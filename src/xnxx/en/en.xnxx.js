@@ -12,7 +12,7 @@ const mangayomiSources = [{
     "isNsfw": true
   }];
 
-  class XNXX extends MProvider {
+  class DefaultExtension extends MProvider {
     getHeaders(url) {
       return {
         "Referer": "https://www.xnxx.com/",
