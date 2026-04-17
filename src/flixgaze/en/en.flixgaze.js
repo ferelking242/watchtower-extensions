@@ -273,7 +273,6 @@
         }
 
         // Pattern 3: iframe embed src
-        const iframeEl = doc ? doc.selectFirst("iframe[src]") : null;
         const doc2 = new Document(html);
         const iframe = doc2.selectFirst("iframe[src]");
         if (iframe) {
