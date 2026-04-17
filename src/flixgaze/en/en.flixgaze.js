@@ -63,7 +63,7 @@
 
         // Fallback: regex on all .html links
         if (items.length === 0) {
-          const re = /href="(https://(?:www.)?flixgaze.com/[^"]+.html)"/g;
+          const re = /href="(https:\/\/(?:www\.)?flixgaze\.com\/[^"]+\.html)"/g;
           let m;
           while ((m = re.exec(html)) !== null) {
             const url = m[1];
