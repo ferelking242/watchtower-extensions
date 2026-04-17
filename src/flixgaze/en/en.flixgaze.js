@@ -1,5 +1,5 @@
 
-const mangayomiSources = [{
+var mangayomiSources = [{
     "name": "FlixGaze",
     "lang": "en",
     "baseUrl": "https://www.flixgaze.com",
@@ -7,13 +7,13 @@ const mangayomiSources = [{
     "iconUrl": "https://www.flixgaze.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.7",
+    "version": "1.0.8",
     "pkgPath": "flixgaze/en/en.flixgaze.js",
     "notes": "FlixGaze.com — Free Movies & TV Series streaming via ZeusDL HLS",
     "isNsfw": false
   }];
 
-const FLIXGAZE_NAV_SLUGS = [
+var FLIXGAZE_NAV_SLUGS = [
     "movie", "tv-series", "foreign-movies", "marvel-cinematic-universe",
     "genre", "category", "tag", "page", "year", "search"
 ];
