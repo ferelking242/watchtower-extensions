@@ -7,7 +7,7 @@ const mangayomiSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.frenchstream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.0",
+    "version": "0.1.1",
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -46,36 +46,37 @@ class DefaultExtension extends MProvider {
 
     _parseItems(html) {
         const list = [];
-        const re = /<article[^>]*>[\s\S]*?<a[^>]+href="([^"]+)"[^>]*>[\s\S]*?<img[^>]+(?:src|data-src)="([^"]+)"[^>]*alt="([^"]+)"/g;
+        // DLE CMS structure: <a class="short-poster img-box with-mask" href="/12345-slug.html" alt="TITLE"><img src="URL">
+        const re = /<a[^>]+class="[^"]*short-poster[^"]*"[^>]+href="(\/[^"]+\.html)"[^>]+alt="([^"]+)"[^>]*>[\s\S]*?<img[^>]+src="([^"]+)"/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
             const url = m[1].startsWith("http") ? m[1] : `${this.baseUrl}${m[1]}`;
-            list.push({ url, imageUrl: m[2], name: m[3].trim() });
+            list.push({ url, imageUrl: m[3], name: m[2].trim() });
         }
         return list;
     }
 
     async getPopular(page) {
-        const res = await this.client.get(`${this.baseUrl}/films-streaming/page/${page}/`, this.getHeaders());
+        const res = await this.client.get(`${this.baseUrl}/films/page/${page}/`, this.getHeaders());
         const list = this._parseItems(res.body);
-        const hasNext = res.body.includes('class="next"') || res.body.includes(`/page/${page + 1}/`);
+        const hasNext = res.body.includes(`/page/${page + 1}/`) || res.body.includes('class="next"');
         return { list, hasNextPage: hasNext };
     }
 
     async getLatestUpdates(page) {
-        const res = await this.client.get(`${this.baseUrl}/page/${page}/`, this.getHeaders());
+        const res = await this.client.get(`${this.baseUrl}/?do=lastupdate&page=${page}`, this.getHeaders());
         const list = this._parseItems(res.body);
-        const hasNext = res.body.includes('class="next"') || res.body.includes(`/page/${page + 1}/`);
+        const hasNext = res.body.includes(`page=${page + 1}`) || res.body.includes('class="next"');
         return { list, hasNextPage: hasNext };
     }
 
     async search(query, page, filterList) {
         const res = await this.client.get(
-            `${this.baseUrl}/?s=${encodeURIComponent(query)}&paged=${page}`,
+            `${this.baseUrl}/?do=search&subaction=search&story=${encodeURIComponent(query)}&from_page=${(page - 1) * 10}&full_search=0`,
             this.getHeaders()
         );
         const list = this._parseItems(res.body);
-        const hasNext = res.body.includes('class="next"');
+        const hasNext = list.length >= 10;
         return { list, hasNextPage: hasNext };
     }
 
@@ -87,26 +88,24 @@ class DefaultExtension extends MProvider {
                       html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
         const name = nameM ? nameM[1].replace(/<[^>]+>/g, "").trim() : "";
 
-        const descM = html.match(/<div[^>]*class="[^"]*synopsis[^"]*"[^>]*>([\s\S]*?)<\/div>/i) ||
-                      html.match(/<div[^>]*class="[^"]*description[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
+        const descM = html.match(/<div[^>]*class="[^"]*sbox[^"]*"[^>]*>[\s\S]*?<div[^>]*>([\s\S]*?)<\/div>/i) ||
+                      html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i);
         const description = descM ? descM[1].replace(/<[^>]+>/g, "").trim() : "";
 
         const imgM = html.match(/<img[^>]+class="[^"]*poster[^"]*"[^>]+src="([^"]+)"/i) ||
-                     html.match(/<img[^>]+src="([^"]+(?:poster|cover|thumb)[^"]+)"/i);
+                     html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i);
         const imageUrl = imgM ? imgM[1] : "";
 
         const episodes = [];
-        const epRe = /<a[^>]+href="([^"]+(?:episode|saison|ep)[^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
+        const epRe = /<a[^>]+href="([^"]+(?:saison|episode|ep-|serie|vf|vostfr)[^"]*\.html)"[^>]*>([\s\S]*?)<\/a>/gi;
         let em;
         while ((em = epRe.exec(html)) !== null) {
-            const epUrl = em[1].startsWith("http") ? em[1] : `${this.baseUrl}${em[1]}`;
-            episodes.push({
-                name: em[2].replace(/<[^>]+>/g, "").trim(),
-                url: epUrl,
-                dateUpload: ""
-            });
+            const epName = em[2].replace(/<[^>]+>/g, "").trim();
+            if (epName && epName.length > 1) {
+                const epUrl = em[1].startsWith("http") ? em[1] : `${this.baseUrl}${em[1]}`;
+                episodes.push({ name: epName, url: epUrl, dateUpload: "" });
+            }
         }
-
         if (episodes.length === 0) {
             episodes.push({ name: "Regarder", url, dateUpload: "" });
         }
@@ -124,14 +123,13 @@ class DefaultExtension extends MProvider {
         let m;
         while ((m = iframeRe.exec(html)) !== null) {
             const src = m[1].startsWith("//") ? `https:${m[1]}` : m[1];
-            if (!src.includes("pub") && !src.includes("ads")) {
-                const quality = q !== "AUTO" ? q : "Stream";
-                videos.push({ url: src, quality, originalUrl: src });
+            if (!src.includes("pub") && !src.includes("advert")) {
+                videos.push({ url: src, quality: q !== "AUTO" ? q : "Stream", originalUrl: src });
             }
         }
 
-        const playerRe = /(?:file|src)\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/gi;
-        while ((m = playerRe.exec(html)) !== null) {
+        const fileRe = /(?:file|src)\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/gi;
+        while ((m = fileRe.exec(html)) !== null) {
             videos.push({ url: m[1], quality: q !== "AUTO" ? q : "Direct", originalUrl: m[1] });
         }
 
@@ -145,7 +143,7 @@ class DefaultExtension extends MProvider {
             {
                 key: "base_url",
                 listPreference: {
-                    title: "URL de base (modifiable si le site change de domaine)",
+                    title: "URL de base",
                     summary: this.baseUrl,
                     valueIndex: 0,
                     entries: [this.source.baseUrl],
@@ -156,7 +154,7 @@ class DefaultExtension extends MProvider {
                 key: "user_agent",
                 editTextPreference: {
                     title: "User-Agent personnalisé",
-                    summary: "Laisser vide pour utiliser le User-Agent par défaut",
+                    summary: "Laisser vide pour utiliser le défaut",
                     value: "",
                     dialogTitle: "User-Agent",
                     dialogMessage: "Entrez un User-Agent personnalisé"
