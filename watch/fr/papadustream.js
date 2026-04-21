@@ -2,12 +2,12 @@ const mangayomiSources = [{
     "name": "PapaDuStream",
     "langs": ["fr"],
     "ids": { "fr": 223948576 },
-    "baseUrl": "https://papadustream.courses",
-    "apiUrl": "https://papadustream.courses",
+    "baseUrl": "https://papadustream-fr.watch",
+    "apiUrl": "https://papadustream-fr.watch",
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.papadustream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.0",
+    "version": "0.1.1",
     "pkgPath": "watch/fr/papadustream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -46,71 +46,76 @@ class DefaultExtension extends MProvider {
 
     _parseItems(html) {
         const list = [];
-        const re = /<div[^>]*class="[^"]*movie[^"]*"[^>]*>[\s\S]*?<a[^>]+href="([^"]+)"[^>]*>[\s\S]*?<img[^>]+(?:src|data-src)="([^"]+)"[^>]*>[\s\S]*?<span[^>]*class="[^"]*title[^"]*"[^>]*>([\s\S]*?)<\/span>/gi;
+        const seen = new Set();
+        // papadustream-fr.watch: <div class="title d-title" data-jp="TITLE">
+        //                        followed by <a href="/film/SLUG" class="btn-watch"
+        const re = /data-jp="([^"]+)"[\s\S]*?href="(\/film\/[^"/][^"]*?)(?:\/ep-\d+)?"[^>]*class="btn-watch"/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
-            const url = m[1].startsWith("http") ? m[1] : `${this.baseUrl}${m[1]}`;
-            list.push({ url, imageUrl: m[2], name: m[3].replace(/<[^>]+>/g, "").trim() });
+            const name = m[1].trim();
+            const url = `${this.baseUrl}${m[2]}`;
+            if (!seen.has(url)) {
+                seen.add(url);
+                list.push({ url, imageUrl: "", name });
+            }
         }
+
+        // Fallback: img + title structure
         if (list.length === 0) {
-            const re2 = /<a[^>]+href="([^"]+)"[^>]*>\s*<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]+)"/gi;
+            const re2 = /<a[^>]+href="((?:https?:\/\/[^/]+)?\/film\/[^"]+)"[^>]*>[\s\S]*?(?:<img[^>]+src="([^"]+)")?[\s\S]*?class="[^"]*d-title[^"]*"[^>]*>([^<]+)</gi;
             while ((m = re2.exec(html)) !== null) {
-                if (m[1].includes("/film") || m[1].includes("/serie") || m[1].includes("/streaming")) {
-                    const url = m[1].startsWith("http") ? m[1] : `${this.baseUrl}${m[1]}`;
-                    list.push({ url, imageUrl: m[2], name: m[3].trim() });
+                const url = m[1].startsWith("/") ? `${this.baseUrl}${m[1]}` : m[1];
+                if (!seen.has(url)) {
+                    seen.add(url);
+                    list.push({ url: url.replace(/\/ep-\d+$/, ""), imageUrl: m[2] || "", name: m[3].trim() });
                 }
             }
         }
+
         return list;
     }
 
     async getPopular(page) {
-        const res = await this.client.get(`${this.baseUrl}/films/page/${page}/`, this.getHeaders());
+        const res = await this.client.get(`${this.baseUrl}/movies/?page=${page}`, this.getHeaders());
         const list = this._parseItems(res.body);
-        const hasNext = res.body.includes(`/page/${page + 1}/`) || res.body.includes('rel="next"');
-        return { list, hasNextPage: hasNext };
+        return { list, hasNextPage: list.length >= 10 };
     }
 
     async getLatestUpdates(page) {
-        const res = await this.client.get(`${this.baseUrl}/page/${page}/`, this.getHeaders());
+        const res = await this.client.get(`${this.baseUrl}/?page=${page}`, this.getHeaders());
         const list = this._parseItems(res.body);
-        const hasNext = res.body.includes(`/page/${page + 1}/`) || res.body.includes('rel="next"');
-        return { list, hasNextPage: hasNext };
+        return { list, hasNextPage: list.length >= 10 };
     }
 
     async search(query, page, filterList) {
         const res = await this.client.get(
-            `${this.baseUrl}/?s=${encodeURIComponent(query)}`,
+            `${this.baseUrl}/?s=${encodeURIComponent(query)}&page=${page}`,
             this.getHeaders()
         );
         const list = this._parseItems(res.body);
-        return { list, hasNextPage: false };
+        return { list, hasNextPage: list.length >= 10 };
     }
 
     async getDetail(url) {
         const res = await this.client.get(url, this.getHeaders());
         const html = res.body;
 
-        const nameM = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
+        const nameM = html.match(/data-jp="([^"]+)"/) ||
+                      html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
         const name = nameM ? nameM[1].replace(/<[^>]+>/g, "").trim() : "";
 
-        const descM = html.match(/<div[^>]*class="[^"]*synopsis[^"]*"[^>]*>([\s\S]*?)<\/div>/i) ||
-                      html.match(/<p[^>]*class="[^"]*resume[^"]*"[^>]*>([\s\S]*?)<\/p>/i);
-        const description = descM ? descM[1].replace(/<[^>]+>/g, "").trim() : "";
-
         const imgM = html.match(/<img[^>]+class="[^"]*(?:poster|cover|thumb)[^"]*"[^>]+src="([^"]+)"/i) ||
-                     html.match(/<img[^>]+src="([^"]+)"[^>]+class="[^"]*(?:poster|cover)[^"]*"/i);
+                     html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i);
         const imageUrl = imgM ? imgM[1] : "";
 
+        const descM = html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i);
+        const description = descM ? descM[1].trim() : "";
+
         const episodes = [];
-        const epRe = /<a[^>]+href="([^"]+(?:saison|episode|ep-|streaming)[^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
-        let em;
-        while ((em = epRe.exec(html)) !== null) {
-            const epName = em[2].replace(/<[^>]+>/g, "").trim();
-            if (epName) {
-                const epUrl = em[1].startsWith("http") ? em[1] : `${this.baseUrl}${em[1]}`;
-                episodes.push({ name: epName, url: epUrl, dateUpload: "" });
-            }
+        const epRe = /href="(\/film\/[^"]+\/ep-\d+)"[^>]*class="btn-watch"/gi;
+        let m;
+        while ((m = epRe.exec(html)) !== null) {
+            episodes.push({ name: "Episode", url: `${this.baseUrl}${m[1]}`, dateUpload: "" });
         }
         if (episodes.length === 0) {
             episodes.push({ name: "Regarder", url, dateUpload: "" });
@@ -129,7 +134,7 @@ class DefaultExtension extends MProvider {
         let m;
         while ((m = iframeRe.exec(html)) !== null) {
             const src = m[1].startsWith("//") ? `https:${m[1]}` : m[1];
-            if (!src.includes("pub") && !src.includes("ads")) {
+            if (!src.includes("pub") && !src.includes("advert")) {
                 videos.push({ url: src, quality: q !== "AUTO" ? q : "Stream", originalUrl: src });
             }
         }
@@ -149,7 +154,7 @@ class DefaultExtension extends MProvider {
             {
                 key: "base_url",
                 listPreference: {
-                    title: "URL de base (modifiable si le site change de domaine)",
+                    title: "URL de base",
                     summary: this.baseUrl,
                     valueIndex: 0,
                     entries: [this.source.baseUrl],
@@ -160,7 +165,7 @@ class DefaultExtension extends MProvider {
                 key: "user_agent",
                 editTextPreference: {
                     title: "User-Agent personnalisé",
-                    summary: "Laisser vide pour utiliser le User-Agent par défaut",
+                    summary: "Laisser vide pour utiliser le défaut",
                     value: "",
                     dialogTitle: "User-Agent",
                     dialogMessage: "Entrez un User-Agent personnalisé"
