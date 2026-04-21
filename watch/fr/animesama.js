@@ -1,18 +1,18 @@
 const mangayomiSources = [{
     "name": "Anime-Sama",
     "langs": ["fr"],
-    "ids": { "fr": 556271809 },
+    "ids": { "fr": 223948123 },
     "baseUrl": "https://anime-sama.fr",
     "apiUrl": "https://anime-sama.fr",
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.animesama.png",
     "typeSource": "single",
-    "itemType": 1,
-    "version": "0.1.0",
+    "itemType": 2,
+    "version": "0.1.1",
     "pkgPath": "watch/fr/animesama.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
     "videoQualities": ["AUTO", "1080p", "720p", "480p", "360p"],
-    "contentSubtype": ["anime", "manga"]
+    "contentSubtype": ["anime"]
 }];
 
 class DefaultExtension extends MProvider {
@@ -40,37 +40,49 @@ class DefaultExtension extends MProvider {
         return {
             "User-Agent": this.userAgent,
             "Referer": `${this.baseUrl}/`,
-            "Accept-Language": "fr-FR,fr;q=0.9"
+            "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8"
         };
     }
 
-    _parseAnime(html) {
+    _parseItems(html) {
         const list = [];
-        const re = /<a[^>]+href="([^"]+catalogue[^"]+)"[^>]*>[\s\S]*?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]+)"/gi;
+        const seen = new Set();
+
+        // Anime-Sama: catalogue cards
+        // Structure: <a href="/catalogue/SLUG/"><img src="URL" alt="TITLE">
+        const re = /<a[^>]+href="((?:https?:\/\/anime-sama\.fr)?\/catalogue\/[^"]+\/)"[^>]*>[\s\S]{0,400}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]+)"/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
             const url = m[1].startsWith("http") ? m[1] : `${this.baseUrl}${m[1]}`;
-            list.push({ url, imageUrl: m[2], name: m[3].trim() });
+            if (seen.has(url)) continue;
+            seen.add(url);
+            const name = m[3].trim();
+            if (name.length > 1) list.push({ url, imageUrl: m[2], name });
         }
+
+        // Fallback: reverse order (img before anchor)
         if (list.length === 0) {
-            const re2 = /<div[^>]*class="[^"]*cardAnime[^"]*"[^>]*>[\s\S]*?<a[^>]+href="([^"]+)"[^>]*>[\s\S]*?<img[^>]+(?:src|data-src)="([^"]+)"[^>]*>[\s\S]*?<h2[^>]*>([\s\S]*?)<\/h2>/gi;
+            const re2 = /<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,})"[^>]*>[\s\S]{0,200}?<a[^>]+href="((?:https?:\/\/anime-sama\.fr)?\/catalogue\/[^"]+\/)"/gi;
             while ((m = re2.exec(html)) !== null) {
-                const url = m[1].startsWith("http") ? m[1] : `${this.baseUrl}${m[1]}`;
-                list.push({ url, imageUrl: m[2], name: m[3].replace(/<[^>]+>/g, "").trim() });
+                const url = m[3].startsWith("http") ? m[3] : `${this.baseUrl}${m[3]}`;
+                if (seen.has(url)) continue;
+                seen.add(url);
+                list.push({ url, imageUrl: m[1], name: m[2].trim() });
             }
         }
+
         return list;
     }
 
     async getPopular(page) {
         const res = await this.client.get(`${this.baseUrl}/catalogue/`, this.getHeaders());
-        const list = this._parseAnime(res.body);
+        const list = this._parseItems(res.body);
         return { list, hasNextPage: false };
     }
 
     async getLatestUpdates(page) {
         const res = await this.client.get(`${this.baseUrl}/`, this.getHeaders());
-        const list = this._parseAnime(res.body);
+        const list = this._parseItems(res.body);
         return { list, hasNextPage: false };
     }
 
@@ -79,75 +91,56 @@ class DefaultExtension extends MProvider {
             `${this.baseUrl}/catalogue/?search=${encodeURIComponent(query)}`,
             this.getHeaders()
         );
-        const list = this._parseAnime(res.body);
+        const list = this._parseItems(res.body);
         return { list, hasNextPage: false };
     }
 
     async getDetail(url) {
-        const fullUrl = url.startsWith("http") ? url : `${this.baseUrl}${url}`;
-        const res = await this.client.get(fullUrl, this.getHeaders());
+        const res = await this.client.get(url, this.getHeaders());
         const html = res.body;
 
         const nameM = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
         const name = nameM ? nameM[1].replace(/<[^>]+>/g, "").trim() : "";
 
-        const descM = html.match(/<p[^>]*class="[^"]*synopsis[^"]*"[^>]*>([\s\S]*?)<\/p>/i) ||
-                      html.match(/<div[^>]*id="synopsis"[^>]*>([\s\S]*?)<\/div>/i);
-        const description = descM ? descM[1].replace(/<[^>]+>/g, "").trim() : "";
-
-        const imgM = html.match(/<img[^>]+id="imgAffiche"[^>]+src="([^"]+)"/i) ||
-                     html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i);
+        const imgM = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) ||
+                     html.match(/<img[^>]+class="[^"]*(?:poster|cover|thumb)[^"]*"[^>]+src="([^"]+)"/i);
         const imageUrl = imgM ? imgM[1] : "";
 
+        const descM = html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i);
+        const description = descM ? descM[1].trim() : "";
+
         const episodes = [];
-        const saisonRe = /<a[^>]+href="([^"]+saison\d[^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
-        let em;
-        while ((em = saisonRe.exec(html)) !== null) {
-            const epUrl = em[1].startsWith("http") ? em[1] : `${this.baseUrl}${em[1]}`;
-            const epName = em[2].replace(/<[^>]+>/g, "").trim();
-            if (epName) episodes.push({ name: epName, url: epUrl, dateUpload: "" });
+        const epRe = /href="((?:https?:\/\/anime-sama\.fr)?\/catalogue\/[^"]+(?:saison|episode|ep)[^"]*)"[^>]*title="([^"]+)"/gi;
+        let m;
+        while ((m = epRe.exec(html)) !== null) {
+            const epUrl = m[1].startsWith("http") ? m[1] : `${this.baseUrl}${m[1]}`;
+            episodes.push({ name: m[2].trim(), url: epUrl, dateUpload: "" });
         }
-
-        const epRe = /<a[^>]+href="([^"]+(?:episode|ep)\d[^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
-        while ((em = epRe.exec(html)) !== null) {
-            const epUrl = em[1].startsWith("http") ? em[1] : `${this.baseUrl}${em[1]}`;
-            const epName = em[2].replace(/<[^>]+>/g, "").trim();
-            if (epName && epName.match(/\d/)) episodes.push({ name: epName, url: epUrl, dateUpload: "" });
-        }
-
         if (episodes.length === 0) {
-            episodes.push({ name: "Regarder", url: fullUrl, dateUpload: "" });
+            episodes.push({ name: "Regarder", url, dateUpload: "" });
         }
 
         return { name, description, imageUrl, genres: [], status: 0, chapters: episodes };
     }
 
     async getVideoList(url) {
-        const fullUrl = url.startsWith("http") ? url : `${this.baseUrl}${url}`;
-        const res = await this.client.get(fullUrl, this.getHeaders());
+        const res = await this.client.get(url, this.getHeaders());
         const html = res.body;
         const videos = [];
         const q = this.preferredQuality;
-
-        const playerRe = /eps\d*\s*=\s*\[([\s\S]*?)\]/gi;
-        let pm;
-        while ((pm = playerRe.exec(html)) !== null) {
-            const urls = pm[1].match(/["'](https?:\/\/[^"']+)["']/g);
-            if (urls) {
-                urls.forEach((u, i) => {
-                    const clean = u.replace(/["']/g, "");
-                    videos.push({ url: clean, quality: q !== "AUTO" ? q : `Lecteur ${i + 1}`, originalUrl: clean });
-                });
-            }
-        }
 
         const iframeRe = /<iframe[^>]+src="([^"]+)"/gi;
         let m;
         while ((m = iframeRe.exec(html)) !== null) {
             const src = m[1].startsWith("//") ? `https:${m[1]}` : m[1];
-            if (!src.includes("pub") && !src.includes("ads")) {
+            if (!src.includes("pub") && !src.includes("advert")) {
                 videos.push({ url: src, quality: q !== "AUTO" ? q : "Stream", originalUrl: src });
             }
+        }
+
+        const fileRe = /(?:file|src)\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/gi;
+        while ((m = fileRe.exec(html)) !== null) {
+            videos.push({ url: m[1], quality: q !== "AUTO" ? q : "Direct", originalUrl: m[1] });
         }
 
         return videos;
@@ -157,36 +150,9 @@ class DefaultExtension extends MProvider {
 
     getSourcePreferences() {
         return [
-            {
-                key: "base_url",
-                listPreference: {
-                    title: "URL de base (modifiable si le site change de domaine)",
-                    summary: this.baseUrl,
-                    valueIndex: 0,
-                    entries: [this.source.baseUrl],
-                    entryValues: [this.source.baseUrl]
-                }
-            },
-            {
-                key: "user_agent",
-                editTextPreference: {
-                    title: "User-Agent personnalisé",
-                    summary: "Laisser vide pour utiliser le User-Agent par défaut",
-                    value: "",
-                    dialogTitle: "User-Agent",
-                    dialogMessage: "Entrez un User-Agent personnalisé"
-                }
-            },
-            {
-                key: "preferred_quality",
-                listPreference: {
-                    title: "Qualité vidéo préférée",
-                    summary: "AUTO",
-                    valueIndex: 0,
-                    entries: ["AUTO", "1080p", "720p", "480p", "360p"],
-                    entryValues: ["AUTO", "1080p", "720p", "480p", "360p"]
-                }
-            }
+            { key: "base_url", listPreference: { title: "URL de base", summary: this.baseUrl, valueIndex: 0, entries: [this.source.baseUrl], entryValues: [this.source.baseUrl] } },
+            { key: "user_agent", editTextPreference: { title: "User-Agent personnalisé", summary: "Laisser vide pour utiliser le défaut", value: "", dialogTitle: "User-Agent", dialogMessage: "Entrez un User-Agent personnalisé" } },
+            { key: "preferred_quality", listPreference: { title: "Qualité vidéo préférée", summary: "AUTO", valueIndex: 0, entries: ["AUTO", "1080p", "720p", "480p", "360p"], entryValues: ["AUTO", "1080p", "720p", "480p", "360p"] } }
         ];
     }
 }
