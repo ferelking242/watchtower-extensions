@@ -1,18 +1,18 @@
 const mangayomiSources = [{
     "name": "Echo du Marteau",
     "langs": ["fr"],
-    "ids": { "fr": 990615243 },
+    "ids": { "fr": 778594031 },
     "baseUrl": "https://echodumarteau.fr",
     "apiUrl": "https://echodumarteau.fr",
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.echodumarteau.png",
     "typeSource": "single",
-    "itemType": 1,
-    "version": "0.1.0",
+    "itemType": 2,
+    "version": "0.1.1",
     "pkgPath": "watch/fr/echodumarteau.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
     "videoQualities": ["AUTO", "1080p", "720p", "480p", "360p"],
-    "contentSubtype": ["anime"]
+    "contentSubtype": ["serie", "drama"]
 }];
 
 class DefaultExtension extends MProvider {
@@ -40,82 +40,86 @@ class DefaultExtension extends MProvider {
         return {
             "User-Agent": this.userAgent,
             "Referer": `${this.baseUrl}/`,
-            "Accept-Language": "fr-FR,fr;q=0.9"
+            "Accept-Language": "fr-FR,fr;q=0.9,en-US;q=0.8"
         };
     }
 
     _parseItems(html) {
         const list = [];
-        const re = /<a[^>]+href="([^"]+)"[^>]*>[\s\S]*?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]+)"/gi;
+        const seen = new Set();
+
+        // Generic card structure with image + title
+        const re = /<a[^>]+href="(https?:\/\/echodumarteau\.fr\/[^"]+)"[^>]*title="([^"]+)"[^>]*>[\s\S]{0,300}?<img[^>]+src="([^"]+)"/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
-            const href = m[1];
-            if (href.match(/\/(anime|serie|episode|streaming|vf|vostfr)/i)) {
-                const url = href.startsWith("http") ? href : `${this.baseUrl}${href}`;
-                list.push({ url, imageUrl: m[2], name: m[3].trim() });
+            if (seen.has(m[1]) || m[1].includes("category") || m[1].includes("tag")) continue;
+            seen.add(m[1]);
+            list.push({ url: m[1], imageUrl: m[3], name: m[2].trim() });
+        }
+
+        // Fallback
+        if (list.length === 0) {
+            const re2 = /<img[^>]+src="([^"]+)"[^>]+alt="([^"]{2,})"[^>]*>[\s\S]{0,200}?<a[^>]+href="(https?:\/\/echodumarteau\.fr\/[^"]+)"/gi;
+            while ((m = re2.exec(html)) !== null) {
+                if (seen.has(m[3])) continue;
+                seen.add(m[3]);
+                list.push({ url: m[3], imageUrl: m[1], name: m[2].trim() });
             }
         }
+
         return list;
     }
 
     async getPopular(page) {
-        const res = await this.client.get(`${this.baseUrl}/page/${page}/`, this.getHeaders());
+        const res = await this.client.get(`${this.baseUrl}/?page=${page}`, this.getHeaders());
         const list = this._parseItems(res.body);
-        const hasNext = res.body.includes(`/page/${page + 1}/`) || res.body.includes('class="next"');
-        return { list, hasNextPage: hasNext };
+        return { list, hasNextPage: list.length >= 10 };
     }
 
     async getLatestUpdates(page) {
-        const res = await this.client.get(`${this.baseUrl}/page/${page}/`, this.getHeaders());
+        const res = await this.client.get(`${this.baseUrl}/?page=${page}`, this.getHeaders());
         const list = this._parseItems(res.body);
-        const hasNext = res.body.includes(`/page/${page + 1}/`) || res.body.includes('class="next"');
-        return { list, hasNextPage: hasNext };
+        return { list, hasNextPage: list.length >= 10 };
     }
 
     async search(query, page, filterList) {
         const res = await this.client.get(
-            `${this.baseUrl}/?s=${encodeURIComponent(query)}`,
+            `${this.baseUrl}/?s=${encodeURIComponent(query)}&page=${page}`,
             this.getHeaders()
         );
         const list = this._parseItems(res.body);
-        return { list, hasNextPage: false };
+        return { list, hasNextPage: list.length >= 10 };
     }
 
     async getDetail(url) {
-        const fullUrl = url.startsWith("http") ? url : `${this.baseUrl}${url}`;
-        const res = await this.client.get(fullUrl, this.getHeaders());
+        const res = await this.client.get(url, this.getHeaders());
         const html = res.body;
 
         const nameM = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
         const name = nameM ? nameM[1].replace(/<[^>]+>/g, "").trim() : "";
 
-        const descM = html.match(/<div[^>]*class="[^"]*(?:synopsis|description)[^"]*"[^>]*>([\s\S]*?)<\/div>/i);
-        const description = descM ? descM[1].replace(/<[^>]+>/g, "").trim() : "";
-
         const imgM = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) ||
-                     html.match(/<img[^>]+class="[^"]*(?:poster|cover)[^"]*"[^>]+(?:src|data-src)="([^"]+)"/i);
+                     html.match(/<img[^>]+class="[^"]*(?:poster|cover|thumb)[^"]*"[^>]+src="([^"]+)"/i);
         const imageUrl = imgM ? imgM[1] : "";
 
+        const descM = html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i);
+        const description = descM ? descM[1].trim() : "";
+
         const episodes = [];
-        const epRe = /<a[^>]+href="([^"]+(?:episode|ep-\d|saison)[^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
-        let em;
-        while ((em = epRe.exec(html)) !== null) {
-            const epName = em[2].replace(/<[^>]+>/g, "").trim();
-            if (epName && (epName.match(/\d/) || epName.toLowerCase().includes("ep"))) {
-                const epUrl = em[1].startsWith("http") ? em[1] : `${this.baseUrl}${em[1]}`;
-                episodes.push({ name: epName, url: epUrl, dateUpload: "" });
-            }
+        const epRe = /href="(https?:\/\/echodumarteau\.fr\/[^"]+(?:episode|ep-|saison)[^"]*)"[^>]*title="([^"]+)"/gi;
+        let m;
+        while ((m = epRe.exec(html)) !== null) {
+            episodes.push({ name: m[2].trim(), url: m[1], dateUpload: "" });
         }
         if (episodes.length === 0) {
-            episodes.push({ name: "Regarder", url: fullUrl, dateUpload: "" });
+            episodes.push({ name: "Regarder", url, dateUpload: "" });
         }
 
         return { name, description, imageUrl, genres: [], status: 0, chapters: episodes };
     }
 
     async getVideoList(url) {
-        const fullUrl = url.startsWith("http") ? url : `${this.baseUrl}${url}`;
-        const res = await this.client.get(fullUrl, this.getHeaders());
+        const res = await this.client.get(url, this.getHeaders());
         const html = res.body;
         const videos = [];
         const q = this.preferredQuality;
@@ -124,7 +128,7 @@ class DefaultExtension extends MProvider {
         let m;
         while ((m = iframeRe.exec(html)) !== null) {
             const src = m[1].startsWith("//") ? `https:${m[1]}` : m[1];
-            if (!src.includes("pub") && !src.includes("ads")) {
+            if (!src.includes("pub") && !src.includes("advert")) {
                 videos.push({ url: src, quality: q !== "AUTO" ? q : "Stream", originalUrl: src });
             }
         }
@@ -141,36 +145,9 @@ class DefaultExtension extends MProvider {
 
     getSourcePreferences() {
         return [
-            {
-                key: "base_url",
-                listPreference: {
-                    title: "URL de base (modifiable si le site change de domaine)",
-                    summary: this.baseUrl,
-                    valueIndex: 0,
-                    entries: [this.source.baseUrl],
-                    entryValues: [this.source.baseUrl]
-                }
-            },
-            {
-                key: "user_agent",
-                editTextPreference: {
-                    title: "User-Agent personnalisé",
-                    summary: "Laisser vide pour utiliser le User-Agent par défaut",
-                    value: "",
-                    dialogTitle: "User-Agent",
-                    dialogMessage: "Entrez un User-Agent personnalisé"
-                }
-            },
-            {
-                key: "preferred_quality",
-                listPreference: {
-                    title: "Qualité vidéo préférée",
-                    summary: "AUTO",
-                    valueIndex: 0,
-                    entries: ["AUTO", "1080p", "720p", "480p", "360p"],
-                    entryValues: ["AUTO", "1080p", "720p", "480p", "360p"]
-                }
-            }
+            { key: "base_url", listPreference: { title: "URL de base", summary: this.baseUrl, valueIndex: 0, entries: [this.source.baseUrl], entryValues: [this.source.baseUrl] } },
+            { key: "user_agent", editTextPreference: { title: "User-Agent personnalisé", summary: "Laisser vide pour utiliser le défaut", value: "", dialogTitle: "User-Agent", dialogMessage: "Entrez un User-Agent personnalisé" } },
+            { key: "preferred_quality", listPreference: { title: "Qualité vidéo préférée", summary: "AUTO", valueIndex: 0, entries: ["AUTO", "1080p", "720p", "480p", "360p"], entryValues: ["AUTO", "1080p", "720p", "480p", "360p"] } }
         ];
     }
 }
