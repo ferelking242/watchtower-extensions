@@ -7,7 +7,7 @@ const mangayomiSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.dotriv.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.2",
+    "version": "0.1.3",
     "pkgPath": "watch/fr/dotriv.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -42,7 +42,7 @@ class DefaultExtension extends MProvider {
         while ((m = re.exec(html)) !== null) {
             const url = `${this.baseUrl}${m[1]}`;
             if (seen.has(url)) continue; seen.add(url);
-            list.push({ url, imageUrl: m[2], name: m[3].trim() });
+            list.push({ link: url, imageUrl: m[2], name: m[3].trim() });
         }
         return list;
     }
