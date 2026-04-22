@@ -37,7 +37,7 @@ class DefaultExtension extends MProvider {
         let m;
         while ((m = re.exec(html)) !== null) {
             if (seen.has(m[1])) continue; seen.add(m[1]);
-            list.push({ url: m[1], imageUrl: m[3], name: m[2].trim() });
+            list.push({ link: m[1], imageUrl: m[3], name: m[2].trim() });
         }
         // Fallback: any drama link with title
         if (list.length === 0) {
@@ -45,7 +45,7 @@ class DefaultExtension extends MProvider {
             while ((m = re2.exec(html)) !== null) {
                 if (seen.has(m[1]) || m[1].includes("feed") || m[1].includes("genre")) continue;
                 seen.add(m[1]);
-                list.push({ url: m[1], imageUrl: "", name: m[2].trim() });
+                list.push({ link: m[1], imageUrl: "", name: m[2].trim() });
             }
         }
         return list;
