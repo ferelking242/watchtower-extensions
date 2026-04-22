@@ -35,7 +35,7 @@ class DefaultExtension extends MProvider {
             if (titleM) {
                 list.push({
                     name: titleM[1].trim(),
-                    url: linkM ? linkM[1] : item.match(/<link[^>]*>([^<]+)/)?.[1]?.trim() || "",
+                    link: linkM ? linkM[1] : item.match(/<link[^>]*>([^<]+)/)?.[1]?.trim() || "",
                     imageUrl: imgM ? imgM[1] : ""
                 });
             }
