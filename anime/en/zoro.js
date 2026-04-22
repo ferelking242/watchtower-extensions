@@ -30,7 +30,7 @@ class DefaultExtension extends MProvider {
         const re = /<a[^>]+href="\/([^"?]+)"[^>]*class="[^"]*film-poster-ahref[^"]*"[^>]*>[\s\S]*?<img[^>]+data-src="([^"]+)"[^>]*>[\s\S]*?<\/a>[\s\S]*?class="film-name[^"]*"[^>]*title="([^"]+)"/g;
         let m;
         while ((m = re.exec(html)) !== null) {
-            list.push({ url: `/${m[1]}`, imageUrl: m[2], name: m[3] });
+            list.push({ link: `/${m[1]}`, imageUrl: m[2], name: m[3] });
         }
         return list;
     }
