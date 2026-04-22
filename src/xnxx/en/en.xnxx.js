@@ -6,7 +6,7 @@ const mangayomiSources = [{
     "iconUrl": "https://www.xnxx.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.6",
+    "version": "1.0.7",
     "pkgPath": "xnxx/en/en.xnxx.js",
     "notes": "Adult content (18+)",
     "isNsfw": true
@@ -171,20 +171,74 @@ class DefaultExtension extends MProvider {
             }
         }
         const videos = [];
+        const headers = this.getHeaders(url);
+        const seenUrls = new Set();
+        const pushVid = (u, q) => {
+            if (!u || seenUrls.has(u)) return;
+            seenUrls.add(u);
+            videos.push({ url: u, quality: q, originalUrl: u, headers });
+        };
+
         const hls  = (html.match(/html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/)       || [])[1];
         const high = (html.match(/html5player\.setVideoUrlHigh\(['"]([^'"]+)['"]\)/)   || [])[1];
         const low  = (html.match(/html5player\.setVideoUrlLow\(['"]([^'"]+)['"]\)/)    || [])[1];
-        const headers = this.getHeaders(url);
-        if (hls)  videos.push({ url: hls,  quality: "Auto · HLS", originalUrl: hls,  headers });
-        if (high) videos.push({ url: high, quality: "720p",       originalUrl: high, headers });
-        if (low)  videos.push({ url: low,  quality: "360p",       originalUrl: low,  headers });
+
+        // 1) Fetch the HLS master playlist and expose every variant
+        // (1080p / 720p / 480p / 360p / 240p depending on the video) as
+        // its own quality entry. Many xnxx videos only ship 360p and 720p
+        // here, but for the ones that have 480p/1080p the user gets them.
+        if (hls) {
+            pushVid(hls, "Auto · HLS");
+            try {
+                const m = await this._safeGet(hls);
+                const body = m.body || "";
+                if (body.includes("#EXT-X-STREAM-INF")) {
+                    const baseIdx = hls.lastIndexOf("/");
+                    const baseUrl = baseIdx > 0 ? hls.substring(0, baseIdx) : hls;
+                    const lines = body.split("\n");
+                    const variants = [];
+                    for (let i = 0; i < lines.length; i++) {
+                        const ln = lines[i].trim();
+                        if (!ln.startsWith("#EXT-X-STREAM-INF")) continue;
+                        const resM = ln.match(/RESOLUTION=\d+x(\d+)/i);
+                        const nameM = ln.match(/NAME="?([^",]+)"?/i);
+                        const bwM = ln.match(/BANDWIDTH=(\d+)/i);
+                        let label = nameM ? nameM[1] : (resM ? resM[1] + "p" : (bwM ? Math.round(parseInt(bwM[1])/1000) + "kbps" : "variant"));
+                        let next = "";
+                        for (let j = i + 1; j < lines.length; j++) {
+                            const c = lines[j].trim();
+                            if (!c || c.startsWith("#")) continue;
+                            next = c; break;
+                        }
+                        if (!next) continue;
+                        const abs = next.startsWith("http") ? next : (baseUrl + "/" + next.replace(/^\//, ""));
+                        const height = resM ? parseInt(resM[1]) : 0;
+                        variants.push({ url: abs, label, height });
+                    }
+                    // Sort variants high → low so dropdowns make sense
+                    variants.sort((a, b) => b.height - a.height);
+                    for (const v of variants) pushVid(v.url, v.label + " · HLS");
+                }
+            } catch (_) {
+                // Master fetch failed → keep just "Auto · HLS"
+            }
+        }
+
+        // 2) Direct MP4 URLs (Low/High often point to the SAME mp4_sd.mp4
+        // on xnxx — dedupe by URL so we don't show "720p" and "360p" both
+        // pointing to the same SD file).
+        if (high) pushVid(high, "High · MP4 direct");
+        if (low && low !== high) pushVid(low, "Low · MP4 direct");
+
         // Sort with preferred quality first
         const want = (this.prefQuality || "auto").toLowerCase();
         const matchKey = q => {
             const ql = q.toLowerCase();
-            if (want === "auto"  && ql.includes("auto")) return 0;
-            if (want === "720p"  && ql.includes("720")) return 0;
-            if (want === "360p"  && ql.includes("360")) return 0;
+            if (want === "auto"   && ql.includes("auto"))   return 0;
+            if (want === "1080p"  && ql.includes("1080"))   return 0;
+            if (want === "720p"   && ql.includes("720"))    return 0;
+            if (want === "480p"   && ql.includes("480"))    return 0;
+            if (want === "360p"   && ql.includes("360"))    return 0;
             return 1;
         };
         videos.sort((a, b) => matchKey(a.quality) - matchKey(b.quality));
@@ -220,8 +274,8 @@ class DefaultExtension extends MProvider {
                     title: "Preferred quality",
                     summary: "Default video quality picked first in the player.",
                     valueIndex: 0,
-                    entries: ["Auto (HLS)", "720p", "360p"],
-                    entryValues: ["auto", "720p", "360p"]
+                    entries: ["Auto (HLS)", "1080p", "720p", "480p", "360p"],
+                    entryValues: ["auto", "1080p", "720p", "480p", "360p"]
                 }
             }
         ];
