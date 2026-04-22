@@ -33,7 +33,7 @@ class DefaultExtension extends MProvider {
     _parse(html) {
         const list = []; const seen = new Set();
         // DLE CMS: <a class="short-poster img-box with-mask" href="/ID-slug.html" alt="TITLE"><img src="URL">
-        const re = /class="short-poster[^"]*"\s+href="(\/[0-9][^"]+\.html)"\s+alt="([^"]+)"[\s\S]{0,400}?<img[^>]+src="([^"]+)"/gi;
+        const re = /class="short-poster[^"]*"\s+href="(\/[0-9][^"]+\.html)"\s+alt="([^"]+)"[\s\S]{0,1500}?<img[^>]+(?:data-src|src)="([^"]+)"/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
             const url = `${this.baseUrl}${m[1]}`;

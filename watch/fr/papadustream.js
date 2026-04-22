@@ -32,14 +32,14 @@ class DefaultExtension extends MProvider {
 
     _parse(html) {
         const list = []; const seen = new Set();
-        // papadustream-fr.watch: <div class="title d-title" data-jp="TITLE">
-        // followed by <a href="/film/SLUG" class="btn-watch"
-        const re = /data-jp="([^"]{2,})"[\s\S]{0,300}?href="(\/film\/[^"]+?)(?:\/ep-\d+)?"[^>]*class="btn-watch"/gi;
+        // papadustream-fr.watch: <a class="ani poster" href="/film/SLUG/ep-ID"><img src="POSTER" alt="TITLE">
+        // The "list" page detail link is /film/SLUG (without /ep-ID); we use that.
+        const re = /<a\s+class="ani\s+poster"\s+href="(https?:\/\/[^"]*?\/film\/[^"\/]+)(?:\/ep-\d+)?"[^>]*>\s*<img[^>]+src="([^"]+)"[^>]+alt="([^"]+)"/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
-            const url = `${this.baseUrl}${m[2]}`;
+            const url = m[1];
             if (seen.has(url)) continue; seen.add(url);
-            list.push({ url, imageUrl: "", name: m[1].trim() });
+            list.push({ url, imageUrl: m[2], name: m[3].trim() });
         }
         return list;
     }

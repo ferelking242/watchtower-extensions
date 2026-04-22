@@ -71,10 +71,29 @@ class DefaultExtension extends MProvider {
         return { list, hasNextPage: list.length >= 10 };
     }
 
+    async _safeGet(url) {
+        // Dotriv's /a8634js/b/dotriv/ID endpoint is a JSON API behind a 302-loop
+        // when called without the site's signed XHR context (SPA). We try a few
+        // header variants and return empty html if the site blocks us, so the
+        // catalog stays browseable instead of throwing "fetch failed".
+        const tries = [
+            this._hdrs(`${this.baseUrl}/`),
+            { ...this._hdrs(`${this.baseUrl}/`), "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" },
+            { ...this._hdrs(`${this.baseUrl}/`), "Accept": "text/html,application/xhtml+xml" }
+        ];
+        for (const h of tries) {
+            try {
+                const r = await this.client.get(url, h);
+                if (r && r.body && r.body.length > 0) return r;
+            } catch (e) { /* try next */ }
+        }
+        return { body: "", statusCode: 0 };
+    }
+
     async getDetail(url) {
         await this._log(`detail: ${url}`);
-        const res = await this.client.get(url, this._hdrs());
-        const html = res.body;
+        const res = await this._safeGet(url);
+        const html = res.body || "";
 
         const nameM = html.match(/<h1[^>]*>([^<]+)<\/h1>/i) || html.match(/<title>([^|<\-]+)/i);
         const name = nameM ? nameM[1].trim() : "";
@@ -85,7 +104,8 @@ class DefaultExtension extends MProvider {
 
         const descM = html.match(/<meta[^>]+property="og:description"[^>]+content="([^"]+)"/i) ||
                       html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i);
-        const description = descM ? descM[1].replace(/&[#\w]+;/g, " ").trim() : "";
+        const description = descM ? descM[1].replace(/&[#\w]+;/g, " ").trim()
+                                 : "Détails non disponibles (site Dotriv en SPA, ouvrir dans le navigateur).";
 
         const episodes = [{ name: name || "Regarder", url, dateUpload: "" }];
 
@@ -95,8 +115,8 @@ class DefaultExtension extends MProvider {
 
     async getVideoList(url) {
         await this._log(`video: ${url}`);
-        const res = await this.client.get(url, this._hdrs(url));
-        const html = res.body;
+        const res = await this._safeGet(url);
+        const html = res.body || "";
         const videos = [];
         const q = this.pref_quality;
 
