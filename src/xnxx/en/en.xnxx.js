@@ -6,7 +6,7 @@ const mangayomiSources = [{
     "iconUrl": "https://www.xnxx.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.5",
+    "version": "1.0.6",
     "pkgPath": "xnxx/en/en.xnxx.js",
     "notes": "Adult content (18+)",
     "isNsfw": true
@@ -23,30 +23,61 @@ class DefaultExtension extends MProvider {
     get prefQuality() { return this._pref("preferred_quality", "auto"); }
 
     getHeaders(url) {
+        // Full browser-like header set. xnxx servers drop bare requests
+        // ("Connection closed before full header was received") when the
+        // request looks too thin (no Accept, no Sec-Fetch, etc.).
         return {
             "Referer": "https://www.xnxx.com/",
             "User-Agent": "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
             "Accept-Language": this.langCode + ",en;q=0.8",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "same-origin",
+            "Sec-Fetch-User": "?1",
             "Cookie": "lang=" + this.langCode
         };
+    }
+
+    // GET with up to 3 retries on transient connection failures
+    // ("Connection closed before full header was received", reset, etc.).
+    async _safeGet(url) {
+        let lastErr = null;
+        for (let i = 0; i < 3; i++) {
+            try {
+                const res = await new Client().get(url, this.getHeaders(url));
+                if (res && res.body && res.body.length > 0) return res;
+                lastErr = new Error("Empty body");
+            } catch (e) {
+                lastErr = e;
+            }
+            // small backoff between retries
+            await new Promise(r => setTimeout(r, 350 + i * 400));
+        }
+        throw lastErr || new Error("Request failed: " + url);
     }
 
     // ---------- listing ----------
     async getPopular(page) {
         const url = `https://www.xnxx.com/best/${this.langCode}/${page}`;
-        const res = await new Client().get(url, this.getHeaders(url));
+        const res = await this._safeGet(url);
         return this._parseVideoList(res.body);
     }
     get supportsLatest() { return true; }
     async getLatestUpdates(page) {
         const url = `https://www.xnxx.com/new/${this.langCode}/${page}`;
-        const res = await new Client().get(url, this.getHeaders(url));
+        const res = await this._safeGet(url);
         return this._parseVideoList(res.body);
     }
     async search(query, page, filters) {
         const q = encodeURIComponent(query.trim().replace(/\s+/g, "+"));
         const url = `https://www.xnxx.com/search/${this.langCode}/${q}/${page}`;
-        const res = await new Client().get(url, this.getHeaders(url));
+        const res = await this._safeGet(url);
         return this._parseVideoList(res.body);
     }
 
@@ -95,7 +126,7 @@ class DefaultExtension extends MProvider {
 
     // ---------- detail ----------
     async getDetail(url) {
-        const res = await new Client().get(url, this.getHeaders(url));
+        const res = await this._safeGet(url);
         const doc = new Document(res.body);
         const title = (doc.selectFirst('meta[property="og:title"]')?.attr("content")
             || doc.selectFirst("h2.page-title, h1.content-title")?.text
@@ -124,8 +155,21 @@ class DefaultExtension extends MProvider {
 
     // ---------- video sources ----------
     async getVideoList(url) {
-        const res = await new Client().get(url, this.getHeaders(url));
-        const html = res.body;
+        let html = "";
+        try {
+            const res = await this._safeGet(url);
+            html = res.body || "";
+        } catch (e) {
+            // Last-ditch fallback to mobile site (m.xnxx.com), which is far
+            // more permissive and rarely closes the connection.
+            const mUrl = url.replace("://www.xnxx.com", "://m.xnxx.com");
+            try {
+                const res2 = await this._safeGet(mUrl);
+                html = res2.body || "";
+            } catch (_) {
+                throw e;
+            }
+        }
         const videos = [];
         const hls  = (html.match(/html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/)       || [])[1];
         const high = (html.match(/html5player\.setVideoUrlHigh\(['"]([^'"]+)['"]\)/)   || [])[1];
