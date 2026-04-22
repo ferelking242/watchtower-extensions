@@ -30,7 +30,7 @@ class DefaultExtension extends MProvider {
         let m;
         while ((m = re.exec(html)) !== null) {
             const imgUrl = m[2].startsWith("//") ? `https:${m[2]}` : m[2];
-            list.push({ url: m[1], imageUrl: imgUrl, name: m[3].trim() });
+            list.push({ link: m[1], imageUrl: imgUrl, name: m[3].trim() });
         }
         return list;
     }
