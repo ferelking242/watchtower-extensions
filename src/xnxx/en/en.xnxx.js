@@ -6,7 +6,7 @@ const mangayomiSources = [{
     "iconUrl": "https://www.xnxx.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.7",
+    "version": "1.0.8",
     "pkgPath": "xnxx/en/en.xnxx.js",
     "notes": "Adult content (18+)",
     "isNsfw": true
@@ -74,9 +74,64 @@ class DefaultExtension extends MProvider {
         const res = await this._safeGet(url);
         return this._parseVideoList(res.body);
     }
+
+    _filterValue(filters, name, fallback) {
+        if (!Array.isArray(filters)) return fallback;
+        for (const f of filters) {
+            if (!f || f.name !== name) continue;
+            if (f.type_name === "SelectFilter" && Array.isArray(f.values)) {
+                const idx = typeof f.state === "number" ? f.state : 0;
+                const v = f.values[idx];
+                return v && typeof v.value === "string" ? v.value : fallback;
+            }
+            if (f.type_name === "TextFilter") {
+                return typeof f.state === "string" ? f.state : fallback;
+            }
+        }
+        return fallback;
+    }
+
     async search(query, page, filters) {
-        const q = encodeURIComponent(query.trim().replace(/\s+/g, "+"));
-        const url = `https://www.xnxx.com/search/${this.langCode}/${q}/${page}`;
+        const q = (query || "").trim();
+        const sort = this._filterValue(filters, "Sort by", "");
+        const category = this._filterValue(filters, "Category", "");
+        const duration = this._filterValue(filters, "Duration", "");
+        const quality = this._filterValue(filters, "Video quality", "");
+        const tag = (this._filterValue(filters, "Tag (slug)", "") || "").trim();
+
+        // No query, no filters → fall back to "best" listing for the language.
+        const noQuery = !q;
+        const noFilters = !sort && !category && !duration && !quality && !tag;
+        if (noQuery && noFilters) {
+            return this.getPopular(page);
+        }
+
+        // /tags/<slug> when a tag slug is given (overrides everything else).
+        if (noQuery && tag) {
+            const slug = encodeURIComponent(tag.replace(/^\/+|\/+$/g, ""));
+            const url = `https://www.xnxx.com/tags/${slug}/${page}`;
+            const res = await this._safeGet(url);
+            return this._parseVideoList(res.body);
+        }
+
+        // /c/<lang>/<category>/<page> when a category is selected and there is no free-text query.
+        if (noQuery && category) {
+            const url = `https://www.xnxx.com/c/${this.langCode}/${encodeURIComponent(category)}/${page}`;
+            const res = await this._safeGet(url);
+            return this._parseVideoList(res.body);
+        }
+
+        // Otherwise → /search/<lang>/<query>/<filter-segments>/<page>
+        const queryPart = q
+            ? encodeURIComponent(q.replace(/\s+/g, "+"))
+            : "-"; // xnxx accepts an empty placeholder for filter-only browsing.
+        const segments = [];
+        if (category) segments.push(category);                 // e.g. "milf"
+        if (duration) segments.push(`duration-${duration}`);   // 0_5, 5_10, 10_20, 20_more
+        if (quality)  segments.push(`hd-${quality}`);          // 720, 1080
+        if (sort)     segments.push(sort);                     // top-rated, newest, longest...
+        const filterPath = segments.length ? `/${segments.join("/")}` : "";
+        const url = `https://www.xnxx.com/search/${this.langCode}/${queryPart}${filterPath}/${page}`;
         const res = await this._safeGet(url);
         return this._parseVideoList(res.body);
     }
@@ -245,7 +300,81 @@ class DefaultExtension extends MProvider {
         return videos;
     }
     async getPageList(url) { return []; }
-    getFilterList() { return []; }
+
+    getFilterList() {
+        const sel = (name, values, state = 0) => ({
+            type_name: "SelectFilter",
+            name,
+            state,
+            values: values.map(v => ({
+                type_name: "SelectOption",
+                name: v[0],
+                value: v[1],
+            })),
+        });
+        return [
+            sel("Sort by", [
+                ["Relevance",  ""],
+                ["Newest",     "newest"],
+                ["Top rated",  "top-rated"],
+                ["Longest",    "longest"],
+                ["Most viewed", "most-viewed"],
+            ]),
+            sel("Category", [
+                ["All",         ""],
+                ["Amateur",     "amateur"],
+                ["Anal",        "anal"],
+                ["Asian",       "asian"],
+                ["BBW",         "bbw"],
+                ["Big Ass",     "big-ass"],
+                ["Big Tits",    "big-tits"],
+                ["Black",       "ebony"],
+                ["Blonde",      "blonde"],
+                ["Blowjob",     "blowjob"],
+                ["Brunette",    "brunette"],
+                ["Casting",     "casting"],
+                ["Cosplay",     "cosplay"],
+                ["Cumshot",     "cumshot"],
+                ["Ebony",       "ebony"],
+                ["French",      "french"],
+                ["Gangbang",    "gangbang"],
+                ["German",      "german"],
+                ["Hardcore",    "hardcore"],
+                ["Hentai",      "hentai"],
+                ["Indian",      "indian"],
+                ["Interracial", "interracial"],
+                ["Japanese",    "japanese"],
+                ["Latina",      "latina"],
+                ["Lesbian",     "lesbian"],
+                ["MILF",        "milf"],
+                ["Massage",     "massage"],
+                ["Mature",      "mature"],
+                ["Old & Young", "old-and-young"],
+                ["POV",         "pov"],
+                ["Public",      "public"],
+                ["Redhead",     "redhead"],
+                ["Russian",     "russian"],
+                ["Squirt",      "squirt"],
+                ["Teen (18+)",  "teen"],
+                ["Threesome",   "threesome"],
+                ["Vintage",     "vintage"],
+            ]),
+            sel("Duration", [
+                ["Any",            ""],
+                ["0–5 min",        "0_5"],
+                ["5–10 min",       "5_10"],
+                ["10–20 min",      "10_20"],
+                ["20+ min",        "20_more"],
+            ]),
+            sel("Video quality", [
+                ["Any",   ""],
+                ["720p+", "720"],
+                ["1080p", "1080"],
+            ]),
+            { type_name: "HeaderFilter", name: "Browse by tag (overrides category)" },
+            { type_name: "TextFilter", name: "Tag (slug)", state: "" },
+        ];
+    }
 
     // ---------- preferences schema (shown in app settings) ----------
     getSourcePreferences() {
