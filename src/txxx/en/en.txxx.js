@@ -6,7 +6,7 @@ const mangayomiSources = [{
     "iconUrl": "https://txxx.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "pkgPath": "txxx/en/en.txxx.js",
     "notes": "Adult content (18+) — ZeusDL powered streaming",
     "isNsfw": true
@@ -55,7 +55,7 @@ const mangayomiSources = [{
       const title = doc.selectFirst('meta[property="og:title"]')?.attr("content") || doc.selectFirst("h1")?.text || "Unknown";
       const thumb = doc.selectFirst('meta[property="og:image"]')?.attr("content") || "";
       const tags = doc.select(".tag a, .tags a").map(el => ({ name: el.text.trim() }));
-      return { name: title.trim(), imageUrl: thumb, description: "", genre: tags, episodes: [{ name: "▶ Watch", url: url }] };
+      return { name: title.trim(), imageUrl: thumb, description: "", genre: tags, episodes: [{ name: (title && title.trim ? title.trim() : (title || "Watch")), url: url }] };
     }
     async getVideoList(url) {
       const res = await new Client().get(url, { headers: this.getHeaders(url) });

@@ -6,7 +6,7 @@ const mangayomiSources = [{
     "iconUrl": "https://www.youporn.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "pkgPath": "youporn/en/en.youporn.js",
     "notes": "Adult content (18+) — ZeusDL powered streaming",
     "isNsfw": true
@@ -55,7 +55,7 @@ const mangayomiSources = [{
       const title = doc.selectFirst('meta[property="og:title"]')?.attr("content") || "Unknown";
       const thumb = doc.selectFirst('meta[property="og:image"]')?.attr("content") || "";
       const tags = doc.select(".video-tags a, .tag").map(el => ({ name: el.text.trim() }));
-      return { name: title, imageUrl: thumb, description: "", genre: tags, episodes: [{ name: "▶ Watch", url: url }] };
+      return { name: title, imageUrl: thumb, description: "", genre: tags, episodes: [{ name: (title && title.trim ? title.trim() : (title || "Watch")), url: url }] };
     }
     async getVideoList(url) {
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
