@@ -57,7 +57,7 @@ const mangayomiSources = [{
       const thumb = doc.selectFirst('meta[property="og:image"]')?.attr("content") || "";
       const desc = doc.selectFirst(".infoWrapper .categoriesWrap")?.text || "";
       const tags = doc.select(".tagsWrapper a, .categoriesWrap a").map(el => ({ name: el.text.trim() }));
-      return { name: title, imageUrl: thumb, description: desc, genre: tags, episodes: [{ name: "▶ Watch", url: url }] };
+      return { name: title, imageUrl: thumb, description: desc, genre: tags, episodes: [{ name: (title && title.trim ? title.trim() : (title || "Watch")), url: url }] };
     }
     async getVideoList(url) {
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
