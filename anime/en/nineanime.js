@@ -31,7 +31,7 @@ class DefaultExtension extends MProvider {
         let m;
         while ((m = re.exec(html)) !== null) {
             const url = m[1].startsWith("/") ? m[1] : `/${m[1]}`;
-            list.push({ url, imageUrl: m[2], name: m[3].replace(/<[^>]+>/g, "").trim() });
+            list.push({ link: url, imageUrl: m[2], name: m[3].replace(/<[^>]+>/g, "").trim() });
         }
         return list;
     }
