@@ -31,7 +31,7 @@ class DefaultExtension extends MProvider {
         let m;
         while ((m = re.exec(html)) !== null) {
             list.push({
-                url: m[1].replace(this.source.baseUrl, ""),
+                link: m[1].replace(this.source.baseUrl, ""),
                 imageUrl: m[2],
                 name: m[3].replace(/<[^>]+>/g, "").trim()
             });
