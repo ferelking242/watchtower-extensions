@@ -37,7 +37,7 @@ class DefaultExtension extends MProvider {
         while ((m = re.exec(html)) !== null) {
             if (seen.has(m[1]) || m[1].includes("category") || m[1].includes("tag")) continue;
             seen.add(m[1]);
-            list.push({ url: m[1], imageUrl: m[3], name: m[2].trim() });
+            list.push({ link: m[1], imageUrl: m[3], name: m[2].trim() });
         }
         return list;
     }
