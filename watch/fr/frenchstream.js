@@ -7,7 +7,7 @@ const mangayomiSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.frenchstream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.2",
+    "version": "0.1.3",
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -38,7 +38,7 @@ class DefaultExtension extends MProvider {
         while ((m = re.exec(html)) !== null) {
             const url = `${this.baseUrl}${m[1]}`;
             if (seen.has(url)) continue; seen.add(url);
-            list.push({ url, imageUrl: m[3], name: m[2].trim() });
+            list.push({ link: url, imageUrl: m[3], name: m[2].trim() });
         }
         return list;
     }
@@ -59,6 +59,14 @@ class DefaultExtension extends MProvider {
 
     async search(query, page, filterList) {
         await this._log(`search: "${query}"`);
+        const gf = (filterList || []).find(f => f && f.name === "Genre");
+        const genrePath = (gf && gf.values && gf.state > 0) ? gf.values[gf.state].value : "";
+        if (!query && genrePath) {
+            const res = await this.client.get(`${this.baseUrl}${genrePath}page/${page}/`, this._hdrs());
+            const list = this._parse(res.body);
+            await this._log(`search(genre): ${list.length} items`);
+            return { list, hasNextPage: list.length >= 10 };
+        }
         const from = (page - 1) * 10;
         const res = await this.client.get(`${this.baseUrl}/?do=search&subaction=search&story=${encodeURIComponent(query)}&from_page=${from}&full_search=0`, this._hdrs());
         await this._log(`search rsp: ${res.body.length}b`);
@@ -83,8 +91,10 @@ class DefaultExtension extends MProvider {
                       html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i);
         const description = descM ? descM[1].trim() : "";
 
-        // Poster
-        const imgM = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i);
+        // Poster: French-Stream uses <div class="fposter|dvd-poster"> wrapping a TMDB <img>
+        const imgM = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) ||
+                     html.match(/<div[^>]+class="[^"]*(?:fposter|dvd-poster)[^"]*"[\s\S]{0,400}?<img[^>]+(?:data-src|src)="([^"]+)"/i) ||
+                     html.match(/<img[^>]+(?:data-src|src)="(https?:\/\/image\.tmdb\.org\/[^"]+)"/i);
         const imageUrl = imgM ? imgM[1] : "";
 
         // Episodes: look for tabs or server links on DLE CMS
@@ -139,7 +149,30 @@ class DefaultExtension extends MProvider {
         return videos;
     }
 
-    getFilterList() { return []; }
+    getFilterList() {
+        return [
+            { type: "SelectFilter", name: "Genre", state: 0, values: [
+                { name: "Tous", value: "" },
+                { name: "Action", value: "/film/action/" },
+                { name: "Aventure", value: "/film/aventure/" },
+                { name: "Animation", value: "/film/animation/" },
+                { name: "Comédie", value: "/film/comedie/" },
+                { name: "Crime", value: "/film/crime/" },
+                { name: "Documentaire", value: "/film/documentaire/" },
+                { name: "Drame", value: "/film/drame/" },
+                { name: "Familial", value: "/film/familial/" },
+                { name: "Fantastique", value: "/film/fantastique/" },
+                { name: "Guerre", value: "/film/guerre/" },
+                { name: "Histoire", value: "/film/histoire/" },
+                { name: "Horreur", value: "/film/horreur/" },
+                { name: "Mystère", value: "/film/mystere/" },
+                { name: "Romance", value: "/film/romance/" },
+                { name: "Science-Fiction", value: "/film/science-fiction/" },
+                { name: "Thriller", value: "/film/thriller/" },
+                { name: "Western", value: "/film/western/" }
+            ]}
+        ];
+    }
 
     getSourcePreferences() {
         return [
