@@ -37,7 +37,7 @@ class DefaultExtension extends MProvider {
         while ((m = re.exec(html)) !== null) {
             const url = m[1].startsWith("http") ? m[1] : `${this.baseUrl}${m[1]}`;
             if (seen.has(url)) continue; seen.add(url);
-            list.push({ url, imageUrl: m[2], name: m[3].trim() });
+            list.push({ link: url, imageUrl: m[2], name: m[3].trim() });
         }
         return list;
     }
