@@ -7,7 +7,7 @@ const mangayomiSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.vostfree.png",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.1.2",
+    "version": "0.1.3",
     "pkgPath": "watch/fr/vostfree.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -38,7 +38,7 @@ class DefaultExtension extends MProvider {
         while ((m = re.exec(html)) !== null) {
             if (seen.has(m[1])) continue; seen.add(m[1]);
             const name = m[3].replace(/\s*(VOSTFR|VF|FRENCH|TrueFrench|DDL|streaming)[^\w]*/gi, "").trim();
-            if (name.length > 1) list.push({ url: m[1], imageUrl: m[2], name });
+            if (name.length > 1) list.push({ link: m[1], imageUrl: m[2], name });
         }
         return list;
     }
@@ -59,6 +59,14 @@ class DefaultExtension extends MProvider {
 
     async search(query, page, filterList) {
         await this._log(`search: "${query}"`);
+        const gf = (filterList || []).find(f => f && f.name === "Genre");
+        const genrePath = (gf && gf.values && gf.state > 0) ? gf.values[gf.state].value : "";
+        if (!query && genrePath) {
+            const res = await this.client.get(`${this.baseUrl}${genrePath}page/${page}/`, this._hdrs());
+            const list = this._parse(res.body);
+            await this._log(`search(genre): ${list.length} items`);
+            return { list, hasNextPage: list.length >= 10 };
+        }
         // Vostfree search: /?search=QUERY&page=N
         const res = await this.client.get(`${this.baseUrl}/?search=${encodeURIComponent(query)}&page=${page}`, this._hdrs());
         await this._log(`search rsp: ${res.body.length}b`);
@@ -79,9 +87,13 @@ class DefaultExtension extends MProvider {
                       html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i);
         const description = descM ? descM[1].trim() : "";
 
+        // Poster: Vostfree serves images at /uploads/posts/...; build absolute URL
         const imgM = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) ||
-                     html.match(/<img[^>]+class="[^"]*(?:poster|img-left)[^"]*"[^>]+src="([^"]+)"/i);
-        const imageUrl = imgM ? imgM[1] : "";
+                     html.match(/<img[^>]+class="[^"]*(?:slide-poster|poster|img-left)[^"]*"[^>]+(?:src|data-src)="([^"]+)"/i) ||
+                     html.match(/<img[^>]+(?:src|data-src)="(\/uploads\/posts\/[^"]+\.(?:jpg|png|webp))"/i) ||
+                     html.match(/<img[^>]+(?:src|data-src)="(https?:\/\/vostfree\.[^"]+\/uploads\/[^"]+\.(?:jpg|png|webp))"/i);
+        let imageUrl = imgM ? imgM[1] : "";
+        if (imageUrl && imageUrl.startsWith("/")) imageUrl = `${this.baseUrl}${imageUrl}`;
 
         // Episodes: Vostfree is mostly single-file anime/films
         // For multi-episode series, look for episode links
@@ -131,7 +143,24 @@ class DefaultExtension extends MProvider {
         return videos;
     }
 
-    getFilterList() { return []; }
+    getFilterList() {
+        return [
+            { type: "SelectFilter", name: "Genre", state: 0, values: [
+                { name: "Tous", value: "" },
+                { name: "Action", value: "/genre/action/" },
+                { name: "Aventure", value: "/genre/aventure/" },
+                { name: "Comédie", value: "/genre/comedie/" },
+                { name: "Drame", value: "/genre/drame/" },
+                { name: "Fantastique", value: "/genre/fantastique/" },
+                { name: "Horreur", value: "/genre/horreur/" },
+                { name: "Mystère", value: "/genre/mystere/" },
+                { name: "Romance", value: "/genre/romance/" },
+                { name: "Science-Fiction", value: "/genre/science-fiction/" },
+                { name: "Shonen", value: "/genre/shonen/" },
+                { name: "Tranche de vie", value: "/genre/tranche-de-vie/" }
+            ]}
+        ];
+    }
 
     getSourcePreferences() {
         return [
