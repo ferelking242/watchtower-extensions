@@ -7,7 +7,7 @@ const mangayomiSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.voirdramacc.png",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.1.2",
+    "version": "0.1.3",
     "pkgPath": "watch/fr/voirdramacc.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -38,14 +38,14 @@ class DefaultExtension extends MProvider {
         while ((m = re.exec(html)) !== null) {
             if (seen.has(m[1])) continue; seen.add(m[1]);
             const name = (m[2] || m[3] || "").trim();
-            list.push({ url: m[1], imageUrl: m[4] || "", name });
+            list.push({ link: m[1], imageUrl: m[4] || "", name });
         }
         // Fallback: any series link with title
         if (list.length === 0) {
             const re2 = /href="(https?:\/\/voirdrama\.cc\/series\/[^/"#]+\/)"[^>]*title="([^"]+)"/gi;
             while ((m = re2.exec(html)) !== null) {
                 if (seen.has(m[1])) continue; seen.add(m[1]);
-                list.push({ url: m[1], imageUrl: "", name: m[2].trim() });
+                list.push({ link: m[1], imageUrl: "", name: m[2].trim() });
             }
         }
         return list;
@@ -83,13 +83,19 @@ class DefaultExtension extends MProvider {
                       html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
         const name = nameM ? nameM[1].replace(/<[^>]+>/g, "").trim() : "";
 
-        const descM = html.match(/<meta[^>]+property="og:description"[^>]+content="([^"]+)"/i) ||
+        // Synopsis: VoirDrama.cc uses itemprop="description" inside the entry div
+        const descM = html.match(/itemprop="description"[^>]*>([\s\S]{20,2000}?)<\/(?:div|p|span)>/i) ||
+                      html.match(/<div[^>]+class="[^"]*(?:entry-content|sinopsis|sbox)[^"]*"[^>]*>([\s\S]{20,2000}?)<\/div>/i) ||
+                      html.match(/<meta[^>]+property="og:description"[^>]+content="([^"]+)"/i) ||
                       html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i);
-        const description = descM ? descM[1].replace(/&[#\w]+;/g, " ").trim() : "";
+        const description = descM ? descM[1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() : "";
 
+        // Poster: WP-served images via i0.wp.com / wp-content/uploads
         const imgM = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) ||
-                     html.match(/<img[^>]+class="[^"]*(?:poster|cover|thumb)[^"]*"[^>]+src="([^"]+)"/i);
-        const imageUrl = imgM ? imgM[1] : "";
+                     html.match(/<img[^>]+(?:src|data-src)="(https?:\/\/i\d?\.wp\.com\/voirdrama\.cc\/wp-content\/uploads\/[^"?]+\.(?:jpg|png|webp))(?:\?[^"]*)?"/i) ||
+                     html.match(/<img[^>]+(?:src|data-src)="(https?:\/\/voirdrama\.cc\/wp-content\/uploads\/[^"]+\.(?:jpg|png|webp))"/i) ||
+                     html.match(/<img[^>]+class="[^"]*(?:poster|cover|thumb|wp-post-image)[^"]*"[^>]+(?:src|data-src)="([^"]+)"/i);
+        const imageUrl = imgM ? imgM[1].replace(/\?resize=\d+,\d+/, "") : "";
 
         // Episodes: VoirDrama.cc uses eplister with data-index items
         // Structure: <li data-index="0"><a href="https://voirdrama.cc/EPISODE-SLUG/"><div class="epl-title">NAME</div>
