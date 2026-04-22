@@ -118,7 +118,7 @@ class DefaultExtension extends MProvider {
             description,
             genre: tags,
             status: 0,
-            episodes: [{ name: "▶ Watch", url }]
+            episodes: [{ name: (title && title.trim ? title.trim() : (title || "Watch")), url }]
         };
     }
 
