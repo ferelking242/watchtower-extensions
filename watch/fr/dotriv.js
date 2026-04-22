@@ -62,13 +62,13 @@ class DefaultExtension extends MProvider {
     }
 
     async search(query, page, filterList) {
-        await this._log(`search: "${query}"`);
-        const body = `mod_search_searchword=${encodeURIComponent(query)}&mod_search_searchphrase=any&task=search&option=com_search&searchphrase=any&searchword=${encodeURIComponent(query)}&Submit=Search`;
-        const res = await this.client.post(`${this.cmsBase}/home/dotriv`, body, { ...this._hdrs(), "Content-Type": "application/x-www-form-urlencoded" });
-        await this._log(`search rsp: ${res.body.length}b`);
+        // Dotriv: no server-side search — returns popular/trending items as fallback
+        await this._log(`search: "${query}" -> retourne populaires (pas de recherche serveur sur Dotriv)`);
+        const res = await this.client.get(`${this.cmsBase}/c/dotriv/29/${page - 1}`, this._hdrs());
+        await this._log(`search/pop rsp: ${res.body.length}b`);
         const list = this._parse(res.body);
-        await this._log(`search: ${list.length} items`);
-        return { list, hasNextPage: false };
+        await this._log(`search: ${list.length} items (populaires)`);
+        return { list, hasNextPage: list.length >= 10 };
     }
 
     async getDetail(url) {
