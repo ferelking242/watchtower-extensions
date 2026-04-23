@@ -1,5 +1,27 @@
 [
   {
+    "name": "LokLok / MovieBox",
+    "id": 1800000020,
+    "baseUrl": "https://lok-lok.cc",
+    "lang": "en",
+    "typeSource": "single",
+    "iconUrl": "https://h5-static.aoneroom.com/oneroomProject/icon/moviebox-official.jpg",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/loklok/en/en.loklok.js",
+    "apiUrl": "https://h5-api.aoneroom.com",
+    "version": "1.0.0",
+    "isManga": false,
+    "itemType": 1,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Free movies + TV series streaming, captions in 12 languages. Backed by aoneroom (LokLok / MovieBox / themoviebox.xyz)."
+  },
+  {
     "name": "Gogoanime",
     "id": 1061885186,
     "baseUrl": "https://anitaku.to",

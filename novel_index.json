@@ -1,5 +1,27 @@
 [
   {
+    "name": "NovelHub",
+    "id": 1800000021,
+    "baseUrl": "https://novelhubapp.com",
+    "lang": "en",
+    "typeSource": "single",
+    "iconUrl": "https://novelhubapp.com/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novelhub/en/en.novelhub.js",
+    "apiUrl": "",
+    "version": "1.0.0",
+    "isManga": false,
+    "itemType": 2,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Free web novels (Romance, Fantasy, Mystery, Sci-fi, LGBT+, Urban...). Same publisher as LokLok / MovieBox."
+  },
+  {
     "name": "ملوك الروايات",
     "id": 756554088,
     "baseUrl": "https://kolnovel.com",
