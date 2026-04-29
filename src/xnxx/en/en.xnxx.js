@@ -6,7 +6,7 @@ const mangayomiSources = [{
     "iconUrl": "https://www.xnxx.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.9",
+    "version": "1.1.0",
     "pkgPath": "xnxx/en/en.xnxx.js",
     "notes": "Adult content (18+)",
     "isNsfw": true
@@ -40,6 +40,31 @@ class DefaultExtension extends MProvider {
             "Sec-Fetch-Mode": "navigate",
             "Sec-Fetch-Site": "same-origin",
             "Sec-Fetch-User": "?1",
+            "Cookie": "lang=" + this.langCode
+        };
+    }
+
+    // Headers tuned for *direct video downloads* — uses `identity` encoding
+    // (no gzip/brotli, otherwise the downloader receives compressed bytes
+    // and bails) and announces this is a video request, which the xnxx CDN
+    // honours by streaming the mp4 with proper byte-range support. Without
+    // these tweaks the download stalls at 0% with no error logs because the
+    // CDN closes the connection after the HTTP handshake.
+    _getMp4Headers() {
+        return {
+            "Referer": "https://www.xnxx.com/",
+            "User-Agent": "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+            "Accept": "video/webm,video/ogg,video/*;q=0.9,application/ogg;q=0.7,audio/*;q=0.6,*/*;q=0.5",
+            "Accept-Language": this.langCode + ",en;q=0.8",
+            // CRITICAL: do NOT request gzip/br for the mp4 itself —
+            // the file is already compressed and many download libs crash
+            // when handed brotli-encoded video bytes.
+            "Accept-Encoding": "identity",
+            "Connection": "keep-alive",
+            "Range": "bytes=0-",
+            "Sec-Fetch-Dest": "video",
+            "Sec-Fetch-Mode": "no-cors",
+            "Sec-Fetch-Site": "cross-site",
             "Cookie": "lang=" + this.langCode
         };
     }
@@ -233,11 +258,20 @@ class DefaultExtension extends MProvider {
         }
         const videos = [];
         const headers = this.getHeaders(url);
+        const mp4Headers = this._getMp4Headers();
         const seenUrls = new Set();
-        const pushVid = (u, q) => {
+        const pushVid = (u, q, isMp4) => {
             if (!u || seenUrls.has(u)) return;
             seenUrls.add(u);
-            videos.push({ url: u, quality: q, originalUrl: u, headers });
+            // Direct MP4s use the lighter "video" header set (identity
+            // encoding + Range:bytes=0-) so the downloader can actually
+            // pull them. HLS variants keep the regular page headers.
+            videos.push({
+                url: u,
+                quality: q,
+                originalUrl: u,
+                headers: isMp4 ? mp4Headers : headers,
+            });
         };
 
         const hls  = (html.match(/html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/)       || [])[1];
@@ -249,7 +283,7 @@ class DefaultExtension extends MProvider {
         // its own quality entry. Many xnxx videos only ship 360p and 720p
         // here, but for the ones that have 480p/1080p the user gets them.
         if (hls) {
-            pushVid(hls, "Auto · HLS");
+            pushVid(hls, "Auto · HLS", false);
             try {
                 const m = await this._safeGet(hls);
                 const body = m.body || "";
@@ -278,7 +312,7 @@ class DefaultExtension extends MProvider {
                     }
                     // Sort variants high → low so dropdowns make sense
                     variants.sort((a, b) => b.height - a.height);
-                    for (const v of variants) pushVid(v.url, v.label + " · HLS");
+                    for (const v of variants) pushVid(v.url, v.label + " · HLS", false);
                 }
             } catch (_) {
                 // Master fetch failed → keep just "Auto · HLS"
@@ -288,8 +322,8 @@ class DefaultExtension extends MProvider {
         // 2) Direct MP4 URLs (Low/High often point to the SAME mp4_sd.mp4
         // on xnxx — dedupe by URL so we don't show "720p" and "360p" both
         // pointing to the same SD file).
-        if (high) pushVid(high, "High · MP4 direct");
-        if (low && low !== high) pushVid(low, "Low · MP4 direct");
+        if (high) pushVid(high, "High · MP4 direct", true);
+        if (low && low !== high) pushVid(low, "Low · MP4 direct", true);
 
         // Sort with preferred quality first
         const want = (this.prefQuality || "auto").toLowerCase();
