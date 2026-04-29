@@ -75,7 +75,7 @@ const mangayomiSources = [{
       if (videos.length === 0) {
         const jsonRx = /"videoUrl"\s*:\s*"([^"]+\.(?:mp4|m3u8)[^"]*)"/g;
         while ((m = jsonRx.exec(html)) !== null) {
-          videos.push({ url: m[1].replace(/\\\/g, ""), quality: "Auto · ZeusDL", originalUrl: m[1], headers: this.getHeaders(url) });
+          videos.push({ url: m[1].replace(/\\\//g, ""), quality: "Auto · ZeusDL", originalUrl: m[1], headers: this.getHeaders(url) });
           if (videos.length >= 3) break;
         }
       }

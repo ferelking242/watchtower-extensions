@@ -60,7 +60,7 @@ class DefaultExtension extends MProvider {
         const styled = card.selectFirst("[style*='background']");
         if (styled) {
             const style = styled.attr("style") || "";
-            const m = style.match(/url\(['"\]?([^'"\)\s]+)['"\]?\)/);
+            const m = style.match(/url\(['"]?([^'")\s]+)['"]?\)/);
             if (m) return m[1];
         }
         return "";
