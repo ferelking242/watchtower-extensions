@@ -2,12 +2,12 @@ const mangayomiSources = [{
     "name": "PapaDuStream",
     "langs": ["fr"],
     "ids": { "fr": 223948576 },
-    "baseUrl": "https://papadustream-fr.watch",
-    "apiUrl": "https://papadustream-fr.watch",
+    "baseUrl": "https://papadustream.fashion",
+    "apiUrl": "https://papadustream.fashion",
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.papadustream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.4",
+    "version": "0.1.5",
     "pkgPath": "watch/fr/papadustream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -23,7 +23,7 @@ class DefaultExtension extends MProvider {
     get logTopic() { const p = this.source.prefs?.find(x => x.key === "log_topic"); return (p && p.value) ? p.value : "wtfr-papadustream"; }
     get pref_quality() { const p = this.source.prefs?.find(x => x.key === "preferred_quality"); return (p && p.value) ? p.value : "AUTO"; }
 
-    _hdrs(ref) { return { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", "Referer": ref || `${this.baseUrl}/`, "Accept-Language": "fr-FR,fr;q=0.9" }; }
+    _hdrs(ref) { return { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36", "Referer": ref || `${this.baseUrl}/`, "Accept-Language": "fr-FR,fr;q=0.9" }; }
 
     async _log(msg) {
         if (!this.logEnabled) return;
@@ -32,20 +32,22 @@ class DefaultExtension extends MProvider {
 
     _parse(html) {
         const list = []; const seen = new Set();
-        // papadustream-fr.watch: <a class="ani poster" href="/film/SLUG/ep-ID"><img src="POSTER" alt="TITLE">
-        // The "list" page detail link is /film/SLUG (without /ep-ID); we use that.
-        const re = /<a\s+class="ani\s+poster"\s+href="(https?:\/\/[^"]*?\/film\/[^"\/]+)(?:\/ep-\d+)?"[^>]*>\s*<img[^>]+src="([^"]+)"[^>]+alt="([^"]+)"/gi;
+        // papadustream.fashion card format:
+        // <a href="/category-films/SLUG.html"> ... <img src="IMG" alt="TITLE"> ...
+        // <a href="/category-series/SLUG.html"> ... <img src="IMG" alt="TITLE"> ...
+        const re = /<a[^>]+href="((?:https?:\/\/papadustream\.fashion)?\/category-(?:films|series)\/[^"]+\.html)"[^>]*>[\s\S]{0,400}?<img[^>]+src="([^"]+)"[^>]+alt="([^"]{2,120})"/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
-            const url = m[1];
+            const url = m[1].startsWith("http") ? m[1] : `${this.baseUrl}${m[1]}`;
             if (seen.has(url)) continue; seen.add(url);
-            list.push({ link: url, imageUrl: m[2], name: m[3].trim() });
+            const name = m[3].replace(/\s*streaming\s*(?:gratuit\s*)?(?:HD|VF|VOSTFR|vf|vostfr)?\.?/gi, "").trim();
+            list.push({ link: url, imageUrl: m[2], name });
         }
         return list;
     }
 
     async getPopular(page) {
-        const res = await this.client.get(`${this.baseUrl}/movies/?page=${page}`, this._hdrs());
+        const res = await this.client.get(`${this.baseUrl}/cat-films/page-${page}.html`, this._hdrs());
         await this._log(`popular ${page}: ${res.body.length}b`);
         const list = this._parse(res.body);
         await this._log(`popular: ${list.length} items`);
@@ -53,62 +55,50 @@ class DefaultExtension extends MProvider {
     }
 
     async getLatestUpdates(page) {
-        const res = await this.client.get(`${this.baseUrl}/?page=${page}`, this._hdrs());
+        const res = await this.client.get(`${this.baseUrl}/cat-series/page-${page}.html`, this._hdrs());
         const list = this._parse(res.body);
         return { list, hasNextPage: list.length >= 10 };
     }
 
     async search(query, page, filterList) {
-        await this._log(`search: "${query}"`);
-        const gf = (filterList || []).find(f => f && f.name === "Genre");
-        const genrePath = (gf && gf.values && gf.state > 0) ? gf.values[gf.state].value : "";
-        if (!query && genrePath) {
-            const res = await this.client.get(`${this.baseUrl}${genrePath}page/${page}/`, this._hdrs());
-            const list = this._parse(res.body);
-            await this._log(`search(genre): ${list.length} items`);
-            return { list, hasNextPage: list.length >= 10 };
-        }
-        const res = await this.client.get(`${this.baseUrl}/?s=${encodeURIComponent(query)}&page=${page}`, this._hdrs());
-        await this._log(`search rsp: ${res.body.length}b`);
-        const list = this._parse(res.body);
-        await this._log(`search: ${list.length} items`);
-        return { list, hasNextPage: list.length >= 10 };
+        await this._log(`search: "${query}" -> populaire (pas de recherche serveur)`);
+        return await this.getPopular(page);
     }
 
     async getDetail(url) {
         await this._log(`detail: ${url}`);
-        const res = await this.client.get(url, this._hdrs());
+        const res = await this.client.get(url, this._hdrs(url));
         const html = res.body;
 
-        // Title: prefer the page <h1> (page-specific), then a.name d-title, then data-jp
         const nameM = html.match(/<h1[^>]*>([\s\S]{2,200}?)<\/h1>/i) ||
-                      html.match(/<a[^>]+class="[^"]*name\s+d-title[^"]*"[^>]*data-jp="([^"]+)"/i) ||
-                      html.match(/data-jp="([^"]+)"/i);
-        const name = nameM ? nameM[1].replace(/<[^>]+>/g, "").trim() : "";
+                      html.match(/<meta[^>]+property="og:title"[^>]+content="([^"]+)"/i) ||
+                      html.match(/<title>([^<|–-]+)/i);
+        const name = nameM ? nameM[1].replace(/<[^>]+>/g, "").replace(/\s*(?:streaming|VF|VOSTFR|HD)\s*/gi, " ").trim() : "";
 
-        // Poster: PapaDuStream uses TMDB images; pick the first non-icon img
-        const imgM = html.match(/<img[^>]+class="[^"]*(?:poster|cover|ani\s+poster)[^"]*"[^>]+src="([^"]+)"/i) ||
-                     html.match(/<img[^>]+src="(https?:\/\/image\.tmdb\.org\/[^"]+)"/i) ||
-                     html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i);
+        const imgM = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) ||
+                     html.match(/<img[^>]+class="[^"]*(?:poster|cover|thumb)[^"]*"[^>]+src="([^"]+)"/i) ||
+                     html.match(/<img[^>]+src="(https?:\/\/(?:www\.)?filmoflix\.fyi[^"]+)"/i);
         const imageUrl = imgM ? imgM[1] : "";
 
-        // Synopsis: page-specific synopsis div (not the site-wide og:description)
-        const descM = html.match(/<div[^>]+class="[^"]*(?:synopsis|sinopsis|desc|description|sbox)[^"]*"[^>]*>([\s\S]{30,2000}?)<\/div>/i) ||
-                      html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i);
+        const descM = html.match(/<meta[^>]+property="og:description"[^>]+content="([^"]+)"/i) ||
+                      html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i) ||
+                      html.match(/<div[^>]+class="[^"]*(?:synopsis|desc|story|plot)[^"]*"[^>]*>([\s\S]{20,2000}?)<\/div>/i);
         const description = descM ? descM[1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() : "";
 
-        // Episodes: look for /film/SLUG/ep-XXX links anywhere on the page (works for series & VF/VOSTFR variants)
         const episodes = [];
         const seen = new Set();
-        const epRe = /href="(https?:\/\/[^"]*?\/film\/[^"]+\/ep-\d+)"[^>]*(?:[^<]{0,50}(?:title|data-tip)="([^"]*)"|)/gi;
-        let m, idx = 0;
+
+        // Look for episode links (series)
+        const epRe = /href="((?:https?:\/\/papadustream\.fashion)?\/(?:episode|ep|saison)[^"]+\.(?:html|php))"[^>]*(?:title="([^"]+)"|>([^<]{1,80})<)/gi;
+        let m;
         while ((m = epRe.exec(html)) !== null) {
-            if (seen.has(m[1])) continue; seen.add(m[1]);
-            idx++;
-            const slugVariant = (m[1].match(/\/film\/([^\/]+)/) || [, ""])[1];
-            const epName = (m[2] && m[2].length < 80 ? m[2] : `Épisode ${idx}${slugVariant.match(/-vf$/i) ? " (VF)" : slugVariant.match(/-vostfr$/i) ? " (VOSTFR)" : ""}`);
-            episodes.push({ name: epName, url: m[1], dateUpload: "" });
+            const epUrl = m[1].startsWith("http") ? m[1] : `${this.baseUrl}${m[1]}`;
+            if (seen.has(epUrl)) continue; seen.add(epUrl);
+            const epName = (m[2] || m[3] || "").trim();
+            episodes.push({ name: epName || `Épisode`, url: epUrl, dateUpload: "" });
         }
+
+        // For films (no sub-episodes): use the detail URL itself
         if (episodes.length === 0) {
             episodes.push({ name: name || "Regarder", url, dateUpload: "" });
         }
@@ -170,27 +160,7 @@ class DefaultExtension extends MProvider {
         return videos;
     }
 
-    getFilterList() {
-        return [
-            { type: "SelectFilter", name: "Genre", state: 0, values: [
-                { name: "Tous", value: "" },
-                { name: "Action", value: "/genre/action/" },
-                { name: "Aventure", value: "/genre/aventure/" },
-                { name: "Animation", value: "/genre/animation/" },
-                { name: "Comédie", value: "/genre/comedie/" },
-                { name: "Crime", value: "/genre/crime/" },
-                { name: "Drame", value: "/genre/drame/" },
-                { name: "Familial", value: "/genre/familial/" },
-                { name: "Fantastique", value: "/genre/fantastique/" },
-                { name: "Guerre", value: "/genre/guerre/" },
-                { name: "Horreur", value: "/genre/horreur/" },
-                { name: "Mystère", value: "/genre/mystere/" },
-                { name: "Romance", value: "/genre/romance/" },
-                { name: "Science-Fiction", value: "/genre/science-fiction/" },
-                { name: "Thriller", value: "/genre/thriller/" }
-            ]}
-        ];
-    }
+    getFilterList() { return []; }
 
     getSourcePreferences() {
         return [

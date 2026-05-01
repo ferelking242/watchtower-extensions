@@ -7,7 +7,7 @@ const mangayomiSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/fr/icons/animezone.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.1",
+    "version": "0.1.2",
     "pkgPath": "watch/fr/animezone.js",
     "editableBaseUrl": true,
     "customUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -37,24 +37,18 @@ class DefaultExtension extends MProvider {
     _parseList(html) {
         const list = [];
         const seen = new Set();
-        // Match anime cards: <a href="/anime/slug/"> ... <img ... src="..."> ... title="Name"
-        const re = /<a[^>]+href="(\/anime\/[^"]+\/)"[^>]*>[\s\S]{0,600}?<img[^>]+(?:src|data-src)="([^"]+)"[\s\S]{0,200}?(?:title|alt)="([^"]{2,100})"/gi;
-        let m;
-        while ((m = re.exec(html)) !== null) {
-            const url = `${this.baseUrl}${m[1]}`;
+        // animezone.fr uses data attributes on favourite buttons inside each card.
+        // Extract all three attributes in order — they always appear in the same sequence
+        // on the same element so positional matching is reliable.
+        const slugs  = [...html.matchAll(/data-anime-slug="([^"]+)"/gi)].map(m => m[1]);
+        const titles = [...html.matchAll(/data-anime-title="([^"]+)"/gi)].map(m => m[1]);
+        const images = [...html.matchAll(/data-anime-image="([^"]+)"/gi)].map(m => m[1]);
+        for (let i = 0; i < slugs.length; i++) {
+            const url = `${this.baseUrl}/anime/${slugs[i]}/`;
             if (seen.has(url)) continue;
             seen.add(url);
-            list.push({ link: url, imageUrl: m[2], name: m[3].trim() });
-        }
-        if (list.length === 0) {
-            // Fallback: broader pattern
-            const re2 = /<article[^>]*>[\s\S]{0,100}?<a[^>]+href="(\/anime\/[^"]+\/)"[\s\S]{0,400}?<img[^>]+(?:src|data-src)="([^"]+)"[\s\S]{0,200}?(?:title|alt)="([^"]{2,100})"/gi;
-            let m2;
-            while ((m2 = re2.exec(html)) !== null) {
-                const url = `${this.baseUrl}${m2[1]}`;
-                if (seen.has(url)) continue;
-                seen.add(url);
-                list.push({ link: url, imageUrl: m2[2], name: m2[3].trim() });
+            if (titles[i] && images[i]) {
+                list.push({ link: url, imageUrl: images[i], name: titles[i].trim() });
             }
         }
         return list;
