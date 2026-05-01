@@ -2237,5 +2237,39 @@
     "contentSubtype": [
       "anime"
     ]
+  },
+  {
+    "name": "AnimeZone",
+    "id": 742916341,
+    "baseUrl": "https://www.animezone.fr",
+    "lang": "fr",
+    "typeSource": "single",
+    "iconUrl": "https://www.google.com/s2/favicons?sz=64&domain=animezone.fr",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": true,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/fr/animezone.js",
+    "apiUrl": "https://www.animezone.fr",
+    "version": "0.1.0",
+    "isManga": false,
+    "itemType": 1,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Streaming d'animes en français avec sous-titres et VF.",
+    "editableBaseUrl": true,
+    "customUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "videoQualities": [
+      "AUTO",
+      "1080p",
+      "720p",
+      "480p",
+      "360p"
+    ],
+    "contentSubtype": [
+      "anime"
+    ]
   }
 ]
