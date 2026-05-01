@@ -7,7 +7,7 @@ const mangayomiSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.echodumarteau.png",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.1.2",
+    "version": "0.1.3",
     "pkgPath": "watch/fr/echodumarteau.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -23,7 +23,7 @@ class DefaultExtension extends MProvider {
     get logTopic() { const p = this.source.prefs?.find(x => x.key === "log_topic"); return (p && p.value) ? p.value : "wtfr-echodumarteau"; }
     get pref_quality() { const p = this.source.prefs?.find(x => x.key === "preferred_quality"); return (p && p.value) ? p.value : "AUTO"; }
 
-    _hdrs(ref) { return { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36", "Referer": ref || `${this.baseUrl}/`, "Accept-Language": "fr-FR,fr;q=0.9" }; }
+    _hdrs(ref) { return { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36", "Referer": ref || `${this.baseUrl}/`, "Accept-Language": "fr-FR,fr;q=0.9", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" }; }
 
     async _log(msg) {
         if (!this.logEnabled) return;
@@ -93,16 +93,52 @@ class DefaultExtension extends MProvider {
     async getVideoList(url) {
         await this._log(`video: ${url}`);
         const res = await this.client.get(url, this._hdrs(url));
-        const html = res.body;
+        const html = res.body || "";
         const videos = [];
         const q = this.pref_quality;
-        const iframeRe = /<iframe[^>]+src="(https?:\/\/[^"]{10,})"/gi;
+
+        // Direct mp4/m3u8 in page source
+        const directRe = /(?:file|source|src|url)\s*[=:]\s*["']([^"']+\.(?:m3u8|mp4)[^"']{0,150})["']/gi;
         let m;
-        while ((m = iframeRe.exec(html)) !== null) {
-            if (!m[1].includes("google") && !m[1].includes("recaptcha")) {
-                videos.push({ url: m[1], quality: q !== "AUTO" ? q : "Stream", originalUrl: m[1] });
+        while ((m = directRe.exec(html)) !== null) {
+            const vUrl = m[1].startsWith("//") ? `https:${m[1]}` : m[1];
+            if (!videos.some(v => v.url === vUrl)) {
+                videos.push({ url: vUrl, quality: q !== "AUTO" ? q : "Direct", originalUrl: vUrl });
             }
         }
+
+        // Find iframe embed URLs
+        const iframeUrls = [];
+        const iframeRe = /<iframe[^>]+src="((?:https?:)?\/\/[^"]{10,})"/gi;
+        while ((m = iframeRe.exec(html)) !== null) {
+            const src = m[1].startsWith("//") ? `https:${m[1]}` : m[1];
+            if (!src.includes("google") && !src.includes("recaptcha") && !src.includes("disqus")) {
+                iframeUrls.push(src);
+            }
+        }
+
+        // Try resolving each embed player to get a direct video URL
+        for (const embedUrl of iframeUrls.slice(0, 4)) {
+            let resolved = false;
+            try {
+                const embedRes = await this.client.get(embedUrl, { ...this._hdrs(url), "Referer": url });
+                const ebody = embedRes.body || "";
+                const hlsM = ebody.match(/["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/);
+                if (hlsM) {
+                    videos.push({ url: hlsM[1], quality: q !== "AUTO" ? q : "Stream", originalUrl: hlsM[1] });
+                    resolved = true;
+                }
+                const mp4M = ebody.match(/["'`](https?:\/\/[^"'`]+\.mp4[^"'`]{0,150})["'`]/);
+                if (mp4M && !resolved) {
+                    videos.push({ url: mp4M[1], quality: q !== "AUTO" ? q : "Direct", originalUrl: mp4M[1] });
+                    resolved = true;
+                }
+            } catch (e) {}
+            if (!resolved) {
+                videos.push({ url: embedUrl, quality: q !== "AUTO" ? q : "Stream", originalUrl: embedUrl });
+            }
+        }
+
         await this._log(`video: ${videos.length} found`);
         return videos;
     }

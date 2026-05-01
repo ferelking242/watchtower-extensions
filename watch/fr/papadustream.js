@@ -7,7 +7,7 @@ const mangayomiSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.papadustream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.3",
+    "version": "0.1.4",
     "pkgPath": "watch/fr/papadustream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -120,21 +120,50 @@ class DefaultExtension extends MProvider {
     async getVideoList(url) {
         await this._log(`video: ${url}`);
         const res = await this.client.get(url, this._hdrs(url));
-        const html = res.body;
+        const html = res.body || "";
         const videos = [];
         const q = this.pref_quality;
 
-        const iframeRe = /<iframe[^>]+src="(https?:\/\/[^"]{10,})"/gi;
+        // Direct mp4/m3u8 in page source
+        const directRe = /(?:file|source|src|url)\s*[=:]\s*["']([^"']+\.(?:m3u8|mp4)[^"']{0,150})["']/gi;
         let m;
-        while ((m = iframeRe.exec(html)) !== null) {
-            if (!m[1].includes("google") && !m[1].includes("recaptcha")) {
-                videos.push({ url: m[1], quality: q !== "AUTO" ? q : "Stream", originalUrl: m[1] });
+        while ((m = directRe.exec(html)) !== null) {
+            const vUrl = m[1].startsWith("//") ? `https:${m[1]}` : m[1];
+            if (!videos.some(v => v.url === vUrl)) {
+                videos.push({ url: vUrl, quality: q !== "AUTO" ? q : "Direct", originalUrl: vUrl });
             }
         }
 
-        const fileRe = /(?:file|source|src)\s*[=:]\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/gi;
-        while ((m = fileRe.exec(html)) !== null) {
-            videos.push({ url: m[1], quality: q !== "AUTO" ? q : "Direct", originalUrl: m[1] });
+        // Find iframe embed URLs
+        const iframeUrls = [];
+        const iframeRe = /<iframe[^>]+src="((?:https?:)?\/\/[^"]{10,})"/gi;
+        while ((m = iframeRe.exec(html)) !== null) {
+            const src = m[1].startsWith("//") ? `https:${m[1]}` : m[1];
+            if (!src.includes("google") && !src.includes("recaptcha") && !src.includes("disqus")) {
+                iframeUrls.push(src);
+            }
+        }
+
+        // Try resolving each embed player to get a direct video URL
+        for (const embedUrl of iframeUrls.slice(0, 4)) {
+            let resolved = false;
+            try {
+                const embedRes = await this.client.get(embedUrl, { ...this._hdrs(url), "Referer": url });
+                const ebody = embedRes.body || "";
+                const hlsM = ebody.match(/["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/);
+                if (hlsM) {
+                    videos.push({ url: hlsM[1], quality: q !== "AUTO" ? q : "Stream", originalUrl: hlsM[1] });
+                    resolved = true;
+                }
+                const mp4M = ebody.match(/["'`](https?:\/\/[^"'`]+\.mp4[^"'`]{0,150})["'`]/);
+                if (mp4M && !resolved) {
+                    videos.push({ url: mp4M[1], quality: q !== "AUTO" ? q : "Direct", originalUrl: mp4M[1] });
+                    resolved = true;
+                }
+            } catch (e) {}
+            if (!resolved) {
+                videos.push({ url: embedUrl, quality: q !== "AUTO" ? q : "Stream", originalUrl: embedUrl });
+            }
         }
 
         await this._log(`video: ${videos.length} found`);
