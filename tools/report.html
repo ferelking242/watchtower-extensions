@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Watchtower – Extension Test Report</title>
+<style>
+  :root {
+    --bg:#0f1117; --bg2:#1a1d27; --bg3:#252836; --border:#2e3347;
+    --text:#e2e8f0; --muted:#8892a4; --green:#22c55e; --red:#ef4444;
+    --yellow:#f59e0b; --blue:#3b82f6; --purple:#a855f7;
+    --radius:10px;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; font-size:14px; }
+  a { color:var(--blue); text-decoration:none; }
+
+  /* Header */
+  header { background:var(--bg2); border-bottom:1px solid var(--border); padding:18px 24px; display:flex; align-items:center; gap:16px; }
+  header img.logo { width:40px; height:40px; border-radius:8px; }
+  header h1 { font-size:20px; font-weight:700; }
+  header .sub { color:var(--muted); font-size:12px; margin-top:2px; }
+  .stats-bar { display:flex; gap:20px; margin-left:auto; }
+  .stat { text-align:center; }
+  .stat .num { font-size:22px; font-weight:800; }
+  .stat .lbl { font-size:11px; color:var(--muted); }
+  .stat.green .num { color:var(--green); }
+  .stat.red   .num { color:var(--red); }
+  .stat.blue  .num { color:var(--blue); }
+
+  /* Filters */
+  .toolbar { background:var(--bg2); border-bottom:1px solid var(--border); padding:12px 24px; display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  .toolbar input[type=text] { background:var(--bg3); border:1px solid var(--border); color:var(--text); border-radius:6px; padding:6px 12px; width:260px; font-size:13px; outline:none; }
+  .toolbar input:focus { border-color:var(--blue); }
+  .btn-group { display:flex; gap:4px; }
+  .btn { background:var(--bg3); border:1px solid var(--border); color:var(--text); border-radius:6px; padding:5px 12px; cursor:pointer; font-size:12px; transition:all .15s; }
+  .btn:hover { background:var(--border); }
+  .btn.active { background:var(--blue); border-color:var(--blue); color:#fff; }
+  .sort-lbl { color:var(--muted); font-size:12px; }
+  select.sort { background:var(--bg3); border:1px solid var(--border); color:var(--text); border-radius:6px; padding:5px 10px; font-size:12px; outline:none; cursor:pointer; }
+
+  /* Grid */
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:14px; padding:20px 24px; }
+
+  /* Card */
+  .card { background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; transition:border-color .2s; }
+  .card:hover { border-color:var(--blue); }
+  .card.fail { border-left:3px solid var(--red); }
+  .card.pass { border-left:3px solid var(--green); }
+
+  .card-head { display:flex; align-items:center; gap:10px; padding:12px 14px; border-bottom:1px solid var(--border); }
+  .card-icon { width:36px; height:36px; border-radius:8px; object-fit:contain; background:var(--bg3); flex-shrink:0; }
+  .card-icon-fallback { width:36px; height:36px; border-radius:8px; background:var(--bg3); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .card-title { font-weight:600; font-size:14px; }
+  .card-meta { color:var(--muted); font-size:11px; margin-top:2px; }
+  .card-badge { margin-left:auto; display:flex; gap:5px; }
+  .badge { font-size:10px; padding:2px 7px; border-radius:99px; font-weight:600; }
+  .badge-pass { background:rgba(34,197,94,.15); color:var(--green); }
+  .badge-fail { background:rgba(239,68,68,.15); color:var(--red); }
+  .badge-nsfw { background:rgba(168,85,247,.15); color:var(--purple); }
+  .badge-type { background:rgba(59,130,246,.15); color:var(--blue); }
+
+  /* Steps table */
+  .steps { padding:10px 14px 12px; display:flex; flex-wrap:wrap; gap:6px; }
+  .step { display:flex; align-items:center; gap:4px; background:var(--bg3); border-radius:6px; padding:4px 8px; font-size:11px; }
+  .step .icon { font-size:13px; }
+  .step .sname { color:var(--muted); }
+  .step .stime { color:var(--muted); margin-left:auto; font-size:10px; }
+  .step.ok .icon::before   { content:"✅"; }
+  .step.fail .icon::before { content:"❌"; }
+  .step.skip .icon::before { content:"⏭"; }
+
+  /* Errors */
+  .errors { padding:0 14px 10px; }
+  .err-line { font-size:11px; color:var(--red); background:rgba(239,68,68,.08); border-radius:5px; padding:4px 8px; margin-top:4px; word-break:break-all; }
+
+  /* Empty state */
+  .empty { grid-column:1/-1; text-align:center; padding:60px 0; color:var(--muted); }
+
+  /* Footer */
+  footer { text-align:center; color:var(--muted); font-size:11px; padding:24px; border-top:1px solid var(--border); }
+
+  .progress-bar { height:3px; background:var(--border); }
+  .progress-bar .fill { height:100%; transition:width .3s; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="card-icon-fallback" style="width:44px;height:44px;font-size:24px">🗼</div>
+  <div>
+    <h1>Watchtower Extension Report</h1>
+    <div class="sub" id="report-date">Loading…</div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat blue">  <div class="num" id="total">–</div><div class="lbl">Total</div></div>
+    <div class="stat green"><div class="num" id="passed">–</div><div class="lbl">Passed</div></div>
+    <div class="stat red">  <div class="num" id="failed">–</div><div class="lbl">Failed</div></div>
+  </div>
+</header>
+
+<div class="toolbar">
+  <input type="text" id="search" placeholder="🔍  Search by name, lang, url…" oninput="applyFilters()">
+  <div class="btn-group">
+    <button class="btn active" data-filter="all"   onclick="setFilter('all',this)">All</button>
+    <button class="btn"        data-filter="pass"  onclick="setFilter('pass',this)">✅ Pass</button>
+    <button class="btn"        data-filter="fail"  onclick="setFilter('fail',this)">❌ Fail</button>
+    <button class="btn"        data-filter="manga" onclick="setFilter('manga',this)">📖 Manga</button>
+    <button class="btn"        data-filter="watch" onclick="setFilter('watch',this)">📺 Watch</button>
+    <button class="btn"        data-filter="novel" onclick="setFilter('novel',this)">📕 Novel</button>
+    <button class="btn"        data-filter="nsfw"  onclick="setFilter('nsfw',this)">🔞 NSFW</button>
+  </div>
+  <span class="sort-lbl">Sort by</span>
+  <select class="sort" id="sort-by" onchange="applyFilters()">
+    <option value="name">Name</option>
+    <option value="status">Status (fails first)</option>
+    <option value="lang">Language</option>
+    <option value="speed">Fastest</option>
+  </select>
+  <span id="visible-count" style="margin-left:auto;color:var(--muted);font-size:12px"></span>
+</div>
+
+<div class="progress-bar"><div class="fill" id="pass-bar" style="background:var(--green)"></div></div>
+
+<div class="grid" id="grid"></div>
+
+<footer id="footer">–</footer>
+
+<script>
+let data = null;
+let activeFilter = "all";
+
+const ITEM_TYPE_LABEL = { 0:"Manga", 1:"Watch", 2:"Novel" };
+const ITEM_TYPE_ICON  = { 0:"📖",    1:"📺",    2:"📕" };
+
+async function load() {
+  try {
+    const r = await fetch("report.json?" + Date.now());
+    data = await r.json();
+    init();
+  } catch(e) {
+    document.getElementById("grid").innerHTML =
+      `<div class="empty">
+        <p style="font-size:32px">📄</p>
+        <p style="margin-top:12px;font-size:15px">No report found</p>
+        <p style="margin-top:6px">Run: <code style="background:var(--bg3);padding:2px 8px;border-radius:4px">node tools/run_all_tests.mjs</code></p>
+       </div>`;
+  }
+}
+
+function init() {
+  document.getElementById("report-date").textContent =
+    "Generated " + new Date(data.generatedAt).toLocaleString() +
+    " · " + data.elapsed + "s · " + data.total + " extensions";
+  document.getElementById("total").textContent  = data.total;
+  document.getElementById("passed").textContent = data.passed;
+  document.getElementById("failed").textContent = data.failed;
+  const pct = Math.round(data.passed / data.total * 100);
+  document.getElementById("pass-bar").style.width = pct + "%";
+  document.getElementById("footer").textContent =
+    `Watchtower Extension Tester · ${data.total} extensions · ${pct}% pass rate · ${data.elapsed}s`;
+  applyFilters();
+}
+
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll(".btn[data-filter]").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  applyFilters();
+}
+
+function applyFilters() {
+  if (!data) return;
+  const q    = document.getElementById("search").value.toLowerCase().trim();
+  const sort = document.getElementById("sort-by").value;
+  let rows = [...data.results];
+
+  // Filter
+  rows = rows.filter(r => {
+    if (activeFilter==="pass"  && !r.ok)         return false;
+    if (activeFilter==="fail"  && r.ok)           return false;
+    if (activeFilter==="manga" && r.itemType!==0) return false;
+    if (activeFilter==="watch" && r.itemType!==1) return false;
+    if (activeFilter==="novel" && r.itemType!==2) return false;
+    if (activeFilter==="nsfw"  && !r.isNsfw)      return false;
+    if (q) {
+      const hay = (r.name+r.lang+r.baseUrl+r.file).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  // Sort
+  if (sort==="name")   rows.sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+  if (sort==="status") rows.sort((a,b)=> (a.ok?1:0)-(b.ok?1:0));
+  if (sort==="lang")   rows.sort((a,b)=>(a.lang||"").localeCompare(b.lang||""));
+  if (sort==="speed")  rows.sort((a,b)=> totalMs(a)-totalMs(b));
+
+  document.getElementById("visible-count").textContent = rows.length + " shown";
+  document.getElementById("grid").innerHTML = rows.length
+    ? rows.map(cardHTML).join("")
+    : `<div class="empty"><p style="font-size:28px">🔍</p><p style="margin-top:8px">No results match your filter.</p></div>`;
+}
+
+function totalMs(r) {
+  return Object.values(r.steps||{}).reduce((s,v)=>s+(v.ms||0),0);
+}
+
+function cardHTML(r) {
+  const passClass = r.ok ? "pass" : "fail";
+  const icon = r.iconUrl
+    ? `<img class="card-icon" src="${esc(r.iconUrl)}" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
+    : "";
+  const fallback = `<div class="card-icon-fallback" style="${r.iconUrl?'display:none':''}">${ITEM_TYPE_ICON[r.itemType]??'🔌'}</div>`;
+
+  const stepsHtml = Object.entries(r.steps||{}).map(([k,v])=>{
+    const cls = v.ok ? "ok" : (v.error==="skipped" ? "skip" : "fail");
+    const ms  = v.ms!=null ? `<span class="stime">${v.ms}ms</span>` : "";
+    const tip = v.error ? ` title="${esc(v.error)}"` : (v.info?.count!=null ? ` title="${v.info.count} items"` : "");
+    return `<span class="step ${cls}"${tip}><span class="icon"></span><span class="sname">${k}</span>${ms}</span>`;
+  }).join("");
+
+  const errHtml = r.errors.length
+    ? `<div class="errors">${r.errors.slice(0,3).map(e=>`<div class="err-line">${esc(e)}</div>`).join("")}</div>`
+    : "";
+
+  const coverInfo = r.steps.cover?.info
+    ? `<br><small style="color:var(--muted)">Cover: <a href="${esc(r.steps.cover.info)}" target="_blank">✅ check</a></small>`
+    : "";
+
+  return `
+  <div class="card ${passClass}">
+    <div class="card-head">
+      ${icon}${fallback}
+      <div>
+        <div class="card-title">${esc(r.name||r.file)}</div>
+        <div class="card-meta">${esc(r.lang)} · ${esc(r.baseUrl||"")}${coverInfo}</div>
+      </div>
+      <div class="card-badge">
+        ${r.isNsfw?'<span class="badge badge-nsfw">NSFW</span>':''}
+        <span class="badge badge-type">${ITEM_TYPE_LABEL[r.itemType]??'?'}</span>
+        <span class="badge ${r.ok?'badge-pass':'badge-fail'}">${r.ok?'PASS':'FAIL'}</span>
+      </div>
+    </div>
+    <div class="steps">${stepsHtml}</div>
+    ${errHtml}
+  </div>`;
+}
+
+function esc(s) {
+  return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+load();
+</script>
+</body>
+</html>
