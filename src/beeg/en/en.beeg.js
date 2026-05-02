@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Beeg",
     "lang": "en",
     "baseUrl": "https://beeg.com",

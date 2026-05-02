@@ -1,5 +1,5 @@
 //update
-const mangayomiSources = [
+const watchtowerSources = [
   {
     "name": "Sudatchi",
     "id": 398530136,

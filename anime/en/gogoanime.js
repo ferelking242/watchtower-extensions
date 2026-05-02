@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Gogoanime",
     "langs": ["en"],
     "ids": { "en": 484282699 },

@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "RedTube",
     "lang": "en",
     "baseUrl": "https://www.redtube.com",

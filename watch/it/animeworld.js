@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "AnimeWorld",
     "lang": "it",
     "baseUrl": "https://www.animeworld.so",

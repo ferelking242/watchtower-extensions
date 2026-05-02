@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "NetflixMirror",
     "langs": ["all"],
     "ids": { "all": 671244578 },

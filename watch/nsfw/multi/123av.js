@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "123AV",
     "lang": "all",
     "baseUrl": "https://123av.com/en",

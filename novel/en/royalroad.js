@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Royal Road",
     "lang": "en",
     "baseUrl": "https://www.royalroad.com",

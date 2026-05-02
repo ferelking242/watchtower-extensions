@@ -1,5 +1,5 @@
 
-var mangayomiSources = [{
+var watchtowerSources = [{
     "name": "FlixGaze",
     "lang": "en",
     "baseUrl": "https://www.flixgaze.com",

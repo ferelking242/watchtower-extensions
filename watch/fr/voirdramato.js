@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "VoirDrama",
     "langs": ["fr"],
     "ids": { "fr": 546372819 },

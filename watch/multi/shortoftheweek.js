@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Short of the Week",
     "lang": "en",
     "baseUrl": "https://www.shortoftheweek.com",

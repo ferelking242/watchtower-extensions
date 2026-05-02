@@ -1,4 +1,4 @@
-const mangayomiSources = [
+const watchtowerSources = [
   {
     "name": "AnimeGG",
     "lang": "en",

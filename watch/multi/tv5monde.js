@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "TV5Monde+",
     "lang": "fr",
     "baseUrl": "https://www.tv5mondeplus.com",

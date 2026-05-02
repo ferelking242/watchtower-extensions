@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "9anime",
     "langs": ["en"],
     "ids": { "en": 527491836 },

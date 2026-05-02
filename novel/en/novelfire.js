@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "NovelFire",
     "lang": "en",
     "baseUrl": "https://novelfire.net",

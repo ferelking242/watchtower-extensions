@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "TioAnime",
     "lang": "es",
     "baseUrl": "https://tioanime.com",

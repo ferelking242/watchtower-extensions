@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "AnimeFLV",
     "lang": "es",
     "baseUrl": "https://www3.animeflv.net",

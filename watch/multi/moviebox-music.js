@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "MovieBox Music",
     "lang": "all",
     "baseUrl": "https://h5-api.aoneroom.com",

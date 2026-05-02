@@ -1,4 +1,4 @@
-const mangayomiSources = [
+const watchtowerSources = [
   {
     "name": "Mangapark",
     "id": 2302366102,

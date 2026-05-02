@@ -1,5 +1,5 @@
 // prettier-ignore
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Webtoons",
     "langs": ["en", "fr", "id", "th", "es", "zh", "de"],
     "baseUrl": "https://www.webtoons.com",

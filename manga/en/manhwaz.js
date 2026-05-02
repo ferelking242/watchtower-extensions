@@ -1,5 +1,5 @@
 // prettier-ignore
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "ManhwaZ",
     "lang": "en",
     "baseUrl": "https://manhwaz.com",

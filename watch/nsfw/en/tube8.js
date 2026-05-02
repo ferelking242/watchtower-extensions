@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Tube8",
     "lang": "en",
     "baseUrl": "https://www.tube8.com",

@@ -1,5 +1,5 @@
 // prettier-ignore
-const mangayomiSources = [{
+const watchtowerSources = [{
    "name": "Oduto - Boruto",
     "lang": "ar",
     "baseUrl":  "https://nb19u.blogspot.com",

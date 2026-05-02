@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "樱花动漫 (YHDM)",
     "langs": ["zh"],
     "ids": { "zh": 365809124 },

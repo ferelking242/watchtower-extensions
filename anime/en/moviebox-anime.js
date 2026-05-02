@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "MovieBox Anime",
     "langs": ["en"],
     "ids": { "en": 881000003 },

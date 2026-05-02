@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "xHamster",
     "lang": "en",
     "baseUrl": "https://xhamster.com",

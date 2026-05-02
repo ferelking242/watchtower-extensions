@@ -1,4 +1,4 @@
-const mangayomiSources = [
+const watchtowerSources = [
     {
         "name": "Comick",
         "langs": ["all", "en", "pt-br", "ru", "fr", "es-419", "pl", "tr", "it", "es", "id", "hu", "vi", "zh-hk", "ar", "de", "zh", "ca", "bg", "th", "fa", "uk", "mn", "ro", "he", "ms", "tl", "ja", "hi", "my", "ko", "cs", "pt", "nl", "sv", "bn", "no", "lt", "el", "sr", "da"],

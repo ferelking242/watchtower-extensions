@@ -1,4 +1,4 @@
-const mangayomiSources = [
+const watchtowerSources = [
   {
     "name": "Moviesda",
     "id": 3570935492,

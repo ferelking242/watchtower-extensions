@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Zoro / Aniwatch",
     "langs": ["en"],
     "ids": { "en": 613418059 },

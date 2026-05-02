@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "PapaDuStream",
     "langs": ["fr"],
     "ids": { "fr": 223948576 },

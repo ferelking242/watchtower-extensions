@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "id": 524070078,
     "name": "Asura Scans",
     "lang": "en",

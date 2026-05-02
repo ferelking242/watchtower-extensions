@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
   "name": "Wordrain69",
   "lang": "en",
   "baseUrl": "https://wordrain69.com",

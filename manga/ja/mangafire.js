@@ -1,4 +1,4 @@
-const mangayomiSources = [
+const watchtowerSources = [
   {
     "name": "Mangafire",
     "langs": ["en", "ja", "fr", "es", "es-la", "pt", "pt-br"],

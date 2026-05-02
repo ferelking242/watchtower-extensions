@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Echo du Marteau",
     "langs": ["fr"],
     "ids": { "fr": 778594031 },

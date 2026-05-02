@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Torrentio Anime (Torrent)",
     "lang": "all",
     "baseUrl": "https://torrentio.strem.fun",

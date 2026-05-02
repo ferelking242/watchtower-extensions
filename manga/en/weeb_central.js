@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "id": 693275080,
     "name": "Weeb Central",
     "lang": "en",

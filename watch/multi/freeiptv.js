@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Free IPTV",
     "lang": "multi",
     "baseUrl": "https://iptv-org.github.io",

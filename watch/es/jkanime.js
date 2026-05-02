@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "JKAnime",
     "lang": "es",
     "baseUrl": "https://jkanime.net",

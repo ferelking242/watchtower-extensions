@@ -1,5 +1,5 @@
 // prettier-ignore
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "TeamX",
     "lang": "ar",
     "baseUrl": "https://olympustaff.com",

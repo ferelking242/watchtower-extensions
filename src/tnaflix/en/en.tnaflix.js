@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "TNAFlix",
     "lang": "en",
     "baseUrl": "https://www.tnaflix.com",

@@ -1,5 +1,5 @@
-// Mangayomi/Watchtower extension test harness.
-// Loads a .js extension, stubs MProvider/Client, and runs popular/search/detail/video.
+// Watchtower extension test harness.
+// Loads a .js extension, stubs MProvider/Client, and runs popular/latest/detail/video/pageList.
 import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
@@ -50,12 +50,15 @@ function loadExtension(filePath) {
     MProvider, Client,
     console, setTimeout, clearTimeout, setInterval, clearInterval,
     URL, URLSearchParams, TextDecoder, TextEncoder, fetch, Buffer,
+    watchtowerSources: undefined,
     mangayomiSources: undefined,
     DefaultExtension: undefined,
   };
   vm.createContext(sandbox);
-  // Append exposure of declared symbols
-  const wrapped = code + "\n;this.__exports = { mangayomiSources: typeof mangayomiSources!=='undefined'?mangayomiSources:null, DefaultExtension: typeof DefaultExtension!=='undefined'?DefaultExtension:null };";
+  const wrapped = code + `\n;this.__exports = {
+    watchtowerSources: typeof watchtowerSources!=='undefined'?watchtowerSources:(typeof mangayomiSources!=='undefined'?mangayomiSources:null),
+    DefaultExtension: typeof DefaultExtension!=='undefined'?DefaultExtension:null
+  };`;
   vm.runInContext(wrapped, sandbox, { filename: path.basename(filePath), timeout: 10000 });
   return sandbox.__exports;
 }
@@ -79,12 +82,15 @@ async function runOne(filePath, opts = {}) {
   try { exp = loadExtension(filePath); }
   catch (e) { result.ok = false; result.errors.push(`load: ${e.message}`); return result; }
 
-  if (!exp.mangayomiSources || !exp.DefaultExtension) {
-    result.ok = false; result.errors.push("missing mangayomiSources or DefaultExtension"); return result;
+  if (!exp.watchtowerSources || !exp.DefaultExtension) {
+    result.ok = false; result.errors.push("missing watchtowerSources or DefaultExtension"); return result;
   }
-  const src = exp.mangayomiSources[0];
+  const src = exp.watchtowerSources[0];
   result.name = src.name;
   result.baseUrl = src.baseUrl;
+  result.itemType = src.itemType ?? 1;
+  result.iconUrl = src.iconUrl ?? "";
+  result.lang = src.lang ?? "?";
 
   const ext = new exp.DefaultExtension();
   ext.source = { ...src, prefs: [] };
@@ -104,52 +110,60 @@ async function runOne(filePath, opts = {}) {
   }
 
   const popular = await step("getPopular", () => ext.getPopular(1));
-  await step("search", () => ext.search(opts.query || "naruto", 1, []));
+  await step("getLatest", () => ext.getLatestUpdates(1));
+  await step("search", () => ext.search(opts.query || "a", 1, []));
 
-  let detailUrl = null;
-  if (popular && popular.list && popular.list.length) detailUrl = popular.list[0].url;
+  let detailUrl = popular?.list?.[0]?.url ?? null;
   let detail = null;
   if (detailUrl) {
     detail = await step("getDetail", () => ext.getDetail(detailUrl));
-    let epUrl = null;
-    if (detail && detail.chapters && detail.chapters.length) epUrl = detail.chapters[0].url;
+    const hasCover = !!(detail?.imageUrl || popular?.list?.[0]?.imageUrl);
+    result.steps.cover = { ok: hasCover, info: hasCover ? popular?.list?.[0]?.imageUrl : null };
+    let epUrl = detail?.chapters?.[0]?.url ?? null;
     if (epUrl) {
-      await step("getVideoList", () => ext.getVideoList(epUrl));
+      const isManga = src.itemType === 0 || src.isManga;
+      if (isManga) {
+        await step("getPageList", () => ext.getPageList(epUrl));
+      } else {
+        await step("getVideoList", () => ext.getVideoList(epUrl));
+      }
     } else {
-      result.steps.getVideoList = { ok: false, error: "no episode/chapter url to test" };
-      result.ok = false;
+      const key = src.isManga ? "getPageList" : "getVideoList";
+      result.steps[key] = { ok: false, error: "no episode/chapter url" };
     }
   } else {
-    result.steps.getDetail = { ok: false, error: "no popular item to test detail" };
-    result.steps.getVideoList = { ok: false, error: "skipped" };
-    result.ok = false;
+    result.steps.getDetail = { ok: false, error: "no popular item to test" };
+    result.steps.cover = { ok: false, error: "no popular item" };
   }
   return result;
 }
 
 function summarize(step, out) {
   if (!out) return null;
-  if (step === "getPopular" || step === "search" || step === "getLatestUpdates") {
-    return { count: out.list?.length ?? 0, hasNext: !!out.hasNextPage, sample: out.list?.[0] ? { name: out.list[0].name, url: out.list[0].url } : null };
+  if (["getPopular","search","getLatest","getLatestUpdates"].includes(step)) {
+    return { count: out.list?.length ?? 0, hasNext: !!out.hasNextPage, sample: out.list?.[0] ? { name: out.list[0].name, url: out.list[0].url, imageUrl: out.list[0].imageUrl } : null };
   }
   if (step === "getDetail") {
-    return { name: snippet(out.name, 80), chapters: out.chapters?.length ?? 0, sample: out.chapters?.[0] ? { name: out.chapters[0].name, url: out.chapters[0].url } : null };
+    return { name: snippet(out.name,80), chapters: out.chapters?.length ?? 0, imageUrl: out.imageUrl, sample: out.chapters?.[0] ? { name: out.chapters[0].name, url: out.chapters[0].url } : null };
   }
   if (step === "getVideoList") {
-    return { count: Array.isArray(out) ? out.length : 0, sample: Array.isArray(out) && out[0] ? { quality: out[0].quality, url: snippet(out[0].url, 120) } : null };
+    return { count: Array.isArray(out) ? out.length : 0, sample: Array.isArray(out) && out[0] ? { quality: out[0].quality, url: snippet(out[0].url,120) } : null };
+  }
+  if (step === "getPageList") {
+    return { count: Array.isArray(out) ? out.length : 0, sample: Array.isArray(out) && out[0] ? { url: snippet(out[0].url ?? out[0],120) } : null };
   }
   return out;
 }
 
 async function main() {
   const args = process.argv.slice(2);
-  if (args.length === 0) { console.error("usage: test_extension.mjs <file.js> [<file.js>...]"); process.exit(2); }
+  if (args.length === 0) { console.error("usage: node test_extension.mjs <file.js> [<file.js>...]"); process.exit(2); }
   const out = [];
   for (const f of args) {
     process.stderr.write(`>> ${f}\n`);
     const r = await runOne(f);
     out.push(r);
-    process.stderr.write(`   ${r.ok ? "OK" : "FAIL"} (${r.errors.length} err)\n`);
+    process.stderr.write(`   ${r.ok ? "✅ OK" : "❌ FAIL"} (${r.errors.length} err)\n`);
   }
   console.log(JSON.stringify(out, null, 2));
 }

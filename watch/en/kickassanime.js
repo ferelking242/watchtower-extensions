@@ -1,5 +1,5 @@
 //update
-const mangayomiSources = [
+const watchtowerSources = [
   {
     "name": "KickAssAnime",
     "id": 4096048097,

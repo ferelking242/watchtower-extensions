@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "AnimeFénix",
     "lang": "es",
     "baseUrl": "https://www3.animefenix.tv",

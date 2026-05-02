@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "AllAnime",
     "lang": "en",
     "baseUrl": "https://allmanga.to",

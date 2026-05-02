@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "小米UC资源站",
     "lang": "zh",
     "baseUrl": "http://www.mucpan.cc",

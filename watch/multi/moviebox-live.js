@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "MovieBox Live",
     "lang": "all",
     "baseUrl": "https://themoviebox.xyz",

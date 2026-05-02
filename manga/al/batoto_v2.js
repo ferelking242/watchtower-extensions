@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Batoto (v2)",
     "lang": "all",
     "baseUrl": "https://bato.to",

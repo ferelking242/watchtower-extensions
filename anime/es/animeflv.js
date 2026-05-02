@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "AnimeFLV",
     "langs": ["es"],
     "ids": { "es": 537733556 },

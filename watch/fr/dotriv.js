@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Dotriv",
     "langs": ["fr"],
     "ids": { "fr": 334859201 },

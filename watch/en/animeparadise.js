@@ -1,5 +1,5 @@
 //update
-const mangayomiSources = [
+const watchtowerSources = [
   {
     "name": "AnimeParadise",
     "id": 419768715,

@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "WuxiaWorld",
     "lang": "en",
     "baseUrl": "https://www.wuxiaworld.site",

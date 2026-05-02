@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "SerienStream",
     "lang": "de",
     "baseUrl": "https://s.to",

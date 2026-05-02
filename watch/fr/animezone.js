@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "AnimeZone",
     "langs": ["fr"],
     "ids": { "fr": 742916341 },

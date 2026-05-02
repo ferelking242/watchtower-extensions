@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "SpankBang",
     "lang": "en",
     "baseUrl": "https://spankbang.com",

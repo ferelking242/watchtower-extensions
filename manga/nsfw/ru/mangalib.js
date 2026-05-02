@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Mangalib",
     "lang": "ru",
     "baseUrl": "https://mangalib.org/ru",

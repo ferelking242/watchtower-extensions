@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Vostfree",
     "langs": ["fr"],
     "ids": { "fr": 445160798 },

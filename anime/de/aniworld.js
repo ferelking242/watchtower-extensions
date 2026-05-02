@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "AniWorld",
     "langs": ["de"],
     "ids": { "de": 219508842 },

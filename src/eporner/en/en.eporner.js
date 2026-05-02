@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Eporner",
     "lang": "en",
     "baseUrl": "https://www.eporner.com",

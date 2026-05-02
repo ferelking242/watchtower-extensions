@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "360资源",
     "lang": "zh",
     "baseUrl": "https://360zy.com",

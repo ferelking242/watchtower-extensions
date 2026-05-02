@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "VIVAMAXph",
     "lang": "all",
     "baseUrl": "https://vivamaxph.com/",

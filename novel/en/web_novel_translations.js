@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Web Novel Translations",
     "lang": "en",
     "baseUrl": "https://webnoveltranslations.com",

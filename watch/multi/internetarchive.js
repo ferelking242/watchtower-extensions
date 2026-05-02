@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "Internet Archive Films",
     "lang": "multi",
     "baseUrl": "https://archive.org",

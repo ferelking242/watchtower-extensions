@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "蜜柑计划 (Mikan Project)",
     "langs": ["zh"],
     "ids": { "zh": 148739201 },

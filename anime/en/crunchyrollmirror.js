@@ -1,4 +1,4 @@
-const mangayomiSources = [{
+const watchtowerSources = [{
     "name": "CrunchyList (CR Mirror)",
     "langs": ["en"],
     "ids": { "en": 204973612 },
