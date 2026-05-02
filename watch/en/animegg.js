@@ -9,7 +9,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=256&domain=https://www.animegg.org/",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.4",
+    "version": "1.0.3",
     "pkgPath": "anime/src/en/animegg.js"
   }
 ];
@@ -98,8 +98,8 @@ class DefaultExtension extends MProvider {
   async getLatestUpdates(page) {
     var start = (page - 1) * 25;
     var limit = start + 25;
-    // /releases uses a different card structure (no .rightpop); use newest popular-series instead
-    var slug = `/popular-series?sortBy=createdAt&sortDirection=DESC&start=${start}&limit=${limit}`;
+
+    var slug = `/releases?start=${start}&limit=${limit}`;
     return await this.fetchPopularnLatest(slug);
   }
   async search(query, page, filters) {
