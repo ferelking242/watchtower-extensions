@@ -7,7 +7,7 @@ const mangayomiSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.echodumarteau.png",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.1.3",
+    "version": "0.1.4",
     "pkgPath": "watch/fr/echodumarteau.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
