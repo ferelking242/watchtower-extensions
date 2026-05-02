@@ -1,5 +1,8 @@
 {
   "name": "WatchTower Extensions",
   "website": "https://github.com/ferelking242/watchtower-extensions",
-  "jsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index.min.json"
+  "jsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index.min.json",
+  "mangaJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/manga.min.json",
+  "watchJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch.min.json",
+  "novelJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/novel.min.json"
 }
