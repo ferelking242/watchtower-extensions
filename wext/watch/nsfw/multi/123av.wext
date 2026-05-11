@@ -2,7 +2,7 @@
   "format": "wext/1.0",
   "metadata": {
     "name": "123AV",
-    "id": 1800002061,
+    "id": 374089040,
     "baseUrl": "https://123av.com/en",
     "lang": "all",
     "typeSource": "single",
@@ -16,7 +16,7 @@
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
-    "appMinVerReq": "0.5.0",
+    "appMinVerReq": "0.2.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": ""
