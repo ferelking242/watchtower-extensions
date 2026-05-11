@@ -1,0 +1,25 @@
+{
+  "format": "wext/1.0",
+  "metadata": {
+    "name": "TokyoMotion",
+    "id": 4096048142,
+    "baseUrl": "https://www.tokyomotion.net",
+    "lang": "ja",
+    "typeSource": "single",
+    "iconUrl": "https://cdn.tokyo-motion.net/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": true,
+    "hasCloudflare": false,
+    "apiUrl": "",
+    "version": "1.0.0",
+    "isManga": false,
+    "itemType": 1,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Japanese porn tube — TokyoMotion"
+  },
+  "source": "const watchtowerSources = [{\n  \"name\": \"TokyoMotion\",\n  \"lang\": \"ja\",\n  \"baseUrl\": \"https://www.tokyomotion.net\",\n  \"apiUrl\": \"\",\n  \"iconUrl\": \"https://cdn.tokyo-motion.net/favicon.ico\",\n  \"typeSource\": \"single\",\n  \"itemType\": 1,\n  \"version\": \"1.0.0\",\n  \"pkgPath\": \"tokyomotion/ja/ja.tokyomotion.js\",\n  \"notes\": \"Japanese porn tube — TokyoMotion\",\n  \"isNsfw\": true\n}];\n\nclass DefaultExtension extends MProvider {\n  getHeaders(url) {\n    return {\n      \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36\",\n      \"Referer\": \"https://www.tokyomotion.net/\"\n    };\n  }\n\n  async getPopular(page) {\n    const url = `${this.source.baseUrl}/?page=${page}`;\n    const res = await new Client().get(url, { headers: this.getHeaders(url) });\n    return this._parse(res.body, this.source.baseUrl);\n  }\n\n  get supportsLatest() { return true; }\n\n  async getLatestUpdates(page) {\n    const url = `${this.source.baseUrl}/search?search_query=japanese&search_type=videos&page=${page}`;\n    const res = await new Client().get(url, { headers: this.getHeaders(url) });\n    return this._parse(res.body, this.source.baseUrl);\n  }\n\n  async search(query, page, filters) {\n    const q = encodeURIComponent(query.trim());\n    const url = `${this.source.baseUrl}/search?search_query=${q}&search_type=videos&page=${page}`;\n    const res = await new Client().get(url, { headers: this.getHeaders(url) });\n    return this._parse(res.body, this.source.baseUrl);\n  }\n\n  _parse(html, base) {\n    const doc = new Document(html);\n    const items = [];\n    const cards = doc.select(\"a.thumb-popu, .well a.thumb-popu\");\n    for (const card of cards) {\n      const href = card.attr(\"href\") || \"\";\n      if (!href || !href.includes(\"/video/\")) continue;\n      const img = card.selectFirst(\"img.img-responsive, img\");\n      const title = img?.attr(\"title\") || img?.attr(\"alt\") || \"\";\n      const thumb = img?.attr(\"src\") || img?.attr(\"data-src\") || \"\";\n      const link = href.startsWith(\"http\") ? href : base + href;\n      if (title) items.push({ name: title.trim(), imageUrl: thumb, link });\n    }\n    const hasNext = !!doc.selectFirst(\".pagination .next, a[rel='next']\");\n    return { list: items, hasNextPage: hasNext || items.length >= 16 };\n  }\n\n  async getDetail(url) {\n    const res = await new Client().get(url, { headers: this.getHeaders(url) });\n    const doc = new Document(res.body);\n    const title = doc.selectFirst(\"meta[property='og:title']\")?.attr(\"content\")\n      || doc.selectFirst(\"h1, .video-title\")?.text || \"Unknown\";\n    const thumb = doc.selectFirst(\"meta[property='og:image']\")?.attr(\"content\") || \"\";\n    const tags = doc.select(\".video-tags a, .tags a, [class*='tag'] a\").map(el => ({ name: el.text.trim() }));\n    return {\n      name: title.trim(), imageUrl: thumb, description: \"\",\n      genre: tags, episodes: [{ name: title.trim() || \"Watch\", url }]\n    };\n  }\n\n  async getVideoList(url) {\n    const res = await new Client().get(url, { headers: this.getHeaders(url) });\n    const html = res.body;\n    const doc = new Document(html);\n    const videos = [];\n    // TokyoMotion uses vsrc/sd/HASH pattern\n    const srcEl = doc.selectFirst(\"source\");\n    const srcUrl = srcEl?.attr(\"src\") || \"\";\n    if (srcUrl) videos.push({ url: srcUrl, quality: \"SD\", originalUrl: srcUrl, headers: this.getHeaders(url) });\n    // embed URL\n    const iframeEl = doc.selectFirst(\"iframe[src*='/embed/']\");\n    const embedSrc = iframeEl?.attr(\"src\") || \"\";\n    if (embedSrc && !srcUrl) {\n      // Convert embed to vsrc\n      const hash = embedSrc.split(\"/embed/\")[1] || \"\";\n      if (hash) {\n        const vsrc = `${this.source.baseUrl}/vsrc/sd/${hash}`;\n        videos.push({ url: vsrc, quality: \"SD\", originalUrl: vsrc, headers: this.getHeaders(url) });\n      }\n    }\n    // fallback m3u8\n    if (videos.length === 0) {\n      const m3u8Rx = /[\"'`](https?:\\/\\/[^\"'`]+\\.m3u8[^\"'`]{0,150})[\"'`]/g;\n      let m;\n      while ((m = m3u8Rx.exec(html)) !== null) {\n        videos.push({ url: m[1], quality: \"HLS\", originalUrl: m[1], headers: this.getHeaders(url) });\n      }\n    }\n    return videos;\n  }\n\n  getFilterList() { return []; }\n  getSourcePreferences() { return []; }\n}\n"
+}

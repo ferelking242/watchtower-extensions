@@ -1,0 +1,25 @@
+{
+  "format": "wext/1.0",
+  "metadata": {
+    "name": "KissJAV",
+    "id": 4096048135,
+    "baseUrl": "https://kissjav.li",
+    "lang": "ja",
+    "typeSource": "single",
+    "iconUrl": "https://kissjav.li/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": true,
+    "hasCloudflare": false,
+    "apiUrl": "",
+    "version": "1.0.0",
+    "isManga": false,
+    "itemType": 1,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Kiss JAV — free Japanese AV streaming"
+  },
+  "source": "const watchtowerSources = [{\n  \"name\": \"KissJAV\",\n  \"lang\": \"ja\",\n  \"baseUrl\": \"https://kissjav.li\",\n  \"apiUrl\": \"\",\n  \"iconUrl\": \"https://kissjav.li/favicon.ico\",\n  \"typeSource\": \"single\",\n  \"itemType\": 1,\n  \"version\": \"1.0.0\",\n  \"pkgPath\": \"kissjav/ja/ja.kissjav.js\",\n  \"notes\": \"Kiss JAV — free Japanese AV streaming\",\n  \"isNsfw\": true\n}];\n\nclass DefaultExtension extends MProvider {\n  getHeaders(url) {\n    return {\n      \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36\",\n      \"Referer\": \"https://kissjav.li/\"\n    };\n  }\n\n  async getPopular(page) {\n    const url = `${this.source.baseUrl}/?page=${page}`;\n    const res = await new Client().get(url, { headers: this.getHeaders(url) });\n    return this._parse(res.body, this.source.baseUrl);\n  }\n\n  get supportsLatest() { return true; }\n\n  async getLatestUpdates(page) {\n    const url = `${this.source.baseUrl}/new/?page=${page}`;\n    const res = await new Client().get(url, { headers: this.getHeaders(url) });\n    return this._parse(res.body, this.source.baseUrl);\n  }\n\n  async search(query, page, filters) {\n    const q = encodeURIComponent(query.trim());\n    const url = `${this.source.baseUrl}/search/${q}/?page=${page}`;\n    const res = await new Client().get(url, { headers: this.getHeaders(url) });\n    return this._parse(res.body, this.source.baseUrl);\n  }\n\n  _parse(html, base) {\n    const doc = new Document(html);\n    const items = [];\n    const cards = doc.select(\".item, .video, article, [class*='thumb'], [class*='movie'], [class*='card']\");\n    for (const card of cards) {\n      const a = card.selectFirst(\"a[href*='/video/'], a[href*='/watch/'], a\");\n      if (!a) continue;\n      const href = a.attr(\"href\") || \"\";\n      if (!href || href === base + \"/\" || href === \"/\") continue;\n      const img = card.selectFirst(\"img\");\n      const title = img?.attr(\"alt\") || a.attr(\"title\") || card.selectFirst(\"h2, h3, .title, span\")?.text || \"\";\n      const thumb = img?.attr(\"data-src\") || img?.attr(\"data-lazy\") || img?.attr(\"src\") || \"\";\n      const link = href.startsWith(\"http\") ? href : base + href;\n      if (title && title.length > 2) items.push({ name: title.trim(), imageUrl: thumb, link });\n    }\n    const hasNext = !!doc.selectFirst(\".next, a[rel='next'], .pagination a[aria-label='Next']\");\n    return { list: items, hasNextPage: hasNext || items.length >= 12 };\n  }\n\n  async getDetail(url) {\n    const res = await new Client().get(url, { headers: this.getHeaders(url) });\n    const doc = new Document(res.body);\n    const title = doc.selectFirst(\"meta[property='og:title']\")?.attr(\"content\") || doc.selectFirst(\"h1\")?.text || \"Unknown\";\n    const thumb = doc.selectFirst(\"meta[property='og:image']\")?.attr(\"content\") || \"\";\n    const tags = doc.select(\".tags a, [class*='genre'] a, [class*='tag'] a\").map(el => ({ name: el.text.trim() }));\n    return { name: title.trim(), imageUrl: thumb, description: \"\", genre: tags, episodes: [{ name: title.trim() || \"Watch\", url }] };\n  }\n\n  async getVideoList(url) {\n    const res = await new Client().get(url, { headers: this.getHeaders(url) });\n    const html = res.body;\n    const videos = [];\n    const m3u8Rx = /[\"'`](https?:\\/\\/[^\"'`]+\\.m3u8[^\"'`]{0,150})[\"'`]/g;\n    let m;\n    while ((m = m3u8Rx.exec(html)) !== null) {\n      if (!videos.find(v => v.url === m[1]))\n        videos.push({ url: m[1], quality: \"HLS\", originalUrl: m[1], headers: this.getHeaders(url) });\n    }\n    if (videos.length === 0) {\n      const mp4Rx = /[\"'`](https?:\\/\\/[^\"'`]+\\.mp4[^\"'`]{0,150})[\"'`]/g;\n      while ((m = mp4Rx.exec(html)) !== null) {\n        if (!videos.find(v => v.url === m[1]))\n          videos.push({ url: m[1], quality: \"MP4\", originalUrl: m[1], headers: this.getHeaders(url) });\n        if (videos.length >= 3) break;\n      }\n    }\n    if (videos.length === 0) {\n      const fileM = html.match(/file\\s*:\\s*[\"']([^\"']+)[\"']/);\n      if (fileM) videos.push({ url: fileM[1], quality: \"JWPlayer\", originalUrl: fileM[1], headers: this.getHeaders(url) });\n    }\n    return videos;\n  }\n\n  getFilterList() { return []; }\n  getSourcePreferences() { return []; }\n}\n"
+}

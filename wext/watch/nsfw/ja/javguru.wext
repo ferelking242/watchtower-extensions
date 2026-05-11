@@ -1,0 +1,25 @@
+{
+  "format": "wext/1.0",
+  "metadata": {
+    "name": "JAV.guru",
+    "id": 4096048127,
+    "baseUrl": "https://jav.guru",
+    "lang": "ja",
+    "typeSource": "single",
+    "iconUrl": "https://cdn.javmiku.com/wp-content/uploads/2018/12/logofinal6.png",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": true,
+    "hasCloudflare": false,
+    "apiUrl": "",
+    "version": "1.0.0",
+    "isManga": false,
+    "itemType": 1,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "JAV WordPress site — Japanese AV streaming"
+  },
+  "source": "const watchtowerSources = [{\n  \"name\": \"JAV.guru\",\n  \"lang\": \"ja\",\n  \"baseUrl\": \"https://jav.guru\",\n  \"apiUrl\": \"\",\n  \"iconUrl\": \"https://cdn.javmiku.com/wp-content/uploads/2018/12/logofinal6.png\",\n  \"typeSource\": \"single\",\n  \"itemType\": 1,\n  \"version\": \"1.0.0\",\n  \"pkgPath\": \"javguru/ja/ja.javguru.js\",\n  \"notes\": \"JAV WordPress site — Japanese AV streaming\",\n  \"isNsfw\": true\n}];\n\nclass DefaultExtension extends MProvider {\n  getHeaders(url) {\n    return {\n      \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36\",\n      \"Referer\": \"https://jav.guru/\"\n    };\n  }\n\n  async getPopular(page) {\n    const url = `${this.source.baseUrl}/page/${page}/`;\n    const res = await new Client().get(url, { headers: this.getHeaders(url) });\n    return this._parse(res.body, this.source.baseUrl);\n  }\n\n  get supportsLatest() { return true; }\n\n  async getLatestUpdates(page) {\n    const url = `${this.source.baseUrl}/page/${page}/?orderby=date`;\n    const res = await new Client().get(url, { headers: this.getHeaders(url) });\n    return this._parse(res.body, this.source.baseUrl);\n  }\n\n  async search(query, page, filters) {\n    const q = encodeURIComponent(query.trim());\n    const url = `${this.source.baseUrl}/page/${page}/?s=${q}`;\n    const res = await new Client().get(url, { headers: this.getHeaders(url) });\n    return this._parse(res.body, this.source.baseUrl);\n  }\n\n  _parse(html, base) {\n    const doc = new Document(html);\n    const items = [];\n    const cards = doc.select(\"article, .post, .entry\");\n    for (const card of cards) {\n      const a = card.selectFirst(\"h2 a, h1 a, .entry-title a, a[rel='bookmark']\");\n      if (!a) continue;\n      const href = a.attr(\"href\") || \"\";\n      if (!href) continue;\n      const title = a.text?.trim() || a.attr(\"title\") || \"\";\n      const img = card.selectFirst(\"img.wp-post-image, .post-thumbnail img, img[class*='thumb'], img\");\n      const thumb = img?.attr(\"data-lazy-src\") || img?.attr(\"data-src\") || img?.attr(\"src\") || \"\";\n      items.push({ name: title, imageUrl: thumb, link: href });\n    }\n    const hasNext = !!doc.selectFirst(\".next.page-numbers, a[rel='next'], .nav-previous a\");\n    return { list: items, hasNextPage: hasNext || items.length >= 10 };\n  }\n\n  async getDetail(url) {\n    const res = await new Client().get(url, { headers: this.getHeaders(url) });\n    const doc = new Document(res.body);\n    const title = doc.selectFirst(\"meta[property='og:title']\")?.attr(\"content\")\n      || doc.selectFirst(\"h1.entry-title, h1\")?.text || \"Unknown\";\n    const thumb = doc.selectFirst(\"meta[property='og:image']\")?.attr(\"content\")\n      || doc.selectFirst(\"img.wp-post-image\")?.attr(\"src\") || \"\";\n    const tags = doc.select(\".tags-links a, .entry-footer a, .genre a\").map(el => ({ name: el.text.trim() }));\n    return {\n      name: title.trim(), imageUrl: thumb, description: \"\",\n      genre: tags, episodes: [{ name: title.trim() || \"Watch\", url }]\n    };\n  }\n\n  async getVideoList(url) {\n    const res = await new Client().get(url, { headers: this.getHeaders(url) });\n    const html = res.body;\n    const videos = [];\n    const m3u8Rx = /[\"'`](https?:\\/\\/[^\"'`]+\\.m3u8[^\"'`]{0,150})[\"'`]/g;\n    let m;\n    while ((m = m3u8Rx.exec(html)) !== null) {\n      if (!videos.find(v => v.url === m[1]))\n        videos.push({ url: m[1], quality: \"HLS\", originalUrl: m[1], headers: this.getHeaders(url) });\n    }\n    if (videos.length === 0) {\n      const mp4Rx = /[\"'`](https?:\\/\\/[^\"'`]+\\.mp4[^\"'`]{0,150})[\"'`]/g;\n      while ((m = mp4Rx.exec(html)) !== null) {\n        if (!videos.find(v => v.url === m[1]))\n          videos.push({ url: m[1], quality: \"MP4\", originalUrl: m[1], headers: this.getHeaders(url) });\n        if (videos.length >= 3) break;\n      }\n    }\n    if (videos.length === 0) {\n      const iframeM = html.match(/src=\"(https?:\\/\\/(?!www\\.google|facebook)[^\"]{15,200})\"/);\n      if (iframeM) videos.push({ url: iframeM[1], quality: \"Iframe\", originalUrl: iframeM[1], headers: this.getHeaders(url) });\n    }\n    return videos;\n  }\n\n  getFilterList() { return []; }\n  getSourcePreferences() { return []; }\n}\n"
+}

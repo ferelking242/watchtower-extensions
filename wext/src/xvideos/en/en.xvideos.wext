@@ -1,0 +1,24 @@
+{
+  "format": "wext/1.0",
+  "metadata": {
+    "name": "XVideos",
+    "lang": "en",
+    "baseUrl": "https://www.xvideos.com",
+    "iconUrl": "https://www.xvideos.com/favicon.ico",
+    "id": 1800000002,
+    "version": "1.0.1",
+    "itemType": 1,
+    "isNsfw": true,
+    "typeSource": "single",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "hasCloudflare": false,
+    "apiUrl": "",
+    "isFullData": false,
+    "appMinVerReq": "0.2.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": ""
+  },
+  "source": "const watchtowerSources = [{\n    \"name\": \"XVideos\",\n    \"lang\": \"en\",\n    \"baseUrl\": \"https://www.xvideos.com\",\n    \"apiUrl\": \"\",\n    \"iconUrl\": \"https://www.xvideos.com/favicon.ico\",\n    \"typeSource\": \"single\",\n    \"itemType\": 1,\n    \"version\": \"1.0.1\",\n    \"pkgPath\": \"xvideos/en/en.xvideos.js\",\n    \"notes\": \"Adult content (18+) — ZeusDL powered streaming\",\n    \"isNsfw\": true\n  }];\n  class DefaultExtension extends MProvider {\n    getHeaders(url) {\n      return { \"Referer\": \"https://www.xvideos.com/\", \"User-Agent\": \"Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36\" };\n    }\n    async getPopular(page) {\n      const url = `https://www.xvideos.com/?p=${page - 1}`;\n      const res = await new Client().get(url, { headers: this.getHeaders(url) });\n      return this._parse(res.body);\n    }\n    get supportsLatest() { return true; }\n    async getLatestUpdates(page) {\n      const url = `https://www.xvideos.com/new/${page - 1}`;\n      const res = await new Client().get(url, { headers: this.getHeaders(url) });\n      return this._parse(res.body);\n    }\n    async search(query, page, filters) {\n      const q = encodeURIComponent(query.trim());\n      const url = `https://www.xvideos.com/?k=${q}&p=${page - 1}`;\n      const res = await new Client().get(url, { headers: this.getHeaders(url) });\n      return this._parse(res.body);\n    }\n    _parse(html) {\n      const doc = new Document(html);\n      const items = [];\n      const cards = doc.select(\".thumb-block, .mozaique .thumb-block, #main .thumb-block\");\n      for (const card of cards) {\n        const a = card.selectFirst(\"a\");\n        if (!a) continue;\n        const href = a.attr(\"href\") || \"\";\n        if (!href || !href.includes(\"/video\")) continue;\n        const title = a.attr(\"title\") || card.selectFirst(\".title\")?.text || \"Unknown\";\n        const img = card.selectFirst(\"img\");\n        const thumb = img?.attr(\"data-src\") || img?.attr(\"src\") || \"\";\n        const dur = card.selectFirst(\".duration\")?.text?.trim() || \"\";\n        items.push({ name: title.trim(), imageUrl: thumb, link: href.startsWith(\"http\") ? href : \"https://www.xvideos.com\" + href, description: dur ? `Duration: ${dur}` : \"\" });\n      }\n      return { list: items, hasNextPage: !!doc.selectFirst(\".pagination .next-page, a[rel='next']\") };\n    }\n    async getDetail(url) {\n      const res = await new Client().get(url, { headers: this.getHeaders(url) });\n      const doc = new Document(res.body);\n      const title = doc.selectFirst('meta[property=\"og:title\"]')?.attr(\"content\") || \"Unknown\";\n      const thumb = doc.selectFirst('meta[property=\"og:image\"]')?.attr(\"content\") || \"\";\n      const tags = doc.select(\".video-tags-list a, .tags a\").map(el => ({ name: el.text.trim() }));\n      return { name: title, imageUrl: thumb, description: \"\", genre: tags, episodes: [{ name: (title && title.trim ? title.trim() : (title || \"Watch\")), url: url }] };\n    }\n    async getVideoList(url) {\n      const res = await new Client().get(url, { headers: this.getHeaders(url) });\n      const html = res.body;\n      const videos = [];\n      const hlsMatch = html.match(/setVideoHLS\\(['\"]([^'\"]+)['\"]\\)/);\n      if (hlsMatch) videos.push({ url: hlsMatch[1], quality: \"HLS · ZeusDL\", originalUrl: hlsMatch[1], headers: this.getHeaders(url) });\n      const hiMatch = html.match(/setVideoUrlHigh\\(['\"]([^'\"]+)['\"]\\)/);\n      if (hiMatch) videos.push({ url: hiMatch[1], quality: \"HD · ZeusDL\", originalUrl: hiMatch[1], headers: this.getHeaders(url) });\n      const loMatch = html.match(/setVideoUrlLow\\(['\"]([^'\"]+)['\"]\\)/);\n      if (loMatch) videos.push({ url: loMatch[1], quality: \"SD · ZeusDL\", originalUrl: loMatch[1], headers: this.getHeaders(url) });\n      return videos;\n    }\n    async getPageList(url) { return []; }\n    getFilterList() { return []; }\n    getSourcePreferences() { return []; }\n  }"
+}

@@ -7,6 +7,8 @@ const HOST = '0.0.0.0';
 const ROOT = __dirname;
 
 const MIME = {
+  '.js': 'application/javascript; charset=utf-8',
+  '.wext': 'application/json; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
   '.html': 'text/html; charset=utf-8',
   '.md': 'text/markdown; charset=utf-8',
