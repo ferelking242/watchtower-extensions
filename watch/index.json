@@ -2899,5 +2899,27 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "91Porn — Chinese homemade and Asian amateur videos"
+  },
+  {
+    "name": "9AnimeTv",
+    "id": 957331416,
+    "baseUrl": "https://9animetv.to",
+    "lang": "en",
+    "typeSource": "single",
+    "iconUrl": "https://9animetv.to/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": true,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/en/nineanimetv.js",
+    "apiUrl": "",
+    "version": "0.1.2",
+    "isManga": false,
+    "itemType": 1,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "9AnimeTv — Anime streaming"
   }
 ]
