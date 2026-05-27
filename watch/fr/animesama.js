@@ -2,12 +2,12 @@ const watchtowerSources = [{
     "name": "Anime-Sama",
     "langs": ["fr"],
     "ids": { "fr": 223948123 },
-    "baseUrl": "https://anime-sama.fr",
-    "apiUrl": "https://anime-sama.fr",
+    "baseUrl": "https://anime-sama.to",
+    "apiUrl": "https://anime-sama.to",
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.animesama.png",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.1.4",
+    "version": "0.1.5",
     "pkgPath": "watch/fr/animesama.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -32,7 +32,8 @@ class DefaultExtension extends MProvider {
 
     _parse(html) {
         const list = []; const seen = new Set();
-        const re = /<a[^>]+href="((?:https?:\/\/anime-sama\.fr)?\/catalogue\/[^"]+\/)"[^>]*>[\s\S]{0,400}<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,})"/gi;
+        // Match /catalogue/... links — domain-agnostic (works with any baseUrl)
+        const re = /<a[^>]+href="((?:https?:\/\/[^"]+)?\/catalogue\/[^"]+\/)"[^>]*>[\s\S]{0,400}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,})"/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
             const url = m[1].startsWith("http") ? m[1] : `${this.baseUrl}${m[1]}`;
@@ -81,7 +82,8 @@ class DefaultExtension extends MProvider {
         const imageUrl = imgM ? imgM[1] : "";
 
         const episodes = [];
-        const epRe = /href="((?:https?:\/\/anime-sama\.fr)?\/catalogue\/[^"]+(?:saison|film|episode)[^"]*\/)"[^>]*title="([^"]+)"/gi;
+        // Domain-agnostic: match any URL containing /catalogue/ with saison/film/episode
+        const epRe = /href="((?:https?:\/\/[^"]+)?\/catalogue\/[^"]+(?:saison|film|episode)[^"]*\/)"[^>]*title="([^"]+)"/gi;
         let m;
         while ((m = epRe.exec(html)) !== null) {
             const epUrl = m[1].startsWith("http") ? m[1] : `${this.baseUrl}${m[1]}`;

@@ -2,12 +2,12 @@ const watchtowerSources = [{
     "name": "French-Stream",
     "langs": ["fr"],
     "ids": { "fr": 112837465 },
-    "baseUrl": "https://french-stream.re",
-    "apiUrl": "https://french-stream.re",
+    "baseUrl": "https://french-stream.one",
+    "apiUrl": "https://french-stream.one",
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.frenchstream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.5",
+    "version": "0.1.6",
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -32,11 +32,13 @@ class DefaultExtension extends MProvider {
 
     _parse(html) {
         const list = []; const seen = new Set();
-        // DLE CMS: <a class="short-poster img-box with-mask" href="/ID-slug.html" alt="TITLE"><img src="URL">
-        const re = /class="short-poster[^"]*"\s+href="(\/[0-9][^"]+\.html)"\s+alt="([^"]+)"[\s\S]{0,1500}?<img[^>]+(?:data-src|src)="([^"]+)"/gi;
+        // DLE CMS — new URL format: href="/index.php?newsid=NUMBER"
+        // Title is in alt="" on the <a> tag itself; poster is the <img> inside
+        const re = /class="short-poster[^"]*"\s+href="([^"]+)"\s+alt="([^"]+)"[\s\S]{0,600}?<img[^>]+(?:data-src|src)="([^"]+)"/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
-            const url = `${this.baseUrl}${m[1]}`;
+            const href = m[1];
+            const url = href.startsWith("http") ? href : `${this.baseUrl}${href}`;
             if (seen.has(url)) continue; seen.add(url);
             list.push({ link: url, imageUrl: m[3], name: m[2].trim() });
         }
@@ -80,41 +82,43 @@ class DefaultExtension extends MProvider {
         const res = await this.client.get(url, this._hdrs());
         const html = res.body;
 
-        // Title from og:title or h1
-        const nameM = html.match(/<meta[^>]+property="og:title"[^>]+content="([^"]+)"/i) ||
+        // Title: h1#s-title (French-Stream specific) or og:title or plain h1
+        const nameM = html.match(/<h1[^>]*id="s-title"[^>]*>([\s\S]*?)<\/h1>/i) ||
+                      html.match(/<meta[^>]+property="og:title"[^>]+content="([^"]+)"/i) ||
                       html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
-        const name = nameM ? nameM[1].replace(/<[^>]+>/g, "").replace(/\s+en streaming.*/i, "").trim() : "";
+        const name = nameM ? nameM[1].replace(/<[^>]+>/g, "").replace(/\s+-\s+\d{4}.*$/s, "").trim() : "";
 
-        // Synopsis: DLE CMS uses <p class="desc-text">
+        // Description
         const descM = html.match(/<p[^>]*class="[^"]*desc-text[^"]*"[^>]*>([^<]+)<\/p>/i) ||
                       html.match(/<meta[^>]+property="og:description"[^>]+content="([^"]+)"/i) ||
                       html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i);
         const description = descM ? descM[1].trim() : "";
 
-        // Poster: French-Stream uses <div class="fposter|dvd-poster"> wrapping a TMDB <img>
-        const imgM = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) ||
-                     html.match(/<div[^>]+class="[^"]*(?:fposter|dvd-poster)[^"]*"[\s\S]{0,400}?<img[^>]+(?:data-src|src)="([^"]+)"/i) ||
-                     html.match(/<img[^>]+(?:data-src|src)="(https?:\/\/image\.tmdb\.org\/[^"]+)"/i);
+        // Poster: prefer TMDB image — found in background-image CSS or as <img>
+        const imgM = html.match(/url\((https?:\/\/image\.tmdb\.org\/[^)]+)\)/i) ||
+                     html.match(/<img[^>]+(?:data-src|src)="(https?:\/\/image\.tmdb\.org\/[^"]+)"/i) ||
+                     html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) ||
+                     html.match(/<div[^>]+class="[^"]*(?:fposter|dvd-poster)[^"]*"[\s\S]{0,400}?<img[^>]+(?:data-src|src)="([^"]+)"/i);
         const imageUrl = imgM ? imgM[1] : "";
 
-        // Episodes: look for tabs or server links on DLE CMS
+        // Episodes for series: look for any newsid-based links in the page
+        // (episode lists on this CMS are often loaded via JS; fall back to movie URL)
         const episodes = [];
-        // For series: look for episode links
-        const serieRe = /<a[^>]+href="(https?:\/\/french-stream[^"]+\.html)"[^>]*>([\s\S]*?)<\/a>/gi;
+        const seen = new Set([url]);
+        const epRe = /<a[^>]+href="((?:https?:\/\/[^"]*french-stream[^"]*|\/index\.php\?newsid=\d+[^"]*)[^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
         let m;
-        const seen = new Set();
-        while ((m = serieRe.exec(html)) !== null) {
-            if (m[1] === url || seen.has(m[1])) continue;
-            seen.add(m[1]);
+        while ((m = epRe.exec(html)) !== null) {
+            const epHref = m[1];
+            const epUrl = epHref.startsWith("http") ? epHref : `${this.baseUrl}${epHref}`;
+            if (seen.has(epUrl)) continue; seen.add(epUrl);
             const epName = m[2].replace(/<[^>]+>/g, "").trim();
             if (epName && epName.length > 1 && epName.length < 100) {
-                episodes.push({ name: epName, url: m[1], dateUpload: "" });
+                episodes.push({ name: epName, url: epUrl, dateUpload: "" });
             }
         }
 
-        // For movies (no sub-episodes): use the film URL itself
         if (episodes.length === 0) {
-            episodes.push({ name: name || "Regarder le film", url, dateUpload: "" });
+            episodes.push({ name: name || "Regarder", url, dateUpload: "" });
         }
 
         await this._log(`detail ok: "${name}", desc: ${description.length}ch, ${episodes.length} ep`);
@@ -138,18 +142,25 @@ class DefaultExtension extends MProvider {
             }
         }
 
-        // Find iframe embed URLs
-        const iframeUrls = [];
+        // data-url="https://..." embed players (French-Stream uses this for its video buttons)
+        const dataUrlRe = /data-url="(https?:\/\/[^"]{10,})"/gi;
+        const embedUrls = [];
+        while ((m = dataUrlRe.exec(html)) !== null) {
+            const eu = m[1];
+            if (!embedUrls.includes(eu)) embedUrls.push(eu);
+        }
+
+        // iframe src embed players
         const iframeRe = /<iframe[^>]+src="((?:https?:)?\/\/[^"]{10,})"/gi;
         while ((m = iframeRe.exec(html)) !== null) {
             const src = m[1].startsWith("//") ? `https:${m[1]}` : m[1];
             if (!src.includes("google") && !src.includes("recaptcha") && !src.includes("facebook") && !src.includes("jquery") && !src.includes("disqus")) {
-                iframeUrls.push(src);
+                if (!embedUrls.includes(src)) embedUrls.push(src);
             }
         }
 
-        // Try resolving each embed player to get a direct video URL
-        for (const embedUrl of iframeUrls.slice(0, 4)) {
+        // Resolve each embed player URL to a direct video stream
+        for (const embedUrl of embedUrls.slice(0, 6)) {
             let resolved = false;
             try {
                 const embedRes = await this.client.get(embedUrl, { ...this._hdrs(url), "Referer": url });
