@@ -95,24 +95,29 @@ class DefaultExtension extends MProvider {
         let imageUrl = imgM ? imgM[1] : "";
         if (imageUrl && imageUrl.startsWith("/")) imageUrl = `${this.baseUrl}${imageUrl}`;
 
-        // Episodes: Vostfree is mostly single-file anime/films
-        // For multi-episode series, look for episode links
+        // Episodes: broadened match — no longer requires a [0-9]+ numeric prefix.
+        // Any .html URL on the vostfree domain is considered; name must contain a
+        // digit or episode/saison keyword to exclude navigation links.
         const episodes = [];
-        const epRe = /<a[^>]+href="(https?:\/\/vostfree\.[^/]+\/[0-9]+-[^"]+\.html)"[^>]*>([^<]{3,})<\/a>/gi;
+        const epRe = /<a[^>]+href="(https?:\/\/vostfree\.[^/"#]+\/[^"#]{5,}\.html)"[^>]*>([^<]{3,80})<\/a>/gi;
         const seen = new Set([url]);
         let m;
         while ((m = epRe.exec(html)) !== null) {
             if (seen.has(m[1])) continue; seen.add(m[1]);
+            const epUrl = m[1];
             const epName = m[2].trim();
-            if (epName && epName.length < 100 && !epName.includes("<")) {
-                episodes.push({ name: epName, url: m[1], dateUpload: "" });
+            if (!epName || epName.length >= 80 || epName.includes("<")) continue;
+            // Keep only episode-like entries: name contains digit or episode/saison keyword
+            if (/\d/.test(epName) || /episode|\u00e9pisode|saison/i.test(epName)) {
+                episodes.push({ name: epName, url: epUrl, dateUpload: "" });
             }
         }
 
-        // Default: the film/anime URL itself is the single episode
+        // Fallback: the film/anime URL itself counts as a single episode
         if (episodes.length === 0) {
             const titleForEp = name || url.split("/").pop().replace(/-/g, " ").replace(/\.html$/, "").trim();
             episodes.push({ name: titleForEp || "Regarder", url, dateUpload: "" });
+        }
         }
 
         await this._log(`detail ok: "${name}", ${episodes.length} ep`);

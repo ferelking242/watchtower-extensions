@@ -149,21 +149,34 @@ class DefaultExtension extends MProvider {
     var description = body.selectFirst("p.ptext").text;
     var chapters = [];
 
+    // Try multiple selectors in case the site's markup changes
     var episodesList = body.select(".newmanga > li");
+    if (!episodesList || episodesList.length === 0) episodesList = body.select(".ep-list > li");
+    if (!episodesList || episodesList.length === 0) episodesList = body.select(".episodes-list > li");
+    if (!episodesList || episodesList.length === 0) episodesList = body.select("ul.episodes > li");
+
     episodesList.forEach((ep) => {
-      var epTitle = ep.selectFirst("i.anititle").text;
-      var epNumber = ep.selectFirst("strong").text.replace(title, "Episode");
-      var epName = epNumber == epTitle ? epNumber : `${epNumber} - ${epTitle}`;
-      var epUrl = ep.selectFirst("a").getHref;
+      try {
+        var epTitleEl = ep.selectFirst("i.anititle");
+        var epTitle = epTitleEl ? epTitleEl.text : "";
+        var strongEl = ep.selectFirst("strong");
+        var epNumber = strongEl ? strongEl.text.replace(title, "Episode") : "";
+        var epName = (epNumber && epTitle && epNumber !== epTitle)
+          ? `${epNumber} - ${epTitle}`
+          : (epNumber || epTitle || "Episode");
+        var aEl = ep.selectFirst("a");
+        var epUrl = aEl ? aEl.getHref : null;
+        if (!epUrl) return;
 
-      var scanlator = "";
-      var type = ep.select("span.btn-xs");
-      type.forEach((t) => {
-        scanlator += t.text + ", ";
-      });
-      scanlator = scanlator.slice(0, -2);
+        var scanlator = "";
+        var type = ep.select("span.btn-xs");
+        if (type) type.forEach((t) => { scanlator += t.text + ", "; });
+        scanlator = scanlator.slice(0, -2);
 
-      chapters.push({ name: epName, url: epUrl, scanlator });
+        chapters.push({ name: epName, url: epUrl, scanlator });
+      } catch (e) {
+        // Skip malformed episode entry
+      }
     });
 
     return { description, status, genre, chapters, link };
