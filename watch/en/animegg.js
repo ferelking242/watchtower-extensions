@@ -9,12 +9,12 @@ const watchtowerSources = [
         "https://www.google.com/s2/favicons?sz=256&domain=https://www.animegg.org/",
       "typeSource": "single",
       "itemType": 1,
-      "version": "1.0.4",
+      "version": "1.0.5",
       "pkgPath": "anime/src/en/animegg.js"
     }
   ];
 
-  // Authors: - Swakshan
+  // Authors: - Swakshan (updated episode detection)
 
   class DefaultExtension extends MProvider {
     constructor() {
@@ -26,6 +26,7 @@ const watchtowerSources = [
       return {
         Referer: this.source.baseUrl,
         Origin: this.source.baseUrl,
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
       };
     }
 
@@ -34,7 +35,7 @@ const watchtowerSources = [
     }
 
     async requestText(slug) {
-      var url = `${this.source.baseUrl}${slug}`;
+      const url = slug.startsWith("http") ? slug : `${this.source.baseUrl}${slug}`;
       var res = await this.client.get(url, this.getHeaders());
       return res.body;
     }
@@ -53,11 +54,7 @@ const watchtowerSources = [
           var linkSection = item.selectFirst(".rightpop").selectFirst("a");
           var link = linkSection.getHref;
           var name = linkSection.text;
-          list.push({
-            name,
-            imageUrl,
-            link,
-          });
+          list.push({ name, imageUrl, link });
         }
       } else {
         hasNextPage = false;
@@ -68,170 +65,221 @@ const watchtowerSources = [
     async getPopular(page) {
       var start = (page - 1) * 25;
       var limit = start + 25;
-
       var category = "";
       var pop = this.getPreference("animegg_popular_category");
       switch (pop) {
-        case 1: {
-          category = "sortBy=createdAt&sortDirection=DESC&";
-          break;
-        }
-        case 2: {
-          category = "ongoing=true&";
-          break;
-        }
-        case 3: {
-          category = "ongoing=false&";
-          break;
-        }
-        case 4: {
-          category = "sortBy=sortLetter&sortDirection=ASC&";
-          break;
-        }
+        case 1: category = "sortBy=createdAt&sortDirection=DESC&"; break;
+        case 2: category = "ongoing=true&"; break;
+        case 3: category = "ongoing=false&"; break;
+        case 4: category = "sortBy=sortLetter&sortDirection=ASC&"; break;
       }
       var slug = `/popular-series?${category}start=${start}&limit=${limit}`;
       return await this.fetchPopularnLatest(slug);
     }
-    get supportsLatest() {
-      throw new Error("supportsLatest not implemented");
-    }
+
+    get supportsLatest() { return true; }
+
     async getLatestUpdates(page) {
       var start = (page - 1) * 25;
       var limit = start + 25;
-
       var slug = `/releases?start=${start}&limit=${limit}`;
       return await this.fetchPopularnLatest(slug);
     }
+
     async search(query, page, filters) {
-      var slug = `/search?q=${query}`;
+      var slug = `/search?q=${encodeURIComponent(query)}`;
       var body = await this.request(slug);
       var items = body.select(".moose.page > a");
+      if (!items || items.length === 0) items = body.select(".anime-list a");
+      if (!items || items.length === 0) items = body.select(".search-result a");
       var list = [];
       for (var item of items) {
-        var imageUrl = item.selectFirst("img").getSrc;
-        var link = item.getHref;
-        var name = item.selectFirst("h2").text;
-        list.push({
-          name,
-          imageUrl,
-          link,
-        });
+        try {
+          var imageUrl = item.selectFirst("img") ? item.selectFirst("img").getSrc : "";
+          var link = item.getHref;
+          var nameEl = item.selectFirst("h2") || item.selectFirst(".title") || item.selectFirst("span");
+          var name = nameEl ? nameEl.text : item.text;
+          if (name && name.trim()) list.push({ name: name.trim(), imageUrl, link });
+        } catch(e) {}
       }
-
       return { list, hasNextPage: false };
     }
 
     statusCode(status) {
-      return (
-        {
-          Ongoing: 0,
-          Completed: 1,
-        }[status] ?? 5
-      );
+      return ({ Ongoing: 0, Completed: 1 }[status] ?? 5);
     }
 
     async getDetail(url) {
       var baseUrl = this.source.baseUrl;
       var slug = url.replace(baseUrl, "");
       var link = baseUrl + slug;
-
       var body = await this.request(slug);
+      var html = await this.requestText(slug);
 
       var media = body.selectFirst(".media");
-      var title = media.selectFirst("h1").text;
-      var spans = media.selectFirst("p.infoami").select("span");
-      var statusText = spans[spans.length - 1].text.replace("Status: ", "");
+      var title = media ? media.selectFirst("h1").text : (body.selectFirst("h1") ? body.selectFirst("h1").text : "");
+      var statusText = "";
+      try {
+        var spans = media ? media.selectFirst("p.infoami").select("span") : [];
+        if (spans && spans.length) statusText = spans[spans.length - 1].text.replace("Status: ", "");
+      } catch(e) {}
       var status = this.statusCode(statusText);
 
-      var tagscat = media.select(".tagscat > li");
+      var tagscat = body.select(".tagscat > li");
       var genre = [];
-      tagscat.forEach((tag) => genre.push(tag.text));
-      var description = body.selectFirst("p.ptext").text;
+      if (tagscat) tagscat.forEach((tag) => genre.push(tag.text));
+
+      var description = "";
+      try {
+        description = body.selectFirst("p.ptext") ? body.selectFirst("p.ptext").text : "";
+      } catch(e) {}
+
       var chapters = [];
 
-      var episodesList = body.select(".newmanga > li");
-      if (!episodesList || episodesList.length === 0) episodesList = body.select(".ep-list > li");
-      if (!episodesList || episodesList.length === 0) episodesList = body.select(".episodes-list > li");
-      if (!episodesList || episodesList.length === 0) episodesList = body.select("ul.episodes > li");
+      // ── Strategy 1: Try all known selector patterns ──
+      const selectors = [
+        ".newmanga > li",
+        ".ep-list > li",
+        ".episodes-list > li",
+        "ul.episodes > li",
+        ".episode-list > li",
+        ".eps-list > li",
+        ".episode_list li",
+        ".episodes li",
+        ".ep_list li",
+        "ul.episode-list li",
+        "#episode-list li",
+        ".ep-box li",
+        ".animegg-episodes li",
+        ".ep-container li",
+        "li.ep-item",
+        "li.episode",
+        ".anime-episodes li",
+      ];
 
-      episodesList.forEach((ep) => {
+      var episodesList = null;
+      for (const sel of selectors) {
         try {
-          var epTitleEl = ep.selectFirst("i.anititle");
-          var epTitle = epTitleEl ? epTitleEl.text : "";
-          var strongEl = ep.selectFirst("strong");
-          var epNumber = strongEl ? strongEl.text.replace(title, "Episode") : "";
-          var epName = (epNumber && epTitle && epNumber !== epTitle)
-            ? `${epNumber} - ${epTitle}`
-            : (epNumber || epTitle || "Episode");
-          var aEl = ep.selectFirst("a");
-          var epUrl = aEl ? aEl.getHref : null;
-          if (!epUrl) return;
-          if (!epUrl.startsWith("http")) epUrl = baseUrl + epUrl;
+          const found = body.select(sel);
+          if (found && found.length > 0) {
+            episodesList = found;
+            break;
+          }
+        } catch(e) {}
+      }
 
-          var scanlator = "";
-          var type = ep.select("span.btn-xs");
-          if (type && type.length) type.forEach((t) => { scanlator += t.text + ", "; });
-          scanlator = scanlator.slice(0, -2);
+      if (episodesList && episodesList.length > 0) {
+        episodesList.forEach((ep) => {
+          try {
+            var epTitleEl = ep.selectFirst("i.anititle") || ep.selectFirst(".ep-title") || ep.selectFirst("span.title");
+            var epTitle = epTitleEl ? epTitleEl.text.trim() : "";
+            var strongEl = ep.selectFirst("strong") || ep.selectFirst(".ep-num");
+            var epNumber = strongEl ? strongEl.text.replace(title, "Episode").trim() : "";
+            var epName = (epNumber && epTitle && epNumber !== epTitle)
+              ? `${epNumber} - ${epTitle}`
+              : (epNumber || epTitle || "");
+            var aEl = ep.selectFirst("a");
+            if (!aEl) return;
+            var epUrl = aEl.getHref;
+            if (!epUrl) return;
+            if (!epUrl.startsWith("http")) epUrl = baseUrl + epUrl;
+            if (!epName) epName = aEl.text.trim() || `Episode`;
 
-          chapters.push({ name: epName, url: epUrl, scanlator });
-        } catch (e) {
-          // Skip malformed episode entry
+            var scanlator = "";
+            var type = ep.select("span.btn-xs");
+            if (type && type.length) type.forEach((t) => { scanlator += t.text + ", "; });
+            scanlator = scanlator.slice(0, -2);
+
+            chapters.push({ name: epName, url: epUrl, scanlator });
+          } catch (e) {}
+        });
+      }
+
+      // ── Strategy 2: regex fallback on raw HTML ──
+      if (chapters.length === 0) {
+        const seen = new Set([link, url]);
+        // Match any internal animegg.org link that looks like an episode page
+        const epPatterns = [
+          // /series-name/episode-X or /watch/X
+          /<a[^>]+href="(https?:\/\/(?:www\.)?animegg\.org\/[^"#\s]{5,})"[^>]*>([\s\S]{0,300}?)<\/a>/gi,
+          // relative links
+          /<a[^>]+href="(\/[^"#\s]{5,})"[^>]*>([\s\S]{0,300}?)<\/a>/gi,
+        ];
+        for (const re of epPatterns) {
+          re.lastIndex = 0;
+          let m;
+          while ((m = re.exec(html)) !== null) {
+            let epUrl = m[1];
+            if (!epUrl.startsWith("http")) epUrl = baseUrl + epUrl;
+            if (seen.has(epUrl)) continue;
+            // Only accept URLs that look like episode pages (contain /episode, /ep-, /watch, numbers)
+            if (!/\/(?:episode|ep[-_\d]|watch\/?\d)/i.test(epUrl) && !/\/\d+[/-]/.test(epUrl)) continue;
+            seen.add(epUrl);
+            const raw = m[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+            const epName = raw || `Episode`;
+            chapters.push({ name: epName, url: epUrl, scanlator: "" });
+          }
+          if (chapters.length > 0) break;
         }
-      });
+      }
+
+      // ── Strategy 3: look for episode select/option elements ──
+      if (chapters.length === 0) {
+        const optRe = /<option[^>]+value="([^"#\s]{5,})"[^>]*>([\s\S]{0,100}?)<\/option>/gi;
+        let m;
+        while ((m = optRe.exec(html)) !== null) {
+          let epUrl = m[1];
+          if (!epUrl.startsWith("http") && epUrl.startsWith("/")) epUrl = baseUrl + epUrl;
+          if (!epUrl.startsWith("http")) continue;
+          const raw = m[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+          if (/episode|ep\s*\d|\d/i.test(raw)) {
+            chapters.push({ name: raw, url: epUrl, scanlator: "" });
+          }
+        }
+      }
 
       return { description, status, genre, chapters, link };
     }
 
     async exxtractStreams(div, audio) {
-      var slug = div.selectFirst("iframe").getSrc;
-      var streams = [];
-      if (slug.length < 1) {
-        return streams;
-      }
-      var body = await this.requestText(slug);
-      var sKey = "var videoSources = ";
-      var eKey = "var httpProtocol";
-      var start = body.indexOf(sKey) + sKey.length;
-      var end = body.indexOf(eKey) - 8;
-      var videoSourcesStr = body.substring(start, end);
-      let videoSources = eval("(" + videoSourcesStr + ")");
-      var headers = this.getHeaders();
-      videoSources.forEach((videoSource) => {
-        var url = this.source.baseUrl + videoSource.file;
-        var quality = `${videoSource.label} - ${audio}`;
-
-        streams.push({
-          url,
-          originalUrl: url,
-          quality,
-          headers,
+      if (!div) return [];
+      try {
+        var slug = div.selectFirst("iframe").getSrc;
+        var streams = [];
+        if (!slug || slug.length < 1) return streams;
+        if (!slug.startsWith("http")) slug = this.source.baseUrl + slug;
+        var body = await this.requestText(slug);
+        var sKey = "var videoSources = ";
+        var eKey = "var httpProtocol";
+        var start = body.indexOf(sKey) + sKey.length;
+        var end = body.indexOf(eKey) - 8;
+        if (start < sKey.length || end < 0) return streams;
+        var videoSourcesStr = body.substring(start, end);
+        let videoSources = eval("(" + videoSourcesStr + ")");
+        var headers = this.getHeaders();
+        videoSources.forEach((videoSource) => {
+          var url = this.source.baseUrl + videoSource.file;
+          var quality = `${videoSource.label} - ${audio}`;
+          streams.push({ url, originalUrl: url, quality, headers });
         });
-      });
-      return streams.reverse();
+        return streams.reverse();
+      } catch(e) { return []; }
     }
 
     async getVideoList(url) {
       var body = await this.request(url);
-
       var sub = body.selectFirst("#subbed-Animegg");
       var subStreams = await this.exxtractStreams(sub, "Sub");
-
       var dub = body.selectFirst("#dubbed-Animegg");
       var dubStreams = await this.exxtractStreams(dub, "Dub");
-
       var raw = body.selectFirst("#raw-Animegg");
       var rawStreams = await this.exxtractStreams(raw, "Raw");
 
       var pref = this.getPreference("animegg_stream_type_1");
       var streams = [];
-      if (pref == 0) {
-        streams = [...subStreams, ...dubStreams, ...rawStreams];
-      } else if (pref == 1) {
-        streams = [...dubStreams, ...subStreams, ...rawStreams];
-      } else {
-        streams = [...rawStreams, ...subStreams, ...dubStreams];
-      }
-
+      if (pref == 0) streams = [...subStreams, ...dubStreams, ...rawStreams];
+      else if (pref == 1) streams = [...dubStreams, ...subStreams, ...rawStreams];
+      else streams = [...rawStreams, ...subStreams, ...dubStreams];
       return streams;
     }
 
@@ -243,13 +291,7 @@ const watchtowerSources = [
             title: "Preferred popular category",
             summary: "",
             valueIndex: 0,
-            entries: [
-              "Popular",
-              "Newest",
-              "Ongoing",
-              "Completed",
-              "Alphabetical",
-            ],
+            entries: ["Popular", "Newest", "Ongoing", "Completed", "Alphabetical"],
             entryValues: ["0", "1", "2", "3", "4"],
           },
         },
@@ -266,4 +308,3 @@ const watchtowerSources = [
       ];
     }
   }
-  
