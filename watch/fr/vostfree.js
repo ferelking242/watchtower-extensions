@@ -6,8 +6,8 @@ const watchtowerSources = [{
       "apiUrl": "https://vostfree.ws",
       "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.vostfree.png",
       "typeSource": "single",
-      "itemType": 2,
-      "version": "0.1.6",
+      "itemType": 1,
+      "version": "0.1.7",
       "pkgPath": "watch/fr/vostfree.js",
       "editableBaseUrl": true,
       "customUserAgent": "",
@@ -32,7 +32,7 @@ const watchtowerSources = [{
 
       _parse(html) {
           const list = []; const seen = new Set();
-          const re = /<a[^>]+href="(https?:\/\/vostfree\.[^/]+\/[0-9]+-[^"]+\.html)"[^>]*>[\s\S]{0,500}<img[^>]+src="([^"]+)"[^>]+alt="([^"]{2,})"/gi;
+          const re = /<a[^>]+href="(https?:\/\/vostfree\.[^/\s"#]+\/[0-9][^"\s#]{3,})"[^>]*>[\s\S]{0,500}<img[^>]+src="([^"]+)"[^>]+alt="([^"]{2,})"/gi;
           let m;
           while ((m = re.exec(html)) !== null) {
               if (seen.has(m[1])) continue; seen.add(m[1]);
@@ -92,24 +92,63 @@ const watchtowerSources = [{
           let imageUrl = imgM ? imgM[1] : "";
           if (imageUrl && imageUrl.startsWith("/")) imageUrl = `${this.baseUrl}${imageUrl}`;
 
-          // Episodes: match any .html link on the vostfree domain.
-          // Using [\s\S]{3,300}? to capture inner content even when link text has nested HTML tags,
-          // then strip the tags to get clean plain text.
           const episodes = [];
-          const epRe = /<a[^>]+href="(https?:\/\/vostfree\.[^/"#]+\/[^"#]{5,}\.html)"[^>]*>([\s\S]{3,300}?)<\/a>/gi;
           const seen = new Set([url]);
-          let m;
-          while ((m = epRe.exec(html)) !== null) {
-              if (seen.has(m[1])) continue; seen.add(m[1]);
-              const epUrl = m[1];
-              const epName = m[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-              if (!epName || epName.length < 2 || epName.length >= 80 || epName.includes("<")) continue;
-              if (/\d/.test(epName) || /episode|\u00e9pisode|saison/i.test(epName)) {
-                  episodes.push({ name: epName, url: epUrl, dateUpload: "" });
+
+          // ── Strategy 1: match any vostfree internal link (with OR without .html) ──
+          // Covers /1234-show-episode-X.html AND /show/episode/X/ AND /saison-X-episode-Y/
+          const patterns = [
+              // numbered slug with .html (classic vostfree format)
+              /<a[^>]+href="(https?:\/\/vostfree\.[^/"#\s]+\/\d[^"#\s]{3,}\.html)"[^>]*>([\s\S]{0,400}?)<\/a>/gi,
+              // numbered slug without extension
+              /<a[^>]+href="(https?:\/\/vostfree\.[^/"#\s]+\/\d[^"#\s]{3,})"[^>]*>([\s\S]{0,400}?)<\/a>/gi,
+              // /episode/ or /saison/ in path
+              /<a[^>]+href="((?:https?:\/\/vostfree\.[^/"#\s]+)?\/[^"#\s]*(?:episode|saison|ep-)[^"#\s]*)"[^>]*>([\s\S]{0,400}?)<\/a>/gi,
+          ];
+
+          for (const re of patterns) {
+              re.lastIndex = 0;
+              let m;
+              while ((m = re.exec(html)) !== null) {
+                  let epUrl = m[1];
+                  if (!epUrl.startsWith("http")) epUrl = `${this.baseUrl}${epUrl}`;
+                  if (seen.has(epUrl)) continue;
+                  seen.add(epUrl);
+                  // strip inner HTML tags
+                  const raw = m[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+                  if (!raw || raw.length === 0 || raw.length > 120) continue;
+                  // Accept: has a digit, OR contains episode/saison keyword, OR URL has episode/saison
+                  const urlHasEp = /episode|saison|ep[-_\d]/i.test(epUrl);
+                  const textOk = /\d/.test(raw) || /episode|\u00e9pisode|saison|ep\b/i.test(raw);
+                  if (textOk || urlHasEp) {
+                      episodes.push({ name: raw, url: epUrl, dateUpload: "" });
+                  }
+              }
+              if (episodes.length > 0) break;
+          }
+
+          // ── Strategy 2: look for episode links inside known list containers ──
+          if (episodes.length === 0) {
+              const containerRe = /class="[^"]*(?:episodes?|episode-list|list-eps|ep-list|newmanga)[^"]*"[^>]*>([\s\S]{0,20000}?)<\/(?:div|ul|ol|section)>/gi;
+              let cm;
+              while ((cm = containerRe.exec(html)) !== null) {
+                  const block = cm[1];
+                  const linkRe = /<a[^>]+href="([^"#]{5,})"[^>]*>([\s\S]{0,200}?)<\/a>/gi;
+                  let lm;
+                  while ((lm = linkRe.exec(block)) !== null) {
+                      let epUrl = lm[1];
+                      if (!epUrl.startsWith("http")) epUrl = `${this.baseUrl}${epUrl}`;
+                      if (seen.has(epUrl)) continue;
+                      seen.add(epUrl);
+                      const raw = lm[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+                      if (!raw || raw.length > 120) continue;
+                      episodes.push({ name: raw || `Episode`, url: epUrl, dateUpload: "" });
+                  }
+                  if (episodes.length > 0) break;
               }
           }
 
-          // Fallback: the film/anime URL itself counts as a single episode
+          // ── Fallback for films (single episode) ──
           if (episodes.length === 0) {
               const titleForEp = name || url.split("/").pop().replace(/-/g, " ").replace(/\.html$/, "").trim();
               episodes.push({ name: titleForEp || "Regarder", url, dateUpload: "" });
@@ -197,4 +236,3 @@ const watchtowerSources = [{
           ];
       }
   }
-  
