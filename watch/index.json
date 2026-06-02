@@ -534,7 +534,7 @@
     "hasCloudflare": false,
     "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/fr/vostfree.js",
     "apiUrl": "https://vostfree.ws",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
