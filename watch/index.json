@@ -93,7 +93,7 @@
     ]
   },
   {
-    "name": "Ã¥Â°ÂÃ§Â±Â³UCÃ¨ÂµÂÃ¦ÂºÂÃ§Â«Â",
+    "name": "ÃÂ¥ÃÂ°ÃÂÃÂ§ÃÂ±ÃÂ³UCÃÂ¨ÃÂµÃÂÃÂ¦ÃÂºÃÂÃÂ§ÃÂ«ÃÂ",
     "id": 143878436,
     "baseUrl": "http://www.mucpan.cc",
     "lang": "zh",
@@ -138,7 +138,7 @@
     "notes": ""
   },
   {
-    "name": "Ã¨ÂÂÃ¦ÂÂÃ¨Â®Â¡Ã¥ÂÂ (Mikan Project)",
+    "name": "ÃÂ¨ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ¨ÃÂ®ÃÂ¡ÃÂ¥ÃÂÃÂ (Mikan Project)",
     "id": 148739201,
     "baseUrl": "https://mikanani.me",
     "lang": "zh",
@@ -238,7 +238,7 @@
     "hasCloudflare": false,
     "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/en/animegg.js",
     "apiUrl": "",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -370,7 +370,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Page d'accueil rÃÂ©elle : /a8634js/home/dotriv",
+    "notes": "Page d'accueil rÃÂÃÂ©elle : /a8634js/home/dotriv",
     "editableBaseUrl": true,
     "customUserAgent": "",
     "videoQualities": [
@@ -388,7 +388,7 @@
     "realHomePath": "/a8634js/home/dotriv"
   },
   {
-    "name": "Ã¦Â¨Â±Ã¨ÂÂ±Ã¥ÂÂ¨Ã¦Â¼Â« (YHDM)",
+    "name": "ÃÂ¦ÃÂ¨ÃÂ±ÃÂ¨ÃÂÃÂ±ÃÂ¥ÃÂÃÂ¨ÃÂ¦ÃÂ¼ÃÂ« (YHDM)",
     "id": 365809124,
     "baseUrl": "https://www.yhdmp.cc",
     "lang": "zh",
@@ -985,7 +985,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Streaming d'animes en franÃÂ§ais avec sous-titres et VF.",
+    "notes": "Streaming d'animes en franÃÂÃÂ§ais avec sous-titres et VF.",
     "editableBaseUrl": true,
     "customUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
     "videoQualities": [
@@ -1066,7 +1066,7 @@
     "notes": ""
   },
   {
-    "name": "AnimeFÃÂ©nix",
+    "name": "AnimeFÃÂÃÂ©nix",
     "id": 750391210,
     "baseUrl": "https://www3.animefenix.tv",
     "lang": "es",
@@ -1089,7 +1089,7 @@
     "isObsolete": false
   },
   {
-    "name": "360Ã¨ÂµÂÃ¦ÂºÂ",
+    "name": "360ÃÂ¨ÃÂµÃÂÃÂ¦ÃÂºÃÂ",
     "id": 750729164,
     "baseUrl": "https://360zy.com",
     "lang": "zh",
@@ -1147,7 +1147,7 @@
     ]
   },
   {
-    "name": "Ã¦Â¨Â±Ã¨ÂÂ±Ã¥ÂÂ¨Ã¦Â¼Â«",
+    "name": "ÃÂ¦ÃÂ¨ÃÂ±ÃÂ¨ÃÂÃÂ±ÃÂ¥ÃÂÃÂ¨ÃÂ¦ÃÂ¼ÃÂ«",
     "id": 781484038,
     "baseUrl": "http://www.iyinghua.com",
     "lang": "zh",
@@ -1358,7 +1358,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "9AnimeTv Ã¢ÂÂ Anime streaming"
+    "notes": "9AnimeTv ÃÂ¢ÃÂÃÂ Anime streaming"
   },
   {
     "name": "Kaido",
@@ -1463,7 +1463,7 @@
     "notes": ""
   },
   {
-    "name": "Ã¨ÂÂÃ¦ÂÂÃ¨Â®Â¡Ã¥ÂÂ",
+    "name": "ÃÂ¨ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ¨ÃÂ®ÃÂ¡ÃÂ¥ÃÂÃÂ",
     "id": 1032743453,
     "baseUrl": "https://mikanani.me",
     "lang": "zh",
@@ -1801,7 +1801,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "FlixGaze.com Ã¢ÂÂ Free Movies & TV Series streaming via ZeusDL HLS"
+    "notes": "FlixGaze.com ÃÂ¢ÃÂÃÂ Free Movies & TV Series streaming via ZeusDL HLS"
   },
   {
     "name": "LokLok / MovieBox",
@@ -1826,7 +1826,7 @@
     "notes": "Free movies + TV series streaming, captions in 12 languages. Backed by aoneroom (LokLok / MovieBox / themoviebox.xyz)."
   },
   {
-    "name": "MovieBox Ã¢ÂÂ Movies",
+    "name": "MovieBox ÃÂ¢ÃÂÃÂ Movies",
     "id": 1800000030,
     "baseUrl": "https://h5.aoneroom.com",
     "lang": "multi",
@@ -1848,7 +1848,7 @@
     "notes": "Free movies streaming. aoneroom.com API (MovieBox / themoviebox.xyz). HLS CloudFront CDN."
   },
   {
-    "name": "MovieBox Ã¢ÂÂ TV Series",
+    "name": "MovieBox ÃÂ¢ÃÂÃÂ TV Series",
     "id": 1800000031,
     "baseUrl": "https://h5.aoneroom.com",
     "lang": "multi",
@@ -1870,7 +1870,7 @@
     "notes": "Free TV series streaming. aoneroom.com API. Subtitles in 12 languages."
   },
   {
-    "name": "MovieBox Ã¢ÂÂ Anime",
+    "name": "MovieBox ÃÂ¢ÃÂÃÂ Anime",
     "id": 1800000032,
     "baseUrl": "https://h5.aoneroom.com",
     "lang": "en",
@@ -1892,7 +1892,7 @@
     "notes": "Free anime streaming via MovieBox (aoneroom.com). Subtitles EN/JP and more."
   },
   {
-    "name": "MovieBox Ã¢ÂÂ Music",
+    "name": "MovieBox ÃÂ¢ÃÂÃÂ Music",
     "id": 1800000033,
     "baseUrl": "https://h5.aoneroom.com",
     "lang": "multi",
@@ -1914,7 +1914,7 @@
     "notes": "Music videos and albums from MovieBox (aoneroom.com). HLS streams."
   },
   {
-    "name": "MovieBox Ã¢ÂÂ Live Sports",
+    "name": "MovieBox ÃÂ¢ÃÂÃÂ Live Sports",
     "id": 1800000034,
     "baseUrl": "https://h5.aoneroom.com",
     "lang": "multi",
@@ -1936,7 +1936,7 @@
     "notes": "Live sports events and highlights from MovieBox (aoneroom.com)."
   },
   {
-    "name": "MovieBox Ã¢ÂÂ All",
+    "name": "MovieBox ÃÂ¢ÃÂÃÂ All",
     "id": 1800000035,
     "baseUrl": "https://h5.aoneroom.com",
     "lang": "multi",
@@ -2021,7 +2021,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "ChaÃÂ®ne franÃÂ§aise gratuite. Films, courts mÃÂ©trages, sÃÂ©ries, docs, jeunesse, sport. Francophonie worldwide."
+    "notes": "ChaÃÂÃÂ®ne franÃÂÃÂ§aise gratuite. Films, courts mÃÂÃÂ©trages, sÃÂÃÂ©ries, docs, jeunesse, sport. Francophonie worldwide."
   },
   {
     "name": "Short of the Week",
@@ -2266,7 +2266,7 @@
     "notes": ""
   },
   {
-    "name": "AnimeFÃÂ©nix",
+    "name": "AnimeFÃÂÃÂ©nix",
     "id": 1800002039,
     "baseUrl": "https://www3.animefenix.tv",
     "lang": "es",
@@ -2505,7 +2505,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "Eporner",
@@ -2527,7 +2527,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "PornHub",
@@ -2549,7 +2549,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "RedTube",
@@ -2571,7 +2571,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "SpankBang",
@@ -2593,7 +2593,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "TNAFlix",
@@ -2615,7 +2615,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "Tube8",
@@ -2637,7 +2637,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "TXXX",
@@ -2659,7 +2659,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "xHamster",
@@ -2681,7 +2681,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "XNXX",
@@ -2725,7 +2725,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "YouPorn",
@@ -2747,7 +2747,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "123AV",
@@ -2816,7 +2816,7 @@
     "notes": ""
   },
   {
-    "name": "360Ã¨ÂµÂÃ¦ÂºÂ",
+    "name": "360ÃÂ¨ÃÂµÃÂÃÂ¦ÃÂºÃÂ",
     "id": 1800002064,
     "baseUrl": "https://360zy.com",
     "lang": "zh",
@@ -2838,7 +2838,7 @@
     "notes": ""
   },
   {
-    "name": "Ã¥Â°ÂÃ§Â±Â³UCÃ¨ÂµÂÃ¦ÂºÂÃ§Â«Â",
+    "name": "ÃÂ¥ÃÂ°ÃÂÃÂ§ÃÂ±ÃÂ³UCÃÂ¨ÃÂµÃÂÃÂ¦ÃÂºÃÂÃÂ§ÃÂ«ÃÂ",
     "id": 1800002065,
     "baseUrl": "http://www.mucpan.cc",
     "lang": "zh",
@@ -2994,7 +2994,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "AsiansGoneWild Ã¢ÂÂ amateur Asian adult videos"
+    "notes": "AsiansGoneWild ÃÂ¢ÃÂÃÂ amateur Asian adult videos"
   },
   {
     "name": "Beeg",
@@ -3016,7 +3016,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "Eporner",
@@ -3038,7 +3038,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "FlixGaze",
@@ -3060,7 +3060,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "FlixGaze.com Ã¢ÂÂ Free Movies & TV Series streaming via ZeusDL HLS"
+    "notes": "FlixGaze.com ÃÂ¢ÃÂÃÂ Free Movies & TV Series streaming via ZeusDL HLS"
   },
   {
     "name": "JuicyAsians",
@@ -3082,7 +3082,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JuicyAsians Ã¢ÂÂ Asian amateur and professional porn"
+    "notes": "JuicyAsians ÃÂ¢ÃÂÃÂ Asian amateur and professional porn"
   },
   {
     "name": "LokLok / MovieBox",
@@ -3126,7 +3126,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "RedTube",
@@ -3148,7 +3148,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "SpankBang",
@@ -3170,7 +3170,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "TNAFlix",
@@ -3192,7 +3192,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "Tube8",
@@ -3214,7 +3214,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "TXXX",
@@ -3236,7 +3236,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "xHamster",
@@ -3258,7 +3258,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "XNXX",
@@ -3302,7 +3302,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "YouPorn",
@@ -3324,7 +3324,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) Ã¢ÂÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
   },
   {
     "name": "7MMTV",
@@ -3346,7 +3346,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "7MMTV Ã¢ÂÂ censored and uncensored JAV online"
+    "notes": "7MMTV ÃÂ¢ÃÂÃÂ censored and uncensored JAV online"
   },
   {
     "name": "ABJav",
@@ -3368,7 +3368,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "ABJav Ã¢ÂÂ uncensored and censored JAV streaming"
+    "notes": "ABJav ÃÂ¢ÃÂÃÂ uncensored and censored JAV streaming"
   },
   {
     "name": "AVPorner",
@@ -3390,7 +3390,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "AV porn streaming Ã¢ÂÂ Japanese and Asian content"
+    "notes": "AV porn streaming ÃÂ¢ÃÂÃÂ Japanese and Asian content"
   },
   {
     "name": "BestJapanesePornTV",
@@ -3412,7 +3412,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "BestJapanesePornTV Ã¢ÂÂ curated Japanese porn streaming"
+    "notes": "BestJapanesePornTV ÃÂ¢ÃÂÃÂ curated Japanese porn streaming"
   },
   {
     "name": "BestJavPorn",
@@ -3434,7 +3434,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Best JAV Porn Ã¢ÂÂ free Japanese adult videos"
+    "notes": "Best JAV Porn ÃÂ¢ÃÂÃÂ free Japanese adult videos"
   },
   {
     "name": "JapanWhores",
@@ -3456,7 +3456,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JapanWhores Ã¢ÂÂ free Japanese porn tube"
+    "notes": "JapanWhores ÃÂ¢ÃÂÃÂ free Japanese porn tube"
   },
   {
     "name": "JAVBestTV",
@@ -3478,7 +3478,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVBestTV Ã¢ÂÂ best quality JAV streaming"
+    "notes": "JAVBestTV ÃÂ¢ÃÂÃÂ best quality JAV streaming"
   },
   {
     "name": "JAVBraze",
@@ -3500,7 +3500,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVBraze Ã¢ÂÂ Japanese AV streaming"
+    "notes": "JAVBraze ÃÂ¢ÃÂÃÂ Japanese AV streaming"
   },
   {
     "name": "JAVComCo",
@@ -3522,7 +3522,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVComCo Ã¢ÂÂ JAV streaming and download portal"
+    "notes": "JAVComCo ÃÂ¢ÃÂÃÂ JAV streaming and download portal"
   },
   {
     "name": "JAVDoe",
@@ -3544,7 +3544,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAV free streaming Ã¢ÂÂ Japanese porn HD"
+    "notes": "JAV free streaming ÃÂ¢ÃÂÃÂ Japanese porn HD"
   },
   {
     "name": "JAVFun",
@@ -3566,7 +3566,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVFun Ã¢ÂÂ free Japanese adult video streaming"
+    "notes": "JAVFun ÃÂ¢ÃÂÃÂ free Japanese adult video streaming"
   },
   {
     "name": "JAVGiga",
@@ -3588,7 +3588,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVGiga Ã¢ÂÂ free JAV streaming online"
+    "notes": "JAVGiga ÃÂ¢ÃÂÃÂ free JAV streaming online"
   },
   {
     "name": "JAV.guru",
@@ -3610,7 +3610,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAV WordPress site Ã¢ÂÂ Japanese AV streaming"
+    "notes": "JAV WordPress site ÃÂ¢ÃÂÃÂ Japanese AV streaming"
   },
   {
     "name": "JAVHDToday",
@@ -3632,7 +3632,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVHDToday Ã¢ÂÂ high definition JAV streaming"
+    "notes": "JAVHDToday ÃÂ¢ÃÂÃÂ high definition JAV streaming"
   },
   {
     "name": "JAVKing",
@@ -3654,7 +3654,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVKing Ã¢ÂÂ free Japanese AV streaming"
+    "notes": "JAVKing ÃÂ¢ÃÂÃÂ free Japanese AV streaming"
   },
   {
     "name": "JAVLeak",
@@ -3676,7 +3676,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVLeak Ã¢ÂÂ JAV HD streaming, Japanese porn movies"
+    "notes": "JAVLeak ÃÂ¢ÃÂÃÂ JAV HD streaming, Japanese porn movies"
   },
   {
     "name": "JAVMost",
@@ -3720,7 +3720,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVsb Ã¢ÂÂ Japanese adult video streaming"
+    "notes": "JAVsb ÃÂ¢ÃÂÃÂ Japanese adult video streaming"
   },
   {
     "name": "JAVTasty",
@@ -3742,7 +3742,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVTasty Ã¢ÂÂ free Japanese porn streaming"
+    "notes": "JAVTasty ÃÂ¢ÃÂÃÂ free Japanese porn streaming"
   },
   {
     "name": "JAVWine",
@@ -3764,7 +3764,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVWine Ã¢ÂÂ curated Japanese AV streaming"
+    "notes": "JAVWine ÃÂ¢ÃÂÃÂ curated Japanese AV streaming"
   },
   {
     "name": "KissJAV",
@@ -3786,7 +3786,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Kiss JAV Ã¢ÂÂ free Japanese AV streaming"
+    "notes": "Kiss JAV ÃÂ¢ÃÂÃÂ free Japanese AV streaming"
   },
   {
     "name": "MaxJav",
@@ -3808,7 +3808,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "MaxJav Ã¢ÂÂ free JAV streaming"
+    "notes": "MaxJav ÃÂ¢ÃÂÃÂ free JAV streaming"
   },
   {
     "name": "MissAV",
@@ -3830,7 +3830,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAV streaming Ã¢ÂÂ content always Japanese, multi-language UI"
+    "notes": "JAV streaming ÃÂ¢ÃÂÃÂ content always Japanese, multi-language UI"
   },
   {
     "name": "MyThav",
@@ -3852,7 +3852,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "MyThav Ã¢ÂÂ JAV streaming portal"
+    "notes": "MyThav ÃÂ¢ÃÂÃÂ JAV streaming portal"
   },
   {
     "name": "NJAV",
@@ -3874,7 +3874,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "NJAV Ã¢ÂÂ HD JAV streaming, multi-language (en/ja/zh)"
+    "notes": "NJAV ÃÂ¢ÃÂÃÂ HD JAV streaming, multi-language (en/ja/zh)"
   },
   {
     "name": "RJAV",
@@ -3896,7 +3896,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "RJAV Ã¢ÂÂ Japanese AV streaming portal"
+    "notes": "RJAV ÃÂ¢ÃÂÃÂ Japanese AV streaming portal"
   },
   {
     "name": "SupJav",
@@ -3918,7 +3918,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAV streaming Ã¢ÂÂ subtitled Japanese AV"
+    "notes": "JAV streaming ÃÂ¢ÃÂÃÂ subtitled Japanese AV"
   },
   {
     "name": "TokyoMotion",
@@ -3940,7 +3940,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Japanese porn tube Ã¢ÂÂ TokyoMotion"
+    "notes": "Japanese porn tube ÃÂ¢ÃÂÃÂ TokyoMotion"
   },
   {
     "name": "VJav",
@@ -3984,7 +3984,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "ZeroJav Ã¢ÂÂ free JAV streaming, no registration"
+    "notes": "ZeroJav ÃÂ¢ÃÂÃÂ free JAV streaming, no registration"
   },
   {
     "name": "SexKBJ",
@@ -4006,7 +4006,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "SexKBJ Ã¢ÂÂ Korean BJ and Asian cam videos"
+    "notes": "SexKBJ ÃÂ¢ÃÂÃÂ Korean BJ and Asian cam videos"
   },
   {
     "name": "SexTB",
@@ -4028,7 +4028,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "SexTB Ã¢ÂÂ Korean adult and Asian videos"
+    "notes": "SexTB ÃÂ¢ÃÂÃÂ Korean adult and Asian videos"
   },
   {
     "name": "XKorean",
@@ -4050,7 +4050,7 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "XKorean Ã¢ÂÂ Korean adult videos and BJ content"
+    "notes": "XKorean ÃÂ¢ÃÂÃÂ Korean adult videos and BJ content"
   },
   {
     "name": "91Porn",
@@ -4072,6 +4072,6 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "91Porn Ã¢ÂÂ Chinese homemade and Asian amateur videos"
+    "notes": "91Porn ÃÂ¢ÃÂÃÂ Chinese homemade and Asian amateur videos"
   }
 ]
