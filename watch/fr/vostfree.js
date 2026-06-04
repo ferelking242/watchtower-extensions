@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.vostfree.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.8",
+    "version": "0.1.9",
     "pkgPath": "watch/fr/vostfree.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -31,18 +31,27 @@ class DefaultExtension extends MProvider {
         };
     }
 
-    // Parse listing pages — cards use .slider-poster with <a title="Name" href="URL"><img src>
+    // Parse listing pages — handles both relative and absolute hrefs, any attribute order
     _parseList(html) {
         const list = [];
         const seen = new Set();
-        const re = /<a\s+href="(https?:\/\/vostfree\.[^"]+\.html)"\s+title="([^"]{2,})"[^>]*>\s*<img[^>]+src="([^"]+)"/gi;
+        // Match anchor tags: extract attributes string then parse href+title independently
+        const anchorRe = /<a\b([^>]+)>[\s\S]{0,600}?<img\b[^>]*?\bsrc="([^"]+)"/gi;
         let m;
-        while ((m = re.exec(html)) !== null) {
-            if (seen.has(m[1])) continue;
-            seen.add(m[1]);
-            let imageUrl = m[3];
+        while ((m = anchorRe.exec(html)) !== null) {
+            const attrs = m[1];
+            const hrefM = attrs.match(/\bhref="([^"]+\.html)"/i);
+            const titleM = attrs.match(/\btitle="([^"]{2,})"/i);
+            if (!hrefM || !titleM) continue;
+            let link = hrefM[1];
+            if (link.startsWith("/")) link = `${this.baseUrl}${link}`;
+            else if (!link.startsWith("http")) link = `${this.baseUrl}/${link}`;
+            if (seen.has(link)) continue;
+            seen.add(link);
+            let imageUrl = m[2];
             if (imageUrl.startsWith("/")) imageUrl = `${this.baseUrl}${imageUrl}`;
-            list.push({ link: m[1], imageUrl, name: m[2].trim() });
+            else if (!imageUrl.startsWith("http")) imageUrl = `${this.baseUrl}/${imageUrl}`;
+            list.push({ link, imageUrl, name: titleM[1].trim() });
         }
         return list;
     }
@@ -50,13 +59,13 @@ class DefaultExtension extends MProvider {
     async getPopular(page) {
         const res = await this.client.get(`${this.baseUrl}/animes-vostfr/?page=${page}`, this._hdrs());
         const list = this._parseList(res.body);
-        return { list, hasNextPage: list.length >= 10 };
+        return { list, hasNextPage: list.length >= 8 };
     }
 
     async getLatestUpdates(page) {
         const res = await this.client.get(`${this.baseUrl}/?page=${page}`, this._hdrs());
         const list = this._parseList(res.body);
-        return { list, hasNextPage: list.length >= 10 };
+        return { list, hasNextPage: list.length >= 8 };
     }
 
     async search(query, page, filterList) {
@@ -68,7 +77,7 @@ class DefaultExtension extends MProvider {
         }
         const res = await this.client.get(`${this.baseUrl}/?search=${encodeURIComponent(query)}&page=${page}`, this._hdrs());
         const list = this._parseList(res.body);
-        return { list, hasNextPage: list.length >= 10 };
+        return { list, hasNextPage: list.length >= 8 };
     }
 
     async getDetail(url) {
@@ -90,13 +99,12 @@ class DefaultExtension extends MProvider {
         if (imageUrl && imageUrl.startsWith("/")) imageUrl = `${this.baseUrl}${imageUrl}`;
 
         // Episodes: parse <select class="new_player_selector"> options
-        // Each option: <option value="buttons_N">Episode N</option>
         const episodes = [];
         const optRe = /<option\s+value="(buttons_\d+)"[^>]*>([^<]+)<\/option>/g;
         let m;
         while ((m = optRe.exec(html)) !== null) {
-            const btnId = m[1];        // "buttons_1"
-            const epName = m[2].trim(); // "Episode 01"
+            const btnId = m[1];
+            const epName = m[2].trim();
             episodes.push({
                 name: epName,
                 url: `${url}#${btnId}`,
@@ -110,6 +118,54 @@ class DefaultExtension extends MProvider {
         }
 
         return { name, description, imageUrl, genres: [], status: 0, chapters: episodes };
+    }
+
+    // ── Video resolvers ──────────────────────────────────────────────────────────
+
+    async _resolveSibnet(videoId) {
+        try {
+            const embedUrl = `https://video.sibnet.ru/shell.php?videoid=${videoId}`;
+            const res = await this.client.get(embedUrl, {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                "Referer": `${this.baseUrl}/`
+            });
+            const html = res.body;
+            // player.src = [{"src": "/v/.../XXX.mp4", "type": "video/mp4"}]
+            const m = html.match(/player\.src\s*=\s*\[[\s\S]*?"src"\s*:\s*"([^"]+)"/);
+            if (m) {
+                const src = m[1];
+                return src.startsWith("http") ? src : `https://video.sibnet.ru${src}`;
+            }
+        } catch (_) {}
+        return null;
+    }
+
+    async _resolveUqload(embedId) {
+        try {
+            const embedUrl = `https://uqload.io/embed-${embedId}.html`;
+            const res = await this.client.get(embedUrl, {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                "Referer": "https://uqload.io/"
+            });
+            const html = res.body;
+            const m = html.match(/"file"\s*:\s*"(https?:[^"]+\.mp4[^"]*)"/);
+            if (m) return m[1];
+        } catch (_) {}
+        return null;
+    }
+
+    async _resolveMp4Upload(embedId) {
+        try {
+            const embedUrl = `https://www.mp4upload.com/embed-${embedId}.html`;
+            const res = await this.client.get(embedUrl, {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                "Referer": "https://www.mp4upload.com/"
+            });
+            const html = res.body;
+            const m = html.match(/"file"\s*:\s*"(https?:[^"]+\.mp4[^"]*)"/);
+            if (m) return m[1];
+        } catch (_) {}
+        return null;
     }
 
     async getVideoList(url) {
@@ -138,26 +194,33 @@ class DefaultExtension extends MProvider {
         if (!cm) return [];
         const content = cm[1].trim();
 
-        // Build video URL based on player type
-        let videoUrl = "";
+        // Build embed URL and resolve to direct video URL
+        let embedUrl = "";
+        let resolvedUrl = null;
+
         if (playerClass.includes("new_player_sibnet")) {
-            videoUrl = `https://video.sibnet.ru/shell.php?videoid=${content}`;
+            embedUrl = `https://video.sibnet.ru/shell.php?videoid=${content}`;
+            resolvedUrl = await this._resolveSibnet(content);
         } else if (playerClass.includes("new_player_uqload")) {
-            videoUrl = `https://uqload.io/embed-${content}.html`;
+            embedUrl = `https://uqload.io/embed-${content}.html`;
+            resolvedUrl = await this._resolveUqload(content);
         } else if (playerClass.includes("new_player_mp4")) {
-            videoUrl = `https://www.mp4upload.com/embed-${content}.html`;
+            embedUrl = `https://www.mp4upload.com/embed-${content}.html`;
+            resolvedUrl = await this._resolveMp4Upload(content);
         } else if (playerClass.includes("new_player_myvi")) {
-            videoUrl = `https://myvi.ru/player/embed/html/${content}`;
+            embedUrl = `https://myvi.ru/player/embed/html/${content}`;
         } else if (playerClass.includes("new_player_gtv")) {
-            videoUrl = `https://iframedream.com/embed/${content}.html`;
+            embedUrl = `https://iframedream.com/embed/${content}.html`;
         } else if (playerClass.includes("new_player_vip") || playerClass.includes("new_player_vidfast")) {
-            videoUrl = content.startsWith("http") ? content : `https:${content}`;
+            embedUrl = content.startsWith("http") ? content : `https:${content}`;
         } else {
-            videoUrl = content.startsWith("http") ? content : `https:${content}`;
+            embedUrl = content.startsWith("http") ? content : `https:${content}`;
         }
 
-        if (!videoUrl) return [];
-        return [{ url: videoUrl, quality: "VOSTFR", originalUrl: videoUrl }];
+        if (!embedUrl) return [];
+
+        const finalUrl = resolvedUrl || embedUrl;
+        return [{ url: finalUrl, quality: "VOSTFR", originalUrl: embedUrl }];
     }
 
     getFilterList() {
