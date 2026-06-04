@@ -9,7 +9,7 @@ const watchtowerSources = [
         "https://www.google.com/s2/favicons?sz=256&domain=https://www.animegg.org/",
       "typeSource": "single",
       "itemType": 1,
-      "version": "1.0.5",
+      "version": "1.0.6",
       "pkgPath": "anime/src/en/animegg.js"
     }
   ];
@@ -136,7 +136,7 @@ const watchtowerSources = [
 
       var chapters = [];
 
-      // ── Strategy 1: Try all known selector patterns ──
+      // ââ Strategy 1: Try all known selector patterns ââ
       const selectors = [
         ".newmanga > li",
         ".ep-list > li",
@@ -195,13 +195,13 @@ const watchtowerSources = [
         });
       }
 
-      // ── Strategy 2: regex fallback on raw HTML ──
+      // ââ Strategy 2: regex fallback on raw HTML ââ
       if (chapters.length === 0) {
         const seen = new Set([link, url]);
         // Match any internal animegg.org link that looks like an episode page
         const epPatterns = [
           // /series-name/episode-X or /watch/X
-          /<a[^>]+href="(https?:\/\/(?:www\.)?animegg\.org\/[^"#\s]{5,})"[^>]*>([\s\S]{0,300}?)<\/a>/gi,
+          /<a[^>]+href="(https?:\/\/[^/]*animegg\.org\/[^"#\s]{5,})"[^>]*>([\s\S]{0,300}?)<\/a>/gi,
           // relative links
           /<a[^>]+href="(\/[^"#\s]{5,})"[^>]*>([\s\S]{0,300}?)<\/a>/gi,
         ];
@@ -213,7 +213,7 @@ const watchtowerSources = [
             if (!epUrl.startsWith("http")) epUrl = baseUrl + epUrl;
             if (seen.has(epUrl)) continue;
             // Only accept URLs that look like episode pages (contain /episode, /ep-, /watch, numbers)
-            if (!/\/(?:episode|ep[-_\d]|watch\/?\d)/i.test(epUrl) && !/\/\d+[/-]/.test(epUrl)) continue;
+            if (!/\/(episode|ep[-_\d]|watch\/?\d)/i.test(epUrl) && !/\/\d+[/-]/.test(epUrl)) continue;
             seen.add(epUrl);
             const raw = m[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
             const epName = raw || `Episode`;
@@ -223,7 +223,7 @@ const watchtowerSources = [
         }
       }
 
-      // ── Strategy 3: look for episode select/option elements ──
+      // ââ Strategy 3: look for episode select/option elements ââ
       if (chapters.length === 0) {
         const optRe = /<option[^>]+value="([^"#\s]{5,})"[^>]*>([\s\S]{0,100}?)<\/option>/gi;
         let m;
