@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/Watchtower-extensions/main/extensions/watch/icon/fr.frenchstream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.3.1",
+    "version": "0.4.0",
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -68,14 +68,18 @@ class DefaultExtension extends MProvider {
         return items;
     }
 
+    // FIX Bug 1: use /films/page/X/ instead of /films/?page=X
+    // which always returned the same content on every page
     async getPopular(page) {
-        var url = this.baseUrl + "/films/?page=" + page;
+        var url = this.baseUrl + "/films/page/" + page + "/";
         var r   = await this.client.get(url, { headers: this._hdrs() });
         var items = this._parseItems(r.body);
         return { list: items, hasNextPage: items.length >= 10 };
     }
 
-    async getLatest(page) {
+    // FIX Bug 2a: renamed from getLatest → getLatestUpdates
+    // Engine calls getLatestUpdates(); getLatest() was never called
+    async getLatestUpdates(page) {
         var url = page <= 1
             ? this.baseUrl + "/"
             : this.baseUrl + "/page/" + page + "/";
@@ -84,7 +88,9 @@ class DefaultExtension extends MProvider {
         return { list: items, hasNextPage: items.length >= 10 };
     }
 
-    async getSearch(query, page) {
+    // FIX Bug 2b: renamed from getSearch(query, page) → search(query, page, filters)
+    // Engine calls search(); getSearch() was never called → "search not implemented" error
+    async search(query, page, filters) {
         var from = (page - 1) * 20 + 1;
         var url  = this.baseUrl
             + "/?do=search&subaction=search&story="
@@ -256,7 +262,7 @@ class DefaultExtension extends MProvider {
                     }
                 } catch (_) {}
             }
-            if (epData) this._extractEpVideos(epData, epNum, videos);
+            if (epData) await this._extractEpVideos(epData, epNum, videos, url);
         } else {
             try {
                 var fr = await this.client.get(
@@ -264,14 +270,85 @@ class DefaultExtension extends MProvider {
                     { headers: this._ajaxHdrs(url) }
                 );
                 var api = JSON.parse(fr.body);
-                if (api && api.players) this._extractFilmVideos(api.players, videos);
+                if (api && api.players) await this._extractFilmVideos(api.players, videos, url);
             } catch (_) {}
         }
 
         return videos;
     }
 
-    _extractFilmVideos(p, videos) {
+    // FIX Bug 3: use doodExtractor/voeExtractor for known CDNs that the app can resolve
+    // Other embeds returned as-is (app may handle in WebView)
+    async _resolveVideoUrl(embedUrl, quality, videos, label) {
+        if (!embedUrl) return;
+        var url = embedUrl;
+        var isM3U8 = false;
+
+        // Use built-in dood extractor for dood-based players
+        if (url.indexOf("dood") !== -1 || url.indexOf("doood") !== -1) {
+            try {
+                var resolved = await doodExtractor(url, quality);
+                if (resolved && resolved.url) {
+                    videos.push({
+                        quality: label,
+                        url: resolved.url,
+                        originalUrl: url,
+                        isM3U8: resolved.isM3U8 || false,
+                        headers: resolved.headers || {}
+                    });
+                    return;
+                }
+            } catch (_) {}
+        }
+
+        // Use built-in voe extractor for voe-based players
+        if (url.indexOf("voe") !== -1) {
+            try {
+                var resolved = await voeExtractor(url, quality);
+                if (resolved && resolved.url) {
+                    videos.push({
+                        quality: label,
+                        url: resolved.url,
+                        originalUrl: url,
+                        isM3U8: resolved.isM3U8 || true,
+                        headers: resolved.headers || {}
+                    });
+                    return;
+                }
+            } catch (_) {}
+        }
+
+        // For all other embeds (vidzy, uqload, filmoon, netu, premium/fsvid):
+        // try to fetch and extract a direct media URL from the embed page
+        try {
+            var r = await this.client.get(url, { headers: this._hdrs(url) });
+            var body = r.body;
+            // m3u8
+            var m3u8M = /["'`](https?:[^"'`\s]{10,300}\.m3u8[^"'`\s]*)["'`]/.exec(body);
+            if (m3u8M) {
+                videos.push({ quality: label, url: m3u8M[1], originalUrl: url, isM3U8: true });
+                return;
+            }
+            // mp4
+            var mp4M = /["'`](https?:[^"'`\s]{10,300}\.mp4[^"'`\s]*)["'`]/.exec(body);
+            if (mp4M) {
+                videos.push({ quality: label, url: mp4M[1], originalUrl: url, isM3U8: false });
+                return;
+            }
+            // jwplayer / videojs / plyr sources
+            var srcM = /(?:"file"|"src"|'file'|'src')\s*:\s*["'`](https?:[^"'`\s]{10,300})["'`]/.exec(body);
+            if (srcM) {
+                var src = srcM[1];
+                videos.push({ quality: label, url: src, originalUrl: url, isM3U8: src.indexOf(".m3u8") !== -1 });
+                return;
+            }
+        } catch (_) {}
+
+        // Fallback: return the embed URL itself
+        videos.push({ quality: label, url: url, originalUrl: url, isM3U8: false });
+    }
+
+    async _extractFilmVideos(p, videos, refUrl) {
         var PROVIDERS = [
             ["vidzy",   "ViDZY"],
             ["uqload",  "Uqload"],
@@ -292,10 +369,10 @@ class DefaultExtension extends MProvider {
             var label = PROVIDERS[i][1];
             if (!p[key]) continue;
             for (var j = 0; j < LANGS.length; j++) {
-                var lk = LANGS[j][0];
-                var ll = LANGS[j][1];
+                var lk  = LANGS[j][0];
+                var ll  = LANGS[j][1];
                 var src = p[key][lk];
-                if (src) videos.push({ quality: label + " " + ll, url: src, originalUrl: src, isM3U8: false });
+                if (src) await this._resolveVideoUrl(src, ll, videos, label + " " + ll);
             }
         }
 
@@ -306,13 +383,13 @@ class DefaultExtension extends MProvider {
                 var id  = p.netu[lk];
                 if (id) {
                     var src = "https://1.multiup.us/player/embed_player.php?vid=" + id + "&autoplay=no";
-                    videos.push({ quality: "Netu " + ll, url: src, originalUrl: src, isM3U8: false });
+                    await this._resolveVideoUrl(src, ll, videos, "Netu " + ll);
                 }
             }
         }
     }
 
-    _extractEpVideos(epData, epNum, videos) {
+    async _extractEpVideos(epData, epNum, videos, refUrl) {
         var LANGS    = [["vf","VF"],["vostfr","VOSTFR"],["vo","VO"]];
         var PNAMES   = {
             premium: "Premium", vidzy: "ViDZY", uqload: "Uqload",
@@ -336,7 +413,7 @@ class DefaultExtension extends MProvider {
                 if (provider === "netu" && val.indexOf("http") !== 0) {
                     src = "https://1.multiup.us/player/embed_player.php?vid=" + val + "&autoplay=no";
                 }
-                videos.push({ quality: pLabel + " " + langLabel, url: src, originalUrl: src, isM3U8: false });
+                await this._resolveVideoUrl(src, langLabel, videos, pLabel + " " + langLabel);
             }
         }
     }
