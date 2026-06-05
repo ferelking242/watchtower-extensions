@@ -70,7 +70,7 @@
     "hasCloudflare": false,
     "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/fr/frenchstream.js",
     "apiUrl": "https://french-stream.one",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,

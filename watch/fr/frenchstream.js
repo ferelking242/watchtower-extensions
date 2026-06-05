@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/Watchtower-extensions/main/extensions/watch/icon/fr.frenchstream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.4.1",
+    "version": "0.4.2",
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -285,74 +285,83 @@ class DefaultExtension extends MProvider {
         return videos;
     }
 
-    // FIX Bug 3: use doodExtractor/voeExtractor for known CDNs that the app can resolve
-    // Other embeds returned as-is (app may handle in WebView)
     async _resolveVideoUrl(embedUrl, quality, videos, label) {
         if (!embedUrl) return;
         var url = embedUrl;
-        var isM3U8 = false;
 
-        // Use built-in dood extractor for dood-based players
+        // Fetch the embed page
+        var body = "";
+        try {
+            var r = await this.client.get(url, { headers: this._hdrs(url) });
+            body = r.body || "";
+        } catch (_) {}
+
+        if (body) {
+            // 1. Direct m3u8/mp4 in raw HTML
+            var m3u8M = /["'`](https?:[^"'`\s]{10,400}\.m3u8[^"'`\s]{0,200})["'`]/.exec(body);
+            if (m3u8M) {
+                videos.push({ quality: label, url: m3u8M[1], originalUrl: url, isM3U8: true, headers: { "Referer": url } });
+                return;
+            }
+            var mp4M = /["'`](https?:[^"'`\s]{10,400}\.mp4[^"'`\s]{0,200})["'`]/.exec(body);
+            if (mp4M) {
+                videos.push({ quality: label, url: mp4M[1], originalUrl: url, isM3U8: false, headers: { "Referer": url } });
+                return;
+            }
+
+            // 2. Unpack eval(function(p,a,c,k,e,d){...}) packed JS and search inside
+            try {
+                var packerRe = /\(function\(p,a,c,k,e(?:,d)?\)\{[\s\S]+?\.split\('\|'\)\)\)/g;
+                var pm;
+                while ((pm = packerRe.exec(body)) !== null) {
+                    try {
+                        var decoded = eval(pm[0]);
+                        if (typeof decoded === "string") {
+                            var dm = /["'`](https?:[^"'`\s]{10,400}\.m3u8[^"'`\s]{0,200})["'`]/.exec(decoded);
+                            if (dm) {
+                                videos.push({ quality: label, url: dm[1], originalUrl: url, isM3U8: true, headers: { "Referer": url } });
+                                return;
+                            }
+                            var dp = /["'`](https?:[^"'`\s]{10,400}\.mp4[^"'`\s]{0,200})["'`]/.exec(decoded);
+                            if (dp) {
+                                videos.push({ quality: label, url: dp[1], originalUrl: url, isM3U8: false, headers: { "Referer": url } });
+                                return;
+                            }
+                        }
+                    } catch (_) {}
+                }
+            } catch (_) {}
+
+            // 3. jwplayer / videojs file/src key
+            var srcM = /(?:"file"|"src"|'file'|'src')\s*:\s*["'`](https?:[^"'`\s]{10,300})["'`]/.exec(body);
+            if (srcM) {
+                var src = srcM[1];
+                videos.push({ quality: label, url: src, originalUrl: url, isM3U8: src.indexOf(".m3u8") !== -1, headers: { "Referer": url } });
+                return;
+            }
+        }
+
+        // 4. Fallback: built-in extractors if available
         if (url.indexOf("dood") !== -1 || url.indexOf("doood") !== -1) {
             try {
                 var resolved = await doodExtractor(url, quality);
                 if (resolved && resolved.url) {
-                    videos.push({
-                        quality: label,
-                        url: resolved.url,
-                        originalUrl: url,
-                        isM3U8: resolved.isM3U8 || false,
-                        headers: resolved.headers || {}
-                    });
+                    videos.push({ quality: label, url: resolved.url, originalUrl: url, isM3U8: resolved.isM3U8 || false, headers: resolved.headers || {} });
                     return;
                 }
             } catch (_) {}
         }
-
-        // Use built-in voe extractor for voe-based players
         if (url.indexOf("voe") !== -1) {
             try {
                 var resolved = await voeExtractor(url, quality);
                 if (resolved && resolved.url) {
-                    videos.push({
-                        quality: label,
-                        url: resolved.url,
-                        originalUrl: url,
-                        isM3U8: resolved.isM3U8 || true,
-                        headers: resolved.headers || {}
-                    });
+                    videos.push({ quality: label, url: resolved.url, originalUrl: url, isM3U8: true, headers: resolved.headers || {} });
                     return;
                 }
             } catch (_) {}
         }
 
-        // For all other embeds (vidzy, uqload, filmoon, netu, premium/fsvid):
-        // try to fetch and extract a direct media URL from the embed page
-        try {
-            var r = await this.client.get(url, { headers: this._hdrs(url) });
-            var body = r.body;
-            // m3u8
-            var m3u8M = /["'`](https?:[^"'`\s]{10,300}\.m3u8[^"'`\s]*)["'`]/.exec(body);
-            if (m3u8M) {
-                videos.push({ quality: label, url: m3u8M[1], originalUrl: url, isM3U8: true });
-                return;
-            }
-            // mp4
-            var mp4M = /["'`](https?:[^"'`\s]{10,300}\.mp4[^"'`\s]*)["'`]/.exec(body);
-            if (mp4M) {
-                videos.push({ quality: label, url: mp4M[1], originalUrl: url, isM3U8: false });
-                return;
-            }
-            // jwplayer / videojs / plyr sources
-            var srcM = /(?:"file"|"src"|'file'|'src')\s*:\s*["'`](https?:[^"'`\s]{10,300})["'`]/.exec(body);
-            if (srcM) {
-                var src = srcM[1];
-                videos.push({ quality: label, url: src, originalUrl: url, isM3U8: src.indexOf(".m3u8") !== -1 });
-                return;
-            }
-        } catch (_) {}
-
-        // Fallback: return the embed URL itself
+        // 5. Last resort: return embed URL for WebView
         videos.push({ quality: label, url: url, originalUrl: url, isM3U8: false });
     }
 
