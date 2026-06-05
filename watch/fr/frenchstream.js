@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/Watchtower-extensions/main/extensions/watch/icon/fr.frenchstream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.4.0",
+    "version": "0.4.1",
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -135,11 +135,13 @@ class DefaultExtension extends MProvider {
                 name: title,
                 imageUrl: image,
                 description: desc,
-                genre: genres.join(", "),
-                year: year,
-                episodes: [{
+                genres: genres,
+                status: 4,
+                author: year,
+                chapters: [{
                     name: title || "Regarder",
                     url: url,
+                    dateUpload: "",
                     description: [runtime, year].filter(Boolean).join(" — ")
                 }]
             };
@@ -160,7 +162,7 @@ class DefaultExtension extends MProvider {
             } catch (_) {}
         }
 
-        var episodes = [];
+        var chapters = [];
 
         if (tagz) {
             try {
@@ -214,9 +216,10 @@ class DefaultExtension extends MProvider {
 
                     for (var ni = 0; ni < nums.length; ni++) {
                         var n = nums[ni];
-                        episodes.push({
+                        chapters.push({
                             name: sName + " — Ep. " + n,
                             url:  this.baseUrl + "/index.php?newsid=" + season.id + "&_fs_ep=" + n,
+                            dateUpload: "",
                             description: "Épisode " + n
                         });
                     }
@@ -224,13 +227,18 @@ class DefaultExtension extends MProvider {
             } catch (_) {}
         }
 
+        if (chapters.length === 0) {
+            chapters.push({ name: title || "Regarder", url: url, dateUpload: "" });
+        }
+
         return {
             name: title,
             imageUrl: image,
             description: desc,
-            genre: genres.join(", "),
-            year: year,
-            episodes: episodes
+            genres: genres,
+            status: 0,
+            author: year,
+            chapters: chapters
         };
     }
 
