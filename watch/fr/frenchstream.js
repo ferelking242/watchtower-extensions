@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/Watchtower-extensions/main/extensions/watch/icon/fr.frenchstream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.3.0",
+    "version": "0.3.1",
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -19,7 +19,9 @@ class DefaultExtension extends MProvider {
     constructor() { super(); this.client = new Client(); }
 
     get baseUrl() {
-        const p = this.source.prefs?.find(x => x.key === "base_url");
+        const p = this.source.prefs
+            ? this.source.prefs.find(function(x) { return x.key === "base_url"; })
+            : null;
         return (p && p.value) ? p.value.replace(/\/$/, "") : this.source.baseUrl.replace(/\/$/, "");
     }
 
@@ -27,80 +29,100 @@ class DefaultExtension extends MProvider {
         return {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
             "Referer": ref || (this.baseUrl + "/"),
-            "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8"
+            "Accept-Language": "fr-FR,fr;q=0.9"
         };
     }
 
+    _ajaxHdrs(ref) {
+        return {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Referer": ref || (this.baseUrl + "/"),
+            "Accept-Language": "fr-FR,fr;q=0.9",
+            "X-Requested-With": "XMLHttpRequest",
+            "Accept": "application/json, text/javascript, */*"
+        };
+    }
+
+    _getParam(url, key) {
+        var re = new RegExp("[?&]" + key + "=([^&]+)");
+        var m  = re.exec(url);
+        return m ? decodeURIComponent(m[1]) : null;
+    }
+
     _parseItems(html) {
-        const items = [];
-        const blockRe = /<a[^>]+class="short-poster[^"]*"([^>]*)>([\s\S]*?)<\/a>/gi;
-        let bm;
+        var items   = [];
+        var blockRe = /<a[^>]+class="short-poster[^"]*"([^>]*)>([\s\S]*?)<\/a>/gi;
+        var bm;
         while ((bm = blockRe.exec(html)) !== null) {
-            const attrs = bm[1];
-            const inner = bm[2];
-            const hrefM = attrs.match(/href="([^"]+newsid=\d+[^"]*)"/);
-            const altM  = attrs.match(/alt="([^"]*)"/);
-            const imgM  = inner.match(/<img[^>]+src="([^"]+)"/i);
+            var attrs = bm[1];
+            var inner = bm[2];
+            var hrefM = /href="([^"]+newsid=\d+[^"]*)"/.exec(attrs);
+            var altM  = /alt="([^"]*)"/.exec(attrs);
+            var imgM  = /<img[^>]+src="([^"]+)"/i.exec(inner);
             if (!hrefM) continue;
-            const href  = hrefM[1].startsWith("/") ? this.baseUrl + hrefM[1] : hrefM[1];
-            const title = altM?.[1]?.trim() || "";
-            const image = imgM?.[1] || "";
+            var href  = hrefM[1].charAt(0) === "/" ? this.baseUrl + hrefM[1] : hrefM[1];
+            var title = altM ? altM[1].trim() : "";
+            var image = imgM ? imgM[1] : "";
             if (title) items.push({ name: title, link: href, imageUrl: image });
         }
         return items;
     }
 
     async getPopular(page) {
-        const url = `${this.baseUrl}/films/?page=${page}`;
-        const r = await this.client.get(url, { headers: this._hdrs() });
-        const items = this._parseItems(r.body);
+        var url = this.baseUrl + "/films/?page=" + page;
+        var r   = await this.client.get(url, { headers: this._hdrs() });
+        var items = this._parseItems(r.body);
         return { list: items, hasNextPage: items.length >= 10 };
     }
 
     async getLatest(page) {
-        const url = page <= 1 ? `${this.baseUrl}/` : `${this.baseUrl}/page/${page}/`;
-        const r = await this.client.get(url, { headers: this._hdrs() });
-        const items = this._parseItems(r.body);
+        var url = page <= 1
+            ? this.baseUrl + "/"
+            : this.baseUrl + "/page/" + page + "/";
+        var r     = await this.client.get(url, { headers: this._hdrs() });
+        var items = this._parseItems(r.body);
         return { list: items, hasNextPage: items.length >= 10 };
     }
 
     async getSearch(query, page) {
-        const from = (page - 1) * 20 + 1;
-        const url = `${this.baseUrl}/?do=search&subaction=search&story=${encodeURIComponent(query)}&search_start=${page - 1}&full_search=0&result_from=${from}`;
-        const r = await this.client.get(url, { headers: this._hdrs() });
-        const items = this._parseItems(r.body);
+        var from = (page - 1) * 20 + 1;
+        var url  = this.baseUrl
+            + "/?do=search&subaction=search&story="
+            + encodeURIComponent(query)
+            + "&search_start=" + (page - 1)
+            + "&full_search=0&result_from=" + from;
+        var r     = await this.client.get(url, { headers: this._hdrs() });
+        var items = this._parseItems(r.body);
         return { list: items, hasNextPage: items.length >= 10 };
     }
 
     async getDetail(url) {
-        const r = await this.client.get(url, { headers: this._hdrs() });
-        const html = r.body;
+        var r    = await this.client.get(url, { headers: this._hdrs() });
+        var html = r.body;
 
-        const newsIdM = url.match(/newsid=(\d+)/);
-        const newsId  = newsIdM?.[1] || "";
+        var newsId   = this._getParam(url, "newsid") || "";
+        var isSerie  = html.indexOf('id="serie-data"') !== -1;
 
-        const isSerie = html.includes('id="serie-data"');
+        var titleM   = /data-title="([^"]+)"/.exec(html);
+        var title    = titleM ? titleM[1].trim() : "";
 
-        const titleM = html.match(/data-title="([^"]+)"/);
-        const title  = titleM?.[1]?.trim() || "";
+        var imgM     = /data-affiche="([^"]+)"/.exec(html);
+        var image    = imgM ? imgM[1] : "";
 
-        const imgM  = html.match(/data-affiche="([^"]+)"/);
-        const image = imgM?.[1] || "";
-
-        const genresM = html.match(/<span class="genres">([\s\S]*?)<\/span>/i);
-        const genres  = genresM
-            ? genresM[1].replace(/<[^>]+>/g, "").split(",").map(g => g.trim()).filter(Boolean)
+        var genresM  = /<span class="genres">([\s\S]*?)<\/span>/i.exec(html);
+        var genres   = genresM
+            ? genresM[1].replace(/<[^>]+>/g, "").split(",").map(function(g) { return g.trim(); }).filter(Boolean)
             : [];
 
-        const yearM = html.match(/xfname=date-de-sortie[^>]+>(\d{4})</);
-        const year  = yearM?.[1] || "";
+        var yearM    = /xfname=date-de-sortie[^>]+>(\d{4})</.exec(html);
+        var year     = yearM ? yearM[1] : "";
 
-        const runtimeM = html.match(/<span class="runtime">[^\d]*(\d[^<]*)</i);
-        const runtime   = runtimeM?.[1]?.trim() || "";
+        var rtM      = /<span class="runtime">[^\d]*(\d[^<]*)/i.exec(html);
+        var runtime  = rtM ? rtM[1].trim() : "";
 
-        const descM = html.match(/class="desc-text"[^>]*>([\s\S]*?)<\/p>/i)
-                   || html.match(/<div[^>]+fdesc[^>]*>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/i);
-        const desc  = descM?.[1]?.replace(/<[^>]+>/g, "").trim() || "";
+        var descM    = /class="desc-text"[^>]*>([\s\S]*?)<\/p>/i.exec(html)
+                    || /<div[^>]+fdesc[^>]*>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/i.exec(html);
+        var desc     = descM ? descM[1].replace(/<[^>]+>/g, "").trim() : "";
 
         if (!isSerie) {
             return {
@@ -108,52 +130,54 @@ class DefaultExtension extends MProvider {
                 imageUrl: image,
                 description: desc,
                 genre: genres.join(", "),
-                year,
+                year: year,
                 episodes: [{
                     name: title || "Regarder",
-                    url,
+                    url: url,
                     description: [runtime, year].filter(Boolean).join(" — ")
                 }]
             };
         }
 
-        let tagz = "";
-        const tagzM = html.match(/data-tagz="([^"]+)"/);
+        var tagz   = "";
+        var tagzM  = /data-tagz="([^"]+)"/.exec(html);
         if (tagzM) {
             tagz = tagzM[1];
         } else if (newsId) {
             try {
-                const apiR = await this.client.get(
-                    `${this.baseUrl}/engine/ajax/film_api.php?id=${newsId}`,
-                    { headers: this._hdrs(url) }
+                var apiR = await this.client.get(
+                    this.baseUrl + "/engine/ajax/film_api.php?id=" + newsId,
+                    { headers: this._ajaxHdrs(url) }
                 );
-                const api = JSON.parse(apiR.body);
-                tagz = api?.meta?.tagz || "";
+                var api = JSON.parse(apiR.body);
+                tagz = (api && api.meta && api.meta.tagz) ? api.meta.tagz : "";
             } catch (_) {}
         }
 
-        const episodes = [];
+        var episodes = [];
 
         if (tagz) {
             try {
-                const seasonsR = await this.client.get(
-                    `${this.baseUrl}/engine/ajax/get_seasons.php?serie_tag=${encodeURIComponent(tagz)}`,
-                    { headers: this._hdrs(url) }
+                var seasonsR = await this.client.get(
+                    this.baseUrl + "/engine/ajax/get_seasons.php?serie_tag=" + encodeURIComponent(tagz),
+                    { headers: this._ajaxHdrs(url) }
                 );
-                const seasons = JSON.parse(seasonsR.body);
+                var seasons = JSON.parse(seasonsR.body);
 
-                for (const season of seasons) {
-                    const v = Math.floor(Date.now() / 30000);
-                    let epData = null;
+                for (var si = 0; si < seasons.length; si++) {
+                    var season = seasons[si];
+                    var v      = Math.floor(Date.now() / 30000);
+                    var epData = null;
 
-                    for (const path of [
-                        `/static/series/${season.id}.js?v=${v}`,
-                        `/data/eps_${season.id}.txt?v=${v}`,
-                        `/ep-data.php?id=${season.id}&format=js&v=${v}`
-                    ]) {
+                    var paths = [
+                        "/static/series/" + season.id + ".js?v=" + v,
+                        "/data/eps_" + season.id + ".txt?v=" + v,
+                        "/ep-data.php?id=" + season.id + "&format=js&v=" + v
+                    ];
+                    for (var pi = 0; pi < paths.length; pi++) {
                         try {
-                            const epR = await this.client.get(
-                                `${this.baseUrl}${path}`,
+                            var epR = await this.client.get(
+                                this.baseUrl + paths[pi],
                                 { headers: this._hdrs(url) }
                             );
                             if (epR.body && epR.body.length > 5) {
@@ -165,21 +189,29 @@ class DefaultExtension extends MProvider {
 
                     if (!epData) continue;
 
-                    const numSet = new Set([
-                        ...Object.keys(epData.vf      || {}),
-                        ...Object.keys(epData.vostfr  || {}),
-                        ...Object.keys(epData.vo      || {})
-                    ]);
-                    const nums = [...numSet].map(Number).filter(n => !isNaN(n)).sort((a, b) => a - b);
+                    var numSet = {};
+                    var langs  = ["vf", "vostfr", "vo"];
+                    for (var li = 0; li < langs.length; li++) {
+                        var langData = epData[langs[li]];
+                        if (!langData) continue;
+                        var keys = Object.keys(langData);
+                        for (var ki = 0; ki < keys.length; ki++) numSet[keys[ki]] = true;
+                    }
 
-                    const sLabel = season.title.replace(/.*?(\bSaison\s*\d+.*)/i, "$1").trim()
-                                || season.title;
+                    var nums = Object.keys(numSet)
+                        .map(function(k) { return parseInt(k, 10); })
+                        .filter(function(n) { return !isNaN(n); })
+                        .sort(function(a, b) { return a - b; });
 
-                    for (const n of nums) {
+                    var sLabel = /\bSaison\s*\d+.*/i.exec(season.title);
+                    var sName  = sLabel ? sLabel[0].trim() : season.title;
+
+                    for (var ni = 0; ni < nums.length; ni++) {
+                        var n = nums[ni];
                         episodes.push({
-                            name: `${sLabel} — Ep. ${n}`,
-                            url:  `${this.baseUrl}/index.php?newsid=${season.id}&_fs_ep=${n}`,
-                            description: `Épisode ${n}`
+                            name: sName + " — Ep. " + n,
+                            url:  this.baseUrl + "/index.php?newsid=" + season.id + "&_fs_ep=" + n,
+                            description: "Épisode " + n
                         });
                     }
                 }
@@ -191,32 +223,31 @@ class DefaultExtension extends MProvider {
             imageUrl: image,
             description: desc,
             genre: genres.join(", "),
-            year,
-            episodes
+            year: year,
+            episodes: episodes
         };
     }
 
     async getVideoList(url) {
-        const u      = new URL(url);
-        const newsId = u.searchParams.get("newsid");
-        const epNum  = u.searchParams.get("_fs_ep");
+        var newsId = this._getParam(url, "newsid");
+        var epNum  = this._getParam(url, "_fs_ep");
 
         if (!newsId) return [];
 
-        const videos = [];
+        var videos = [];
 
-        if (epNum) {
-            const v = Math.floor(Date.now() / 30000);
-            let epData = null;
-
-            for (const path of [
-                `/static/series/${newsId}.js?v=${v}`,
-                `/data/eps_${newsId}.txt?v=${v}`,
-                `/ep-data.php?id=${newsId}&format=js&v=${v}`
-            ]) {
+        if (epNum !== null) {
+            var v     = Math.floor(Date.now() / 30000);
+            var epData = null;
+            var paths = [
+                "/static/series/" + newsId + ".js?v=" + v,
+                "/data/eps_" + newsId + ".txt?v=" + v,
+                "/ep-data.php?id=" + newsId + "&format=js&v=" + v
+            ];
+            for (var pi = 0; pi < paths.length; pi++) {
                 try {
-                    const r = await this.client.get(
-                        `${this.baseUrl}${path}`,
+                    var r = await this.client.get(
+                        this.baseUrl + paths[pi],
                         { headers: this._hdrs(url) }
                     );
                     if (r.body && r.body.length > 5) {
@@ -225,18 +256,15 @@ class DefaultExtension extends MProvider {
                     }
                 } catch (_) {}
             }
-
-            if (epData) {
-                this._extractEpVideos(epData, epNum, videos);
-            }
+            if (epData) this._extractEpVideos(epData, epNum, videos);
         } else {
             try {
-                const r = await this.client.get(
-                    `${this.baseUrl}/engine/ajax/film_api.php?id=${newsId}`,
-                    { headers: this._hdrs(url) }
+                var fr = await this.client.get(
+                    this.baseUrl + "/engine/ajax/film_api.php?id=" + newsId,
+                    { headers: this._ajaxHdrs(url) }
                 );
-                const api = JSON.parse(r.body);
-                this._extractFilmVideos(api?.players || {}, videos);
+                var api = JSON.parse(fr.body);
+                if (api && api.players) this._extractFilmVideos(api.players, videos);
             } catch (_) {}
         }
 
@@ -244,7 +272,7 @@ class DefaultExtension extends MProvider {
     }
 
     _extractFilmVideos(p, videos) {
-        const PROVIDERS = [
+        var PROVIDERS = [
             ["vidzy",   "ViDZY"],
             ["uqload",  "Uqload"],
             ["dood",    "Dood"],
@@ -252,55 +280,64 @@ class DefaultExtension extends MProvider {
             ["filmoon", "Filmoon"],
             ["premium", "Premium"]
         ];
-        const LANGS = {
-            "default": "VF",
-            "vostfr":  "VOSTFR",
-            "vfq":     "VFQ",
-            "vff":     "VFF"
-        };
+        var LANGS = [
+            ["default", "VF"],
+            ["vostfr",  "VOSTFR"],
+            ["vfq",     "VFQ"],
+            ["vff",     "VFF"]
+        ];
 
-        for (const [key, label] of PROVIDERS) {
+        for (var i = 0; i < PROVIDERS.length; i++) {
+            var key   = PROVIDERS[i][0];
+            var label = PROVIDERS[i][1];
             if (!p[key]) continue;
-            for (const [langKey, langLabel] of Object.entries(LANGS)) {
-                const src = p[key][langKey];
-                if (src) videos.push({ quality: `${label} ${langLabel}`, url: src, originalUrl: src, isM3U8: false });
+            for (var j = 0; j < LANGS.length; j++) {
+                var lk = LANGS[j][0];
+                var ll = LANGS[j][1];
+                var src = p[key][lk];
+                if (src) videos.push({ quality: label + " " + ll, url: src, originalUrl: src, isM3U8: false });
             }
         }
 
         if (p.netu) {
-            for (const [langKey, langLabel] of Object.entries(LANGS)) {
-                const id = p.netu[langKey];
+            for (var j = 0; j < LANGS.length; j++) {
+                var lk  = LANGS[j][0];
+                var ll  = LANGS[j][1];
+                var id  = p.netu[lk];
                 if (id) {
-                    const src = `https://1.multiup.us/player/embed_player.php?vid=${id}&autoplay=no`;
-                    videos.push({ quality: `Netu ${langLabel}`, url: src, originalUrl: src, isM3U8: false });
+                    var src = "https://1.multiup.us/player/embed_player.php?vid=" + id + "&autoplay=no";
+                    videos.push({ quality: "Netu " + ll, url: src, originalUrl: src, isM3U8: false });
                 }
             }
         }
     }
 
     _extractEpVideos(epData, epNum, videos) {
-        const LANGS = { vf: "VF", vostfr: "VOSTFR", vo: "VO" };
-        const PNAMES = {
+        var LANGS    = [["vf","VF"],["vostfr","VOSTFR"],["vo","VO"]];
+        var PNAMES   = {
             premium: "Premium", vidzy: "ViDZY", uqload: "Uqload",
             netu: "Netu", voe: "Voe", dood: "Dood", filmoon: "Filmoon"
         };
 
-        for (const [lang, langLabel] of Object.entries(LANGS)) {
-            const entry = (epData[lang] || {})[epNum] || (epData[lang] || {})[String(epNum)];
+        for (var li = 0; li < LANGS.length; li++) {
+            var lang      = LANGS[li][0];
+            var langLabel = LANGS[li][1];
+            var langData  = epData[lang];
+            if (!langData) continue;
+            var entry = langData[epNum] || langData[String(parseInt(epNum, 10))];
             if (!entry) continue;
-            for (const [provider, val] of Object.entries(entry)) {
+            var providers = Object.keys(entry);
+            for (var pi = 0; pi < providers.length; pi++) {
+                var provider = providers[pi];
+                var val      = entry[provider];
                 if (!val) continue;
-                const pLabel = PNAMES[provider] || provider;
-                let src = val;
-                if (provider === "netu" && !val.startsWith("http")) {
-                    src = `https://1.multiup.us/player/embed_player.php?vid=${val}&autoplay=no`;
+                var pLabel = PNAMES[provider] || provider;
+                var src    = val;
+                if (provider === "netu" && val.indexOf("http") !== 0) {
+                    src = "https://1.multiup.us/player/embed_player.php?vid=" + val + "&autoplay=no";
                 }
-                videos.push({ quality: `${pLabel} ${langLabel}`, url: src, originalUrl: src, isM3U8: false });
+                videos.push({ quality: pLabel + " " + langLabel, url: src, originalUrl: src, isM3U8: false });
             }
         }
-    }
-
-    getPreference(key) {
-        return this.source.prefs?.find(x => x.key === key)?.value || "";
     }
 }
