@@ -40,7 +40,7 @@ const watchtowerSources = [{
     "subCategories": ["film", "serie"],
     // Fonctionnalités optionnelles exposées par cette extension
     "supportsForYou": true,
-    "supportsComments": false,
+    "supportsComments": true,
     "prefs": [
         {
             "key": "username",
@@ -219,14 +219,72 @@ class DefaultExtension extends MProvider {
 
     // ─── getComments ─────────────────────────────────────────────────────────
     // Appelé par l'onglet « Commentaires » dans Watchtower.
-    // French-Stream ne fournit pas d'API publique pour les commentaires.
-    // supportsComments est false dans watchtowerSources → cet onglet reste vide.
-    // La méthode est fournie pour compatibilité avec le contrat MProvider.
+    // Tente l'endpoint AJAX EngineScript ; retourne liste vide si indisponible.
     // Retourne : { list: MComment[], hasNextPage: bool }
     async getComments(url, page) {
-        // Non implémenté : French-Stream charge ses commentaires via JavaScript
-        // embarqué (système propriétaire) sans endpoint REST accessible.
+        var newsId = this._getParam(url, "newsid");
+        if (!newsId) {
+            try {
+                var pr = await this.client.get(url, { headers: this._hdrs() });
+                newsId = this._extractNewsId(url, pr.body);
+            } catch (_) {}
+        }
+        if (!newsId) return { list: [], hasNextPage: false };
+
+        var endpoints = [
+            "/engine/ajax/getcomments.php?news_id=" + newsId + "&page=" + page,
+            "/engine/ajax/comments.php?id=" + newsId + "&p=" + page,
+            "/comments/" + newsId + "/?page=" + page
+        ];
+        for (var ei = 0; ei < endpoints.length; ei++) {
+            try {
+                var r = await this.client.get(
+                    this.baseUrl + endpoints[ei],
+                    { headers: this._ajaxHdrs(url) }
+                );
+                if (!r.body || r.body.length < 5) continue;
+                var data = JSON.parse(r.body);
+                var cmtList = Array.isArray(data) ? data
+                    : (data.comments || data.list || data.data || []);
+                if (!Array.isArray(cmtList) || cmtList.length === 0) continue;
+                var items = [];
+                for (var i = 0; i < cmtList.length; i++) {
+                    var c = cmtList[i];
+                    items.push({
+                        id:        String(c.id || c.comment_id || i),
+                        username:  c.name || c.author || c.user || "Anonyme",
+                        avatarUrl: c.avatar || c.avatar_url || "",
+                        content:   c.text || c.message || c.comment || c.body || "",
+                        timestamp: c.date || c.created_at || "",
+                        score:     Number(c.likes || c.score || 0)
+                    });
+                }
+                return { list: items, hasNextPage: cmtList.length >= 20 };
+            } catch (_) {}
+        }
         return { list: [], hasNextPage: false };
+    }
+
+    // ─── _parseJsonOrJs ───────────────────────────────────────────────────────
+    // Parse a string that may be raw JSON or a JS assignment like:
+    //   var epData = {...};   or   window.x = [...];
+    // Returns parsed object/array or null on failure.
+    _parseJsonOrJs(str) {
+        if (!str || str.length < 3) return null;
+        str = str.trim();
+        // Check it doesn't look like an HTML error page
+        if (str.charAt(0) === '<') return null;
+        // Try raw JSON first
+        try { return JSON.parse(str); } catch (_) {}
+        // Strip JS assignment prefix: var xxx =  /  let xxx =  /  window.xxx =
+        try {
+            var s = str
+                .replace(/^(?:var|let|const)\s+\w+\s*=\s*/, '')
+                .replace(/^window\.\w+\s*=\s*/, '')
+                .replace(/;?\s*$/, '');
+            return JSON.parse(s);
+        } catch (_) {}
+        return null;
     }
 
     async getDetail(url) {
@@ -266,6 +324,33 @@ class DefaultExtension extends MProvider {
         var castM    = /(?:Acteurs?|Casting|Cast)\s*:[^<]*<[^>]+>([\s\S]*?)<\/(?:p|div|span)>/i.exec(html);
         var cast     = castM ? castM[1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() : "";
 
+        // ── Galerie d'images (aperçus / screenshots) ──────────────────────
+        var galleryImgs = [];
+        // Bloc gallery explicite
+        var gBlockM = /<div[^>]+class="[^"]*(?:screens|screenshots|gallery|preview)[^"]*"[^>]*>([\s\S]*?)<\/div>/i.exec(html);
+        if (gBlockM) {
+            var gImgRe = /<img[^>]+(?:data-src|src)="([^"]+)"[^>]*/gi;
+            var gim;
+            while ((gim = gImgRe.exec(gBlockM[1])) !== null) {
+                var gu = gim[1].trim();
+                if (gu.startsWith("http") && !/pixel|1x1|transparent|blank|icon|logo/i.test(gu)) {
+                    galleryImgs.push(gu);
+                }
+            }
+        }
+        // Attribut data-screenshots ou data-images
+        if (galleryImgs.length === 0) {
+            var dsM = /data-screenshots="([^"]+)"/.exec(html) || /data-images="([^"]+)"/.exec(html);
+            if (dsM) {
+                dsM[1].split(/[,|]/).forEach(function(u) {
+                    var t = u.trim(); if (t.startsWith("http")) galleryImgs.push(t);
+                });
+            }
+        }
+        var fullDesc = galleryImgs.length > 0
+            ? desc + "\n__GALLERY__:" + galleryImgs.slice(0, 10).join("||")
+            : desc;
+
         var metaLine = [runtime, year].filter(Boolean).join(" — ");
         if (rating) metaLine = metaLine ? metaLine + " · ★ " + rating : "★ " + rating;
 
@@ -273,7 +358,7 @@ class DefaultExtension extends MProvider {
             return {
                 name: title,
                 imageUrl: image,
-                description: desc,
+                description: fullDesc,
                 genres: genres,
                 status: 4,
                 author: year,
@@ -384,7 +469,7 @@ class DefaultExtension extends MProvider {
         return {
             name: title,
             imageUrl: image,
-            description: desc,
+            description: fullDesc,
             genres: genres,
             status: 0,
             author: year,
@@ -426,12 +511,57 @@ class DefaultExtension extends MProvider {
                         { headers: this._hdrs(url) }
                     );
                     if (r.body && r.body.length > 5) {
-                        epData = JSON.parse(r.body);
-                        break;
+                        epData = this._parseJsonOrJs(r.body);
+                        if (epData) break;
                     }
                 } catch (_) {}
             }
             if (epData) await this._extractEpVideos(epData, epNum, videos, url);
+            // Fallback : scrape la page de l'épisode pour les iframes vidéo
+            if (videos.length === 0) {
+                try {
+                    var pageR = await this.client.get(url, { headers: this._hdrs(url) });
+                    var pageBody = pageR.body || "";
+                    var iRe = /(?:data-src|src)\s*=\s*["'](https?:\/\/[^"']{10,400})["']/g;
+                    var im;
+                    while ((im = iRe.exec(pageBody)) !== null) {
+                        var src = im[1];
+                        if (/fsvid|vidzy|uqload|dood|voe\.sx|filmoon|netu|multiup|embed|player|iframe/i.test(src)) {
+                            await this._resolveVideoUrl(src, "AUTO", videos, "Lecteur");
+                        }
+                    }
+                    // Essai via film_api si aucun lecteur trouvé directement
+                    if (videos.length === 0) {
+                        var apiIdM = /film_api\.php\?id=(\d+)/.exec(pageBody)
+                                  || /["']news_id["']\s*:\s*["']?(\d+)/.exec(pageBody);
+                        if (apiIdM) {
+                            try {
+                                var apiR2 = await this.client.get(
+                                    this.baseUrl + "/engine/ajax/film_api.php?id=" + apiIdM[1],
+                                    { headers: this._ajaxHdrs(url) }
+                                );
+                                if (apiR2.body && apiR2.body.length > 5) {
+                                    var api2 = JSON.parse(apiR2.body);
+                                    if (api2 && api2.players) await this._extractFilmVideos(api2.players, videos, url);
+                                }
+                            } catch (_) {}
+                        }
+                    }
+                    // Dernier recours : JSON inline dans la page
+                    if (videos.length === 0) {
+                        var jsonRe2 = /"(?:file|src|url)"\s*:\s*"(https?:\\?\/\\?\/[^"]{10,300})"/g;
+                        var jm2;
+                        while ((jm2 = jsonRe2.exec(pageBody)) !== null) {
+                            var ru = jm2[1].replace(/\\\//g, "/");
+                            if (/\.m3u8|\.mp4/i.test(ru)) {
+                                videos.push({ quality: "AUTO", url: ru, originalUrl: ru,
+                                    isM3U8: ru.indexOf(".m3u8") !== -1,
+                                    headers: { "Referer": url } });
+                            }
+                        }
+                    }
+                } catch (_) {}
+            }
         } else {
             // Strategy 1: JSON API
             try {
