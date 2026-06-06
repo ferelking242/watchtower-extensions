@@ -1,3 +1,26 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// French-Stream — extension Watchtower v0.4.5
+//
+// Ce fichier est le seul point d'entrée de l'extension.
+// Il exporte `watchtowerSources` (métadonnées) et la classe `DefaultExtension`
+// qui implémente l'API MProvider attendue par le moteur Watchtower.
+//
+// Méthodes fournies :
+//   getPopular(page)         → films populaires (page browsing)
+//   getLatestUpdates(page)   → dernières sorties
+//   search(query, page)      → recherche textuelle
+//   getDetail(url)           → fiche détail (titre, poster, épisodes…)
+//   getVideoList(url)        → liste des liens vidéo pour un épisode/film
+//   getForYou(page)          → contenu « Pour vous » (alias getPopular pour l'instant)
+//   getComments(url, page)   → commentaires (non supporté → tableau vide)
+//
+// Champs `watchtowerSources` :
+//   supportsForYou     → true  : l'onglet « Pour vous » est activé
+//   supportsComments   → false : l'onglet « Commentaires » reste vide
+//   subCategories      → sous-catégories disponibles dans cette source
+//                         (remplace l'ancien champ contentSubtype)
+// ─────────────────────────────────────────────────────────────────────────────
+
 const watchtowerSources = [{
     "name": "French-Stream",
     "langs": ["fr"],
@@ -7,12 +30,17 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/Watchtower-extensions/main/extensions/watch/icon/fr.frenchstream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.4.3",
+    "version": "0.4.5",
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
-    "videoQualities": ["AUTO", "VF", "VOSTFR", "VO"],
-    "contentSubtype": ["film", "serie"],
+    // Langues/pistes audio disponibles sur French-Stream
+    "videoQualities": ["AUTO", "VF", "VOSTFR", "VO", "VFQ"],
+    // Sous-catégories de contenu (renommé depuis contentSubtype)
+    "subCategories": ["film", "serie"],
+    // Fonctionnalités optionnelles exposées par cette extension
+    "supportsForYou": true,
+    "supportsComments": false,
     "prefs": [
         {
             "key": "username",
@@ -175,6 +203,30 @@ class DefaultExtension extends MProvider {
         var r     = await this.client.get(url, { headers: this._hdrs() });
         var items = this._parseItems(r.body);
         return { list: items, hasNextPage: items.length >= 10 };
+    }
+
+    // ─── getForYou ───────────────────────────────────────────────────────────
+    // Appelé par l'onglet « Pour vous » dans Watchtower.
+    // French-Stream n'a pas de fil personnalisé côté serveur, on retourne donc
+    // les films populaires comme contenu de découverte.
+    // Retourne un objet MPages : { list: MManga[], hasNextPage: bool }
+    async getForYou(page) {
+        // Déléguer à getPopular — même endpoint, même parsing.
+        // Une future version pourrait utiliser les préférences utilisateur
+        // (genre, langue VF/VOSTFR) pour filtrer le résultat.
+        return this.getPopular(page);
+    }
+
+    // ─── getComments ─────────────────────────────────────────────────────────
+    // Appelé par l'onglet « Commentaires » dans Watchtower.
+    // French-Stream ne fournit pas d'API publique pour les commentaires.
+    // supportsComments est false dans watchtowerSources → cet onglet reste vide.
+    // La méthode est fournie pour compatibilité avec le contrat MProvider.
+    // Retourne : { list: MComment[], hasNextPage: bool }
+    async getComments(url, page) {
+        // Non implémenté : French-Stream charge ses commentaires via JavaScript
+        // embarqué (système propriétaire) sans endpoint REST accessible.
+        return { list: [], hasNextPage: false };
     }
 
     async getDetail(url) {
