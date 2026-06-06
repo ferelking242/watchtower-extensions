@@ -198,7 +198,8 @@ class DefaultExtension extends MProvider {
                     name: title || "Regarder",
                     url: url,
                     dateUpload: "",
-                    description: metaLine
+                    description: metaLine,
+                    scanlator: "VF / VOSTFR"
                 }]
             };
         }
@@ -272,11 +273,19 @@ class DefaultExtension extends MProvider {
 
                     for (var ni = 0; ni < nums.length; ni++) {
                         var n = nums[ni];
+                        var epLangs = [];
+                        for (var li = 0; li < langs.length; li++) {
+                            var ld = epData[langs[li]];
+                            if (ld && (ld[n] || ld[String(n)])) {
+                                epLangs.push(langs[li].toUpperCase());
+                            }
+                        }
                         chapters.push({
                             name: sName + " — Ep. " + n,
                             url:  this.baseUrl + "/index.php?newsid=" + season.id + "&_fs_ep=" + n,
                             dateUpload: "",
-                            description: "Épisode " + n
+                            description: "Épisode " + n,
+                            scanlator: epLangs.join(" / ") || "VF / VOSTFR"
                         });
                     }
                 }
