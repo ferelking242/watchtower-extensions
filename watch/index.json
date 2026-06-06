@@ -70,7 +70,7 @@
     "hasCloudflare": false,
     "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/fr/frenchstream.js",
     "apiUrl": "https://french-stream.one",
-    "version": "0.4.2",
+    "version": "0.4.5",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -82,15 +82,17 @@
     "customUserAgent": "",
     "videoQualities": [
       "AUTO",
-      "1080p",
-      "720p",
-      "480p",
-      "360p"
+      "VF",
+      "VOSTFR",
+      "VO",
+      "VFQ"
     ],
-    "contentSubtype": [
+    "subCategories": [
       "film",
       "serie"
-    ]
+    ],
+    "supportsForYou": true,
+    "supportsComments": false
   },
   {
     "name": "ÃÂ¥ÃÂ°ÃÂÃÂ§ÃÂ±ÃÂ³UCÃÂ¨ÃÂµÃÂÃÂ¦ÃÂºÃÂÃÂ§ÃÂ«ÃÂ",
