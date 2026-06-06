@@ -7,12 +7,28 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/Watchtower-extensions/main/extensions/watch/icon/fr.frenchstream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.4.2",
+    "version": "0.4.3",
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
     "videoQualities": ["AUTO", "VF", "VOSTFR", "VO"],
-    "contentSubtype": ["film", "serie"]
+    "contentSubtype": ["film", "serie"],
+    "prefs": [
+        {
+            "key": "username",
+            "type": "text",
+            "label": "Nom d'utilisateur",
+            "value": "",
+            "hint": "Votre identifiant French-Stream"
+        },
+        {
+            "key": "password",
+            "type": "password",
+            "label": "Mot de passe",
+            "value": "",
+            "hint": "Votre mot de passe French-Stream"
+        }
+    ]
 }];
 
 class DefaultExtension extends MProvider {
@@ -23,6 +39,32 @@ class DefaultExtension extends MProvider {
             ? this.source.prefs.find(function(x) { return x.key === "base_url"; })
             : null;
         return (p && p.value) ? p.value.replace(/\/$/, "") : this.source.baseUrl.replace(/\/$/, "");
+    }
+
+    _getPref(key) {
+        const p = this.source.prefs
+            ? this.source.prefs.find(function(x) { return x.key === key; })
+            : null;
+        return (p && p.value) ? p.value : null;
+    }
+
+    async _ensureLogin() {
+        var username = this._getPref("username");
+        var password = this._getPref("password");
+        if (!username || !password) return;
+        try {
+            await this.client.post(
+                this.baseUrl + "/index.php?do=login",
+                {
+                    headers: Object.assign({}, this._hdrs(), {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    }),
+                    body: "login_name=" + encodeURIComponent(username) +
+                          "&login_password=" + encodeURIComponent(password) +
+                          "&login_submit=1&action=login"
+                }
+            );
+        } catch (_) {}
     }
 
     _hdrs(ref) {
@@ -103,6 +145,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getDetail(url) {
+        await this._ensureLogin();
         var r    = await this.client.get(url, { headers: this._hdrs() });
         var html = r.body;
 
@@ -130,6 +173,17 @@ class DefaultExtension extends MProvider {
                     || /<div[^>]+fdesc[^>]*>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/i.exec(html);
         var desc     = descM ? descM[1].replace(/<[^>]+>/g, "").trim() : "";
 
+        var ratingM  = /itemprop="ratingValue"[^>]*>([0-9.,]+)</.exec(html)
+                    || /<span[^>]+class="[^"]*(?:rating|note|score)[^"]*"[^>]*>\s*([0-9][0-9.,]*)\s*</.exec(html)
+                    || /data-rating="([0-9.,]+)"/.exec(html);
+        var rating   = ratingM ? ratingM[1].trim() : "";
+
+        var castM    = /(?:Acteurs?|Casting|Cast)\s*:[^<]*<[^>]+>([\s\S]*?)<\/(?:p|div|span)>/i.exec(html);
+        var cast     = castM ? castM[1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() : "";
+
+        var metaLine = [runtime, year].filter(Boolean).join(" — ");
+        if (rating) metaLine = metaLine ? metaLine + " · ★ " + rating : "★ " + rating;
+
         if (!isSerie) {
             return {
                 name: title,
@@ -138,11 +192,13 @@ class DefaultExtension extends MProvider {
                 genres: genres,
                 status: 4,
                 author: year,
+                artist: cast,
+                rating: rating,
                 chapters: [{
                     name: title || "Regarder",
                     url: url,
                     dateUpload: "",
-                    description: [runtime, year].filter(Boolean).join(" — ")
+                    description: metaLine
                 }]
             };
         }
@@ -238,6 +294,8 @@ class DefaultExtension extends MProvider {
             genres: genres,
             status: 0,
             author: year,
+            artist: cast,
+            rating: rating,
             chapters: chapters
         };
     }
