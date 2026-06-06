@@ -339,14 +339,47 @@ class DefaultExtension extends MProvider {
             }
             if (epData) await this._extractEpVideos(epData, epNum, videos, url);
         } else {
+            // Strategy 1: JSON API
             try {
                 var fr = await this.client.get(
                     this.baseUrl + "/engine/ajax/film_api.php?id=" + newsId,
                     { headers: this._ajaxHdrs(url) }
                 );
-                var api = JSON.parse(fr.body);
-                if (api && api.players) await this._extractFilmVideos(api.players, videos, url);
+                if (fr.body && fr.body.length > 5) {
+                    var api = JSON.parse(fr.body);
+                    if (api && api.players) await this._extractFilmVideos(api.players, videos, url);
+                }
             } catch (_) {}
+
+            // Strategy 2: scrape the film detail page directly for player iframes
+            if (videos.length === 0) {
+                try {
+                    var pageR = await this.client.get(url, { headers: this._hdrs(url) });
+                    var pageBody = pageR.body || "";
+                    // Extract all iframe/source src URLs that look like video players
+                    var iRe = /(?:data-src|src)\s*=\s*["'](https?:\/\/[^"']{10,400})["']/g;
+                    var im;
+                    while ((im = iRe.exec(pageBody)) !== null) {
+                        var src = im[1];
+                        if (/fsvid|vidzy|uqload|dood|voe\.sx|filmoon|netu|multiup|embed|player/i.test(src)) {
+                            await this._resolveVideoUrl(src, "AUTO", videos, "Player");
+                        }
+                    }
+                    // Also try JSON blobs embedded in the page (some sites inline player data)
+                    if (videos.length === 0) {
+                        var jsonRe = /"(?:file|src|url)"\s*:\s*"(https?:\\?\/\\?\/[^"]{10,300})"/g;
+                        var jm;
+                        while ((jm = jsonRe.exec(pageBody)) !== null) {
+                            var rawUrl = jm[1].replace(/\\\//g, "/");
+                            if (/\.m3u8|\.mp4/i.test(rawUrl)) {
+                                videos.push({ quality: "AUTO", url: rawUrl, originalUrl: rawUrl,
+                                    isM3U8: rawUrl.indexOf(".m3u8") !== -1,
+                                    headers: { "Referer": url } });
+                            }
+                        }
+                    }
+                } catch (_) {}
+            }
         }
 
         return videos;
@@ -435,11 +468,15 @@ class DefaultExtension extends MProvider {
     async _extractFilmVideos(p, videos, refUrl) {
         var PROVIDERS = [
             ["vidzy",   "ViDZY"],
+            ["fsvid",   "FsVid"],
+            ["fsvideo", "FsVideo"],
             ["uqload",  "Uqload"],
             ["dood",    "Dood"],
             ["voe",     "Voe"],
             ["filmoon", "Filmoon"],
-            ["premium", "Premium"]
+            ["premium", "Premium"],
+            ["sibnet",  "Sibnet"],
+            ["okru",    "Ok.ru"]
         ];
         var LANGS = [
             ["default", "VF"],
