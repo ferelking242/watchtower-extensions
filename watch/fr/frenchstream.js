@@ -93,12 +93,17 @@ class DefaultExtension extends MProvider {
 
     _parseItems(html) {
         var items   = [];
+
+        // Strategy 1: classic short-poster links (original FS layout)
         var blockRe = /<a[^>]+class="short-poster[^"]*"([^>]*)>([\s\S]*?)<\/a>/gi;
         var bm;
         while ((bm = blockRe.exec(html)) !== null) {
             var attrs = bm[1];
             var inner = bm[2];
-            var hrefM = /href="([^"]+newsid=\d+[^"]*)"/.exec(attrs);
+            // Accept newsid= param OR any numeric-id segment in the href
+            var hrefM = /href="([^"]+newsid=\d+[^"]*)"/.exec(attrs)
+                     || /href="(https?:\/\/[^"]+\/\d{4,}[\/"][^"]*)"/.exec(attrs)
+                     || /href="([^"]+\/[^"]+\?[^"]*newsid[^"]*)"/.exec(attrs);
             var altM  = /alt="([^"]*)"/.exec(attrs);
             var imgM  = /<img[^>]+src="([^"]+)"/i.exec(inner);
             if (!hrefM) continue;
@@ -107,7 +112,35 @@ class DefaultExtension extends MProvider {
             var image = imgM ? imgM[1] : "";
             if (title) items.push({ name: title, link: href, imageUrl: image });
         }
+
+        // Strategy 2: generic card/poster links as fallback if nothing found
+        if (items.length === 0) {
+            var re2 = /<a[^>]+href="([^"]+newsid=\d+[^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
+            var m2;
+            while ((m2 = re2.exec(html)) !== null) {
+                var href2 = m2[1].charAt(0) === "/" ? this.baseUrl + m2[1] : m2[1];
+                var inner2 = m2[2];
+                var title2M = /(?:alt|title)="([^"]{2,})"/i.exec(m2[0]);
+                var img2M   = /<img[^>]+src="([^"]+)"/i.exec(inner2);
+                var title2  = title2M ? title2M[1].trim() : "";
+                if (title2) items.push({ name: title2, link: href2, imageUrl: img2M ? img2M[1] : "" });
+            }
+        }
+
         return items;
+    }
+
+    // Extract newsId from URL params or from page HTML
+    _extractNewsId(url, html) {
+        var fromUrl = this._getParam(url, "newsid");
+        if (fromUrl) return fromUrl;
+        // Try to find newsid in the page source (embedded in JS/data attributes)
+        var m = /(?:newsid|news_id)[='":\s]+(\d{3,})/i.exec(html || "");
+        if (m) return m[1];
+        // Try a numeric segment in the URL path (e.g. /12345/ or -12345-)
+        var mPath = /[\/\-](\d{4,})[\/\-\.?]/.exec(url);
+        if (mPath) return mPath[1];
+        return null;
     }
 
     // FIX Bug 1: use /films/page/X/ instead of /films/?page=X
@@ -149,7 +182,7 @@ class DefaultExtension extends MProvider {
         var r    = await this.client.get(url, { headers: this._hdrs() });
         var html = r.body;
 
-        var newsId   = this._getParam(url, "newsid") || "";
+        var newsId   = this._extractNewsId(url, html) || "";
         var isSerie  = html.indexOf('id="serie-data"') !== -1;
 
         var titleM   = /data-title="([^"]+)"/.exec(html);
@@ -310,8 +343,17 @@ class DefaultExtension extends MProvider {
     }
 
     async getVideoList(url) {
-        var newsId = this._getParam(url, "newsid");
         var epNum  = this._getParam(url, "_fs_ep");
+
+        // Get newsId from URL param, or from page HTML if not in URL
+        var newsId = this._getParam(url, "newsid");
+        if (!newsId && epNum === null) {
+            // Film: fetch the page to extract newsId
+            try {
+                var pr = await this.client.get(url, { headers: this._hdrs() });
+                newsId = this._extractNewsId(url, pr.body);
+            } catch (_) {}
+        }
 
         if (!newsId) return [];
 
