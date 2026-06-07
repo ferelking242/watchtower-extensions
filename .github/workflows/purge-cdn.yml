@@ -1,0 +1,28 @@
+name: Purge jsDelivr CDN
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'watch/**/*.js'
+      - 'watch/**/*.json'
+      - 'repo.json'
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Purge jsDelivr cache for changed JS files
+        run: |
+          BASE="https://purge.jsdelivr.net/gh/${{ github.repository }}@main"
+          # Purge every changed .js / .json file
+          echo "${{ toJson(github.event.commits) }}" | \
+            grep -oP '"[^"]+\.(?:js|json)"' | sort -u | \
+            while read -r f; do
+              FILE=$(echo "$f" | tr -d '"')
+              echo "Purging: $FILE"
+              curl -sf "${BASE}/${FILE}" -o /dev/null && echo "  ✓ purged" || echo "  ✗ failed"
+            done
+          # Always purge frenchstream.js explicitly
+          curl -sf "${BASE}/watch/fr/frenchstream.js" -o /dev/null && echo "frenchstream.js purged" || true
+          curl -sf "${BASE}/repo.json" -o /dev/null && echo "repo.json purged" || true
