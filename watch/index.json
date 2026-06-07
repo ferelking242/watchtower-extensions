@@ -4075,8 +4075,7 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "91Porn ÃÂ¢ÃÂÃÂ Chinese homemade and Asian amateur videos"
-  }
-,
+  },
   {
     "name": "GoTVSeries",
     "id": 285745821,
@@ -4100,8 +4099,12 @@
     "notes": "",
     "editableBaseUrl": true,
     "customUserAgent": "",
-    "videoQualities": ["AUTO"],
-    "subCategories": ["serie"],
+    "videoQualities": [
+      "AUTO"
+    ],
+    "subCategories": [
+      "serie"
+    ],
     "supportsForYou": true,
     "supportsComments": false
   }
