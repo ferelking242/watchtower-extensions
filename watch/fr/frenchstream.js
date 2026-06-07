@@ -462,6 +462,58 @@ class DefaultExtension extends MProvider {
             } catch (_) {}
         }
 
+        // ── Direct newsId fallback: when tagz/get_seasons fails, use page's own newsId ──
+        // Flash S9, etc. don't have data-tagz → /static/series/{newsId}.js works directly
+        if (chapters.length === 0 && isSerie && newsId) {
+            try {
+                var v2  = Math.floor(Date.now() / 30000);
+                var epR2 = await this.client.get(
+                    this.baseUrl + "/static/series/" + newsId + ".js?v=" + v2,
+                    { headers: this._hdrs(url) }
+                );
+                if (epR2.body && epR2.body.length > 5) {
+                    var epData2 = this._parseJsonOrJs(epR2.body);
+                    if (epData2) {
+                        var titleSeasonM = /Saison\s*(\d+)/i.exec(title);
+                        var sNum2  = titleSeasonM ? titleSeasonM[1] : "1";
+                        var sName2 = "Saison " + sNum2;
+
+                        var numSet2 = {};
+                        var LKEYS   = ["vf", "vostfr", "vo"];
+                        for (var li2 = 0; li2 < LKEYS.length; li2++) {
+                            var ld2 = epData2[LKEYS[li2]];
+                            if (!ld2) continue;
+                            var ks = Object.keys(ld2);
+                            for (var ki2 = 0; ki2 < ks.length; ki2++) numSet2[ks[ki2]] = true;
+                        }
+
+                        var nums2 = Object.keys(numSet2)
+                            .map(function(k) { return parseInt(k, 10); })
+                            .filter(function(n) { return !isNaN(n); })
+                            .sort(function(a, b) { return a - b; });
+
+                        for (var ni2 = 0; ni2 < nums2.length; ni2++) {
+                            var n2 = nums2[ni2];
+                            var epLangs2 = [];
+                            for (var li3 = 0; li3 < LKEYS.length; li3++) {
+                                var ld3 = epData2[LKEYS[li3]];
+                                if (ld3 && (ld3[n2] || ld3[String(n2)])) {
+                                    epLangs2.push(LKEYS[li3].toUpperCase());
+                                }
+                            }
+                            chapters.push({
+                                name: sName2 + " — Ep. " + n2,
+                                url:  this.baseUrl + "/index.php?newsid=" + newsId + "&_fs_ep=" + n2,
+                                dateUpload: "",
+                                description: "Épisode " + n2,
+                                scanlator: epLangs2.join(" / ") || "VF / VOSTFR"
+                            });
+                        }
+                    }
+                }
+            } catch (_) {}
+        }
+
         if (chapters.length === 0) {
             chapters.push({ name: title || "Regarder", url: url, dateUpload: "" });
         }
