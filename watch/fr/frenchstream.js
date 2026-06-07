@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// French-Stream — extension Watchtower v0.4.5
+// French-Stream — extension Watchtower v0.4.6
 //
 // Ce fichier est le seul point d'entrée de l'extension.
 // Il exporte `watchtowerSources` (métadonnées) et la classe `DefaultExtension`
@@ -30,7 +30,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/Watchtower-extensions/main/extensions/watch/icon/fr.frenchstream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.4.5",
+    "version": "0.4.6",
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -744,16 +744,14 @@ class DefaultExtension extends MProvider {
     async _extractFilmVideos(p, videos, refUrl) {
         var PROVIDERS = [
             ["vidzy",   "ViDZY"],
-            ["fsvid",   "FsVid"],
-            ["fsvideo", "FsVideo"],
             ["uqload",  "Uqload"],
             ["dood",    "Dood"],
             ["voe",     "Voe"],
             ["filmoon", "Filmoon"],
-            ["premium", "Premium"],
             ["sibnet",  "Sibnet"],
             ["okru",    "Ok.ru"]
         ];
+        // fsvid / fsvideo / premium skipped — blocked by Cloudflare, causes CF challenge notifs
         var LANGS = [
             ["default", "VF"],
             ["vostfr",  "VOSTFR"],
@@ -789,9 +787,11 @@ class DefaultExtension extends MProvider {
     async _extractEpVideos(epData, epNum, videos, refUrl) {
         var LANGS    = [["vf","VF"],["vostfr","VOSTFR"],["vo","VO"]];
         var PNAMES   = {
-            premium: "Premium", vidzy: "ViDZY", uqload: "Uqload",
+            vidzy: "ViDZY", uqload: "Uqload",
             netu: "Netu", voe: "Voe", dood: "Dood", filmoon: "Filmoon"
         };
+        // fsvid / premium skipped — Cloudflare blocks + causes CF challenge notifs
+        var CF_SKIP  = { premium: true, fsvid: true, fsvideo: true };
 
         for (var li = 0; li < LANGS.length; li++) {
             var lang      = LANGS[li][0];
@@ -803,6 +803,7 @@ class DefaultExtension extends MProvider {
             var providers = Object.keys(entry);
             for (var pi = 0; pi < providers.length; pi++) {
                 var provider = providers[pi];
+                if (CF_SKIP[provider]) continue; // skip CF-blocked providers
                 var val      = entry[provider];
                 if (!val) continue;
                 var pLabel = PNAMES[provider] || provider;
