@@ -4076,4 +4076,33 @@
     "sourceCodeLanguage": 1,
     "notes": "91Porn ÃÂ¢ÃÂÃÂ Chinese homemade and Asian amateur videos"
   }
+,
+  {
+    "name": "GoTVSeries",
+    "id": 285745821,
+    "baseUrl": "https://gotvseries.top",
+    "lang": "en",
+    "typeSource": "single",
+    "iconUrl": "https://gotvseries.top/images/favicon.png",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/en/gotvseries.js",
+    "apiUrl": "https://gotvseries.top",
+    "version": "0.1.0",
+    "isManga": false,
+    "itemType": 1,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "",
+    "editableBaseUrl": true,
+    "customUserAgent": "",
+    "videoQualities": ["AUTO"],
+    "subCategories": ["serie"],
+    "supportsForYou": true,
+    "supportsComments": false
+  }
 ]
