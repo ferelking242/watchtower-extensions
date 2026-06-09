@@ -1,1 +1,7 @@
-[]
+{
+  "plugins": [],
+  "_comment": "Plugin registry \u2014 submit a PR to add your plugin",
+  "_schema": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/schema.json",
+  "_templates": "https://github.com/ferelking242/watchtower-extensions/tree/main/plugins/_templates",
+  "_lastUpdated": "2026-06-09"
+}
