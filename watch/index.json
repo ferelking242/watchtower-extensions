@@ -33,7 +33,13 @@
       "anime",
       "manga"
     ],
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeFLV",
@@ -55,7 +61,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "French-Stream",
@@ -92,7 +104,13 @@
       "serie"
     ],
     "supportsForYou": true,
-    "supportsComments": false
+    "supportsComments": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "ÃÂ¥ÃÂ°ÃÂÃÂ§ÃÂ±ÃÂ³UCÃÂ¨ÃÂµÃÂÃÂ¦ÃÂºÃÂÃÂ§ÃÂ«ÃÂ",
@@ -115,7 +133,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "VIVAMAXph",
@@ -137,7 +161,13 @@
     "appMinVerReq": "0.2.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "ÃÂ¨ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ¨ÃÂ®ÃÂ¡ÃÂ¥ÃÂÃÂ (Mikan Project)",
@@ -159,7 +189,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "TioAnime",
@@ -181,7 +217,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "SerienStream",
@@ -203,7 +245,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "CrunchyList (CR Mirror)",
@@ -225,7 +273,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeGG",
@@ -248,7 +302,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AniWorld",
@@ -270,7 +330,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "PapaDuStream",
@@ -305,7 +371,13 @@
     "contentSubtype": [
       "film",
       "serie"
-    ]
+    ],
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeWorld",
@@ -328,7 +400,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeHeaven",
@@ -350,7 +428,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Dotriv",
@@ -387,7 +471,13 @@
       "serie",
       "anime"
     ],
-    "realHomePath": "/a8634js/home/dotriv"
+    "realHomePath": "/a8634js/home/dotriv",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "ÃÂ¦ÃÂ¨ÃÂ±ÃÂ¨ÃÂÃÂ±ÃÂ¥ÃÂÃÂ¨ÃÂ¦ÃÂ¼ÃÂ« (YHDM)",
@@ -409,7 +499,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeWorld",
@@ -431,7 +527,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "123AV",
@@ -453,7 +555,13 @@
     "appMinVerReq": "0.2.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "AnimePahe",
@@ -475,7 +583,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Sudatchi",
@@ -498,7 +612,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeParadise",
@@ -521,7 +641,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Vostfree",
@@ -556,7 +682,13 @@
     "contentSubtype": [
       "anime",
       "film"
-    ]
+    ],
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "NetMirror",
@@ -578,7 +710,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeWorld",
@@ -601,7 +739,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeZZ",
@@ -624,7 +768,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "9anime (JS)",
@@ -646,7 +796,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": true
   },
   {
     "name": "AnimeWorld",
@@ -669,7 +825,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimePahe",
@@ -692,7 +854,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Autoembed",
@@ -715,7 +883,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeFLV",
@@ -737,7 +911,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Anime-Sama",
@@ -772,7 +952,13 @@
     "contentSubtype": [
       "anime",
       "manga"
-    ]
+    ],
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AllAnime",
@@ -794,7 +980,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeWorld",
@@ -817,7 +1009,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Zoro / Aniwatch",
@@ -839,7 +1037,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": true
   },
   {
     "name": "KissKH",
@@ -862,7 +1066,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeWorld",
@@ -885,7 +1095,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "VoirDrama",
@@ -920,7 +1136,13 @@
     "contentSubtype": [
       "drama",
       "anime"
-    ]
+    ],
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "NetflixMirror",
@@ -942,7 +1164,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": true,
+    "isAggregator": false,
+    "paywall": "premium",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Torrentio Anime (Torrent)",
@@ -965,7 +1193,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeZone",
@@ -999,7 +1233,13 @@
     ],
     "contentSubtype": [
       "anime"
-    ]
+    ],
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AniWorld",
@@ -1021,7 +1261,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Gogoanime (JS)",
@@ -1043,7 +1289,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AllAnime",
@@ -1065,7 +1317,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeFÃÂÃÂ©nix",
@@ -1088,7 +1346,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "360ÃÂ¨ÃÂµÃÂÃÂ¦ÃÂºÃÂ",
@@ -1111,7 +1375,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "VoirDrama.cc",
@@ -1146,7 +1416,13 @@
     "contentSubtype": [
       "drama",
       "anime"
-    ]
+    ],
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "ÃÂ¦ÃÂ¨ÃÂ±ÃÂ¨ÃÂÃÂ±ÃÂ¥ÃÂÃÂ¨ÃÂ¦ÃÂ¼ÃÂ«",
@@ -1168,7 +1444,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeSuge",
@@ -1190,7 +1472,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeWorld",
@@ -1213,7 +1501,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "KickAssAnime",
@@ -1235,7 +1529,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "HDSS",
@@ -1270,7 +1570,13 @@
     "contentSubtype": [
       "film",
       "serie"
-    ]
+    ],
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Torrentio",
@@ -1292,7 +1598,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeWorld",
@@ -1315,7 +1627,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeWorld",
@@ -1338,7 +1656,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "9AnimeTv",
@@ -1360,7 +1684,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "9AnimeTv ÃÂ¢ÃÂÃÂ Anime streaming"
+    "notes": "9AnimeTv ÃÂ¢ÃÂÃÂ Anime streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": true
   },
   {
     "name": "Kaido",
@@ -1383,7 +1713,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeWorld",
@@ -1406,7 +1742,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Echo du Marteau",
@@ -1440,7 +1782,13 @@
     ],
     "contentSubtype": [
       "anime"
-    ]
+    ],
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "JKAnime",
@@ -1462,7 +1810,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "ÃÂ¨ÃÂÃÂÃÂ¦ÃÂÃÂÃÂ¨ÃÂ®ÃÂ¡ÃÂ¥ÃÂÃÂ",
@@ -1484,7 +1838,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Gogoanime (JS)",
@@ -1507,7 +1867,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Torrentio (Torrent)",
@@ -1529,7 +1895,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "XNXX",
@@ -1550,7 +1922,13 @@
     "appMinVerReq": "0.2.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "XVideos",
@@ -1571,7 +1949,13 @@
     "appMinVerReq": "0.2.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "PornHub",
@@ -1592,7 +1976,13 @@
     "appMinVerReq": "0.2.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "SpankBang",
@@ -1613,7 +2003,13 @@
     "appMinVerReq": "0.2.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "xHamster",
@@ -1634,7 +2030,13 @@
     "appMinVerReq": "0.2.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "Eporner",
@@ -1655,7 +2057,13 @@
     "appMinVerReq": "0.2.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "RedTube",
@@ -1676,7 +2084,13 @@
     "appMinVerReq": "0.2.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "YouPorn",
@@ -1697,7 +2111,13 @@
     "appMinVerReq": "0.2.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "Tube8",
@@ -1718,7 +2138,13 @@
     "appMinVerReq": "0.2.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "TXXX",
@@ -1739,7 +2165,13 @@
     "appMinVerReq": "0.2.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "Beeg",
@@ -1760,7 +2192,13 @@
     "appMinVerReq": "0.2.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "TNAFlix",
@@ -1781,7 +2219,13 @@
     "appMinVerReq": "0.2.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "FlixGaze",
@@ -1803,7 +2247,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "FlixGaze.com ÃÂ¢ÃÂÃÂ Free Movies & TV Series streaming via ZeusDL HLS"
+    "notes": "FlixGaze.com ÃÂ¢ÃÂÃÂ Free Movies & TV Series streaming via ZeusDL HLS",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "LokLok / MovieBox",
@@ -1825,7 +2275,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Free movies + TV series streaming, captions in 12 languages. Backed by aoneroom (LokLok / MovieBox / themoviebox.xyz)."
+    "notes": "Free movies + TV series streaming, captions in 12 languages. Backed by aoneroom (LokLok / MovieBox / themoviebox.xyz).",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "MovieBox ÃÂ¢ÃÂÃÂ Movies",
@@ -1847,7 +2303,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Free movies streaming. aoneroom.com API (MovieBox / themoviebox.xyz). HLS CloudFront CDN."
+    "notes": "Free movies streaming. aoneroom.com API (MovieBox / themoviebox.xyz). HLS CloudFront CDN.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "MovieBox ÃÂ¢ÃÂÃÂ TV Series",
@@ -1869,7 +2331,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Free TV series streaming. aoneroom.com API. Subtitles in 12 languages."
+    "notes": "Free TV series streaming. aoneroom.com API. Subtitles in 12 languages.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "MovieBox ÃÂ¢ÃÂÃÂ Anime",
@@ -1891,7 +2359,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Free anime streaming via MovieBox (aoneroom.com). Subtitles EN/JP and more."
+    "notes": "Free anime streaming via MovieBox (aoneroom.com). Subtitles EN/JP and more.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "MovieBox ÃÂ¢ÃÂÃÂ Music",
@@ -1913,7 +2387,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Music videos and albums from MovieBox (aoneroom.com). HLS streams."
+    "notes": "Music videos and albums from MovieBox (aoneroom.com). HLS streams.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "MovieBox ÃÂ¢ÃÂÃÂ Live Sports",
@@ -1935,7 +2415,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Live sports events and highlights from MovieBox (aoneroom.com)."
+    "notes": "Live sports events and highlights from MovieBox (aoneroom.com).",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "MovieBox ÃÂ¢ÃÂÃÂ All",
@@ -1957,7 +2443,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Unified MovieBox browser: Movies + Series + Anime + Music + Short Films. Filter by type."
+    "notes": "Unified MovieBox browser: Movies + Series + Anime + Music + Short Films. Filter by type.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Free IPTV",
@@ -1979,7 +2471,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "8000+ free live TV channels worldwide. Powered by iptv-org. News, Sports, Movies, Kids, Music, 25+ countries."
+    "notes": "8000+ free live TV channels worldwide. Powered by iptv-org. News, Sports, Movies, Kids, Music, 25+ countries.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Internet Archive Films",
@@ -2001,7 +2499,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Free public domain films, short films, documentaries, classics, silent films. No account needed."
+    "notes": "Free public domain films, short films, documentaries, classics, silent films. No account needed.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "TV5Monde+",
@@ -2023,7 +2527,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "ChaÃÂÃÂ®ne franÃÂÃÂ§aise gratuite. Films, courts mÃÂÃÂ©trages, sÃÂÃÂ©ries, docs, jeunesse, sport. Francophonie worldwide."
+    "notes": "ChaÃÂÃÂ®ne franÃÂÃÂ§aise gratuite. Films, courts mÃÂÃÂ©trages, sÃÂÃÂ©ries, docs, jeunesse, sport. Francophonie worldwide.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Short of the Week",
@@ -2045,7 +2555,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Curated short films: Drama, Comedy, Animation, Horror, Sci-Fi, Documentary. Vimeo/YouTube embeds."
+    "notes": "Curated short films: Drama, Comedy, Animation, Horror, Sci-Fi, Documentary. Vimeo/YouTube embeds.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AniWorld",
@@ -2067,7 +2583,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "SerienStream",
@@ -2089,7 +2611,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AllAnime",
@@ -2111,7 +2639,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeGG",
@@ -2133,7 +2667,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeParadise",
@@ -2155,7 +2695,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeZZ",
@@ -2177,7 +2723,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Kaido",
@@ -2199,7 +2751,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "KickAssAnime",
@@ -2221,7 +2779,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "SubsPlease",
@@ -2243,7 +2807,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Sudatchi",
@@ -2265,7 +2835,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeFÃÂÃÂ©nix",
@@ -2287,7 +2863,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeFLV",
@@ -2309,7 +2891,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "JKAnime",
@@ -2331,7 +2919,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "TioAnime",
@@ -2353,7 +2947,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AnimeWorld",
@@ -2375,7 +2975,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Autoembed",
@@ -2397,7 +3003,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "KissKH",
@@ -2419,7 +3031,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "NetMirror",
@@ -2441,7 +3059,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Torrentio Anime (Torrent)",
@@ -2463,7 +3087,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Torrentio (Torrent)",
@@ -2485,7 +3115,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Beeg",
@@ -2507,7 +3143,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "Eporner",
@@ -2529,7 +3171,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "PornHub",
@@ -2551,7 +3199,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "RedTube",
@@ -2573,7 +3227,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "SpankBang",
@@ -2595,7 +3255,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "TNAFlix",
@@ -2617,7 +3283,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "Tube8",
@@ -2639,7 +3311,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "TXXX",
@@ -2661,7 +3339,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "xHamster",
@@ -2683,7 +3367,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "XNXX",
@@ -2705,7 +3395,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+)"
+    "notes": "Adult content (18+)",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "XVideos",
@@ -2727,7 +3423,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "YouPorn",
@@ -2749,7 +3451,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "123AV",
@@ -2771,7 +3479,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "VIVAMAXph",
@@ -2793,7 +3507,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "Moviesda",
@@ -2815,7 +3535,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "360ÃÂ¨ÃÂµÃÂÃÂ¦ÃÂºÃÂ",
@@ -2837,7 +3563,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "ÃÂ¥ÃÂ°ÃÂÃÂ§ÃÂ±ÃÂ³UCÃÂ¨ÃÂµÃÂÃÂ¦ÃÂºÃÂÃÂ§ÃÂ«ÃÂ",
@@ -2859,7 +3591,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Kaido",
@@ -2882,7 +3620,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "SubsPlease",
@@ -2905,7 +3649,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "Moviesda",
@@ -2928,7 +3678,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "KissKH",
@@ -2951,7 +3707,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "KickAssAnime",
@@ -2974,7 +3736,13 @@
     "additionalParams": "",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "isObsolete": false
+    "isObsolete": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "AsiansGoneWild",
@@ -2996,7 +3764,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "AsiansGoneWild ÃÂ¢ÃÂÃÂ amateur Asian adult videos"
+    "notes": "AsiansGoneWild ÃÂ¢ÃÂÃÂ amateur Asian adult videos",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "Beeg",
@@ -3018,7 +3792,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "Eporner",
@@ -3040,7 +3820,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "FlixGaze",
@@ -3062,7 +3848,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "FlixGaze.com ÃÂ¢ÃÂÃÂ Free Movies & TV Series streaming via ZeusDL HLS"
+    "notes": "FlixGaze.com ÃÂ¢ÃÂÃÂ Free Movies & TV Series streaming via ZeusDL HLS",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "JuicyAsians",
@@ -3084,7 +3876,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JuicyAsians ÃÂ¢ÃÂÃÂ Asian amateur and professional porn"
+    "notes": "JuicyAsians ÃÂ¢ÃÂÃÂ Asian amateur and professional porn",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "LokLok / MovieBox",
@@ -3106,7 +3904,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Free movies + TV series streaming, captions in 12 languages. Backed by aoneroom (LokLok / MovieBox / themoviebox.xyz)."
+    "notes": "Free movies + TV series streaming, captions in 12 languages. Backed by aoneroom (LokLok / MovieBox / themoviebox.xyz).",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   },
   {
     "name": "PornHub",
@@ -3128,7 +3932,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "RedTube",
@@ -3150,7 +3960,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "SpankBang",
@@ -3172,7 +3988,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "TNAFlix",
@@ -3194,7 +4016,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "Tube8",
@@ -3216,7 +4044,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "TXXX",
@@ -3238,7 +4072,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "xHamster",
@@ -3260,7 +4100,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "XNXX",
@@ -3282,7 +4128,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+)"
+    "notes": "Adult content (18+)",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "XVideos",
@@ -3304,7 +4156,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "YouPorn",
@@ -3326,7 +4184,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming"
+    "notes": "Adult content (18+) ÃÂ¢ÃÂÃÂ ZeusDL powered streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "7MMTV",
@@ -3348,7 +4212,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "7MMTV ÃÂ¢ÃÂÃÂ censored and uncensored JAV online"
+    "notes": "7MMTV ÃÂ¢ÃÂÃÂ censored and uncensored JAV online",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "ABJav",
@@ -3370,7 +4240,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "ABJav ÃÂ¢ÃÂÃÂ uncensored and censored JAV streaming"
+    "notes": "ABJav ÃÂ¢ÃÂÃÂ uncensored and censored JAV streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "AVPorner",
@@ -3392,7 +4268,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "AV porn streaming ÃÂ¢ÃÂÃÂ Japanese and Asian content"
+    "notes": "AV porn streaming ÃÂ¢ÃÂÃÂ Japanese and Asian content",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "BestJapanesePornTV",
@@ -3414,7 +4296,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "BestJapanesePornTV ÃÂ¢ÃÂÃÂ curated Japanese porn streaming"
+    "notes": "BestJapanesePornTV ÃÂ¢ÃÂÃÂ curated Japanese porn streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "BestJavPorn",
@@ -3436,7 +4324,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Best JAV Porn ÃÂ¢ÃÂÃÂ free Japanese adult videos"
+    "notes": "Best JAV Porn ÃÂ¢ÃÂÃÂ free Japanese adult videos",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "JapanWhores",
@@ -3458,7 +4352,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JapanWhores ÃÂ¢ÃÂÃÂ free Japanese porn tube"
+    "notes": "JapanWhores ÃÂ¢ÃÂÃÂ free Japanese porn tube",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "JAVBestTV",
@@ -3480,7 +4380,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVBestTV ÃÂ¢ÃÂÃÂ best quality JAV streaming"
+    "notes": "JAVBestTV ÃÂ¢ÃÂÃÂ best quality JAV streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "JAVBraze",
@@ -3502,7 +4408,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVBraze ÃÂ¢ÃÂÃÂ Japanese AV streaming"
+    "notes": "JAVBraze ÃÂ¢ÃÂÃÂ Japanese AV streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "JAVComCo",
@@ -3524,7 +4436,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVComCo ÃÂ¢ÃÂÃÂ JAV streaming and download portal"
+    "notes": "JAVComCo ÃÂ¢ÃÂÃÂ JAV streaming and download portal",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "JAVDoe",
@@ -3546,7 +4464,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAV free streaming ÃÂ¢ÃÂÃÂ Japanese porn HD"
+    "notes": "JAV free streaming ÃÂ¢ÃÂÃÂ Japanese porn HD",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "JAVFun",
@@ -3568,7 +4492,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVFun ÃÂ¢ÃÂÃÂ free Japanese adult video streaming"
+    "notes": "JAVFun ÃÂ¢ÃÂÃÂ free Japanese adult video streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "JAVGiga",
@@ -3590,7 +4520,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVGiga ÃÂ¢ÃÂÃÂ free JAV streaming online"
+    "notes": "JAVGiga ÃÂ¢ÃÂÃÂ free JAV streaming online",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "JAV.guru",
@@ -3612,7 +4548,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAV WordPress site ÃÂ¢ÃÂÃÂ Japanese AV streaming"
+    "notes": "JAV WordPress site ÃÂ¢ÃÂÃÂ Japanese AV streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "JAVHDToday",
@@ -3634,7 +4576,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVHDToday ÃÂ¢ÃÂÃÂ high definition JAV streaming"
+    "notes": "JAVHDToday ÃÂ¢ÃÂÃÂ high definition JAV streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "JAVKing",
@@ -3656,7 +4604,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVKing ÃÂ¢ÃÂÃÂ free Japanese AV streaming"
+    "notes": "JAVKing ÃÂ¢ÃÂÃÂ free Japanese AV streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "JAVLeak",
@@ -3678,7 +4632,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVLeak ÃÂ¢ÃÂÃÂ JAV HD streaming, Japanese porn movies"
+    "notes": "JAVLeak ÃÂ¢ÃÂÃÂ JAV HD streaming, Japanese porn movies",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "JAVMost",
@@ -3700,7 +4660,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Watch free JAV online streaming"
+    "notes": "Watch free JAV online streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "JAVsb",
@@ -3722,7 +4688,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVsb ÃÂ¢ÃÂÃÂ Japanese adult video streaming"
+    "notes": "JAVsb ÃÂ¢ÃÂÃÂ Japanese adult video streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "JAVTasty",
@@ -3744,7 +4716,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVTasty ÃÂ¢ÃÂÃÂ free Japanese porn streaming"
+    "notes": "JAVTasty ÃÂ¢ÃÂÃÂ free Japanese porn streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "JAVWine",
@@ -3766,7 +4744,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAVWine ÃÂ¢ÃÂÃÂ curated Japanese AV streaming"
+    "notes": "JAVWine ÃÂ¢ÃÂÃÂ curated Japanese AV streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "KissJAV",
@@ -3788,7 +4772,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Kiss JAV ÃÂ¢ÃÂÃÂ free Japanese AV streaming"
+    "notes": "Kiss JAV ÃÂ¢ÃÂÃÂ free Japanese AV streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "MaxJav",
@@ -3810,7 +4800,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "MaxJav ÃÂ¢ÃÂÃÂ free JAV streaming"
+    "notes": "MaxJav ÃÂ¢ÃÂÃÂ free JAV streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "MissAV",
@@ -3832,7 +4828,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAV streaming ÃÂ¢ÃÂÃÂ content always Japanese, multi-language UI"
+    "notes": "JAV streaming ÃÂ¢ÃÂÃÂ content always Japanese, multi-language UI",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "MyThav",
@@ -3854,7 +4856,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "MyThav ÃÂ¢ÃÂÃÂ JAV streaming portal"
+    "notes": "MyThav ÃÂ¢ÃÂÃÂ JAV streaming portal",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "NJAV",
@@ -3876,7 +4884,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "NJAV ÃÂ¢ÃÂÃÂ HD JAV streaming, multi-language (en/ja/zh)"
+    "notes": "NJAV ÃÂ¢ÃÂÃÂ HD JAV streaming, multi-language (en/ja/zh)",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "RJAV",
@@ -3898,7 +4912,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "RJAV ÃÂ¢ÃÂÃÂ Japanese AV streaming portal"
+    "notes": "RJAV ÃÂ¢ÃÂÃÂ Japanese AV streaming portal",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "SupJav",
@@ -3920,7 +4940,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAV streaming ÃÂ¢ÃÂÃÂ subtitled Japanese AV"
+    "notes": "JAV streaming ÃÂ¢ÃÂÃÂ subtitled Japanese AV",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "TokyoMotion",
@@ -3942,7 +4968,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Japanese porn tube ÃÂ¢ÃÂÃÂ TokyoMotion"
+    "notes": "Japanese porn tube ÃÂ¢ÃÂÃÂ TokyoMotion",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "VJav",
@@ -3964,7 +4996,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "JAV streaming site"
+    "notes": "JAV streaming site",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "ZeroJav",
@@ -3986,7 +5024,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "ZeroJav ÃÂ¢ÃÂÃÂ free JAV streaming, no registration"
+    "notes": "ZeroJav ÃÂ¢ÃÂÃÂ free JAV streaming, no registration",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "SexKBJ",
@@ -4008,7 +5052,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "SexKBJ ÃÂ¢ÃÂÃÂ Korean BJ and Asian cam videos"
+    "notes": "SexKBJ ÃÂ¢ÃÂÃÂ Korean BJ and Asian cam videos",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "SexTB",
@@ -4030,7 +5080,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "SexTB ÃÂ¢ÃÂÃÂ Korean adult and Asian videos"
+    "notes": "SexTB ÃÂ¢ÃÂÃÂ Korean adult and Asian videos",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "XKorean",
@@ -4052,7 +5108,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "XKorean ÃÂ¢ÃÂÃÂ Korean adult videos and BJ content"
+    "notes": "XKorean ÃÂ¢ÃÂÃÂ Korean adult videos and BJ content",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "91Porn",
@@ -4074,7 +5136,13 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "91Porn ÃÂ¢ÃÂÃÂ Chinese homemade and Asian amateur videos"
+    "notes": "91Porn ÃÂ¢ÃÂÃÂ Chinese homemade and Asian amateur videos",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   },
   {
     "name": "GoTVSeries",
@@ -4106,6 +5174,12 @@
       "serie"
     ],
     "supportsForYou": true,
-    "supportsComments": false
+    "supportsComments": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": false
   }
 ]

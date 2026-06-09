@@ -19,6 +19,10 @@
     "appMinVerReq": "0.6.1",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "ROM downloads — PSP, PS2, GBA, SNES, N64, NDS and more"
+    "notes": "ROM downloads — PSP, PS2, GBA, SNES, N64, NDS and more",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
   }
 ]

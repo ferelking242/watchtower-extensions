@@ -19,7 +19,11 @@
     "appMinVerReq": "0.6.1",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "EPUBs are automatically downloaded to view chapters! Downloads from Libgen might be slow!"
+    "notes": "EPUBs are automatically downloaded to view chapters! Downloads from Libgen might be slow!",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
   },
   {
     "name": "Novel Updates",
@@ -41,7 +45,11 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "This extension requires you to login to view the chapters!"
+    "notes": "This extension requires you to login to view the chapters!",
+    "requiresAccount": true,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "freemium"
   },
   {
     "name": "Novelbuddy",
@@ -63,7 +71,11 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
   },
   {
     "name": "NovelFire",
@@ -85,7 +97,11 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": true,
+    "paywall": "free"
   },
   {
     "name": "Web Novel Translations",
@@ -107,7 +123,11 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
   },
   {
     "name": "Wordrain69",
@@ -129,7 +149,11 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "",
+    "requiresAccount": true,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
   },
   {
     "name": "Royal Road",
@@ -151,7 +175,11 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "#1 platform for webfiction: LitRPG, Fantasy, Isekai, Sci-Fi, Horror. All stories FREE."
+    "notes": "#1 platform for webfiction: LitRPG, Fantasy, Isekai, Sci-Fi, Horror. All stories FREE.",
+    "requiresAccount": true,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "freemium"
   },
   {
     "name": "NovelCool",
@@ -173,7 +201,11 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Light novels: Wuxia, Xianxia, Xuanhuan, Isekai, Romance. Multi-language."
+    "notes": "Light novels: Wuxia, Xianxia, Xuanhuan, Isekai, Romance. Multi-language.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": true,
+    "paywall": "free"
   },
   {
     "name": "WuxiaWorld",
@@ -195,7 +227,11 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Chinese Wuxia, Xianxia, Xuanhuan and Korean/Japanese translated novels. Free."
+    "notes": "Chinese Wuxia, Xianxia, Xuanhuan and Korean/Japanese translated novels. Free.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
   },
   {
     "name": "NovelHub",
@@ -217,28 +253,10 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Free web novels (Romance, Fantasy, Mystery, Sci-fi, LGBT+, Urban...). Same publisher as LokLok / MovieBox."
-  },
-  {
-    "name": "ملوك الروايات",
-    "id": 756554088,
-    "baseUrl": "https://kolnovel.com",
-    "lang": "ar",
-    "typeSource": "single",
-    "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://kolnovel.com",
-    "dateFormat": "",
-    "dateFormatLocale": "",
-    "isNsfw": false,
-    "hasCloudflare": false,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/entityJY/mangayomi-extensions-eJ/main/javascript/novel/src/ar/kolnovel.js",
-    "apiUrl": "",
-    "version": "0.0.1",
-    "isManga": false,
-    "itemType": 2,
-    "isFullData": false,
-    "appMinVerReq": "0.5.0",
-    "additionalParams": "",
-    "sourceCodeLanguage": 1,
-    "notes": ""
+    "notes": "Free web novels (Romance, Fantasy, Mystery, Sci-fi, LGBT+, Urban...). Same publisher as LokLok / MovieBox.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
   }
 ]

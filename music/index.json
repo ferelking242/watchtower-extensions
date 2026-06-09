@@ -19,7 +19,11 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "SoundCloud — Free music streaming"
+    "notes": "SoundCloud — Free music streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
   },
   {
     "name": "Deezer",
@@ -41,7 +45,11 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Deezer — Catalogue mondial (previews 30s)"
+    "notes": "Deezer — Catalogue mondial (previews 30s)",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
   },
   {
     "name": "YouTube Music",
@@ -63,7 +71,11 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "YouTube Music — Stream music via YouTube"
+    "notes": "YouTube Music — Stream music via YouTube",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
   },
   {
     "name": "Bandcamp",
@@ -85,6 +97,10 @@
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Bandcamp — Independent artists & albums (free streaming)"
+    "notes": "Bandcamp — Independent artists & albums (free streaming)",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
   }
 ]
