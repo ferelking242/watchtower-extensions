@@ -1,48 +1,189 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Watchtower Plugin Manifest",
+  "description": "Schema for Watchtower plugin manifests. Each plugin must have a manifest.json at its root.",
   "type": "object",
   "required": ["id", "name", "version", "author", "runtime", "ui", "permissions"],
   "additionalProperties": false,
   "properties": {
     "id": {
       "type": "string",
-      "pattern": "^[a-z0-9]+(?:\\.[a-z0-9]+)+$",
-      "description": "Reverse-domain unique identifier, e.g. com.watchtower.my-plugin"
+      "pattern": "^[a-z0-9]+(?:\\.[a-z0-9-]+)+$",
+      "description": "Reverse-domain unique identifier. e.g. com.watchtower.tiktok-dl"
     },
-    "name": { "type": "string", "minLength": 2, "maxLength": 64 },
-    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
-    "author": { "type": "string" },
-    "description": { "type": "string", "maxLength": 512 },
-    "icon": { "type": "string", "description": "Relative path to icon (64x64 PNG) or HTTPS URL" },
-    "screenshots": { "type": "array", "items": { "type": "string" }, "maxItems": 6 },
+    "name":    { "type": "string", "minLength": 2, "maxLength": 64 },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$", "description": "Semver version string" },
+    "author":  { "type": "string" },
+    "description": { "type": "string", "maxLength": 1024 },
+    "longDescription": { "type": "string", "description": "Full Markdown description shown on the detail page" },
+    "icon": { "type": "string", "description": "Relative path to 64×64 PNG icon or HTTPS URL" },
+    "banner": { "type": "string", "description": "Optional banner image (HTTPS URL or relative path) shown on detail page" },
+    "screenshots": {
+      "type": "array",
+      "items": { "type": "string" },
+      "maxItems": 8,
+      "description": "List of screenshot URLs or relative paths shown in the detail page carousel"
+    },
     "category": {
       "type": "string",
       "enum": ["sync", "theme", "downloader", "reader", "player", "tools", "social", "ai", "other"]
     },
     "runtime": {
       "type": "string",
-      "enum": ["javascript", "wasm", "remote", "binary"]
+      "enum": ["javascript", "wasm", "remote", "binary"],
+      "description": "Execution environment for plugin logic"
     },
     "ui": {
       "type": "string",
-      "enum": ["flutter_eval", "webview", "declarative", "builtin"]
+      "enum": ["flutter_eval", "webview", "declarative", "builtin"],
+      "description": "UI system used by the plugin"
     },
     "permissions": {
       "type": "array",
+      "description": "Watchtower API permissions the plugin requires. The user must grant these before installation.",
       "items": {
         "type": "string",
         "enum": [
-          "network", "storage.read", "storage.write", "downloads",
-          "notifications", "player", "reader", "account", "clipboard",
-          "camera", "microphone", "filesystem", "database", "crypto"
+          "network",
+          "storage.read",
+          "storage.write",
+          "downloads",
+          "notifications",
+          "player",
+          "reader",
+          "account",
+          "clipboard",
+          "camera",
+          "microphone",
+          "filesystem",
+          "database",
+          "crypto",
+          "system",
+          "cron",
+          "anilist",
+          "debrid",
+          "torrent-client"
         ]
+      },
+      "uniqueItems": true
+    },
+    "requirements": {
+      "type": "array",
+      "description": "External binary dependencies required by this plugin (e.g. zeusdl, aria2, ffmpeg, yt-dlp).",
+      "items": {
+        "type": "object",
+        "required": ["id", "version"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Binary identifier as registered in Watchtower's binary manager. e.g. zeusdl, aria2, ffmpeg, yt-dlp, aria2c"
+          },
+          "version": {
+            "type": "string",
+            "description": "Semver version constraint. e.g. >=1.0.0, ^2.0.0, *"
+          },
+          "optional": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, the plugin works without this binary (reduced functionality)"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Human-readable explanation of why this binary is needed"
+          }
+        }
+      }
+    },
+    "commandScopes": {
+      "type": "array",
+      "description": "Specific binary commands this plugin is allowed to execute. Requires the 'system' permission.",
+      "items": {
+        "type": "object",
+        "required": ["command"],
+        "additionalProperties": false,
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "The binary executable name (must match a requirement id)"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable explanation of what this command does"
+          },
+          "args": {
+            "type": "array",
+            "description": "Allowed argument patterns for this command",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "description": "Fixed argument value (e.g. --format, --output)"
+                },
+                "validator": {
+                  "type": "string",
+                  "description": "Regex pattern to validate a dynamic argument. Special: $ARGS = any, $PATH = any valid path, $URL = any URL"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "networkAccess": {
+      "type": "object",
+      "description": "Granular network access control. Required when using the 'network' permission.",
+      "additionalProperties": false,
+      "properties": {
+        "allowedDomains": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of allowed domains. Use * for wildcard. Wildcard requires 'reasoning'. e.g. ['*.tiktok.com', 'api.example.com']"
+        },
+        "reasoning": {
+          "type": "string",
+          "description": "Required when allowedDomains contains '*'. Explain why unrestricted network access is needed."
+        }
+      }
+    },
+    "readPaths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Filesystem paths the plugin may read. Requires 'filesystem' permission. Use $DOWNLOADS, $DOCUMENTS, $CACHE macros."
+    },
+    "writePaths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Filesystem paths the plugin may write to. Requires 'filesystem' permission."
+    },
+    "unsafeFlags": {
+      "type": "array",
+      "description": "Unsafe capabilities. Plugins using these get a warning badge and cannot be auto-updated.",
+      "items": {
+        "type": "object",
+        "required": ["flag", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "flag": {
+            "type": "string",
+            "enum": ["dom-script-manipulation", "dom-link-manipulation", "unrestricted-network", "unrestricted-filesystem"]
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why this unsafe flag is needed"
+          }
+        }
       }
     },
     "watchtower": {
       "type": "object",
+      "description": "Watchtower app compatibility info",
+      "additionalProperties": false,
       "properties": {
-        "minVersion": { "type": "string" },
+        "minVersion": { "type": "string", "description": "Minimum Watchtower version required. e.g. 1.0.0" },
+        "semverConstraint": { "type": "string", "description": "Full semver constraint. e.g. >=1.0.0 <2.0.0" },
         "apis": {
           "type": "array",
           "items": {
@@ -50,25 +191,58 @@
             "enum": [
               "Storage", "Download", "Notification", "Player", "Reader",
               "HTTP", "Database", "Cache", "Crypto", "Media", "Search",
-              "Theme", "Localization", "Account", "Marketplace"
+              "Theme", "Localization", "Account", "Marketplace",
+              "Cron", "System", "AniList", "Debrid", "TorrentClient"
             ]
           }
         }
       }
     },
-    "tags": { "type": "array", "items": { "type": "string" }, "maxItems": 10 },
-    "license": { "type": "string" },
+    "userConfig": {
+      "type": "object",
+      "description": "User-configurable settings shown in the plugin settings screen",
+      "additionalProperties": false,
+      "properties": {
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["key", "type", "label"],
+            "properties": {
+              "key":          { "type": "string" },
+              "type":         { "type": "string", "enum": ["string", "number", "boolean", "select", "secret"] },
+              "label":        { "type": "string" },
+              "description":  { "type": "string" },
+              "default":      {},
+              "options":      { "type": "array", "items": { "type": "string" } },
+              "required":     { "type": "boolean", "default": false }
+            }
+          }
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "maxItems": 10
+    },
+    "license":    { "type": "string" },
     "repository": { "type": "string", "format": "uri" },
-    "changelog": { "type": "string" },
+    "homepage":   { "type": "string", "format": "uri" },
+    "changelog":  { "type": "string", "description": "URL or relative path to CHANGELOG.md" },
     "endpoint": {
       "type": "string",
       "format": "uri",
       "description": "Required when runtime is 'remote'. HTTPS endpoint URL."
     },
-    "isNsfw": { "type": "boolean", "default": false },
+    "isNsfw":          { "type": "boolean", "default": false },
     "requiresAccount": { "type": "boolean", "default": false },
-    "paywall": { "type": "string", "enum": ["free", "freemium", "premium"], "default": "free" }
+    "paywall": {
+      "type": "string",
+      "enum": ["free", "freemium", "premium"],
+      "default": "free"
+    }
   },
-  "if": { "properties": { "runtime": { "const": "remote" } }, "required": ["runtime"] },
+  "if":   { "properties": { "runtime": { "const": "remote" } }, "required": ["runtime"] },
   "then": { "required": ["endpoint"] }
 }

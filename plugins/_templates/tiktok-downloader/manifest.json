@@ -1,0 +1,90 @@
+{
+  "id": "com.watchtower.tiktok-downloader",
+  "name": "TikTok Downloader",
+  "version": "1.0.0",
+  "author": "Watchtower Team",
+  "description": "Download TikTok videos and slideshows in HD without watermark, using ZeusDL.",
+  "longDescription": "Download any TikTok video, slideshow or audio track directly into Watchtower. Supports watermark removal, HD quality, audio-only mode, and batch downloads from profiles or hashtags.\n\n**Requires ZeusDL** — Watchtower's built-in download engine that handles TikTok's anti-bot protection, rotating sessions and rate-limiting automatically.",
+  "icon": "assets/icon.png",
+  "category": "downloader",
+  "runtime": "javascript",
+  "ui": "webview",
+  "permissions": [
+    "network",
+    "downloads",
+    "storage.read",
+    "storage.write",
+    "notifications",
+    "filesystem"
+  ],
+  "requirements": [
+    {
+      "id": "zeusdl",
+      "version": ">=1.0.0",
+      "optional": false,
+      "reason": "ZeusDL handles TikTok session management, watermark removal and HD extraction. Without it, downloads are unavailable."
+    },
+    {
+      "id": "ffmpeg",
+      "version": ">=5.0.0",
+      "optional": true,
+      "reason": "FFmpeg is used to merge audio+video streams for the highest quality. Without it, quality is limited to 480p."
+    }
+  ],
+  "commandScopes": [
+    {
+      "command": "zeusdl",
+      "description": "Download TikTok videos without watermark",
+      "args": [
+        { "value": "--url" },
+        { "validator": "^https://(?:www\\.)?tiktok\\.com/.+$" },
+        { "value": "--output" },
+        { "validator": "$PATH" },
+        { "value": "--format" },
+        { "validator": "^(mp4|mp3|webm)$" },
+        { "value": "--quality" },
+        { "validator": "^(1080p|720p|480p|360p|audio)$" },
+        { "value": "--no-watermark" }
+      ]
+    },
+    {
+      "command": "ffmpeg",
+      "description": "Merge audio and video streams",
+      "args": [
+        { "value": "-i" }, { "validator": "$PATH" },
+        { "value": "-i" }, { "validator": "$PATH" },
+        { "value": "-c:v" }, { "value": "copy" },
+        { "value": "-c:a" }, { "value": "aac" },
+        { "validator": "$PATH" }
+      ]
+    }
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "*.tiktok.com",
+      "*.tiktokcdn.com",
+      "*.tiktokv.com",
+      "*.bytedance.com"
+    ]
+  },
+  "writePaths": ["$DOWNLOADS/TikTok"],
+  "watchtower": {
+    "minVersion": "1.0.0",
+    "apis": ["HTTP", "Download", "Notification", "Storage", "Cache"]
+  },
+  "userConfig": {
+    "fields": [
+      { "key": "defaultQuality",  "type": "select",  "label": "Default quality",  "options": ["1080p","720p","480p","360p","audio only"], "default": "720p" },
+      { "key": "saveFolder",      "type": "string",  "label": "Save folder",       "default": "$DOWNLOADS/TikTok", "description": "Where to save downloaded files" },
+      { "key": "removeWatermark", "type": "boolean", "label": "Remove watermark",  "default": true },
+      { "key": "audioOnly",       "type": "boolean", "label": "Audio only by default", "default": false },
+      { "key": "autoRename",      "type": "boolean", "label": "Auto-rename with creator name", "default": true }
+    ]
+  },
+  "tags": ["tiktok", "download", "video", "watermark-free", "hd", "social"],
+  "license": "MIT",
+  "repository": "https://github.com/ferelking242/watchtower-extensions/tree/main/plugins/_templates/tiktok-downloader",
+  "isNsfw": false,
+  "requiresAccount": false,
+  "paywall": "free"
+}
