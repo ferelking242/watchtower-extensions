@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TikTok Downloader</title>
+  <style>
+    /* ── Reset & Variables ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0e0e0e;
+      --bg2:      #1a1a1a;
+      --bg3:      #242424;
+      --border:   #2e2e2e;
+      --brand:    #fe2c55;
+      --brand2:   #25f4ee;
+      --text:     #f1f1f2;
+      --text2:    #8e8e93;
+      --success:  #34c759;
+      --warn:     #ff9f0a;
+      --error:    #ff3b30;
+      --radius:   14px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Segoe UI, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Navigation ── */
+    .nav {
+      display: flex;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 4px;
+      flex-shrink: 0;
+    }
+    .nav-tab {
+      flex: 1;
+      padding: 12px 8px 10px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text2);
+      cursor: pointer;
+      border: none;
+      background: none;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .nav-tab .icon { font-size: 20px; }
+    .nav-tab.active { color: var(--brand); border-bottom-color: var(--brand); }
+
+    /* ── Scrollable content ── */
+    .screen { flex: 1; overflow-y: auto; padding: 16px; display: none; }
+    .screen.active { display: block; }
+
+    /* ── URL input section ── */
+    .url-section { margin-bottom: 20px; }
+    .url-box {
+      display: flex;
+      gap: 8px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 4px 4px 4px 14px;
+      align-items: center;
+      transition: border-color 0.2s;
+    }
+    .url-box:focus-within { border-color: var(--brand); }
+    .url-input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      padding: 10px 0;
+    }
+    .url-input::placeholder { color: var(--text2); }
+    .paste-btn {
+      padding: 8px 14px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text2);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-weight: 600;
+    }
+    .paste-btn:hover { background: var(--border); color: var(--text); }
+
+    /* ── Video preview card ── */
+    .preview-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .preview-card.visible { display: block; }
+
+    .preview-thumb {
+      position: relative;
+      background: #000;
+    }
+    .preview-thumb img {
+      width: 100%;
+      aspect-ratio: 9/5;
+      object-fit: cover;
+      display: block;
+    }
+    .preview-thumb .duration-badge {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: #000a;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      backdrop-filter: blur(4px);
+    }
+    .preview-thumb .type-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: var(--brand);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .preview-info {
+      padding: 14px;
+    }
+    .preview-author {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .preview-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg3);
+      object-fit: cover;
+    }
+    .preview-author-name { font-size: 13px; font-weight: 700; }
+    .preview-title {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.4;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .preview-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 11px;
+      color: var(--text2);
+      margin-bottom: 14px;
+    }
+    .preview-stats span { display: flex; align-items: center; gap: 4px; }
+
+    .music-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg3);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 11px;
+      color: var(--text2);
+      border: 1px solid var(--border);
+    }
+    .music-badge .note { font-size: 14px; animation: spin 3s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Download options ── */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .opt-label { font-size: 11px; color: var(--text2); font-weight: 600; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .opt-select {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 13px;
+      appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238e8e93'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+    .opt-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .opt-toggle-label { font-size: 13px; }
+    .toggle-input { display: none; }
+    .toggle-track {
+      width: 36px; height: 20px;
+      background: var(--border);
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-input:checked + .toggle-track { background: var(--brand); }
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      left: 2px; top: 2px;
+      width: 16px; height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .toggle-input:checked + .toggle-track::after { transform: translateX(16px); }
+
+    /* ── Download button ── */
+    .dl-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--brand), #ff0055);
+      border: none;
+      border-radius: var(--radius);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 20px var(--brand)44;
+    }
+    .dl-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 28px var(--brand)66; }
+    .dl-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── Info banner ── */
+    .info-banner {
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .info-banner.error  { background: #ff3b3011; border: 1px solid #ff3b30; color: #ff3b30; }
+    .info-banner.warn   { background: #ff9f0a11; border: 1px solid #ff9f0a; color: #ff9f0a; }
+    .info-banner.ok     { background: #34c75911; border: 1px solid #34c759; color: #34c759; }
+    .info-banner.info   { background: #25f4ee11; border: 1px solid #25f4ee; color: #25f4ee; }
+    .info-banner.hidden { display: none; }
+
+    /* ── Spinner ── */
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid #fff4;
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── History ── */
+    .history-item {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+    .history-thumb {
+      width: 56px;
+      height: 44px;
+      border-radius: 8px;
+      background: var(--bg3);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .history-meta { flex: 1; min-width: 0; }
+    .history-title {
+      font-size: 13px;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .history-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+    .history-badge {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      font-weight: 600;
+    }
+    .history-empty { text-align: center; color: var(--text2); padding: 40px 20px; font-size: 14px; }
+
+    /* ── Settings ── */
+    .settings-section { margin-bottom: 20px; }
+    .settings-title { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; padding: 0 2px; }
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 14px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 6px;
+    }
+    .setting-info { flex: 1; }
+    .setting-label { font-size: 14px; font-weight: 500; }
+    .setting-desc  { font-size: 11px; color: var(--text2); margin-top: 2px; }
+    .setting-input {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 13px;
+      padding: 6px 10px;
+      width: 140px;
+      outline: none;
+    }
+    .setting-input:focus { border-color: var(--brand); }
+    .save-btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--brand);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .save-btn:hover { opacity: 0.85; }
+
+    /* ── Binary status ── */
+    .binary-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+    }
+    .binary-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .binary-dot.ok      { background: var(--success); box-shadow: 0 0 6px var(--success); }
+    .binary-dot.missing { background: var(--error);   box-shadow: 0 0 6px var(--error); }
+    .binary-dot.warn    { background: var(--warn);    box-shadow: 0 0 6px var(--warn); }
+  </style>
+</head>
+<body>
+
+<!-- Navigation tabs -->
+<nav class="nav">
+  <button class="nav-tab active" onclick="showTab('download')" id="tab-download">
+    <span class="icon">⬇️</span> Download
+  </button>
+  <button class="nav-tab" onclick="showTab('history')" id="tab-history">
+    <span class="icon">🕐</span> History
+  </button>
+  <button class="nav-tab" onclick="showTab('settings')" id="tab-settings">
+    <span class="icon">⚙️</span> Settings
+  </button>
+</nav>
+
+<!-- ── DOWNLOAD TAB ── -->
+<div class="screen active" id="screen-download">
+
+  <!-- Binary status -->
+  <div id="binary-banner" class="info-banner info hidden">
+    <span>ℹ️</span>
+    <span id="binary-text"></span>
+  </div>
+
+  <!-- URL input -->
+  <div class="url-section">
+    <div class="opt-label">TikTok URL</div>
+    <div class="url-box">
+      <input class="url-input" id="url-input" type="url"
+        placeholder="https://www.tiktok.com/@user/video/..." />
+      <button class="paste-btn" onclick="pasteUrl()">📋 Paste</button>
+    </div>
+  </div>
+
+  <!-- Status banner -->
+  <div id="status-banner" class="info-banner hidden">
+    <div id="status-spinner" class="spinner" style="display:none"></div>
+    <span id="status-text"></span>
+  </div>
+
+  <!-- Video preview -->
+  <div class="preview-card" id="preview-card">
+    <div class="preview-thumb">
+      <img id="preview-thumb-img" src="" alt="Thumbnail" />
+      <span class="duration-badge" id="preview-duration"></span>
+      <span class="type-badge" id="preview-type">TikTok</span>
+    </div>
+    <div class="preview-info">
+      <div class="preview-author">
+        <img class="preview-avatar" id="preview-avatar" src="" alt="" />
+        <span class="preview-author-name" id="preview-author"></span>
+      </div>
+      <div class="preview-title" id="preview-title"></div>
+      <div class="preview-stats" id="preview-stats"></div>
+      <div class="music-badge" id="preview-music">
+        <span class="note">🎵</span>
+        <span id="preview-music-text"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Download options -->
+  <div id="dl-options" style="display:none">
+    <div class="options-grid">
+      <div>
+        <div class="opt-label">Quality</div>
+        <select class="opt-select" id="quality-select">
+          <option value="1080p">1080p HD</option>
+          <option value="720p" selected>720p</option>
+          <option value="480p">480p</option>
+          <option value="360p">360p</option>
+          <option value="audio only">Audio only</option>
+        </select>
+      </div>
+      <div>
+        <div class="opt-label">Format</div>
+        <select class="opt-select" id="format-select">
+          <option value="mp4" selected>MP4 Video</option>
+          <option value="mp3">MP3 Audio</option>
+          <option value="webm">WebM</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="opt-toggle" style="margin-bottom:14px">
+      <span class="opt-toggle-label">🚫 Remove watermark</span>
+      <label>
+        <input type="checkbox" class="toggle-input" id="watermark-toggle" checked />
+        <div class="toggle-track"></div>
+      </label>
+    </div>
+
+    <button class="dl-btn" id="dl-btn" onclick="startDownload()">
+      <span>⬇️</span> Download
+    </button>
+  </div>
+
+  <!-- Idle state -->
+  <div id="idle-state" style="text-align:center;padding:40px 20px;color:var(--text2)">
+    <div style="font-size:48px;margin-bottom:12px">🎵</div>
+    <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px">TikTok Downloader</div>
+    <div style="font-size:13px">Paste a TikTok URL above to get started</div>
+  </div>
+</div>
+
+<!-- ── HISTORY TAB ── -->
+<div class="screen" id="screen-history">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div style="font-size:16px;font-weight:700">Download History</div>
+    <button onclick="clearHistory()" style="font-size:12px;color:var(--error);background:none;border:none;cursor:pointer;font-weight:600">Clear all</button>
+  </div>
+  <div id="history-list"></div>
+</div>
+
+<!-- ── SETTINGS TAB ── -->
+<div class="screen" id="screen-settings">
+  <div class="settings-section">
+    <div class="settings-title">Binaries</div>
+    <div class="setting-row">
+      <div class="setting-info">
+        <div class="setting-label">ZeusDL</div>
+        <div class="setting-desc">Required for downloading</div>
+      </div>
+      <div class="binary-status">
+        <div class="binary-dot" id="dot-zeusdl"></div>
+        <span id="label-zeusdl">Checking…</span>
+      </div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-info">
+        <div class="setting-label">FFmpeg</div>
+        <div class="setting-desc">Optional — enables HD quality</div>
+      </div>
+      <div class="binary-status">
+        <div class="binary-dot" id="dot-ffmpeg"></div>
+        <span id="label-ffmpeg">Checking…</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-title">Defaults</div>
+    <div class="setting-row">
+      <div class="setting-info">
+        <div class="setting-label">Default quality</div>
+      </div>
+      <select class="opt-select" id="s-quality" style="width:130px">
+        <option value="1080p">1080p</option>
+        <option value="720p">720p</option>
+        <option value="480p">480p</option>
+        <option value="360p">360p</option>
+        <option value="audio only">Audio only</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <div class="setting-info">
+        <div class="setting-label">Save folder</div>
+        <div class="setting-desc">Where to save downloaded files</div>
+      </div>
+      <input class="setting-input" id="s-folder" value="$DOWNLOADS/TikTok" />
+    </div>
+    <div class="setting-row">
+      <div class="setting-info">
+        <div class="setting-label">Remove watermark</div>
+      </div>
+      <label>
+        <input type="checkbox" class="toggle-input" id="s-watermark" checked />
+        <div class="toggle-track"></div>
+      </label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-info">
+        <div class="setting-label">Audio only by default</div>
+      </div>
+      <label>
+        <input type="checkbox" class="toggle-input" id="s-audio" />
+        <div class="toggle-track"></div>
+      </label>
+    </div>
+    <div class="setting-row">
+      <div class="setting-info">
+        <div class="setting-label">Auto-rename with creator</div>
+        <div class="setting-desc">Prefix filename with @username</div>
+      </div>
+      <label>
+        <input type="checkbox" class="toggle-input" id="s-rename" checked />
+        <div class="toggle-track"></div>
+      </label>
+    </div>
+  </div>
+
+  <button class="save-btn" onclick="saveSettings()">Save Settings</button>
+</div>
+
+<script>
+// ── Bridge to Watchtower ─────────────────────────────────────────────────────
+function send(action, payload) {
+  return new Promise((resolve, reject) => {
+    const id = Math.random().toString(36).slice(2)
+    window.__callbacks = window.__callbacks || {}
+    window.__callbacks[id] = { resolve, reject }
+    window.parent.postMessage({ type: 'action', id, action, payload }, '*')
+    setTimeout(() => reject(new Error('Timeout')), 30000)
+  })
+}
+
+window.addEventListener('message', e => {
+  const { type, id, data, error } = e.data || {}
+  if (type === 'result' && window.__callbacks?.[id]) {
+    if (error) window.__callbacks[id].reject(new Error(error))
+    else        window.__callbacks[id].resolve(data)
+    delete window.__callbacks[id]
+  }
+})
+
+// ── State ────────────────────────────────────────────────────────────────────
+let currentInfo = null
+let config = {}
+let binaries = { zeusdl: false, ffmpeg: false }
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    [config, binaries] = await Promise.all([
+      send('getConfig', {}),
+      send('checkBinaries', {}),
+    ])
+    applyConfig()
+    updateBinaryUI()
+  } catch(e) {
+    // Dev mode — use defaults
+    config = { defaultQuality:'720p', saveFolder:'$DOWNLOADS/TikTok', removeWatermark:true, audioOnly:false, autoRename:true }
+    binaries = { zeusdl: true, ffmpeg: false }
+    updateBinaryUI()
+  }
+  loadHistory()
+  document.getElementById('url-input').addEventListener('input', debounce(onUrlChange, 600))
+}
+
+function applyConfig() {
+  setVal('s-quality', config.defaultQuality || '720p')
+  setVal('s-folder', config.saveFolder || '$DOWNLOADS/TikTok')
+  setCheck('s-watermark', config.removeWatermark !== false)
+  setCheck('s-audio', config.audioOnly === true)
+  setCheck('s-rename', config.autoRename !== false)
+  setCheck('watermark-toggle', config.removeWatermark !== false)
+}
+
+function updateBinaryUI() {
+  setBinary('zeusdl', binaries.zeusdl, 'Installed', 'Not installed')
+  setBinary('ffmpeg',  binaries.ffmpeg,  'Installed', 'Not installed (optional)')
+
+  if (!binaries.zeusdl) {
+    showBanner('binary', 'warn', 'ZeusDL is not installed. Go to Watchtower Settings → Binaries to install it.')
+  } else if (!binaries.ffmpeg) {
+    showBanner('binary', 'info', 'FFmpeg not found (optional). Without it, max quality is 480p.')
+  }
+}
+
+function setBinary(id, ok, okLabel, failLabel) {
+  const dot = document.getElementById(`dot-${id}`)
+  const label = document.getElementById(`label-${id}`)
+  dot.className = `binary-dot ${ok ? 'ok' : (id === 'ffmpeg' ? 'warn' : 'missing')}`
+  label.textContent = ok ? okLabel : failLabel
+}
+
+// ── Tab navigation ───────────────────────────────────────────────────────────
+function showTab(tab) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'))
+  document.getElementById(`screen-${tab}`).classList.add('active')
+  document.getElementById(`tab-${tab}`).classList.add('active')
+  if (tab === 'history') loadHistory()
+}
+
+// ── URL input / info fetching ────────────────────────────────────────────────
+async function pasteUrl() {
+  try {
+    const text = await navigator.clipboard.readText()
+    document.getElementById('url-input').value = text
+    onUrlChange()
+  } catch { }
+}
+
+function onUrlChange() {
+  const url = document.getElementById('url-input').value.trim()
+  if (!url.includes('tiktok.com')) {
+    resetPreview()
+    return
+  }
+  fetchVideoInfo(url)
+}
+
+async function fetchVideoInfo(url) {
+  showBanner('status', 'info', 'Fetching video info…', true)
+  document.getElementById('idle-state').style.display = 'none'
+  document.getElementById('preview-card').classList.remove('visible')
+  document.getElementById('dl-options').style.display = 'none'
+
+  try {
+    const info = await send('getVideoInfo', { url })
+    currentInfo = info
+    showPreview(info)
+    hideBanner('status')
+    document.getElementById('dl-options').style.display = 'block'
+  } catch(e) {
+    showBanner('status', 'error', `Could not fetch video info: ${e.message}`)
+    document.getElementById('idle-state').style.display = 'block'
+  }
+}
+
+function showPreview(info) {
+  const card = document.getElementById('preview-card')
+  card.classList.add('visible')
+
+  if (info.thumbnail) {
+    document.getElementById('preview-thumb-img').src = info.thumbnail
+    document.getElementById('preview-thumb-img').style.display = 'block'
+  } else {
+    document.getElementById('preview-thumb-img').style.display = 'none'
+  }
+
+  if (info.duration) {
+    const m = Math.floor(info.duration / 60)
+    const s = String(info.duration % 60).padStart(2,'0')
+    document.getElementById('preview-duration').textContent = `${m}:${s}`
+  }
+
+  document.getElementById('preview-type').textContent = info.isSlideshow ? '📷 SLIDESHOW' : '▶ VIDEO'
+  document.getElementById('preview-type').style.background = info.isSlideshow ? '#25f4ee' : 'var(--brand)'
+  document.getElementById('preview-type').style.color = info.isSlideshow ? '#000' : '#fff'
+
+  if (info.avatar) document.getElementById('preview-avatar').src = info.avatar
+  document.getElementById('preview-author').textContent = `@${info.author}`
+  document.getElementById('preview-title').textContent = info.title
+
+  const fmt = n => n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n >= 1e3 ? (n/1e3).toFixed(1)+'K' : String(n)
+  document.getElementById('preview-stats').innerHTML = `
+    <span>❤️ ${fmt(info.likes||0)}</span>
+    <span>💬 ${fmt(info.comments||0)}</span>
+    <span>↪️ ${fmt(info.shares||0)}</span>
+    <span>👁 ${fmt(info.views||0)}</span>
+  `
+
+  if (info.music?.title) {
+    document.getElementById('preview-music').style.display = 'flex'
+    document.getElementById('preview-music-text').textContent =
+      `${info.music.title}${info.music.author ? ' — ' + info.music.author : ''}`
+  } else {
+    document.getElementById('preview-music').style.display = 'none'
+  }
+
+  // Update quality select based on available qualities
+  const qSelect = document.getElementById('quality-select')
+  qSelect.innerHTML = (info.qualities || ['720p','480p','audio only']).map(q =>
+    `<option value="${q}"${q === (config.defaultQuality||'720p') ? ' selected' : ''}>${q}</option>`
+  ).join('')
+
+  // Update format select
+  const fSelect = document.getElementById('format-select')
+  fSelect.innerHTML = (info.formats || ['mp4','mp3']).map(f =>
+    `<option value="${f}">${f.toUpperCase()}</option>`
+  ).join('')
+}
+
+function resetPreview() {
+  currentInfo = null
+  document.getElementById('preview-card').classList.remove('visible')
+  document.getElementById('dl-options').style.display = 'none'
+  document.getElementById('idle-state').style.display = 'block'
+  hideBanner('status')
+}
+
+// ── Download ─────────────────────────────────────────────────────────────────
+async function startDownload() {
+  if (!binaries.zeusdl) {
+    showBanner('status', 'error', 'ZeusDL is required but not installed. Install it in Watchtower Settings → Binaries.')
+    return
+  }
+
+  const url = document.getElementById('url-input').value.trim()
+  if (!url) return
+
+  const btn = document.getElementById('dl-btn')
+  btn.disabled = true
+  btn.innerHTML = '<div class="spinner"></div> Downloading…'
+
+  const quality = document.getElementById('quality-select').value
+  const format  = document.getElementById('format-select').value
+  const removeWatermark = document.getElementById('watermark-toggle').checked
+
+  try {
+    showBanner('status', 'info', 'Starting download via ZeusDL…', true)
+    const result = await send('download', { url, quality, format, removeWatermark })
+    showBanner('status', 'ok', `✅ Downloaded: ${result.filename}`)
+    setTimeout(() => hideBanner('status'), 4000)
+  } catch(e) {
+    showBanner('status', 'error', `Download failed: ${e.message}`)
+  } finally {
+    btn.disabled = false
+    btn.innerHTML = '<span>⬇️</span> Download'
+  }
+}
+
+// ── History ──────────────────────────────────────────────────────────────────
+async function loadHistory() {
+  const list = document.getElementById('history-list')
+  try {
+    const { history } = await send('getHistory', {})
+    if (!history.length) {
+      list.innerHTML = '<div class="history-empty">🕐 No downloads yet</div>'
+      return
+    }
+    list.innerHTML = history.map(item => `
+      <div class="history-item">
+        ${item.thumbnail ? `<img class="history-thumb" src="${item.thumbnail}" alt="" onerror="this.style.display='none'" />` : '<div class="history-thumb" style="background:var(--bg3);border-radius:8px"></div>'}
+        <div class="history-meta">
+          <div class="history-title">${escHtml(item.title || item.filename)}</div>
+          <div class="history-sub">@${escHtml(item.author || '')} · ${new Date(item.downloadedAt).toLocaleDateString()}</div>
+        </div>
+        <span class="history-badge">${item.format?.toUpperCase() || 'MP4'}</span>
+      </div>
+    `).join('')
+  } catch(e) {
+    list.innerHTML = '<div class="history-empty">Could not load history</div>'
+  }
+}
+
+async function clearHistory() {
+  if (!confirm('Clear all download history?')) return
+  await send('clearHistory', {})
+  loadHistory()
+}
+
+// ── Settings ─────────────────────────────────────────────────────────────────
+async function saveSettings() {
+  const newConfig = {
+    defaultQuality:  document.getElementById('s-quality').value,
+    saveFolder:      document.getElementById('s-folder').value,
+    removeWatermark: document.getElementById('s-watermark').checked,
+    audioOnly:       document.getElementById('s-audio').checked,
+    autoRename:      document.getElementById('s-rename').checked,
+  }
+  await send('saveConfig', newConfig)
+  config = { ...config, ...newConfig }
+  showBanner('status', 'ok', 'Settings saved!')
+  setTimeout(() => hideBanner('status'), 2000)
+}
+
+// ── Utils ────────────────────────────────────────────────────────────────────
+function showBanner(id, type, msg, spinner = false) {
+  const el = document.getElementById(`${id}-banner`)
+  if (!el) return
+  el.className = `info-banner ${type}`
+  const spin = document.getElementById(`${id}-spinner`)
+  if (spin) spin.style.display = spinner ? 'block' : 'none'
+  const text = document.getElementById(`${id}-text`) || el
+  text.textContent = msg
+}
+function hideBanner(id) {
+  const el = document.getElementById(`${id}-banner`)
+  if (el) el.className = 'info-banner hidden'
+}
+function setVal(id, val)   { const el = document.getElementById(id); if (el) el.value = val }
+function setCheck(id, val) { const el = document.getElementById(id); if (el) el.checked = val }
+function escHtml(str)      { return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])) }
+function debounce(fn, ms)  { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms) } }
+
+init()
+</script>
+</body>
+</html>

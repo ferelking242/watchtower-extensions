@@ -1,8 +1,11 @@
 {
   "name": "WatchTower Extensions",
   "website": "https://ferelking242.github.io/watchtower-extensions",
-  "watchJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/index.json",
-  "mangaJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/manga/index.json",
-  "novelJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/novel/index.json",
-  "gameJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/game/index.json"
+  "watchJsonUrl":  "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/index.json",
+  "mangaJsonUrl":  "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/manga/index.json",
+  "novelJsonUrl":  "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/novel/index.json",
+  "gameJsonUrl":   "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/game/index.json",
+  "musicJsonUrl":  "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/music/index.json",
+  "pluginsJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/index.json",
+  "localSourcesPath": "local_sources/"
 }
