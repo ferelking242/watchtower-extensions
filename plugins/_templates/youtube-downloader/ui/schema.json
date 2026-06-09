@@ -1,0 +1,46 @@
+{
+  "screens": [
+    {
+      "id": "main",
+      "title": "YouTube Downloader",
+      "widgets": [
+        {
+          "type": "textfield",
+          "key": "url",
+          "label": "YouTube URL",
+          "placeholder": "https://youtube.com/watch?v=..."
+        },
+        {
+          "type": "select",
+          "key": "format",
+          "label": "Format",
+          "options": [
+            "mp4",
+            "mp3",
+            "webm"
+          ],
+          "default": "mp4"
+        },
+        {
+          "type": "select",
+          "key": "quality",
+          "label": "Quality",
+          "options": [
+            "1080p",
+            "720p",
+            "480p",
+            "360p",
+            "audio only"
+          ],
+          "default": "720p"
+        },
+        {
+          "type": "button",
+          "label": "Download",
+          "action": "download",
+          "style": "primary"
+        }
+      ]
+    }
+  ]
+}

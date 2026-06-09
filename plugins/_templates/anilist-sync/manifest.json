@@ -1,0 +1,35 @@
+{
+  "id": "com.watchtower.anilist-sync",
+  "name": "AniList Sync",
+  "version": "0.1.0",
+  "author": "Your Name",
+  "description": "Sync your Watchtower history to AniList automatically",
+  "icon": "assets/icon.png",
+  "category": "sync",
+  "runtime": "javascript",
+  "ui": "declarative",
+  "permissions": [
+    "network",
+    "storage.read",
+    "storage.write",
+    "notifications"
+  ],
+  "watchtower": {
+    "minVersion": "1.0.0",
+    "apis": [
+      "HTTP",
+      "Storage",
+      "Notification"
+    ]
+  },
+  "tags": [
+    "anilist",
+    "sync",
+    "tracking",
+    "anime"
+  ],
+  "license": "MIT",
+  "requiresAccount": true,
+  "paywall": "free",
+  "isNsfw": false
+}

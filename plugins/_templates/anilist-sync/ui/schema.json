@@ -1,0 +1,46 @@
+{
+  "screens": [
+    {
+      "id": "main",
+      "title": "AniList Sync",
+      "widgets": [
+        {
+          "type": "text",
+          "value": "Connect your AniList account to sync watch history automatically.",
+          "style": "body"
+        },
+        {
+          "type": "divider"
+        },
+        {
+          "type": "textfield",
+          "key": "token",
+          "label": "AniList API Token",
+          "placeholder": "Paste your token from anilist.co/settings/developer",
+          "secure": true
+        },
+        {
+          "type": "toggle",
+          "key": "auto_sync",
+          "label": "Auto-sync on watch progress update",
+          "default": true
+        },
+        {
+          "type": "button",
+          "label": "Save & Connect",
+          "action": "save_config",
+          "style": "primary"
+        },
+        {
+          "type": "divider"
+        },
+        {
+          "type": "button",
+          "label": "Sync Now",
+          "action": "sync",
+          "style": "secondary"
+        }
+      ]
+    }
+  ]
+}
