@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Watchtower Plugin Manifest",
+  "type": "object",
+  "required": ["id", "name", "version", "author", "runtime", "ui", "permissions"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:\\.[a-z0-9]+)+$",
+      "description": "Reverse-domain unique identifier, e.g. com.watchtower.my-plugin"
+    },
+    "name": { "type": "string", "minLength": 2, "maxLength": 64 },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "author": { "type": "string" },
+    "description": { "type": "string", "maxLength": 512 },
+    "icon": { "type": "string", "description": "Relative path to icon (64x64 PNG) or HTTPS URL" },
+    "screenshots": { "type": "array", "items": { "type": "string" }, "maxItems": 6 },
+    "category": {
+      "type": "string",
+      "enum": ["sync", "theme", "downloader", "reader", "player", "tools", "social", "ai", "other"]
+    },
+    "runtime": {
+      "type": "string",
+      "enum": ["javascript", "wasm", "remote", "binary"]
+    },
+    "ui": {
+      "type": "string",
+      "enum": ["flutter_eval", "webview", "declarative", "builtin"]
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "network", "storage.read", "storage.write", "downloads",
+          "notifications", "player", "reader", "account", "clipboard",
+          "camera", "microphone", "filesystem", "database", "crypto"
+        ]
+      }
+    },
+    "watchtower": {
+      "type": "object",
+      "properties": {
+        "minVersion": { "type": "string" },
+        "apis": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Storage", "Download", "Notification", "Player", "Reader",
+              "HTTP", "Database", "Cache", "Crypto", "Media", "Search",
+              "Theme", "Localization", "Account", "Marketplace"
+            ]
+          }
+        }
+      }
+    },
+    "tags": { "type": "array", "items": { "type": "string" }, "maxItems": 10 },
+    "license": { "type": "string" },
+    "repository": { "type": "string", "format": "uri" },
+    "changelog": { "type": "string" },
+    "endpoint": {
+      "type": "string",
+      "format": "uri",
+      "description": "Required when runtime is 'remote'. HTTPS endpoint URL."
+    },
+    "isNsfw": { "type": "boolean", "default": false },
+    "requiresAccount": { "type": "boolean", "default": false },
+    "paywall": { "type": "string", "enum": ["free", "freemium", "premium"], "default": "free" }
+  },
+  "if": { "properties": { "runtime": { "const": "remote" } }, "required": ["runtime"] },
+  "then": { "required": ["endpoint"] }
+}

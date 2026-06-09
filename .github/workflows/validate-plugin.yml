@@ -1,0 +1,166 @@
+name: Validate & Publish Plugin
+
+on:
+  push:
+    branches: [main]
+    paths: ['plugins/**']
+  pull_request:
+    branches: [main]
+    paths: ['plugins/**']
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate Plugin Manifest & Logic
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install validator deps
+        run: npm install ajv ajv-formats cheerio
+
+      - name: Detect changed plugins
+        id: detect
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || git diff --name-only $(git rev-list --max-parents=0 HEAD) HEAD)
+          PLUGIN_DIRS=$(echo "$CHANGED" | grep '^plugins/' | grep -v '^plugins/index.json' | grep -v '^plugins/schema.json' | awk -F'/' '{print "plugins/"$2}' | sort -u | tr '\n' ' ')
+          echo "plugins=$PLUGIN_DIRS" >> $GITHUB_OUTPUT
+          echo "Detected plugins: $PLUGIN_DIRS"
+
+      - name: Validate manifests
+        run: |
+          node << 'SCRIPT'
+          const fs = require('fs'), path = require('path')
+          const Ajv = require('ajv')
+          const addFormats = require('ajv-formats')
+          const ajv = new Ajv({ allErrors: true })
+          addFormats(ajv)
+
+          const schema = JSON.parse(fs.readFileSync('plugins/schema.json', 'utf8'))
+          const validate = ajv.compile(schema)
+
+          const pluginsDir = 'plugins'
+          let failed = false
+
+          if (!fs.existsSync(pluginsDir)) { console.log('No plugins dir yet'); process.exit(0) }
+
+          const dirs = fs.readdirSync(pluginsDir).filter(d => {
+            const full = path.join(pluginsDir, d)
+            return fs.statSync(full).isDirectory()
+          })
+
+          for (const dir of dirs) {
+            const manifestPath = path.join(pluginsDir, dir, 'manifest.json')
+            if (!fs.existsSync(manifestPath)) {
+              console.error(`❌ ${dir}: manifest.json missing`)
+              failed = true
+              continue
+            }
+            const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'))
+            const valid = validate(manifest)
+            if (!valid) {
+              console.error(`❌ ${dir}: manifest validation failed`)
+              validate.errors.forEach(e => console.error('  ', e.instancePath, e.message))
+              failed = true
+            } else {
+              console.log(`✅ ${dir}: manifest OK`)
+            }
+          }
+          if (failed) process.exit(1)
+          SCRIPT
+
+      - name: Security scan — detect dangerous patterns
+        run: |
+          node << 'SCRIPT'
+          const fs = require('fs'), path = require('path')
+          const DANGEROUS = [
+            /\beval\s*\(/g,
+            /\bFunction\s*\(/g,
+            /process\.env\b/g,
+            /require\s*\(/g,
+            /__proto__\b/g,
+            /child_process/g,
+            /\bexec\s*\(/g,
+          ]
+
+          const pluginsDir = 'plugins'
+          if (!fs.existsSync(pluginsDir)) process.exit(0)
+
+          let failed = false
+          function scanFile(filePath) {
+            const content = fs.readFileSync(filePath, 'utf8')
+            for (const pattern of DANGEROUS) {
+              pattern.lastIndex = 0
+              if (pattern.test(content)) {
+                console.error(`❌ SECURITY: ${filePath} contains dangerous pattern: ${pattern}`)
+                failed = true
+              }
+            }
+          }
+
+          const dirs = fs.readdirSync(pluginsDir).filter(d => {
+            const full = path.join(pluginsDir, d)
+            return fs.existsSync(full) && fs.statSync(full).isDirectory()
+          })
+          for (const dir of dirs) {
+            const logicDir = path.join(pluginsDir, dir, 'logic')
+            if (fs.existsSync(logicDir)) {
+              fs.readdirSync(logicDir)
+                .filter(f => f.endsWith('.js'))
+                .forEach(f => scanFile(path.join(logicDir, f)))
+            }
+          }
+          if (failed) process.exit(1)
+          else console.log('✅ Security scan passed')
+          SCRIPT
+
+      - name: Validate plugin logic (sandbox run)
+        run: |
+          node << 'SCRIPT'
+          const fs = require('fs'), path = require('path'), vm = require('vm')
+
+          const pluginsDir = 'plugins'
+          if (!fs.existsSync(pluginsDir)) process.exit(0)
+
+          const dirs = fs.readdirSync(pluginsDir).filter(d => {
+            const full = path.join(pluginsDir, d)
+            return fs.existsSync(full) && fs.statSync(full).isDirectory()
+          })
+
+          const mockApi = {
+            http: { get: async () => ({ body: '{}', statusCode: 200, headers: {} }), post: async () => ({ body: '{}', statusCode: 200, headers: {} }) },
+            storage: { get: async () => null, set: async () => {} },
+            notification: { send: async () => {} },
+            cache: { get: async () => null, set: async () => {} },
+          }
+
+          let failed = false
+          for (const dir of dirs) {
+            const mainPath = path.join(pluginsDir, dir, 'logic', 'main.js')
+            if (!fs.existsSync(mainPath)) { console.log(`⏭ ${dir}: no logic/main.js (skipping)`); continue }
+
+            try {
+              const code = fs.readFileSync(mainPath, 'utf8')
+              const ctx = vm.createContext({ console, setTimeout, clearTimeout, Promise, JSON, Object, Array, String, Number, Boolean, Error, exports: {}, module: { exports: {} } })
+              vm.runInContext(code, ctx, { timeout: 5000 })
+              const PluginClass = ctx.exports?.default || ctx.module?.exports?.default
+              if (!PluginClass) { console.warn(`⚠️ ${dir}: no default export found`); continue }
+              const instance = new PluginClass(mockApi)
+              if (typeof instance.execute !== 'function') throw new Error('execute() method missing')
+              console.log(`✅ ${dir}: logic loads and exports correctly`)
+            } catch (e) {
+              console.error(`❌ ${dir}: ${e.message}`)
+              failed = true
+            }
+          }
+          if (failed) process.exit(1)
+          SCRIPT
+
+      - name: All checks passed
+        run: echo "✅ All plugin validations passed!"
