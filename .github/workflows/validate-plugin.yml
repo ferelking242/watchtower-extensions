@@ -23,15 +23,7 @@ jobs:
           node-version: '20'
 
       - name: Install validator deps
-        run: npm install ajv ajv-formats cheerio
-
-      - name: Detect changed plugins
-        id: detect
-        run: |
-          CHANGED=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || git diff --name-only $(git rev-list --max-parents=0 HEAD) HEAD)
-          PLUGIN_DIRS=$(echo "$CHANGED" | grep '^plugins/' | grep -v '^plugins/index.json' | grep -v '^plugins/schema.json' | awk -F'/' '{print "plugins/"$2}' | sort -u | tr '\n' ' ')
-          echo "plugins=$PLUGIN_DIRS" >> $GITHUB_OUTPUT
-          echo "Detected plugins: $PLUGIN_DIRS"
+        run: npm install ajv ajv-formats
 
       - name: Validate manifests
         run: |
@@ -51,9 +43,12 @@ jobs:
           if (!fs.existsSync(pluginsDir)) { console.log('No plugins dir yet'); process.exit(0) }
 
           const dirs = fs.readdirSync(pluginsDir).filter(d => {
+            if (d.startsWith('_')) return false   // skip _templates, _drafts, etc.
             const full = path.join(pluginsDir, d)
             return fs.statSync(full).isDirectory()
           })
+
+          if (dirs.length === 0) { console.log('No plugins to validate yet'); process.exit(0) }
 
           for (const dir of dirs) {
             const manifestPath = path.join(pluginsDir, dir, 'manifest.json')
@@ -105,6 +100,7 @@ jobs:
           }
 
           const dirs = fs.readdirSync(pluginsDir).filter(d => {
+            if (d.startsWith('_')) return false
             const full = path.join(pluginsDir, d)
             return fs.existsSync(full) && fs.statSync(full).isDirectory()
           })
@@ -129,15 +125,20 @@ jobs:
           if (!fs.existsSync(pluginsDir)) process.exit(0)
 
           const dirs = fs.readdirSync(pluginsDir).filter(d => {
+            if (d.startsWith('_')) return false
             const full = path.join(pluginsDir, d)
             return fs.existsSync(full) && fs.statSync(full).isDirectory()
           })
 
+          if (dirs.length === 0) { console.log('No plugins to test yet'); process.exit(0) }
+
           const mockApi = {
             http: { get: async () => ({ body: '{}', statusCode: 200, headers: {} }), post: async () => ({ body: '{}', statusCode: 200, headers: {} }) },
-            storage: { get: async () => null, set: async () => {} },
+            storage: { get: async () => null, set: async () => {}, remove: async () => {}, clear: async () => {}, keys: async () => [] },
             notification: { send: async () => {} },
-            cache: { get: async () => null, set: async () => {} },
+            cache: { get: async () => null, set: async () => {}, remove: async () => {} },
+            downloads: { add: async () => {} },
+            player: { play: async () => {} },
           }
 
           let failed = false
