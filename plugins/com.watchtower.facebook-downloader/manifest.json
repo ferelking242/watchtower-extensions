@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1",
+  "id": "com.watchtower.facebook-downloader",
+  "name": "Facebook Downloader",
+  "version": "1.0.0",
+  "author": "Watchtower Team",
+  "description": "Download Facebook videos and Reels in HD. Powered by ZeusDL.",
+  "category": "downloader",
+  "runtimeTypes": [
+    "downloader"
+  ],
+  "tags": [
+    "facebook",
+    "reels",
+    "download",
+    "video",
+    "hd",
+    "social"
+  ],
+  "requirements": {
+    "zeusdl": {
+      "version": ">=1.0.0",
+      "optional": false
+    }
+  },
+  "commandScopes": [
+    "zeusdl",
+    "ffmpeg"
+  ],
+  "networkAccess": [
+    "*.facebook.com",
+    "*.fbcdn.net",
+    "*.fb.com"
+  ],
+  "featured": false,
+  "publishedAt": "2026-06-12"
+}
