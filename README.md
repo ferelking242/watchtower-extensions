@@ -1,270 +1,373 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/ferelking242/watchtower/main/assets/icon/icon.png" width="100" alt="Watchtower Logo" />
-  <h1>Watchtower Extensions</h1>
-  <p><strong>Official extension repository for the Watchtower app</strong></p>
-  <p>
-    <a href="https://ferelking242.github.io/watchtower-extensions"><img src="https://img.shields.io/badge/Website-Live-brightgreen?style=flat-square" alt="Website"/></a>
-    <a href="https://github.com/ferelking242/watchtower-extensions/blob/main/watch/index.json"><img src="https://img.shields.io/badge/Watch-Extensions-blue?style=flat-square&logo=youtube" alt="Watch"/></a>
-    <a href="https://github.com/ferelking242/watchtower-extensions/blob/main/manga/index.json"><img src="https://img.shields.io/badge/Manga-Extensions-orange?style=flat-square&logo=bookstack" alt="Manga"/></a>
-    <a href="https://github.com/ferelking242/watchtower-extensions/blob/main/novel/index.json"><img src="https://img.shields.io/badge/Novel-Extensions-purple?style=flat-square" alt="Novel"/></a>
-  </p>
-</div>
 
----
+  <img src="https://raw.githubusercontent.com/ferelking242/watchtower/main/assets/icon/icon.png" width="120" alt="Watchtower" />
 
-## Overview
+  # Watchtower Extensions
 
-This repository hosts all official extensions for [Watchtower](https://github.com/ferelking242/watchtower) — a unified media app for watching, reading manga, novels, and gaming.
+  **Le dépôt officiel d'extensions pour [Watchtower](https://github.com/ferelking242/watchtower)**
+  *Regarder · Lire · Écouter · Jouer — tout en un*
 
-### Repository Structure
+  [![Extensions Watch](https://img.shields.io/badge/Watch-60%20sources-blue?style=flat-square&logo=youtube)](https://github.com/ferelking242/watchtower-extensions/blob/main/index/watch.json)
+  [![Extensions Manga](https://img.shields.io/badge/Manga-15%20sources-orange?style=flat-square&logo=bookstack)](https://github.com/ferelking242/watchtower-extensions/blob/main/index/manga.json)
+  [![Extensions Novel](https://img.shields.io/badge/Novel-10%20sources-purple?style=flat-square)](https://github.com/ferelking242/watchtower-extensions/blob/main/index/novel.json)
+  [![Extensions Music](https://img.shields.io/badge/Music-4%20sources-green?style=flat-square&logo=spotify)](https://github.com/ferelking242/watchtower-extensions/blob/main/index/music.json)
+  [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](LICENSE)
 
-```
-watchtower-extensions/
-│
-├── repo.json                 ← App entry point (points to all 4 indexes)
-│
-├── watch/
-│   ├── index.json            ← All video/streaming extensions
-│   ├── en/                   ← English sources
-│   ├── fr/                   ← French sources
-│   ├── de/                   ← German sources
-│   ├── es/                   ← Spanish sources
-│   ├── zh/                   ← Chinese sources
-│   ├── ...                   ← Other languages
-│   └── nsfw/                 ← Adult content (isNsfw: true)
-│       ├── ja/               ← Japanese adult (JAV etc.)
-│       ├── ko/               ← Korean adult
-│       ├── en/               ← English adult
-│       └── multi/            ← Multi-language adult
-│
-├── manga/
-│   ├── index.json            ← All manga extensions
-│   └── <lang>/               ← Language subfolders
-│
-├── novel/
-│   ├── index.json            ← All novel extensions
-│   └── <lang>/               ← Language subfolders
-│
-└── game/
-    ├── index.json            ← All game extensions
-    └── <lang>/               ← Language subfolders
-```
+  </div>
 
----
+  ---
 
-## Adding This Repo to Watchtower
+  ## 📋 Table des matières
 
-1. Open Watchtower → **Settings** → **Browse** → **Extension Repositories**
-2. Tap **+** and paste the URL of the index for your content type:
+  - [Ajouter le dépôt à Watchtower](#-ajouter-le-dépôt-à-watchtower)
+  - [Ajouter le dépôt via Live Container](#-via-live-container)
+  - [Ajouter manuellement](#-ajouter-manuellement)
+  - [Dépôts disponibles par app](#-dépôts-disponibles-par-app)
+  - [Architecture du dépôt](#-architecture-du-dépôt)
+  - [Créer une extension](#-créer-une-extension)
+  - [Créer son propre dépôt](#-créer-son-propre-dépôt)
+  - [Contribuer](#-contribuer)
 
-| Type  | URL |
-|-------|-----|
-| Watch | `https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/index.json` |
-| Manga | `https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/manga/index.json` |
-| Novel | `https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/novel/index.json` |
-| Game  | `https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/game/index.json` |
+  ---
 
-Or add the main repo.json and let the app auto-detect:
-```
-https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/repo.json
-```
+  ## 📲 Ajouter le dépôt à Watchtower
 
----
+  > **Watchtower** — ouvre l'app → **Plus** → **Paramètres** → **Browse**
 
-## Creating Your Own Extension
+  Clique sur l'un des boutons ci-dessous pour ajouter le ou les dépôts correspondants :
 
-### 1. Extension Anatomy
+  ### Tous les dépôts d'un coup
 
-An extension is a single JavaScript file that exports a `watchtowerSources` array. Each source object describes a website the app can scrape.
+  [![Add All](https://img.shields.io/badge/➕%20Ajouter%20tous%20les%20dépôts-Watchtower-1a1a2e?style=for-the-badge&logo=github)](watchtower://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/repo.json)
 
-**Minimal example — `mysource.js`:**
+  ### Par type de contenu
 
-```javascript
-const watchtowerSources = [{
-  "name": "My Source",
-  "lang": "en",
-  "baseUrl": "https://mysite.com",
-  "apiUrl": "",
-  "iconUrl": "https://mysite.com/favicon.ico",
-  "typeSource": "single",
-  "itemType": 1,      // 0=manga, 1=watch/anime, 2=novel, 4=game
-  "isManga": false,
-  "isNsfw": false,
-  "hasCloudflare": false,
-  "version": "1.0.0",
-  "appMinVerReq": "0.5.0",
-  "sourceCodeLanguage": 1,   // 1=JavaScript
-  "notes": ""
-}];
+  | Type | Bouton |
+  |------|--------|
+  | 📺 **Watch** — Anime, Films, Séries | [![Add Watch](https://img.shields.io/badge/➕%20Watch-blue?style=flat-square)](watchtower://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/watch.json) |
+  | 📖 **Manga** — Manga, Manhwa, Comics | [![Add Manga](https://img.shields.io/badge/➕%20Manga-orange?style=flat-square)](watchtower://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/manga.json) |
+  | 📚 **Novel** — Webnovels, Light novels | [![Add Novel](https://img.shields.io/badge/➕%20Novel-purple?style=flat-square)](watchtower://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/novel.json) |
+  | 🎵 **Music** — Streaming musical | [![Add Music](https://img.shields.io/badge/➕%20Music-green?style=flat-square)](watchtower://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/music.json) |
+  | 🎮 **Game** — ROMs & émulation | [![Add Game](https://img.shields.io/badge/➕%20Game-red?style=flat-square)](watchtower://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/game.json) |
 
-// ── Search ────────────────────────────────────────────────────────────────
-async function search(query, page) {
-  const url = `${source.baseUrl}/search?q=${encodeURIComponent(query)}&page=${page}`;
-  const res = await fetch(url);
-  const $ = await parseHtml(await res.text());
+  ---
 
-  return {
-    list: $('.item').toArray().map(el => ({
-      name: $(el).find('.title').text().trim(),
-      imageUrl: $(el).find('img').attr('src'),
-      link: $(el).find('a').attr('href'),
-    })),
-    hasNextPage: !!$('.next-page').length,
-  };
-}
+  ## 🐳 Via Live Container
 
-// ── Detail page ───────────────────────────────────────────────────────────
-async function getDetail(url) {
-  const res = await fetch(url);
-  const $ = await parseHtml(await res.text());
-  return {
-    name: $('h1').text().trim(),
-    description: $('.synopsis').text().trim(),
-    imageUrl: $('.cover img').attr('src'),
-    chapters: $('.episode-list li').toArray().map(el => ({
-      name: $(el).find('.ep-title').text().trim(),
-      url: $(el).find('a').attr('href'),
-    })).reverse(),
-  };
-}
+  > Si tu as installé l'app via **Live Container**, utilise ces boutons à la place :
 
-// ── Video/Page extraction ─────────────────────────────────────────────────
-async function getVideoList(url) {
-  // For watch extensions: return video sources
-  const res = await fetch(url);
-  // ... extract video URLs ...
-  return [{ url: 'https://...', quality: '1080p', headers: {} }];
-}
-```
+  [![Add All (LC)](https://img.shields.io/badge/➕%20Ajouter%20tous%20les%20dépôts-Live%20Container-0f3460?style=for-the-badge&logo=docker)](livecontainer://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/repo.json)
 
-### 2. `itemType` Values
+  | Type | Bouton |
+  |------|--------|
+  | 📺 Watch | [![Add Watch LC](https://img.shields.io/badge/➕%20Watch-LC-blue?style=flat-square)](livecontainer://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/watch.json) |
+  | 📖 Manga | [![Add Manga LC](https://img.shields.io/badge/➕%20Manga-LC-orange?style=flat-square)](livecontainer://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/manga.json) |
+  | 📚 Novel | [![Add Novel LC](https://img.shields.io/badge/➕%20Novel-LC-purple?style=flat-square)](livecontainer://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/novel.json) |
+  | 🎵 Music | [![Add Music LC](https://img.shields.io/badge/➕%20Music-LC-green?style=flat-square)](livecontainer://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/music.json) |
+  | 🎮 Game | [![Add Game LC](https://img.shields.io/badge/➕%20Game-LC-red?style=flat-square)](livecontainer://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/game.json) |
 
-| Value | Content Type |
-|-------|-------------|
-| `0`   | Manga / Comic |
-| `1`   | Watch / Anime / Video |
-| `2`   | Novel / Ebook |
-| `4`   | Game / ROM |
+  ---
 
-### 3. Available APIs Inside Extensions
+  ## 🔗 Ajouter manuellement
 
-Watchtower injects these globals into your JS runtime:
+  Ouvre l'app → **Plus** → **Paramètres** → **Browse** → **Dépôts d'extensions** → **+**
 
-| API | Description |
-|-----|-------------|
-| `fetch(url, options?)` | HTTP client with cookie support |
-| `parseHtml(html)` | Returns a Cheerio-like `$` selector |
-| `source` | The current source config object |
-| `btoa(str)` / `atob(str)` | Base64 encode/decode |
-| `CryptoJS` | Encryption utilities (AES, MD5…) |
+  Colle l'URL correspondante :
 
-### 4. Marking NSFW Content
+  ```
+  # Dépôt principal (auto-détecte tous les types)
+  https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/repo.json
 
-Set `"isNsfw": true` in your source object. The app hides these extensions unless the user enables NSFW in Settings → Browse. Place the file under the `nsfw/` subfolder of the relevant language:
+  # Watch (Anime, Films, Séries)
+  https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/watch.json
 
-```
-watch/nsfw/en/mysource.js
-watch/nsfw/ja/myjavsource.js
-```
+  # Manga & Comics
+  https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/manga.json
 
----
+  # Novels
+  https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/novel.json
 
-## Creating Your Own Extension Repository
+  # Musique
+  https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/music.json
 
-### 1. Fork or Create a Repo
+  # Jeux / ROMs
+  https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/game.json
+  ```
 
-Create a GitHub repository and set up this structure:
+  ---
 
-```
-my-extensions/
-├── repo.json
-├── watch/
-│   ├── index.json
-│   └── en/
-│       └── mysource.js
-├── manga/
-│   ├── index.json
-│   └── en/
-│       └── mymanga.js
-```
+  ## 🌐 Dépôts disponibles par app
 
-### 2. Write `repo.json`
+  > Ces URLs sont compatibles avec plusieurs apps basées sur le même moteur.
 
-```json
-{
-  "name": "My Extension Repo",
-  "website": "https://github.com/yourname/my-extensions",
-  "watchJsonUrl": "https://raw.githubusercontent.com/yourname/my-extensions/main/watch/index.json",
-  "mangaJsonUrl": "https://raw.githubusercontent.com/yourname/my-extensions/main/manga/index.json",
-  "novelJsonUrl": "https://raw.githubusercontent.com/yourname/my-extensions/main/novel/index.json",
-  "gameJsonUrl":  "https://raw.githubusercontent.com/yourname/my-extensions/main/game/index.json"
-}
-```
+  <details>
+  <summary><strong>📺 Watchtower</strong> — app principale</summary>
 
-### 3. Write the Index (`watch/index.json`)
+  | Bouton | URL |
+  |--------|-----|
+  | [![Watchtower All](https://img.shields.io/badge/All-Watchtower-1a1a2e?style=flat-square)](watchtower://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/repo.json) | `watchtower://add-repo?url=…/repo.json` |
+  | [![Watchtower Manga](https://img.shields.io/badge/Manga-Watchtower-orange?style=flat-square)](watchtower://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/manga.json) | `watchtower://add-repo?url=…/index/manga.json` |
+  | [![Watchtower Novel](https://img.shields.io/badge/Novel-Watchtower-purple?style=flat-square)](watchtower://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/novel.json) | `watchtower://add-repo?url=…/index/novel.json` |
 
-The index is a JSON array of source descriptor objects. Each object must match this schema:
+  </details>
 
-```json
-[
-  {
-    "name": "My Source",
-    "id": 9000000001,
-    "baseUrl": "https://mysite.com",
-    "lang": "en",
+  <details>
+  <summary><strong>🦊 Mangayomi</strong> — fork upstream</summary>
+
+  | Bouton | URL |
+  |--------|-----|
+  | [![Mangayomi Manga](https://img.shields.io/badge/Manga-Mangayomi-orange?style=flat-square)](mangayomi://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/manga.json) | `mangayomi://add-repo?url=…/index/manga.json` |
+  | [![Mangayomi Novel](https://img.shields.io/badge/Novel-Mangayomi-purple?style=flat-square)](mangayomi://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/novel.json) | `mangayomi://add-repo?url=…/index/novel.json` |
+
+  </details>
+
+  <details>
+  <summary><strong>📦 Live Container</strong> — installation sandboxée iOS</summary>
+
+  | Bouton | URL |
+  |--------|-----|
+  | [![LC All](https://img.shields.io/badge/All-LiveContainer-0f3460?style=flat-square)](livecontainer://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/repo.json) | `livecontainer://add-repo?url=…/repo.json` |
+  | [![LC Manga](https://img.shields.io/badge/Manga-LiveContainer-orange?style=flat-square)](livecontainer://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/manga.json) | `livecontainer://add-repo?url=…/index/manga.json` |
+  | [![LC Novel](https://img.shields.io/badge/Novel-LiveContainer-purple?style=flat-square)](livecontainer://add-repo?url=https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/novel.json) | `livecontainer://add-repo?url=…/index/novel.json` |
+
+  </details>
+
+  ---
+
+  ## 🗂️ Architecture du dépôt
+
+  ```
+  watchtower-extensions/
+  │
+  ├── 📁 src/                        ← Code source des extensions (.js)
+  │   │
+  │   ├── 📁 watch/                  ← Sources vidéo (anime, films, séries)
+  │   │   ├── 📁 multi/              ← Extensions multi-langues (1 fichier = N langues)
+  │   │   ├── 📁 en/                 ← Sources anglophones uniquement
+  │   │   ├── 📁 fr/                 ← Sources francophones uniquement
+  │   │   ├── 📁 de/ es/ zh/ …      ← Autres langues
+  │   │   └── 📁 nsfw/               ← Contenu adulte (désactivé par défaut)
+  │   │       ├── 📁 en/
+  │   │       ├── 📁 ja/             ← JAV & sources japonaises
+  │   │       └── 📁 multi/
+  │   │
+  │   ├── 📁 manga/                  ← Sources manga, manhwa, comics
+  │   │   ├── 📁 multi/              ← MangaDex, Comick, Webtoons, Mangafire…
+  │   │   ├── 📁 en/ fr/ ar/ …      ← Sources langue-spécifiques
+  │   │   └── 📁 nsfw/multi/        ← MangaDex Unlocked
+  │   │
+  │   ├── 📁 novel/en/               ← RoyalRoad, WuxiaWorld, NovelFire…
+  │   ├── 📁 game/en/                ← Sources ROM / émulation
+  │   ├── 📁 music/                  ← SoundCloud, Deezer, YouTube Music…
+  │   └── 📁 plugins/               ← Plugins système (téléchargeurs, sync…)
+  │
+  ├── 📁 index/                      ← Index JSON générés (lus par l'app)
+  │   ├── watch.json                 ← Index Watch
+  │   ├── manga.json                 ← Index Manga
+  │   ├── novel.json                 ← Index Novel
+  │   ├── game.json                  ← Index Game
+  │   └── music.json                 ← Index Music
+  │
+  ├── 📁 docs/                       ← Site web GitHub Pages
+  ├── 📁 tools/                      ← Scripts de build et de test
+  ├── 📁 local_sources/              ← Templates pour sources personnelles
+  ├── 📄 repo.json                   ← Point d'entrée principal
+  └── 📄 README.md
+  ```
+
+  > **Pourquoi `multi/` ?** MangaDex supporte 45 langues avec un seul fichier. L'ancienne structure créait 42 entrées identiques dans la marketplace. Maintenant : **1 entrée, toutes les langues**.
+
+  ---
+
+  ## 🔧 Créer une extension
+
+  <details>
+  <summary><strong>Voir le guide complet</strong></summary>
+
+  ### Structure minimale
+
+  Une extension = un fichier JS qui exporte `watchtowerSources` :
+
+  ```javascript
+  const watchtowerSources = [{
+    "name": "Ma Source",
+    "lang": "en",                  // ou "multi" si plusieurs langues
+    "baseUrl": "https://monsite.com",
+    "iconUrl": "https://monsite.com/favicon.ico",
     "typeSource": "single",
-    "iconUrl": "https://mysite.com/favicon.ico",
-    "dateFormat": "",
-    "dateFormatLocale": "",
+    "itemType": 1,                 // 0=manga 1=watch 2=novel 4=game
+    "isManga": false,
     "isNsfw": false,
     "hasCloudflare": false,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/yourname/my-extensions/main/watch/en/mysource.js",
-    "apiUrl": "",
     "version": "1.0.0",
-    "isManga": false,
-    "itemType": 1,
-    "isFullData": false,
     "appMinVerReq": "0.5.0",
-    "additionalParams": "",
-    "sourceCodeLanguage": 1,
-    "notes": ""
+    "sourceCodeLanguage": 1,       // 1=JavaScript
+  }];
+
+  async function search(query, page) {
+    const url = `${source.baseUrl}/search?q=${encodeURIComponent(query)}&page=${page}`;
+    const res = await fetch(url);
+    const $ = await parseHtml(await res.text());
+    return {
+      list: $('.item').toArray().map(el => ({
+        name: $(el).find('.title').text().trim(),
+        imageUrl: $(el).find('img').attr('src'),
+        link: $(el).find('a').attr('href'),
+      })),
+      hasNextPage: !!$('.next-page').length,
+    };
   }
-]
-```
 
-> **ID uniqueness:** Use a high unique integer for `id` (e.g. start at `9000000001`). Avoid collisions with existing extensions.
+  async function getDetail(url) { /* … */ }
+  async function getVideoList(url) { /* … */ }   // pour watch
+  async function getPageList(url) { /* … */ }    // pour manga
+  ```
 
-### 4. Publish Your Repo Index URL
+  ### Types de contenu (`itemType`)
 
-Make your GitHub repo public, then share the raw URL:
-```
-https://raw.githubusercontent.com/yourname/my-extensions/main/watch/index.json
-```
+  | Valeur | Type |
+  |--------|------|
+  | `0` | Manga / Comic |
+  | `1` | Watch / Anime / Vidéo |
+  | `2` | Novel / Ebook |
+  | `4` | Game / ROM |
 
-Users can paste this into Watchtower → Settings → Browse → Extension Repositories.
+  ### APIs disponibles dans le runtime
 
-### 5. Keeping Your Index Up to Date
+  | API | Description |
+  |-----|-------------|
+  | `fetch(url, options?)` | HTTP avec support cookies |
+  | `parseHtml(html)` | Sélecteur Cheerio-like |
+  | `source` | Config de la source courante |
+  | `btoa` / `atob` | Base64 |
+  | `CryptoJS` | AES, MD5, etc. |
 
-When you update an extension JS file, **also bump the `version` field** in the index JSON. Watchtower uses version comparison to show the "Update" badge.
+  ### Extension multi-langues
 
----
+  Si ta source supporte plusieurs langues, utilise `"lang": "multi"` et le champ `"langs"` :
 
-## Contributing
+  ```javascript
+  const watchtowerSources = [{
+    "lang": "multi",
+    "langs": ["en", "fr", "de", "ja"],
+    "ids": {
+      "en": 810342358,
+      "fr": 545017689,
+      // …
+    }
+  }];
+  ```
 
-1. Fork this repository
-2. Place your JS file in the correct language subfolder (`watch/en/`, `manga/fr/`, etc.)
-3. Add your source entry to the corresponding `index.json`
-4. Bump the version if updating an existing source
-5. Open a Pull Request — title: `[watch/en] Add MySite v1.0.0`
+  Cela crée **une seule entrée** dans la marketplace avec un sélecteur de langue intégré.
 
-Please ensure:
-- NSFW sources use `"isNsfw": true` and are in a `nsfw/` subfolder
-- Version follows `MAJOR.MINOR.PATCH` (SemVer)
-- `appMinVerReq` matches the minimum Watchtower version your extension requires
-- Extensions do not contain malicious code
+  ### Contenu NSFW
 
----
+  ```javascript
+  // Dans le fichier source :
+  "isNsfw": true
 
-## License
+  // Placement dans le repo :
+  src/watch/nsfw/en/masource.js
+  src/manga/nsfw/multi/masource.js
+  ```
 
-MIT — see [LICENSE](LICENSE)
+  Le contenu NSFW est masqué par défaut — l'utilisateur doit l'activer dans **Paramètres → Browse**.
+
+  </details>
+
+  ---
+
+  ## 🏗️ Créer son propre dépôt
+
+  <details>
+  <summary><strong>Guide pas à pas</strong></summary>
+
+  ### 1. Structure minimale
+
+  ```
+  mon-depot/
+  ├── repo.json
+  ├── index/
+  │   └── manga.json
+  └── src/
+      └── manga/
+          └── en/
+              └── masource.js
+  ```
+
+  ### 2. `repo.json`
+
+  ```json
+  {
+    "name": "Mon Dépôt",
+    "website": "https://github.com/moncompte/mon-depot",
+    "watchJsonUrl":  "https://raw.githubusercontent.com/moncompte/mon-depot/main/index/watch.json",
+    "mangaJsonUrl":  "https://raw.githubusercontent.com/moncompte/mon-depot/main/index/manga.json",
+    "novelJsonUrl":  "https://raw.githubusercontent.com/moncompte/mon-depot/main/index/novel.json"
+  }
+  ```
+
+  ### 3. `index/manga.json`
+
+  ```json
+  [
+    {
+      "name": "Ma Source",
+      "id": 9000000001,
+      "baseUrl": "https://monsite.com",
+      "lang": "en",
+      "typeSource": "single",
+      "iconUrl": "https://monsite.com/favicon.ico",
+      "isNsfw": false,
+      "hasCloudflare": false,
+      "sourceCodeUrl": "https://raw.githubusercontent.com/moncompte/mon-depot/main/src/manga/en/masource.js",
+      "version": "1.0.0",
+      "isManga": true,
+      "itemType": 0,
+      "appMinVerReq": "0.5.0",
+      "sourceCodeLanguage": 1
+    }
+  ]
+  ```
+
+  > **ID unique** : commence à `9000000001` pour éviter les collisions avec ce dépôt officiel.
+
+  ### 4. Publier
+
+  Rends le repo GitHub public, puis partage l'URL :
+  ```
+  https://raw.githubusercontent.com/moncompte/mon-depot/main/repo.json
+  ```
+
+  ### 5. Mises à jour
+
+  À chaque modification d'un fichier JS, **incrémente le champ `version`** dans l'index JSON. Watchtower affiche alors le badge « Mettre à jour » dans la marketplace.
+
+  </details>
+
+  ---
+
+  ## 🤝 Contribuer
+
+  1. **Fork** ce dépôt
+  2. Place ton fichier JS dans `src/<type>/<lang>/masource.js`
+  3. Ajoute une entrée dans `index/<type>.json`
+  4. Si c'est une mise à jour, **bump la version** dans l'index
+  5. Ouvre une **Pull Request** — titre : `[manga/en] Add MonSite v1.0.0`
+
+  ### Règles
+
+  - ✅ Sources NSFW → `isNsfw: true` + placées dans `src/<type>/nsfw/<lang>/`
+  - ✅ Version SemVer : `MAJOR.MINOR.PATCH`
+  - ✅ `appMinVerReq` doit correspondre à la version Watchtower minimum requise
+  - ❌ Pas de code malveillant ou de tracking utilisateur
+  - ❌ Pas de clés API hardcodées
+
+  ---
+
+  <div align="center">
+
+  **MIT License** · [Watchtower](https://github.com/ferelking242/watchtower) · [Signaler un bug](https://github.com/ferelking242/watchtower-extensions/issues)
+
+  </div>
+  

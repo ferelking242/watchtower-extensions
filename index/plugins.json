@@ -1,0 +1,244 @@
+{
+  "_comment": "Plugin registry — submit a PR to add your plugin",
+  "_schema": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/schema.json",
+  "_templates": "https://github.com/ferelking242/watchtower-extensions/tree/main/plugins/_templates",
+  "_lastUpdated": "2026-06-12",
+  "plugins": [
+    {
+      "id": "com.watchtower.tiktok-downloader",
+      "name": "TikTok Downloader",
+      "version": "1.0.0",
+      "author": "Watchtower Team",
+      "description": "Download TikTok videos and slideshows in HD without watermark. Powered by ZeusDL.",
+      "longDescription": "Download any TikTok video, slideshow, or audio track directly into Watchtower.\n\nSupports **watermark removal**, **HD quality**, **audio-only mode**, and **batch downloads**.\n\n**Requires ZeusDL** — Watchtower's built-in download engine that handles TikTok's anti-bot protection, rotating sessions and rate-limiting automatically.\n\n**Optional: FFmpeg** for 1080p quality (merges audio+video streams).",
+      "icon": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/com.watchtower.tiktok-downloader/assets/icon.svg",
+      "banner": "",
+      "screenshots": [],
+      "category": "downloader",
+      "runtime": "javascript",
+      "ui": "webview",
+      "permissions": [
+        "network",
+        "downloads",
+        "storage.read",
+        "storage.write",
+        "notifications",
+        "filesystem",
+        "system"
+      ],
+      "requirements": [
+        {
+          "id": "zeusdl",
+          "version": ">=1.0.0",
+          "optional": false,
+          "reason": "ZeusDL handles TikTok session management, watermark removal and HD extraction."
+        },
+        {
+          "id": "ffmpeg",
+          "version": ">=5.0.0",
+          "optional": true,
+          "reason": "Merges audio+video streams for 1080p quality."
+        }
+      ],
+      "commandScopes": [
+        {
+          "command": "zeusdl",
+          "description": "Download TikTok videos without watermark"
+        },
+        {
+          "command": "ffmpeg",
+          "description": "Merge audio and video streams for HD quality"
+        }
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*.tiktok.com",
+          "*.tiktokcdn.com",
+          "*.tiktokv.com",
+          "*.bytedance.com"
+        ]
+      },
+      "writePaths": [
+        "$DOWNLOADS/TikTok"
+      ],
+      "watchtower": {
+        "minVersion": "1.0.0",
+        "apis": [
+          "HTTP",
+          "Download",
+          "Notification",
+          "Storage",
+          "Cache",
+          "System"
+        ]
+      },
+      "userConfig": {
+        "fields": [
+          {
+            "key": "defaultQuality",
+            "type": "select",
+            "label": "Default quality",
+            "options": [
+              "1080p",
+              "720p",
+              "480p",
+              "360p",
+              "audio only"
+            ],
+            "default": "720p"
+          },
+          {
+            "key": "saveFolder",
+            "type": "string",
+            "label": "Save folder",
+            "default": "$DOWNLOADS/TikTok"
+          },
+          {
+            "key": "removeWatermark",
+            "type": "boolean",
+            "label": "Remove watermark",
+            "default": true
+          },
+          {
+            "key": "audioOnly",
+            "type": "boolean",
+            "label": "Audio only",
+            "default": false
+          }
+        ]
+      },
+      "tags": [
+        "tiktok",
+        "download",
+        "video",
+        "watermark-free",
+        "hd",
+        "social"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/watchtower-extensions/tree/main/plugins/com.watchtower.tiktok-downloader",
+      "isNsfw": false,
+      "requiresAccount": false,
+      "paywall": "free",
+      "downloads": 0,
+      "rating": 0,
+      "featured": true,
+      "publishedAt": "2026-06-09"
+    },
+    {
+      "id": "com.watchtower.facebook-downloader",
+      "name": "Facebook Downloader",
+      "version": "1.0.0",
+      "author": "Watchtower Team",
+      "description": "Download Facebook videos and Reels in HD. Powered by ZeusDL.",
+      "longDescription": "Download any public Facebook video, Reel, or story directly into Watchtower.\n\nSupports **HD quality**, **audio-only mode**, and **private video download** (when logged in via cookies).\n\n**Requires ZeusDL** — Watchtower's built-in download engine that handles Facebook's CDN and session management automatically.\n\n**Optional: FFmpeg** for best quality (merges audio+video streams).",
+      "icon": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/com.watchtower.facebook-downloader/assets/icon.svg",
+      "banner": "",
+      "screenshots": [],
+      "category": "downloader",
+      "runtime": "javascript",
+      "ui": "webview",
+      "permissions": [
+        "network",
+        "downloads",
+        "storage.read",
+        "storage.write",
+        "notifications",
+        "filesystem",
+        "system"
+      ],
+      "requirements": [
+        {
+          "id": "zeusdl",
+          "version": ">=1.0.0",
+          "optional": false,
+          "reason": "ZeusDL handles Facebook CDN, cookie session and HD stream extraction."
+        },
+        {
+          "id": "ffmpeg",
+          "version": ">=5.0.0",
+          "optional": true,
+          "reason": "Merges audio+video streams for best quality."
+        }
+      ],
+      "commandScopes": [
+        {
+          "command": "zeusdl",
+          "description": "Download Facebook videos and Reels"
+        },
+        {
+          "command": "ffmpeg",
+          "description": "Merge audio and video streams"
+        }
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*.facebook.com",
+          "*.fbcdn.net",
+          "*.fb.com",
+          "*.fbsbx.com"
+        ]
+      },
+      "writePaths": [
+        "$DOWNLOADS/Facebook"
+      ],
+      "watchtower": {
+        "minVersion": "1.0.0",
+        "apis": [
+          "HTTP",
+          "Download",
+          "Notification",
+          "Storage",
+          "Cache",
+          "System"
+        ]
+      },
+      "userConfig": {
+        "fields": [
+          {
+            "key": "defaultQuality",
+            "type": "select",
+            "label": "Default quality",
+            "options": [
+              "1080p",
+              "720p",
+              "480p",
+              "360p",
+              "audio only"
+            ],
+            "default": "720p"
+          },
+          {
+            "key": "saveFolder",
+            "type": "string",
+            "label": "Save folder",
+            "default": "$DOWNLOADS/Facebook"
+          },
+          {
+            "key": "audioOnly",
+            "type": "boolean",
+            "label": "Audio only",
+            "default": false
+          }
+        ]
+      },
+      "tags": [
+        "facebook",
+        "reels",
+        "download",
+        "video",
+        "hd",
+        "social"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/watchtower-extensions/tree/main/plugins/com.watchtower.facebook-downloader",
+      "isNsfw": false,
+      "requiresAccount": false,
+      "paywall": "free",
+      "downloads": 0,
+      "rating": 0,
+      "featured": false,
+      "publishedAt": "2026-06-12"
+    }
+  ]
+}
