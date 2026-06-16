@@ -16,7 +16,9 @@
       "banner": "",
       "screenshots": [],
       "category": "downloader",
-      "runtimeTypes": ["downloader"],
+      "runtimeTypes": [
+        "downloader"
+      ],
       "ui": {
         "method": "json",
         "schema": "ui/schema.json",
@@ -24,24 +26,93 @@
         "evalSource": "ui/main.dart",
         "template": "downloader"
       },
-      "permissions": ["network","downloads","storage.read","storage.write","notifications","filesystem"],
+      "permissions": [
+        "network",
+        "downloads",
+        "storage.read",
+        "storage.write",
+        "notifications",
+        "filesystem"
+      ],
       "requirements": {
-        "zeusdl": { "version": ">=1.0.0", "optional": false },
-        "ffmpeg": { "version": ">=5.0.0", "optional": true }
+        "zeusdl": {
+          "version": ">=1.0.0",
+          "optional": false
+        },
+        "ffmpeg": {
+          "version": ">=5.0.0",
+          "optional": true
+        }
       },
-      "commandScopes": ["zeusdl", "ffmpeg"],
-      "networkAccess": ["*.youtube.com","*.youtu.be","*.googlevideo.com","*.ytimg.com"],
-      "writePaths": ["$DOWNLOADS/YouTube"],
+      "commandScopes": [
+        "zeusdl",
+        "ffmpeg"
+      ],
+      "networkAccess": [
+        "*.youtube.com",
+        "*.youtu.be",
+        "*.googlevideo.com",
+        "*.ytimg.com"
+      ],
+      "writePaths": [
+        "$DOWNLOADS/YouTube"
+      ],
       "userConfig": {
         "fields": [
-          { "key": "defaultQuality", "type": "select", "label": "Qualité par défaut", "options": ["4K","1080p","720p","480p","360p","audio only"], "default": "1080p" },
-          { "key": "defaultFormat", "type": "select", "label": "Format par défaut", "options": ["mp4","mp3","m4a","webm"], "default": "mp4" },
-          { "key": "saveFolder", "type": "string", "label": "Dossier de sauvegarde", "default": "$DOWNLOADS/YouTube" },
-          { "key": "embedSubtitles", "type": "boolean", "label": "Intégrer les sous-titres", "default": false },
-          { "key": "downloadThumbnail", "type": "boolean", "label": "Télécharger la miniature", "default": true }
+          {
+            "key": "defaultQuality",
+            "type": "select",
+            "label": "Qualité par défaut",
+            "options": [
+              "4K",
+              "1080p",
+              "720p",
+              "480p",
+              "360p",
+              "audio only"
+            ],
+            "default": "1080p"
+          },
+          {
+            "key": "defaultFormat",
+            "type": "select",
+            "label": "Format par défaut",
+            "options": [
+              "mp4",
+              "mp3",
+              "m4a",
+              "webm"
+            ],
+            "default": "mp4"
+          },
+          {
+            "key": "saveFolder",
+            "type": "string",
+            "label": "Dossier de sauvegarde",
+            "default": "$DOWNLOADS/YouTube"
+          },
+          {
+            "key": "embedSubtitles",
+            "type": "boolean",
+            "label": "Intégrer les sous-titres",
+            "default": false
+          },
+          {
+            "key": "downloadThumbnail",
+            "type": "boolean",
+            "label": "Télécharger la miniature",
+            "default": true
+          }
         ]
       },
-      "tags": ["youtube","download","video","audio","playlist","4k"],
+      "tags": [
+        "youtube",
+        "download",
+        "video",
+        "audio",
+        "playlist",
+        "4k"
+      ],
       "license": "MIT",
       "isNsfw": false,
       "requiresAccount": false,
@@ -286,6 +357,78 @@
       "rating": 0,
       "featured": false,
       "publishedAt": "2026-06-12"
+    },
+    {
+      "id": "com.watchtower.telegram-source",
+      "name": "Telegram Source",
+      "version": "1.0.0",
+      "author": "Watchtower Team",
+      "description": "Use any Telegram channel as a manga, comics or document source. Stream CBR/CBZ/PDF/EPUB directly in Watchtower. 2FA supported.",
+      "longDescription": "Connect to any Telegram channel (public or private) and browse its files as a reading library in Watchtower. Each channel becomes a source with cover, description and chapter list.\n\n**Powered by Pyrogram** — connects via user account (not bot). Supports chunk streaming, search, thumbnail extraction from archives, and **two-step verification (2FA)**.\n\n**First use** requires a Telegram OTP authentication (code sent to your Telegram app). **Accounts with 2FA** are fully supported — you will be prompted for your cloud password.",
+      "schemaVersion": "2",
+      "icon": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/com.watchtower.telegram-source/assets/icon.svg",
+      "banner": "",
+      "screenshots": [],
+      "category": "reader",
+      "runtimeTypes": [
+        "source",
+        "reader"
+      ],
+      "ui": {
+        "method": "flutter_eval",
+        "evalSource": "ui/main.dart"
+      },
+      "permissions": [
+        "network",
+        "storage.read",
+        "storage.write",
+        "account",
+        "crypto",
+        "reader"
+      ],
+      "requirements": {
+        "libpython": {
+          "version": ">=3.11.0",
+          "optional": false
+        }
+      },
+      "commandScopes": [
+        {
+          "command": "python",
+          "description": "Run Pyrogram Telegram source script",
+          "actions": [
+            "auth_send_code",
+            "auth_verify_code",
+            "auth_check_password",
+            "metadata",
+            "list",
+            "stream",
+            "search",
+            "thumbnail"
+          ]
+        }
+      ],
+      "networkAccess": [
+        "*.telegram.org",
+        "*.t.me",
+        "*.core.telegram.org"
+      ],
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Reader",
+          "Storage",
+          "SecureStorage",
+          "Cache"
+        ]
+      },
+      "userConfig": {
+        "fields": []
+      },
+      "requiresAccount": true,
+      "paywall": "free",
+      "license": "MIT"
     }
   ]
 }
