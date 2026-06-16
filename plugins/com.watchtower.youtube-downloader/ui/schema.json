@@ -1,96 +1,110 @@
 {
-  "version": 2,
   "title": "YouTube Downloader",
-  "subtitle": "Téléchargez vidéos, audio et playlists YouTube en haute qualité.",
-  "accentColor": "#FF0000",
-
-  "screens": [
+  "description": "Téléchargez des vidéos et de l'audio depuis YouTube",
+  "color": "#E53935",
+  "sections": [
     {
-      "id": "main",
-      "title": "YouTube Downloader",
-      "layout": "scroll",
-      "widgets": [
+      "id": "search",
+      "title": "Recherche",
+      "inputs": [
         {
-          "type": "url_field",
           "id": "url",
-          "label": "Lien YouTube",
-          "placeholder": "https://youtube.com/watch?v=...",
-          "required": true,
-          "validator": "^https?://(?:www\\.)?(?:youtube\\.com|youtu\\.be)/.+$",
-          "validatorError": "Entrez un lien YouTube valide",
-          "pasteButton": true,
-          "clearButton": true
+          "type": "text",
+          "label": "URL ou recherche",
+          "placeholder": "Rechercher ou insérer une URL",
+          "icon": "search",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "format",
+      "title": "Format",
+      "inputs": [
+        {
+          "id": "type",
+          "type": "chip_select",
+          "label": "Type de contenu",
+          "options": [
+            "Vidéo",
+            "Audio uniquement"
+          ],
+          "default": "Vidéo"
         },
         {
-          "type": "chip_select",
           "id": "quality",
-          "label": "Qualité",
+          "type": "chip_select",
+          "label": "Qualité vidéo",
           "options": [
-            { "label": "4K", "value": "4K" },
-            { "label": "1080p", "value": "1080p" },
-            { "label": "720p", "value": "720p" },
-            { "label": "480p", "value": "480p" },
-            { "label": "360p", "value": "360p" },
-            { "label": "🎵 Audio", "value": "audio" }
+            "2160p",
+            "1440p",
+            "1080p",
+            "720p",
+            "480p",
+            "360p"
           ],
           "default": "1080p"
         },
         {
+          "id": "audio_format",
           "type": "chip_select",
-          "id": "format",
-          "label": "Format",
+          "label": "Format audio",
           "options": [
-            { "label": "MP4", "value": "mp4" },
-            { "label": "MP3", "value": "mp3" },
-            { "label": "M4A", "value": "m4a" },
-            { "label": "WebM", "value": "webm" }
+            "mp3",
+            "m4a",
+            "opus",
+            "aac",
+            "flac"
           ],
-          "default": "mp4",
-          "hideWhen": { "field": "quality", "value": "audio" }
-        },
+          "default": "mp3"
+        }
+      ]
+    },
+    {
+      "id": "options",
+      "title": "Options",
+      "inputs": [
         {
+          "id": "subtitles",
           "type": "toggle",
-          "id": "embed_subs",
-          "label": "Intégrer les sous-titres",
-          "description": "Intègre les sous-titres dans le fichier",
-          "default": false,
-          "icon": "closed_caption"
+          "label": "Télécharger les sous-titres",
+          "default": false
         },
         {
+          "id": "thumbnail",
           "type": "toggle",
-          "id": "playlist_mode",
-          "label": "Mode playlist",
-          "description": "Télécharge toute la playlist si l'URL en contient une",
-          "default": false,
-          "icon": "queue_music"
+          "label": "Intégrer la miniature",
+          "default": true
         },
         {
-          "type": "divider"
-        },
+          "id": "metadata",
+          "type": "toggle",
+          "label": "Intégrer les métadonnées",
+          "default": true
+        }
+      ]
+    },
+    {
+      "id": "action",
+      "inputs": [
         {
-          "type": "button",
           "id": "download",
+          "type": "button",
           "label": "Télécharger",
           "style": "primary",
           "icon": "download",
-          "action": "download"
-        },
-        {
-          "type": "button",
-          "id": "fetch_info",
-          "label": "Infos vidéo",
-          "style": "secondary",
-          "icon": "info_outline",
-          "action": "fetch_info"
+          "action": {
+            "command": "yt-dlp",
+            "buildArgs": [
+              "${url}",
+              "-f",
+              "${quality}",
+              "--audio-format",
+              "${audio_format}"
+            ]
+          }
         }
-      ],
-      "output": {
-        "type": "progress_log",
-        "label": "Progression",
-        "showSpeed": true,
-        "showEta": true,
-        "showFileSize": true
-      }
+      ]
     }
   ]
 }
