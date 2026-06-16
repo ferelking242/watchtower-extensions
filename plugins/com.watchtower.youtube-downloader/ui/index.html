@@ -1,397 +1,213 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <html lang="fr">
+  <head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
   <title>YouTube Downloader</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root{--bg:#1C1C1E;--card:#252526;--red:#E53935;--blue:#1565C0;--grey:#9E9E9E;--greyD:#383838;--border:rgba(255,255,255,.22);--nav-h:68px}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{background:var(--bg);color:#fff;font-family:-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;min-height:100vh;overflow:hidden}
+  #app{display:flex;flex-direction:column;height:100dvh}
+  #content{flex:1;overflow:hidden;position:relative}
+  .tab{position:absolute;inset:0;overflow-y:auto;display:none;flex-direction:column}
+  .tab.on{display:flex}
 
-    :root {
-      --bg: #0F0F0F;
-      --card: #1A1A1A;
-      --card2: #222;
-      --border: #2A2A2A;
-      --accent: #FF0000;
-      --accent2: #CC0000;
-      --text: #FFFFFF;
-      --muted: #888;
-      --radius: 12px;
-    }
+  /* ── NAV ── */
+  #nav{height:var(--nav-h);background:var(--bg);display:flex;align-items:flex-start;padding-top:4px;border-top:1px solid rgba(255,255,255,.06);flex-shrink:0}
+  .ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;user-select:none}
+  .np{padding:8px 20px;border-radius:24px;background:transparent;transition:background .2s;display:flex;align-items:center;justify-content:center;position:relative}
+  .ni.on .np{background:var(--greyD)}
+  .np svg{width:24px;height:24px;fill:#fff}
+  .nl{font-size:11px;color:var(--grey);font-weight:400}
+  .ni.on .nl{color:#fff;font-weight:600}
+  .badge{position:absolute;top:-2px;right:-2px;width:17px;height:17px;border-radius:50%;background:var(--red);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:#fff}
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, 'SF Pro Display', 'Segoe UI', sans-serif;
-      padding: 16px;
-      min-height: 100vh;
-    }
+  /* ── HOME ── */
+  .home-title{padding:20px 16px 0;font-size:22px;font-weight:700}
+  .home-title .r{color:var(--red)}
+  .sbar{margin:12px 12px 0;display:flex;align-items:center;gap:8px;background:var(--card);border-radius:28px;padding:0 6px 0 14px;height:52px}
+  .sbar input{flex:1;background:none;border:none;outline:none;color:#fff;font-size:15px}
+  .sbar input::placeholder{color:var(--grey)}
+  .sbar button{background:none;border:none;color:var(--grey);cursor:pointer;padding:8px}
+  .sbar button svg{width:22px;height:22px;fill:var(--grey)}
+  .results{padding:16px 12px 0;display:flex;flex-direction:column;gap:12px}
 
-    /* ── Header ── */
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-    .header-icon {
-      width: 44px; height: 44px;
-      background: var(--accent);
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px;
-    }
-    .header-title { font-size: 20px; font-weight: 700; }
-    .header-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  /* ── VIDEO CARD ── */
+  .vc{border-radius:12px;overflow:hidden;position:relative;aspect-ratio:16/9;background:#2C2C2E}
+  .vc img{width:100%;height:100%;object-fit:cover;display:block}
+  .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2C2C2E,#1C1C1E)}
+  .ph svg{width:56px;height:56px;fill:var(--grey);opacity:.5}
+  .grad{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,.78))}
+  .vmeta{position:absolute;top:10px;left:10px;right:110px}
+  .vmeta .vt{font-size:13px;font-weight:700;color:#fff;line-height:1.3;text-shadow:0 1px 4px #000;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .vmeta .vc2{font-size:11px;color:#ccc;text-shadow:0 1px 3px #000;margin-top:2px}
+  .vdur{position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,.55);border-radius:4px;padding:3px 7px;font-size:12px;font-weight:600;color:#fff}
+  .vact{position:absolute;bottom:8px;right:8px;display:flex;gap:6px}
+  .ab{width:42px;height:42px;background:rgba(0,0,0,.62);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;transition:background .15s,transform .1s}
+  .ab:active{transform:scale(.92);background:rgba(0,0,0,.85)}
+  .ab svg{width:22px;height:22px;fill:#fff}
 
-    /* ── Fields ── */
-    .field { margin-bottom: 16px; }
-    .field-label {
-      font-size: 12px; font-weight: 600;
-      color: var(--muted); text-transform: uppercase;
-      letter-spacing: 0.5px; margin-bottom: 6px;
-    }
-    .field-label .req { color: var(--accent); margin-left: 2px; }
+  /* ── DOWNLOADS TAB ── */
+  .dl-bar{display:flex;align-items:center;padding:14px 4px 0 16px}
+  .dl-bar h1{flex:1;font-size:20px;font-weight:700;color:#fff}
+  .ib{background:none;border:none;color:#fff;cursor:pointer;width:40px;height:40px;display:flex;align-items:center;justify-content:center}
+  .ib svg{width:22px;height:22px;fill:#fff}
+  .chips{display:flex;gap:8px;padding:10px 12px 0;overflow-x:auto;scrollbar-width:none}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex-shrink:0;padding:7px 14px;border-radius:20px;cursor:pointer;border:1px solid var(--border);font-size:13px;color:#fff;background:transparent;transition:background .15s;white-space:nowrap}
+  .chip.on{background:rgba(255,255,255,.12);font-weight:600}
+  .dl-list{padding:12px 12px 0;display:flex;flex-direction:column;gap:12px}
 
-    .input-wrap {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      display: flex; align-items: center;
-      transition: border-color .2s;
-    }
-    .input-wrap:focus-within { border-color: var(--accent); }
+  /* ── DOWNLOAD CARD ── */
+  .dc{border-radius:12px;overflow:hidden;position:relative;aspect-ratio:16/9;background:#2C2C2E}
+  .dc img{width:100%;height:100%;object-fit:cover;display:block}
+  .dgrad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.42),rgba(0,0,0,.78))}
+  .dmeta{position:absolute;top:10px;left:10px;right:76px}
+  .dmeta .dt{font-size:13px;font-weight:700;color:#fff;text-shadow:0 1px 4px #000;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .dmeta .dc2{font-size:11px;color:#ccc;margin-top:2px}
+  .play-b{position:absolute;top:10px;right:10px;width:52px;height:52px;background:var(--blue);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .play-b svg{width:30px;height:30px;fill:#fff}
+  .ddur{position:absolute;bottom:10px;left:10px;background:rgba(0,0,0,.55);border-radius:4px;padding:3px 7px;font-size:12px;font-weight:600;color:#fff}
+  .ddate{position:absolute;bottom:10px;right:10px;font-size:11px;color:#bbb}
 
-    input[type="url"], input[type="text"] {
-      flex: 1;
-      background: transparent;
-      border: none; outline: none;
-      color: var(--text);
-      font-size: 14px;
-      padding: 13px 14px;
-    }
-    input::placeholder { color: var(--muted); }
-
-    .btn-paste, .btn-clear {
-      background: none; border: none;
-      color: var(--muted); cursor: pointer;
-      padding: 0 10px; font-size: 18px;
-      transition: color .2s;
-    }
-    .btn-paste:hover, .btn-clear:hover { color: var(--text); }
-
-    /* ── Select ── */
-    .select-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .select-opt {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      cursor: pointer;
-      font-size: 13px;
-      transition: all .15s;
-      text-align: center;
-    }
-    .select-opt:hover { border-color: var(--accent); }
-    .select-opt.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
-
-    /* ── Toggle ── */
-    .toggle-row {
-      display: flex; justify-content: space-between; align-items: center;
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 14px;
-      margin-bottom: 10px;
-    }
-    .toggle-info { flex: 1; }
-    .toggle-label { font-size: 14px; font-weight: 500; }
-    .toggle-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-    .switch {
-      position: relative; width: 48px; height: 28px;
-      flex-shrink: 0; margin-left: 12px;
-    }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute; inset: 0;
-      background: var(--border); border-radius: 28px;
-      cursor: pointer; transition: .3s;
-    }
-    .slider::before {
-      content: '';
-      position: absolute; width: 22px; height: 22px;
-      left: 3px; top: 3px;
-      background: var(--muted); border-radius: 50%;
-      transition: .3s;
-    }
-    input:checked + .slider { background: var(--accent); }
-    input:checked + .slider::before { transform: translateX(20px); background: #fff; }
-
-    /* ── Divider ── */
-    .divider { height: 1px; background: var(--border); margin: 20px 0; }
-
-    /* ── Buttons ── */
-    .btn {
-      width: 100%; padding: 15px;
-      border: none; border-radius: var(--radius);
-      font-size: 15px; font-weight: 700;
-      cursor: pointer; transition: all .15s;
-      display: flex; align-items: center; justify-content: center;
-      gap: 8px; margin-bottom: 10px;
-    }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:active { background: var(--accent2); transform: scale(0.98); }
-    .btn-secondary {
-      background: transparent; color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .btn-secondary:active { background: var(--card2); transform: scale(0.98); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    /* ── Output ── */
-    .output {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px;
-      margin-top: 16px;
-      display: none;
-    }
-    .output.visible { display: block; }
-    .output-title {
-      font-size: 12px; font-weight: 600;
-      color: var(--muted); text-transform: uppercase;
-      letter-spacing: 0.5px; margin-bottom: 8px;
-    }
-    .log-area {
-      font-family: 'SF Mono', 'Fira Code', monospace;
-      font-size: 12px; color: #aaa; line-height: 1.6;
-      max-height: 180px; overflow-y: auto;
-    }
-    .log-line { margin-bottom: 2px; }
-    .log-line.success { color: #4CAF50; }
-    .log-line.error { color: #F44336; }
-    .log-line.info { color: #64B5F6; }
-
-    /* ── Progress bar ── */
-    .progress-wrap {
-      background: var(--border);
-      border-radius: 4px; height: 4px;
-      margin-top: 10px; overflow: hidden;
-    }
-    .progress-bar {
-      height: 100%; background: var(--accent);
-      border-radius: 4px; width: 0%;
-      transition: width .3s ease;
-    }
-    .progress-info {
-      display: flex; justify-content: space-between;
-      font-size: 11px; color: var(--muted); margin-top: 6px;
-    }
+  /* ── MORE TAB ── */
+  .more-icon{display:flex;justify-content:center;padding:40px 0}
+  .ai{width:90px;height:90px;background:var(--red);border-radius:22px;display:flex;align-items:center;justify-content:center}
+  .ai svg{width:52px;height:52px;fill:#fff}
+  .mi{display:flex;align-items:center;gap:18px;padding:16px 20px;cursor:pointer;transition:background .12s}
+  .mi:active{background:rgba(255,255,255,.05)}
+  .mi svg{width:22px;height:22px;flex-shrink:0;fill:#fff}
+  .mi span{font-size:15px;font-weight:500;color:#fff}
+  .mi.danger svg,.mi.danger span{fill:var(--red);color:var(--red)}
+  .msep{height:1px;background:#2C2C2E;margin:2px 20px}
   </style>
-</head>
-<body>
+  </head>
+  <body>
+  <div id="app">
+    <div id="content">
 
-  <!-- Header -->
-  <div class="header">
-    <div class="header-icon">▶</div>
-    <div>
-      <div class="header-title">YouTube Downloader</div>
-      <div class="header-sub">Téléchargez vidéos, audio et playlists</div>
-    </div>
-  </div>
+      <!-- HOME -->
+      <div class="tab on" id="home">
+        <div class="home-title"><span class="r">YTDL</span>nis</div>
+        <div class="sbar">
+          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" id="si" placeholder="Rechercher ou insérer une URL" autocomplete="off"/>
+          <button onclick="doSearch()"><svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
+        </div>
+        <div class="results" id="results">
+          <div class="vc">
+            <div class="ph"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></div>
+            <div class="grad"></div>
+            <div class="vmeta"><div class="vt">Life Is Strange&trade; Episode 2: Out of Time | Full Walkthrough (No commentary) [HD]</div><div class="vc2">Xenonz</div></div>
+            <div class="vdur">2:16:55</div>
+            <div class="vact">
+              <button class="ab" onclick="dlAudio(this)"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></button>
+              <button class="ab" onclick="dlVideo(this)"><svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  <!-- URL Field -->
-  <div class="field">
-    <div class="field-label">Lien YouTube <span class="req">*</span></div>
-    <div class="input-wrap">
-      <input type="url" id="url" placeholder="https://youtube.com/watch?v=..." autocomplete="off" />
-      <button class="btn-paste" onclick="pasteUrl()" title="Coller">📋</button>
-      <button class="btn-clear" onclick="clearUrl()" title="Effacer">✕</button>
-    </div>
-  </div>
+      <!-- DOWNLOADS -->
+      <div class="tab" id="downloads">
+        <div class="dl-bar">
+          <h1>T&eacute;l&eacute;chargements</h1>
+          <button class="ib"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg></button>
+          <button class="ib"><svg viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg></button>
+          <button class="ib"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg></button>
+          <button class="ib"><svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button>
+        </div>
+        <div class="chips">
+          <div class="chip on" onclick="filt(this,'date')">&#8593; Date ajout&eacute;e</div>
+          <div class="chip" onclick="filt(this,'audio')">Audio</div>
+          <div class="chip" onclick="filt(this,'video')">Vid&eacute;o</div>
+          <div class="chip" onclick="filt(this,'cmd')">Commande</div>
+        </div>
+        <div class="dl-list">
+          <div class="dc">
+            <div class="ph" style="position:absolute;inset:0"><svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8 12.5v-9l6 4.5-6 4.5z"/></svg></div>
+            <div class="dgrad"></div>
+            <div class="dmeta"><div class="dt">How to use Samsung Dex in a monitor</div><div class="dc2">Intehill</div></div>
+            <div class="play-b"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+            <div class="ddur">0:20</div>
+            <div class="ddate">27 avr. 2026, 12:00</div>
+          </div>
+        </div>
+      </div>
 
-  <!-- Quality -->
-  <div class="field">
-    <div class="field-label">Qualité</div>
-    <div class="select-grid" id="quality-grid">
-      <div class="select-opt" onclick="selectQuality('4K')" id="q-4K">4K</div>
-      <div class="select-opt active" onclick="selectQuality('1080p')" id="q-1080p">Full HD 1080p</div>
-      <div class="select-opt" onclick="selectQuality('720p')" id="q-720p">HD 720p</div>
-      <div class="select-opt" onclick="selectQuality('480p')" id="q-480p">480p</div>
-      <div class="select-opt" onclick="selectQuality('360p')" id="q-360p">360p</div>
-      <div class="select-opt" onclick="selectQuality('audio')" id="q-audio">🎵 Audio</div>
-    </div>
-  </div>
+      <!-- MORE -->
+      <div class="tab" id="more">
+        <div class="more-icon"><div class="ai"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div></div>
+        <div class="mi"><svg viewBox="0 0 24 24"><path d="M20 3H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg><span>Terminal</span></div>
+        <div class="mi"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg><span>Journaux</span></div>
+        <div class="mi"><svg viewBox="0 0 24 24"><path d="M10 17l5-5-5-5v10z"/></svg><span>Mod&egrave;les de commandes</span></div>
+        <div class="mi"><svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg><span>Gestionnaire de t&eacute;l&eacute;chargements</span></div>
+        <div class="mi"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-8v4h4l-5 8z"/></svg><span>Cookies</span></div>
+        <div class="mi"><svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg><span>Observer les sources</span></div>
+        <div class="mi danger"><svg viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"/></svg><span>Quitter l&apos;application</span></div>
+        <div class="msep"></div>
+        <div class="mi"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg><span>Param&egrave;tres</span></div>
+      </div>
 
-  <!-- Format -->
-  <div class="field" id="format-field">
-    <div class="field-label">Format</div>
-    <div class="select-grid" id="format-grid">
-      <div class="select-opt active" onclick="selectFormat('mp4')" id="f-mp4">MP4</div>
-      <div class="select-opt" onclick="selectFormat('webm')" id="f-webm">WebM</div>
-      <div class="select-opt" onclick="selectFormat('mp3')" id="f-mp3">MP3</div>
-      <div class="select-opt" onclick="selectFormat('m4a')" id="f-m4a">M4A</div>
-    </div>
-  </div>
+    </div><!-- #content -->
 
-  <!-- Toggles -->
-  <div class="toggle-row">
-    <div class="toggle-info">
-      <div class="toggle-label">Sous-titres</div>
-      <div class="toggle-desc">Intégrer les sous-titres dans le fichier</div>
-    </div>
-    <label class="switch">
-      <input type="checkbox" id="embed_subs" />
-      <span class="slider"></span>
-    </label>
-  </div>
-
-  <div class="toggle-row">
-    <div class="toggle-info">
-      <div class="toggle-label">Mode playlist</div>
-      <div class="toggle-desc">Télécharge toute la playlist automatiquement</div>
-    </div>
-    <label class="switch">
-      <input type="checkbox" id="playlist_mode" />
-      <span class="slider"></span>
-    </label>
-  </div>
-
-  <div class="divider"></div>
-
-  <!-- Actions -->
-  <button class="btn btn-primary" id="btn-download" onclick="triggerDownload()">
-    ⬇ Télécharger
-  </button>
-  <button class="btn btn-secondary" onclick="triggerFetchInfo()">
-    ℹ Infos vidéo
-  </button>
-
-  <!-- Output -->
-  <div class="output" id="output">
-    <div class="output-title">Progression</div>
-    <div class="log-area" id="log"></div>
-    <div class="progress-wrap" id="progress-wrap" style="display:none">
-      <div class="progress-bar" id="progress-bar"></div>
-    </div>
-    <div class="progress-info" id="progress-info" style="display:none">
-      <span id="prog-speed">—</span>
-      <span id="prog-eta">ETA —</span>
-      <span id="prog-size">—</span>
-    </div>
+    <nav id="nav">
+      <div class="ni on" data-t="home" onclick="go('home')">
+        <div class="np"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div>
+        <span class="nl">Accueil</span>
+      </div>
+      <div class="ni" data-t="downloads" onclick="go('downloads')">
+        <div class="np">
+          <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+          <div class="badge" id="dlb">2</div>
+        </div>
+        <span class="nl">T&eacute;l&eacute;chargements</span>
+      </div>
+      <div class="ni" data-t="more" onclick="go('more')">
+        <div class="np"><svg viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></div>
+        <span class="nl">Plus</span>
+      </div>
+    </nav>
   </div>
 
   <script>
-    let selectedQuality = '1080p';
-    let selectedFormat = 'mp4';
-
-    function selectQuality(val) {
-      selectedQuality = val;
-      document.querySelectorAll('#quality-grid .select-opt').forEach(el => el.classList.remove('active'));
-      document.getElementById('q-' + val)?.classList.add('active');
-      const formatField = document.getElementById('format-field');
-      if (val === 'audio') {
-        formatField.style.opacity = '0.5';
-        selectFormat('mp3');
-      } else {
-        formatField.style.opacity = '1';
-      }
-    }
-
-    function selectFormat(val) {
-      selectedFormat = val;
-      document.querySelectorAll('#format-grid .select-opt').forEach(el => el.classList.remove('active'));
-      document.getElementById('f-' + val)?.classList.add('active');
-    }
-
-    function pasteUrl() {
-      navigator.clipboard?.readText().then(t => {
-        document.getElementById('url').value = t;
-      }).catch(() => {
-        if (window.Watchtower) window.Watchtower.requestClipboard();
+  function go(name){
+    document.querySelectorAll('.tab').forEach(function(p){p.classList.remove('on')});
+    document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on')});
+    document.getElementById(name).classList.add('on');
+    document.querySelector('.ni[data-t="'+name+'"]').classList.add('on');
+  }
+  function filt(el,t){
+    if(t!=='date') document.querySelectorAll('.chip').forEach(function(c){if(c!==el)c.classList.remove('on')});
+    el.classList.toggle('on');
+  }
+  function doSearch(){
+    var url=document.getElementById('si').value.trim();
+    if(!url)return;
+    window.Watchtower&&window.Watchtower.postAction('search',{url:url});
+  }
+  document.getElementById('si').addEventListener('keydown',function(e){if(e.key==='Enter')doSearch()});
+  function dlAudio(btn){
+    var t=btn.closest('.vc').querySelector('.vt');
+    window.Watchtower&&window.Watchtower.postAction('download_audio',{title:t?t.textContent:''});
+  }
+  function dlVideo(btn){
+    var t=btn.closest('.vc').querySelector('.vt');
+    window.Watchtower&&window.Watchtower.postAction('download_video',{title:t?t.textContent:''});
+  }
+  function escH(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+  window.addEventListener('message',function(e){
+    var d=e.data;if(!d||!d.type)return;
+    if(d.type==='search_result'&&d.results){
+      var l=document.getElementById('results');l.innerHTML='';
+      d.results.forEach(function(v){
+        var th=v.thumbnail?('<img src="'+escH(v.thumbnail)+'" alt=""/>'):'<div class="ph"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></div>';
+        l.innerHTML+='<div class="vc">'+th+'<div class="grad"></div><div class="vmeta"><div class="vt">'+escH(v.title||'')+'</div><div class="vc2">'+escH(v.uploader||'')+'</div></div><div class="vdur">'+escH(v.duration_string||'')+'</div><div class="vact"><button class="ab" onclick="dlAudio(this)"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></button><button class="ab" onclick="dlVideo(this)"><svg viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg></button></div></div>';
       });
     }
-
-    function clearUrl() {
-      document.getElementById('url').value = '';
-    }
-
-    function getValues() {
-      return {
-        url: document.getElementById('url').value.trim(),
-        quality: selectedQuality,
-        format: selectedFormat,
-        embed_subs: document.getElementById('embed_subs').checked,
-        playlist_mode: document.getElementById('playlist_mode').checked,
-      };
-    }
-
-    function addLog(msg, type = '') {
-      const log = document.getElementById('log');
-      const line = document.createElement('div');
-      line.className = 'log-line ' + type;
-      line.textContent = msg;
-      log.appendChild(line);
-      log.scrollTop = log.scrollHeight;
-      document.getElementById('output').classList.add('visible');
-    }
-
-    function setProgress(pct, speed, eta, size) {
-      document.getElementById('progress-wrap').style.display = 'block';
-      document.getElementById('progress-info').style.display = 'flex';
-      document.getElementById('progress-bar').style.width = pct + '%';
-      if (speed) document.getElementById('prog-speed').textContent = speed;
-      if (eta) document.getElementById('prog-eta').textContent = 'ETA ' + eta;
-      if (size) document.getElementById('prog-size').textContent = size;
-    }
-
-    function triggerDownload() {
-      const vals = getValues();
-      if (!vals.url) { addLog('⚠ Entrez un lien YouTube valide', 'error'); return; }
-      document.getElementById('log').innerHTML = '';
-      document.getElementById('progress-bar').style.width = '0%';
-      document.getElementById('btn-download').disabled = true;
-      addLog('▶ Démarrage du téléchargement…', 'info');
-      // Bridge Flutter → JS via postMessage
-      if (window.Watchtower) {
-        window.Watchtower.postAction('download', vals);
-      } else {
-        window.parent?.postMessage({ action: 'download', values: vals }, '*');
-      }
-    }
-
-    function triggerFetchInfo() {
-      const vals = getValues();
-      if (!vals.url) { addLog('⚠ Entrez un lien YouTube valide', 'error'); return; }
-      document.getElementById('log').innerHTML = '';
-      addLog('🔍 Récupération des infos…', 'info');
-      if (window.Watchtower) {
-        window.Watchtower.postAction('fetch_info', vals);
-      } else {
-        window.parent?.postMessage({ action: 'fetch_info', values: vals }, '*');
-      }
-    }
-
-    // ── Bridge: receive messages from Flutter ─────────────────────────────────
-    window.addEventListener('message', (e) => {
-      const d = e.data;
-      if (!d || !d.type) return;
-      switch (d.type) {
-        case 'log':    addLog(d.message, d.level || ''); break;
-        case 'progress': setProgress(d.percent, d.speed, d.eta, d.size); break;
-        case 'done':
-          document.getElementById('btn-download').disabled = false;
-          addLog('✅ ' + (d.message || 'Terminé !'), 'success');
-          break;
-        case 'error':
-          document.getElementById('btn-download').disabled = false;
-          addLog('❌ ' + (d.message || 'Erreur inconnue'), 'error');
-          break;
-        case 'clipboard':
-          document.getElementById('url').value = d.text || '';
-          break;
-      }
-    });
+    if(d.type==='download_added'){var b=document.getElementById('dlb');b.textContent=String(parseInt(b.textContent||'0')+1)}
+  });
   </script>
-</body>
-</html>
+  </body>
+  </html>
