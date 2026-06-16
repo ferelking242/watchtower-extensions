@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "title": "TikTok Downloader",
+  "subtitle": "Collez une URL TikTok pour télécharger la vidéo.",
+  "inputs": [
+    {
+      "id": "url",
+      "type": "url_field",
+      "label": "URL TikTok",
+      "placeholder": "https://vm.tiktok.com/…",
+      "required": true
+    },
+    {
+      "id": "quality",
+      "type": "select",
+      "label": "Qualité",
+      "options": [
+        "Auto",
+        "720p",
+        "1080p",
+        "Audio seul"
+      ],
+      "default": "Auto"
+    },
+    {
+      "id": "no_watermark",
+      "type": "toggle",
+      "label": "Sans filigrane",
+      "default": true
+    },
+    {
+      "id": "output_dir",
+      "type": "text_field",
+      "label": "Dossier de sortie (optionnel)",
+      "placeholder": "/storage/emulated/0/Watchtower/video/downloads",
+      "required": false
+    }
+  ],
+  "actions": [
+    {
+      "id": "download",
+      "label": "Télécharger",
+      "style": "primary",
+      "icon": "download"
+    }
+  ],
+  "output": {
+    "type": "log",
+    "label": "Progression"
+  }
+}

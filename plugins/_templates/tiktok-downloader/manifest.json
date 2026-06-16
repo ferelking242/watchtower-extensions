@@ -8,7 +8,7 @@
   "icon": "assets/icon.png",
   "category": "downloader",
   "runtime": "javascript",
-  "ui": "webview",
+  "ui": "native",
   "permissions": [
     "network",
     "downloads",
@@ -36,26 +36,66 @@
       "command": "zeusdl",
       "description": "Download TikTok videos without watermark",
       "args": [
-        { "value": "--url" },
-        { "validator": "^https://(?:www\\.)?tiktok\\.com/.+$" },
-        { "value": "--output" },
-        { "validator": "$PATH" },
-        { "value": "--format" },
-        { "validator": "^(mp4|mp3|webm)$" },
-        { "value": "--quality" },
-        { "validator": "^(1080p|720p|480p|360p|audio)$" },
-        { "value": "--no-watermark" }
+        {
+          "value": "--url"
+        },
+        {
+          "validator": "^https://(?:www\\.)?tiktok\\.com/.+$"
+        },
+        {
+          "value": "--output"
+        },
+        {
+          "validator": "$PATH"
+        },
+        {
+          "value": "--format"
+        },
+        {
+          "validator": "^(mp4|mp3|webm)$"
+        },
+        {
+          "value": "--quality"
+        },
+        {
+          "validator": "^(1080p|720p|480p|360p|audio)$"
+        },
+        {
+          "value": "--no-watermark"
+        }
       ]
     },
     {
       "command": "ffmpeg",
       "description": "Merge audio and video streams",
       "args": [
-        { "value": "-i" }, { "validator": "$PATH" },
-        { "value": "-i" }, { "validator": "$PATH" },
-        { "value": "-c:v" }, { "value": "copy" },
-        { "value": "-c:a" }, { "value": "aac" },
-        { "validator": "$PATH" }
+        {
+          "value": "-i"
+        },
+        {
+          "validator": "$PATH"
+        },
+        {
+          "value": "-i"
+        },
+        {
+          "validator": "$PATH"
+        },
+        {
+          "value": "-c:v"
+        },
+        {
+          "value": "copy"
+        },
+        {
+          "value": "-c:a"
+        },
+        {
+          "value": "aac"
+        },
+        {
+          "validator": "$PATH"
+        }
       ]
     }
   ],
@@ -67,21 +107,69 @@
       "*.bytedance.com"
     ]
   },
-  "writePaths": ["$DOWNLOADS/TikTok"],
+  "writePaths": [
+    "$DOWNLOADS/TikTok"
+  ],
   "watchtower": {
     "minVersion": "1.0.0",
-    "apis": ["HTTP", "Download", "Notification", "Storage", "Cache"]
+    "apis": [
+      "HTTP",
+      "Download",
+      "Notification",
+      "Storage",
+      "Cache"
+    ]
   },
   "userConfig": {
     "fields": [
-      { "key": "defaultQuality",  "type": "select",  "label": "Default quality",  "options": ["1080p","720p","480p","360p","audio only"], "default": "720p" },
-      { "key": "saveFolder",      "type": "string",  "label": "Save folder",       "default": "$DOWNLOADS/TikTok", "description": "Where to save downloaded files" },
-      { "key": "removeWatermark", "type": "boolean", "label": "Remove watermark",  "default": true },
-      { "key": "audioOnly",       "type": "boolean", "label": "Audio only by default", "default": false },
-      { "key": "autoRename",      "type": "boolean", "label": "Auto-rename with creator name", "default": true }
+      {
+        "key": "defaultQuality",
+        "type": "select",
+        "label": "Default quality",
+        "options": [
+          "1080p",
+          "720p",
+          "480p",
+          "360p",
+          "audio only"
+        ],
+        "default": "720p"
+      },
+      {
+        "key": "saveFolder",
+        "type": "string",
+        "label": "Save folder",
+        "default": "$DOWNLOADS/TikTok",
+        "description": "Where to save downloaded files"
+      },
+      {
+        "key": "removeWatermark",
+        "type": "boolean",
+        "label": "Remove watermark",
+        "default": true
+      },
+      {
+        "key": "audioOnly",
+        "type": "boolean",
+        "label": "Audio only by default",
+        "default": false
+      },
+      {
+        "key": "autoRename",
+        "type": "boolean",
+        "label": "Auto-rename with creator name",
+        "default": true
+      }
     ]
   },
-  "tags": ["tiktok", "download", "video", "watermark-free", "hd", "social"],
+  "tags": [
+    "tiktok",
+    "download",
+    "video",
+    "watermark-free",
+    "hd",
+    "social"
+  ],
   "license": "MIT",
   "repository": "https://github.com/ferelking242/watchtower-extensions/tree/main/plugins/_templates/tiktok-downloader",
   "isNsfw": false,
