@@ -1,0 +1,96 @@
+{
+  "version": 2,
+  "title": "YouTube Downloader",
+  "subtitle": "Téléchargez vidéos, audio et playlists YouTube en haute qualité.",
+  "accentColor": "#FF0000",
+
+  "screens": [
+    {
+      "id": "main",
+      "title": "YouTube Downloader",
+      "layout": "scroll",
+      "widgets": [
+        {
+          "type": "url_field",
+          "id": "url",
+          "label": "Lien YouTube",
+          "placeholder": "https://youtube.com/watch?v=...",
+          "required": true,
+          "validator": "^https?://(?:www\\.)?(?:youtube\\.com|youtu\\.be)/.+$",
+          "validatorError": "Entrez un lien YouTube valide",
+          "pasteButton": true,
+          "clearButton": true
+        },
+        {
+          "type": "chip_select",
+          "id": "quality",
+          "label": "Qualité",
+          "options": [
+            { "label": "4K", "value": "4K" },
+            { "label": "1080p", "value": "1080p" },
+            { "label": "720p", "value": "720p" },
+            { "label": "480p", "value": "480p" },
+            { "label": "360p", "value": "360p" },
+            { "label": "🎵 Audio", "value": "audio" }
+          ],
+          "default": "1080p"
+        },
+        {
+          "type": "chip_select",
+          "id": "format",
+          "label": "Format",
+          "options": [
+            { "label": "MP4", "value": "mp4" },
+            { "label": "MP3", "value": "mp3" },
+            { "label": "M4A", "value": "m4a" },
+            { "label": "WebM", "value": "webm" }
+          ],
+          "default": "mp4",
+          "hideWhen": { "field": "quality", "value": "audio" }
+        },
+        {
+          "type": "toggle",
+          "id": "embed_subs",
+          "label": "Intégrer les sous-titres",
+          "description": "Intègre les sous-titres dans le fichier",
+          "default": false,
+          "icon": "closed_caption"
+        },
+        {
+          "type": "toggle",
+          "id": "playlist_mode",
+          "label": "Mode playlist",
+          "description": "Télécharge toute la playlist si l'URL en contient une",
+          "default": false,
+          "icon": "queue_music"
+        },
+        {
+          "type": "divider"
+        },
+        {
+          "type": "button",
+          "id": "download",
+          "label": "Télécharger",
+          "style": "primary",
+          "icon": "download",
+          "action": "download"
+        },
+        {
+          "type": "button",
+          "id": "fetch_info",
+          "label": "Infos vidéo",
+          "style": "secondary",
+          "icon": "info_outline",
+          "action": "fetch_info"
+        }
+      ],
+      "output": {
+        "type": "progress_log",
+        "label": "Progression",
+        "showSpeed": true,
+        "showEta": true,
+        "showFileSize": true
+      }
+    }
+  ]
+}
