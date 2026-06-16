@@ -2,7 +2,7 @@
   "_comment": "Plugin registry — submit a PR to add your plugin",
   "_schema": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/schema.json",
   "_templates": "https://github.com/ferelking242/watchtower-extensions/tree/main/plugins/_templates",
-  "_lastUpdated": "2026-06-12",
+  "_lastUpdated": "2026-06-16",
   "plugins": [
     {
       "id": "com.watchtower.tiktok-downloader",
@@ -239,6 +239,68 @@
       "rating": 0,
       "featured": false,
       "publishedAt": "2026-06-12"
+    },
+    {
+      "id": "com.watchtower.telegram-source",
+      "name": "Telegram Source",
+      "version": "1.0.0",
+      "author": "Watchtower Team",
+      "description": "Use any Telegram channel as a manga, comics or document source. Stream CBR/CBZ/PDF/EPUB directly in Watchtower.",
+      "longDescription": "Connect to any Telegram channel (public or private) and browse its files as a reading library.\n\nEach channel becomes a source with cover, description and chapter list.\n\n**Powered by Pyrogram** — user account connection, supports chunk streaming, search, and cover extraction.\n\n**First use** requires a Telegram OTP (code sent to your Telegram app).",
+      "icon": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/com.watchtower.telegram-source/assets/icon.svg",
+      "banner": "",
+      "screenshots": [],
+      "category": "reader",
+      "runtime": "binary",
+      "ui": "flutter_eval",
+      "permissions": [
+        "network",
+        "storage.read",
+        "storage.write",
+        "reader",
+        "account",
+        "crypto"
+      ],
+      "requirements": [
+        {
+          "id": "libpython",
+          "version": ">=3.11.0",
+          "optional": false,
+          "reason": "Runs the Pyrogram script natively on Android."
+        }
+      ],
+      "commandScopes": [
+        {
+          "command": "python",
+          "description": "Pyrogram Telegram source script"
+        }
+      ],
+      "tags": [
+        "telegram",
+        "manga",
+        "comics",
+        "cbr",
+        "cbz",
+        "pdf",
+        "epub",
+        "reader",
+        "source"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/watchtower-telegram-plugin",
+      "isNsfw": false,
+      "requiresAccount": true,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Reader",
+          "Storage",
+          "SecureStorage",
+          "Cache"
+        ]
+      }
     }
   ]
 }
