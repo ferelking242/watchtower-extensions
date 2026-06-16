@@ -77,10 +77,10 @@ class _LoginFlow extends StatefulWidget {
 class _LoginFlowState extends State<_LoginFlow> {
   // 0 = ApiKeys, 1 = Phone, 2 = OTP, 3 = 2FA (si nécessaire)
   int _step = 0;
-  String _apiId   = '';
-  String _apiHash = '';
-  String _phone   = '';
-  String _sessionPartial = '';
+  String _apiId          = '';
+  String _apiHash        = '';
+  String _phone          = '';
+  String _phoneCodeHash  = '';
 
   void _onApiKeysDone(String apiId, String apiHash) {
     setState(() {
@@ -90,10 +90,11 @@ class _LoginFlowState extends State<_LoginFlow> {
     });
   }
 
-  void _onPhoneDone(String phone) {
+  void _onPhoneDone(String phone, String phoneCodeHash) {
     setState(() {
-      _phone = phone;
-      _step  = 2;
+      _phone         = phone;
+      _phoneCodeHash = phoneCodeHash;
+      _step          = 2;
     });
   }
 
@@ -120,6 +121,7 @@ class _LoginFlowState extends State<_LoginFlow> {
       case 2:
         return _OTPScreen(
           phone: _phone,
+          phoneCodeHash: _phoneCodeHash,
           apiId: _apiId,
           apiHash: _apiHash,
           onBack: () => setState(() => _step = 1),
@@ -245,7 +247,7 @@ class _ApiKeysScreenState extends State<_ApiKeysScreen> {
 // ─────────────────────────────────────────────────────────────────────────────
 class _PhoneScreen extends StatefulWidget {
   final VoidCallback onBack;
-  final void Function(String phone) onDone;
+  final void Function(String phone, String phoneCodeHash) onDone;
   final String apiId;
   final String apiHash;
   const _PhoneScreen({required this.onBack, required this.onDone,
@@ -300,7 +302,8 @@ class _PhoneScreenState extends State<_PhoneScreen> {
       });
 
       if (result['status'] == 'ok') {
-        widget.onDone(fullPhone);
+        final hash = result['data']?['phone_code_hash']?.toString() ?? '';
+        widget.onDone(fullPhone, hash);
       } else {
         setState(() => _error = result['error']?.toString() ?? 'Failed to send code');
       }
@@ -494,12 +497,14 @@ class _PhoneScreenState extends State<_PhoneScreen> {
 // ─────────────────────────────────────────────────────────────────────────────
 class _OTPScreen extends StatefulWidget {
   final String phone;
+  final String phoneCodeHash;
   final String apiId;
   final String apiHash;
   final VoidCallback onBack;
   final void Function(String sessionString) onSuccess;
-  const _OTPScreen({required this.phone, required this.apiId,
-    required this.apiHash, required this.onBack, required this.onSuccess});
+  const _OTPScreen({required this.phone, required this.phoneCodeHash,
+    required this.apiId, required this.apiHash,
+    required this.onBack, required this.onSuccess});
   @override
   State<_OTPScreen> createState() => _OTPScreenState();
 }
@@ -555,10 +560,11 @@ class _OTPScreenState extends State<_OTPScreen> {
     setState(() { _loading = true; _error = null; });
     try {
       final result = await WPlugin.invoke('auth_verify_code', {
-        'api_id':   widget.apiId,
-        'api_hash': widget.apiHash,
-        'phone':    widget.phone,
-        'code':     code,
+        'api_id':          widget.apiId,
+        'api_hash':        widget.apiHash,
+        'phone':           widget.phone,
+        'phone_code_hash': widget.phoneCodeHash,
+        'code':            code,
       });
 
       if (result['status'] == 'ok') {
