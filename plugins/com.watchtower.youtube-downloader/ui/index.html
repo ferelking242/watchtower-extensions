@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>YouTube Downloader</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0F0F0F;
+      --card: #1A1A1A;
+      --card2: #222;
+      --border: #2A2A2A;
+      --accent: #FF0000;
+      --accent2: #CC0000;
+      --text: #FFFFFF;
+      --muted: #888;
+      --radius: 12px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, 'SF Pro Display', 'Segoe UI', sans-serif;
+      padding: 16px;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .header-icon {
+      width: 44px; height: 44px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .header-title { font-size: 20px; font-weight: 700; }
+    .header-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Fields ── */
+    .field { margin-bottom: 16px; }
+    .field-label {
+      font-size: 12px; font-weight: 600;
+      color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 6px;
+    }
+    .field-label .req { color: var(--accent); margin-left: 2px; }
+
+    .input-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex; align-items: center;
+      transition: border-color .2s;
+    }
+    .input-wrap:focus-within { border-color: var(--accent); }
+
+    input[type="url"], input[type="text"] {
+      flex: 1;
+      background: transparent;
+      border: none; outline: none;
+      color: var(--text);
+      font-size: 14px;
+      padding: 13px 14px;
+    }
+    input::placeholder { color: var(--muted); }
+
+    .btn-paste, .btn-clear {
+      background: none; border: none;
+      color: var(--muted); cursor: pointer;
+      padding: 0 10px; font-size: 18px;
+      transition: color .2s;
+    }
+    .btn-paste:hover, .btn-clear:hover { color: var(--text); }
+
+    /* ── Select ── */
+    .select-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .select-opt {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all .15s;
+      text-align: center;
+    }
+    .select-opt:hover { border-color: var(--accent); }
+    .select-opt.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+
+    /* ── Toggle ── */
+    .toggle-row {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px;
+      margin-bottom: 10px;
+    }
+    .toggle-info { flex: 1; }
+    .toggle-label { font-size: 14px; font-weight: 500; }
+    .toggle-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .switch {
+      position: relative; width: 48px; height: 28px;
+      flex-shrink: 0; margin-left: 12px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; inset: 0;
+      background: var(--border); border-radius: 28px;
+      cursor: pointer; transition: .3s;
+    }
+    .slider::before {
+      content: '';
+      position: absolute; width: 22px; height: 22px;
+      left: 3px; top: 3px;
+      background: var(--muted); border-radius: 50%;
+      transition: .3s;
+    }
+    input:checked + .slider { background: var(--accent); }
+    input:checked + .slider::before { transform: translateX(20px); background: #fff; }
+
+    /* ── Divider ── */
+    .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+    /* ── Buttons ── */
+    .btn {
+      width: 100%; padding: 15px;
+      border: none; border-radius: var(--radius);
+      font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: all .15s;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; margin-bottom: 10px;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:active { background: var(--accent2); transform: scale(0.98); }
+    .btn-secondary {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:active { background: var(--card2); transform: scale(0.98); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Output ── */
+    .output {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-top: 16px;
+      display: none;
+    }
+    .output.visible { display: block; }
+    .output-title {
+      font-size: 12px; font-weight: 600;
+      color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    .log-area {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px; color: #aaa; line-height: 1.6;
+      max-height: 180px; overflow-y: auto;
+    }
+    .log-line { margin-bottom: 2px; }
+    .log-line.success { color: #4CAF50; }
+    .log-line.error { color: #F44336; }
+    .log-line.info { color: #64B5F6; }
+
+    /* ── Progress bar ── */
+    .progress-wrap {
+      background: var(--border);
+      border-radius: 4px; height: 4px;
+      margin-top: 10px; overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%; background: var(--accent);
+      border-radius: 4px; width: 0%;
+      transition: width .3s ease;
+    }
+    .progress-info {
+      display: flex; justify-content: space-between;
+      font-size: 11px; color: var(--muted); margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-icon">▶</div>
+    <div>
+      <div class="header-title">YouTube Downloader</div>
+      <div class="header-sub">Téléchargez vidéos, audio et playlists</div>
+    </div>
+  </div>
+
+  <!-- URL Field -->
+  <div class="field">
+    <div class="field-label">Lien YouTube <span class="req">*</span></div>
+    <div class="input-wrap">
+      <input type="url" id="url" placeholder="https://youtube.com/watch?v=..." autocomplete="off" />
+      <button class="btn-paste" onclick="pasteUrl()" title="Coller">📋</button>
+      <button class="btn-clear" onclick="clearUrl()" title="Effacer">✕</button>
+    </div>
+  </div>
+
+  <!-- Quality -->
+  <div class="field">
+    <div class="field-label">Qualité</div>
+    <div class="select-grid" id="quality-grid">
+      <div class="select-opt" onclick="selectQuality('4K')" id="q-4K">4K</div>
+      <div class="select-opt active" onclick="selectQuality('1080p')" id="q-1080p">Full HD 1080p</div>
+      <div class="select-opt" onclick="selectQuality('720p')" id="q-720p">HD 720p</div>
+      <div class="select-opt" onclick="selectQuality('480p')" id="q-480p">480p</div>
+      <div class="select-opt" onclick="selectQuality('360p')" id="q-360p">360p</div>
+      <div class="select-opt" onclick="selectQuality('audio')" id="q-audio">🎵 Audio</div>
+    </div>
+  </div>
+
+  <!-- Format -->
+  <div class="field" id="format-field">
+    <div class="field-label">Format</div>
+    <div class="select-grid" id="format-grid">
+      <div class="select-opt active" onclick="selectFormat('mp4')" id="f-mp4">MP4</div>
+      <div class="select-opt" onclick="selectFormat('webm')" id="f-webm">WebM</div>
+      <div class="select-opt" onclick="selectFormat('mp3')" id="f-mp3">MP3</div>
+      <div class="select-opt" onclick="selectFormat('m4a')" id="f-m4a">M4A</div>
+    </div>
+  </div>
+
+  <!-- Toggles -->
+  <div class="toggle-row">
+    <div class="toggle-info">
+      <div class="toggle-label">Sous-titres</div>
+      <div class="toggle-desc">Intégrer les sous-titres dans le fichier</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="embed_subs" />
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="toggle-row">
+    <div class="toggle-info">
+      <div class="toggle-label">Mode playlist</div>
+      <div class="toggle-desc">Télécharge toute la playlist automatiquement</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="playlist_mode" />
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Actions -->
+  <button class="btn btn-primary" id="btn-download" onclick="triggerDownload()">
+    ⬇ Télécharger
+  </button>
+  <button class="btn btn-secondary" onclick="triggerFetchInfo()">
+    ℹ Infos vidéo
+  </button>
+
+  <!-- Output -->
+  <div class="output" id="output">
+    <div class="output-title">Progression</div>
+    <div class="log-area" id="log"></div>
+    <div class="progress-wrap" id="progress-wrap" style="display:none">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <div class="progress-info" id="progress-info" style="display:none">
+      <span id="prog-speed">—</span>
+      <span id="prog-eta">ETA —</span>
+      <span id="prog-size">—</span>
+    </div>
+  </div>
+
+  <script>
+    let selectedQuality = '1080p';
+    let selectedFormat = 'mp4';
+
+    function selectQuality(val) {
+      selectedQuality = val;
+      document.querySelectorAll('#quality-grid .select-opt').forEach(el => el.classList.remove('active'));
+      document.getElementById('q-' + val)?.classList.add('active');
+      const formatField = document.getElementById('format-field');
+      if (val === 'audio') {
+        formatField.style.opacity = '0.5';
+        selectFormat('mp3');
+      } else {
+        formatField.style.opacity = '1';
+      }
+    }
+
+    function selectFormat(val) {
+      selectedFormat = val;
+      document.querySelectorAll('#format-grid .select-opt').forEach(el => el.classList.remove('active'));
+      document.getElementById('f-' + val)?.classList.add('active');
+    }
+
+    function pasteUrl() {
+      navigator.clipboard?.readText().then(t => {
+        document.getElementById('url').value = t;
+      }).catch(() => {
+        if (window.Watchtower) window.Watchtower.requestClipboard();
+      });
+    }
+
+    function clearUrl() {
+      document.getElementById('url').value = '';
+    }
+
+    function getValues() {
+      return {
+        url: document.getElementById('url').value.trim(),
+        quality: selectedQuality,
+        format: selectedFormat,
+        embed_subs: document.getElementById('embed_subs').checked,
+        playlist_mode: document.getElementById('playlist_mode').checked,
+      };
+    }
+
+    function addLog(msg, type = '') {
+      const log = document.getElementById('log');
+      const line = document.createElement('div');
+      line.className = 'log-line ' + type;
+      line.textContent = msg;
+      log.appendChild(line);
+      log.scrollTop = log.scrollHeight;
+      document.getElementById('output').classList.add('visible');
+    }
+
+    function setProgress(pct, speed, eta, size) {
+      document.getElementById('progress-wrap').style.display = 'block';
+      document.getElementById('progress-info').style.display = 'flex';
+      document.getElementById('progress-bar').style.width = pct + '%';
+      if (speed) document.getElementById('prog-speed').textContent = speed;
+      if (eta) document.getElementById('prog-eta').textContent = 'ETA ' + eta;
+      if (size) document.getElementById('prog-size').textContent = size;
+    }
+
+    function triggerDownload() {
+      const vals = getValues();
+      if (!vals.url) { addLog('⚠ Entrez un lien YouTube valide', 'error'); return; }
+      document.getElementById('log').innerHTML = '';
+      document.getElementById('progress-bar').style.width = '0%';
+      document.getElementById('btn-download').disabled = true;
+      addLog('▶ Démarrage du téléchargement…', 'info');
+      // Bridge Flutter → JS via postMessage
+      if (window.Watchtower) {
+        window.Watchtower.postAction('download', vals);
+      } else {
+        window.parent?.postMessage({ action: 'download', values: vals }, '*');
+      }
+    }
+
+    function triggerFetchInfo() {
+      const vals = getValues();
+      if (!vals.url) { addLog('⚠ Entrez un lien YouTube valide', 'error'); return; }
+      document.getElementById('log').innerHTML = '';
+      addLog('🔍 Récupération des infos…', 'info');
+      if (window.Watchtower) {
+        window.Watchtower.postAction('fetch_info', vals);
+      } else {
+        window.parent?.postMessage({ action: 'fetch_info', values: vals }, '*');
+      }
+    }
+
+    // ── Bridge: receive messages from Flutter ─────────────────────────────────
+    window.addEventListener('message', (e) => {
+      const d = e.data;
+      if (!d || !d.type) return;
+      switch (d.type) {
+        case 'log':    addLog(d.message, d.level || ''); break;
+        case 'progress': setProgress(d.percent, d.speed, d.eta, d.size); break;
+        case 'done':
+          document.getElementById('btn-download').disabled = false;
+          addLog('✅ ' + (d.message || 'Terminé !'), 'success');
+          break;
+        case 'error':
+          document.getElementById('btn-download').disabled = false;
+          addLog('❌ ' + (d.message || 'Erreur inconnue'), 'error');
+          break;
+        case 'clipboard':
+          document.getElementById('url').value = d.text || '';
+          break;
+      }
+    });
+  </script>
+</body>
+</html>
