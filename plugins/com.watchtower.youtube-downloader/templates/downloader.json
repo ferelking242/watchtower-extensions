@@ -1,0 +1,23 @@
+{
+  "_comment": "Template 'downloader' — embarqué dans l'app Watchtower. Les créateurs de plugins peuvent l'utiliser comme base et le personnaliser via leur schema.json.",
+  "templateId": "downloader",
+  "templateVersion": "1.0",
+  "description": "Interface type downloader : champ URL, sélecteur qualité/format, bouton télécharger, zone progression.",
+
+  "slots": {
+    "urlField": true,
+    "qualitySelect": true,
+    "formatSelect": true,
+    "outputPath": true,
+    "progressLog": true,
+    "actionButton": true
+  },
+
+  "defaults": {
+    "accentColor": "#00D4AA",
+    "layout": "scroll",
+    "outputType": "progress_log"
+  },
+
+  "usage": "Dans manifest.json, déclarez : \"ui\": { \"template\": \"downloader\", \"schema\": \"ui/schema.json\" }"
+}
