@@ -1,439 +1,649 @@
-// YouTube Downloader — méthode eval
-// Interprété par d4rt à l'intérieur de Watchtower.
-// Ce fichier définit l'UI native Flutter du plugin.
-// Il hérite de WPlugin (bridge injecté par le runner Watchtower).
-//
-// Accès disponibles via bridges d4rt :
-//   - WatchtowerContext  : userConfig, pluginId, basePath
-//   - WatchtowerZeusDL  : start(), cancel(), getInfo()
-//   - WatchtowerLog     : info(), warn(), error(), success(), progress()
-//   - WatchtowerNotif   : show()
-//   - WatchtowerStorage : read(), write()
+// ──────────────────────────────────────────────────────────────────────────────
+  // YTDLnis Plugin — ui/main.dart
+  // Interprété par d4rt via FlareEvalRenderer. Le stub WPlugin + WatchtowerZeusDL
+  // est injecté avant ce code par le runtime.
+  // ──────────────────────────────────────────────────────────────────────────────
 
-class YouTubeDownloaderPlugin extends WPlugin {
-  // ── État ────────────────────────────────────────────────────────────────────
-  String _url = '';
-  String _quality = '1080p';
-  String _format = 'mp4';
-  bool _embedSubs = false;
-  bool _playlistMode = false;
-  bool _running = false;
-  final List<String> _logs = [];
-  double _progress = 0;
-  String _speed = '';
-  String _eta = '';
+  // ── Palette YTDLnis ────────────────────────────────────────────────────────────
+  const Color _bg    = Color(0xFF1C1C1E);
+  const Color _card  = Color(0xFF252526);
+  const Color _red   = Color(0xFFE53935);
+  const Color _blue  = Color(0xFF1565C0);
+  const Color _grey  = Color(0xFF9E9E9E);
+  const Color _greyD = Color(0xFF3A3A3A);
 
-  final List<String> _qualities = ['4K', '1080p', '720p', '480p', '360p', 'audio'];
-  final List<String> _formats = ['mp4', 'mp3', 'm4a', 'webm'];
-
-  // ── Entry point appelé par le runner ────────────────────────────────────────
-  @override
-  Widget buildWidget(BuildContext context) {
-    return _YouTubeDownloaderScreen(plugin: this);
+  // ── Faux modèles (rempli par ZeusDL en prod) ───────────────────────────────────
+  class _VideoResult {
+    final String title;
+    final String channel;
+    final String duration;
+    final String thumbUrl;
+    const _VideoResult({required this.title, required this.channel, required this.duration, required this.thumbUrl});
   }
 
-  // ── Actions ─────────────────────────────────────────────────────────────────
-  Future<void> download() async {
-    if (_running) return;
-    if (_url.isEmpty) {
-      _addLog('⚠ Entrez un lien YouTube valide');
-      return;
-    }
-    if (!_isValidUrl(_url)) {
-      _addLog('❌ URL invalide — doit être youtube.com ou youtu.be');
-      return;
-    }
-
-    _running = true;
-    _logs.clear();
-    _progress = 0;
-    _addLog('▶ Démarrage du téléchargement…');
-    _addLog('  Qualité : $_quality  •  Format : $_format');
-
-    final outputDir = WatchtowerContext.userConfig['saveFolder'] ?? '\$DOWNLOADS/YouTube';
-
-    final args = [
-      '--url', _url,
-      '--output', outputDir,
-      '--format', _format,
-      '--quality', _quality,
-    ];
-    if (_embedSubs) args.addAll(['--embed-subs']);
-    if (WatchtowerContext.userConfig['downloadThumbnail'] == true) {
-      args.add('--write-thumbnail');
-    }
-
-    try {
-      final result = await WatchtowerZeusDL.start(
-        command: 'zeusdl',
-        args: args,
-        onProgress: (percent, speed, eta, size) {
-          _progress = percent / 100.0;
-          _speed = speed;
-          _eta = eta;
-          _addLog('  $_speed  •  ETA $_eta');
-        },
-        onLog: (line) => _addLog(line),
-      );
-
-      if (result.success) {
-        _addLog('✅ Téléchargé : ${result.fileName}');
-        _addLog('📁 ${result.filePath}');
-        WatchtowerNotif.show(
-          title: 'YouTube — Téléchargement terminé',
-          body: result.fileName,
-        );
-      } else {
-        _addLog('❌ Échec : ${result.error}');
-      }
-    } catch (e) {
-      _addLog('❌ Erreur : $e');
-    } finally {
-      _running = false;
-    }
+  class _DownloadItem {
+    final String title;
+    final String channel;
+    final String duration;
+    final String date;
+    final String thumbUrl;
+    final String type; // 'video' | 'audio'
+    const _DownloadItem({required this.title, required this.channel, required this.duration, required this.date, required this.thumbUrl, required this.type});
   }
 
-  Future<void> fetchInfo() async {
-    if (_url.isEmpty) return;
-    _addLog('🔍 Récupération des informations…');
-    try {
-      final info = await WatchtowerZeusDL.getInfo(_url);
-      _addLog('📹 ${info['title']}');
-      _addLog('👤 ${info['channel']}  •  ⏱ ${info['duration']}');
-      if (info['isPlaylist'] == true) {
-        _addLog('📋 Playlist : ${info['playlistCount']} vidéos');
-      }
-    } catch (e) {
-      _addLog('❌ Impossible de récupérer les infos : $e');
-    }
+  const List<_VideoResult> _demoResults = [
+    _VideoResult(
+      title: 'Life Is Strange™ Episode 2: Out of Time | Full Walkthrough (No commentary) [HD]',
+      channel: 'Xenonz',
+      duration: '2:16:55',
+      thumbUrl: '',
+    ),
+  ];
+
+  const List<_DownloadItem> _demoDownloads = [
+    _DownloadItem(
+      title: 'How to use Samsung Dex in a monitor',
+      channel: 'Intehill',
+      duration: '0:20',
+      date: '27 avr. 2026, 12:00',
+      thumbUrl: '',
+      type: 'video',
+    ),
+  ];
+
+  // ── Plugin entry point ─────────────────────────────────────────────────────────
+  class YTDownloaderPlugin extends WPlugin {
+    @override
+    Widget buildWidget(BuildContext context) => const _YTDLRoot();
   }
 
-  // ── Helpers ─────────────────────────────────────────────────────────────────
-  void _addLog(String line) {
-    _logs.add(line);
+  // ── Root widget — gère la navigation 3 onglets ─────────────────────────────────
+  class _YTDLRoot extends StatefulWidget {
+    const _YTDLRoot();
+    @override
+    State<_YTDLRoot> createState() => _YTDLRootState();
   }
 
-  bool _isValidUrl(String url) {
-    return url.contains('youtube.com') || url.contains('youtu.be');
-  }
-}
+  class _YTDLRootState extends State<_YTDLRoot> {
+    int _tab = 0;
 
-// ── Widget screen ─────────────────────────────────────────────────────────────
-
-class _YouTubeDownloaderScreen extends StatefulWidget {
-  final YouTubeDownloaderPlugin plugin;
-  const _YouTubeDownloaderScreen({required this.plugin});
-
-  @override
-  State<_YouTubeDownloaderScreen> createState() =>
-      _YouTubeDownloaderScreenState();
-}
-
-class _YouTubeDownloaderScreenState extends State<_YouTubeDownloaderScreen> {
-  late final TextEditingController _urlCtrl;
-  static const _bg    = Color(0xFF0F0F0F);
-  static const _card  = Color(0xFF1A1A1A);
-  static const _border = Color(0xFF2A2A2A);
-  static const _red   = Color(0xFFFF0000);
-  static const _grey  = Color(0xFF888888);
-
-  YouTubeDownloaderPlugin get p => widget.plugin;
-
-  @override
-  void initState() {
-    super.initState();
-    _urlCtrl = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _urlCtrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _bg,
-      appBar: AppBar(
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
         backgroundColor: _bg,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        surfaceTintColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
-          onPressed: () => Navigator.of(context).maybePop(),
+        body: SafeArea(
+          bottom: false,
+          child: IndexedStack(
+            index: _tab,
+            children: const [_HomeTab(), _DownloadsTab(), _MoreTab()],
+          ),
         ),
-        title: Row(children: [
-          Container(
-            width: 28, height: 28,
-            decoration: BoxDecoration(color: _red, borderRadius: BorderRadius.circular(6)),
-            child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 18),
-          ),
-          const SizedBox(width: 10),
-          const Text('YouTube Downloader',
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: Colors.white)),
-        ]),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
-        children: [
-          _buildUrlField(),
-          const SizedBox(height: 16),
-          _buildQualityPicker(),
-          const SizedBox(height: 16),
-          if (p._quality != 'audio') ...[_buildFormatPicker(), const SizedBox(height: 16)],
-          _buildToggles(),
-          const SizedBox(height: 20),
-          _buildButtons(),
-          if (p._logs.isNotEmpty) ...[const SizedBox(height: 16), _buildOutput()],
-        ],
-      ),
-    );
-  }
-
-  // ── URL Field ──────────────────────────────────────────────────────────────
-  Widget _buildUrlField() {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const _Label(text: 'Lien YouTube', required: true),
-      const SizedBox(height: 6),
-      Container(
-        decoration: BoxDecoration(
-          color: _card, border: Border.all(color: _border),
-          borderRadius: BorderRadius.circular(12),
+        bottomNavigationBar: _YTDLNavBar(
+          current: _tab,
+          badge: 2,
+          onChange: (i) => setState(() => _tab = i),
         ),
-        child: Row(children: [
-          Expanded(
-            child: TextField(
-              controller: _urlCtrl,
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-              keyboardType: TextInputType.url,
-              onChanged: (v) => setState(() => p._url = v.trim()),
-              decoration: const InputDecoration(
-                hintText: 'https://youtube.com/watch?v=...',
-                hintStyle: TextStyle(color: _grey, fontSize: 13),
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-              ),
-            ),
-          ),
-          if (_urlCtrl.text.isNotEmpty)
-            IconButton(
-              onPressed: () { _urlCtrl.clear(); setState(() => p._url = ''); },
-              icon: const Icon(Icons.close_rounded, color: _grey, size: 18),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-            ),
-          IconButton(
-            onPressed: () async {
-              final data = await Clipboard.getData('text/plain');
-              if (data?.text != null) {
-                _urlCtrl.text = data!.text!;
-                setState(() => p._url = data.text!.trim());
-              }
-            },
-            icon: const Icon(Icons.content_paste_rounded, color: _grey, size: 18),
-            tooltip: 'Coller',
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-          ),
-          const SizedBox(width: 4),
-        ]),
-      ),
-    ]);
+      );
+    }
   }
 
-  // ── Quality picker ─────────────────────────────────────────────────────────
-  Widget _buildQualityPicker() {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const _Label(text: 'Qualité'),
-      const SizedBox(height: 8),
-      Wrap(spacing: 8, runSpacing: 8, children: p._qualities.map((q) {
-        final sel = q == p._quality;
-        return GestureDetector(
-          onTap: () => setState(() => p._quality = q),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+  // ════════════════════════════════════════════════════════════════════════════════
+  // BOTTOM NAV BAR
+  // ════════════════════════════════════════════════════════════════════════════════
+  class _YTDLNavBar extends StatelessWidget {
+    final int current;
+    final int badge;
+    final ValueChanged<int> onChange;
+    const _YTDLNavBar({required this.current, required this.badge, required this.onChange});
+
+    @override
+    Widget build(BuildContext context) {
+      return Container(
+        color: _bg,
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom, top: 4),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _NavItem(icon: Icons.home_rounded, label: 'Accueil', selected: current == 0, onTap: () => onChange(0)),
+            _NavItemBadge(icon: Icons.download_rounded, label: 'Téléchargements', selected: current == 1, badge: badge, onTap: () => onChange(1)),
+            _NavItem(icon: Icons.more_horiz_rounded, label: 'Plus', selected: current == 2, onTap: () => onChange(2)),
+          ],
+        ),
+      );
+    }
+  }
+
+  class _NavItem extends StatelessWidget {
+    final IconData icon;
+    final String label;
+    final bool selected;
+    final VoidCallback onTap;
+    const _NavItem({required this.icon, required this.label, required this.selected, required this.onTap});
+
+    @override
+    Widget build(BuildContext context) {
+      return GestureDetector(
+        onTap: onTap,
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             decoration: BoxDecoration(
-              color: sel ? _red : _card,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: sel ? _red : _border),
+              color: selected ? _greyD : Colors.transparent,
+              borderRadius: BorderRadius.circular(24),
             ),
-            child: Text(
-              q == 'audio' ? '🎵 Audio' : q,
-              style: TextStyle(
-                color: sel ? Colors.white : _grey,
-                fontSize: 13, fontWeight: sel ? FontWeight.w700 : FontWeight.w400,
-              ),
-            ),
+            child: Icon(icon, color: Colors.white, size: 24),
           ),
-        );
-      }).toList()),
-    ]);
-  }
-
-  // ── Format picker ──────────────────────────────────────────────────────────
-  Widget _buildFormatPicker() {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const _Label(text: 'Format'),
-      const SizedBox(height: 8),
-      Wrap(spacing: 8, runSpacing: 8, children: p._formats.map((f) {
-        final sel = f == p._format;
-        return GestureDetector(
-          onTap: () => setState(() => p._format = f),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-            decoration: BoxDecoration(
-              color: sel ? _red.withOpacity(0.15) : _card,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: sel ? _red : _border),
-            ),
-            child: Text(f.toUpperCase(),
-              style: TextStyle(
-                color: sel ? _red : _grey,
-                fontSize: 13, fontWeight: sel ? FontWeight.w700 : FontWeight.w400,
-              )),
-          ),
-        );
-      }).toList()),
-    ]);
-  }
-
-  // ── Toggles ────────────────────────────────────────────────────────────────
-  Widget _buildToggles() {
-    return Column(children: [
-      _buildToggleRow('Sous-titres', 'Intégrer les sous-titres dans le fichier',
-          p._embedSubs, (v) => setState(() => p._embedSubs = v)),
-      const SizedBox(height: 8),
-      _buildToggleRow('Mode playlist', 'Télécharge toute la playlist automatiquement',
-          p._playlistMode, (v) => setState(() => p._playlistMode = v)),
-    ]);
-  }
-
-  Widget _buildToggleRow(String label, String desc, bool value, ValueChanged<bool> onChanged) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: _card, border: Border.all(color: _border),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(children: [
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(label, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500)),
           const SizedBox(height: 2),
-          Text(desc, style: const TextStyle(color: _grey, fontSize: 12)),
-        ])),
-        Switch(value: value, onChanged: onChanged,
-          activeColor: _red, activeTrackColor: _red.withOpacity(0.3),
-          inactiveTrackColor: _border, inactiveThumbColor: _grey),
-      ]),
-    );
+          Text(label, style: TextStyle(
+            color: selected ? Colors.white : _grey,
+            fontSize: 11,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+          )),
+        ]),
+      );
+    }
   }
 
-  // ── Buttons ────────────────────────────────────────────────────────────────
-  Widget _buildButtons() {
-    return Column(children: [
-      SizedBox(
-        width: double.infinity,
-        child: FilledButton.icon(
-          onPressed: p._running ? null : () => setState(() { p.download(); }),
-          style: FilledButton.styleFrom(
-            backgroundColor: _red,
-            disabledBackgroundColor: _red.withOpacity(0.4),
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  class _NavItemBadge extends StatelessWidget {
+    final IconData icon;
+    final String label;
+    final bool selected;
+    final int badge;
+    final VoidCallback onTap;
+    const _NavItemBadge({required this.icon, required this.label, required this.selected, required this.badge, required this.onTap});
+
+    @override
+    Widget build(BuildContext context) {
+      return GestureDetector(
+        onTap: onTap,
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            decoration: BoxDecoration(
+              color: selected ? _greyD : Colors.transparent,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Stack(clipBehavior: Clip.none, children: [
+              Icon(icon, color: Colors.white, size: 24),
+              if (badge > 0)
+                Positioned(
+                  top: -6,
+                  right: -8,
+                  child: Container(
+                    width: 17,
+                    height: 17,
+                    decoration: const BoxDecoration(color: Color(0xFFE53935), shape: BoxShape.circle),
+                    child: Center(child: Text(badge.toString(), style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold))),
+                  ),
+                ),
+            ]),
           ),
-          icon: p._running
-              ? const SizedBox(width: 18, height: 18,
-                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-              : const Icon(Icons.download_rounded, color: Colors.white),
-          label: Text(p._running ? 'Téléchargement…' : 'Télécharger',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15)),
-        ),
-      ),
-      const SizedBox(height: 10),
-      SizedBox(
-        width: double.infinity,
-        child: OutlinedButton.icon(
-          onPressed: p._running ? null : () => setState(() { p.fetchInfo(); }),
-          style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: _border),
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-          icon: const Icon(Icons.info_outline_rounded, color: _grey, size: 18),
-          label: const Text('Infos vidéo',
-            style: TextStyle(color: _grey, fontWeight: FontWeight.w500, fontSize: 14)),
-        ),
-      ),
-    ]);
+          const SizedBox(height: 2),
+          Text(label, style: TextStyle(
+            color: selected ? Colors.white : _grey,
+            fontSize: 11,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+          )),
+        ]),
+      );
+    }
   }
 
-  // ── Output / logs ──────────────────────────────────────────────────────────
-  Widget _buildOutput() {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: _card, border: Border.all(color: _border),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('PROGRESSION',
-          style: TextStyle(color: _grey, fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.5)),
-        const SizedBox(height: 10),
-        if (p._progress > 0) ...[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: p._progress,
-              backgroundColor: _border,
-              color: _red,
-              minHeight: 4,
+  // ════════════════════════════════════════════════════════════════════════════════
+  // ONGLET 1 — ACCUEIL
+  // ════════════════════════════════════════════════════════════════════════════════
+  class _HomeTab extends StatefulWidget {
+    const _HomeTab();
+    @override
+    State<_HomeTab> createState() => _HomeTabState();
+  }
+
+  class _HomeTabState extends State<_HomeTab> {
+    final _ctrl = TextEditingController();
+    List<_VideoResult> _results = List.from(_demoResults);
+
+    @override
+    Widget build(BuildContext context) {
+      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        // ── Titre "YTDLnis" ────────────────────────────────────────────────────
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+          child: RichText(text: const TextSpan(children: [
+            TextSpan(text: 'YTDL', style: TextStyle(color: _red, fontSize: 22, fontWeight: FontWeight.bold)),
+            TextSpan(text: 'nis', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+          ])),
+        ),
+        const SizedBox(height: 12),
+
+        // ── Barre de recherche ─────────────────────────────────────────────────
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Container(
+            height: 52,
+            decoration: BoxDecoration(
+              color: _card,
+              borderRadius: BorderRadius.circular(28),
+            ),
+            child: Row(children: [
+              const SizedBox(width: 14),
+              const Icon(Icons.search, color: _grey, size: 22),
+              const SizedBox(width: 10),
+              Expanded(
+                child: TextField(
+                  controller: _ctrl,
+                  style: const TextStyle(color: Colors.white, fontSize: 15),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Rechercher ou insérer une URL',
+                    hintStyle: TextStyle(color: _grey, fontSize: 15),
+                    isDense: true,
+                  ),
+                  onSubmitted: (v) => _onSearch(v),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.more_vert, color: _grey, size: 22),
+                onPressed: () {},
+              ),
+            ]),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // ── Liste des résultats ────────────────────────────────────────────────
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            itemCount: _results.length,
+            itemBuilder: (ctx, i) => _VideoCard(result: _results[i]),
+          ),
+        ),
+      ]);
+    }
+
+    void _onSearch(String url) async {
+      if (url.trim().isEmpty) return;
+      // En prod, appelle WatchtowerZeusDL.getInfo(url)
+      WatchtowerLog.info('Recherche : $url');
+      final info = await WatchtowerZeusDL.getInfo(url);
+      if (info.isNotEmpty) {
+        setState(() {
+          _results = [
+            _VideoResult(
+              title: info['title']?.toString() ?? 'Vidéo sans titre',
+              channel: info['uploader']?.toString() ?? 'Inconnu',
+              duration: info['duration_string']?.toString() ?? '',
+              thumbUrl: info['thumbnail']?.toString() ?? '',
+            ),
+          ];
+        });
+      }
+    }
+  }
+
+  // ── Carte vidéo ───────────────────────────────────────────────────────────────
+  class _VideoCard extends StatelessWidget {
+    final _VideoResult result;
+    const _VideoCard({required this.result});
+
+    @override
+    Widget build(BuildContext context) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: _card,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(children: [
+          // Thumbnail
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: result.thumbUrl.isNotEmpty
+                ? Image.network(result.thumbUrl, fit: BoxFit.cover, errorBuilder: (c, e, s) => _thumbPlaceholder())
+                : _thumbPlaceholder(),
+          ),
+
+          // Gradient overlay en bas
+          Positioned.fill(child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.transparent, Colors.black.withOpacity(0.75)],
+                stops: const [0.45, 1.0],
+              ),
+            ),
+          )),
+
+          // Titre + channel en haut à gauche
+          Positioned(
+            top: 10, left: 10, right: 100,
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(result.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w700,
+                  shadows: [Shadow(blurRadius: 4, color: Colors.black)]),
+              ),
+              const SizedBox(height: 2),
+              Text(result.channel,
+                style: const TextStyle(color: Color(0xFFCCCCCC), fontSize: 11,
+                  shadows: [Shadow(blurRadius: 3, color: Colors.black)]),
+              ),
+            ]),
+          ),
+
+          // Durée en bas à gauche
+          Positioned(
+            bottom: 10, left: 10,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+              decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(4)),
+              child: Text(result.duration, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
             ),
           ),
-          const SizedBox(height: 6),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text('${(p._progress * 100).toStringAsFixed(0)}%',
-              style: const TextStyle(color: _grey, fontSize: 11)),
-            Text(p._speed, style: const TextStyle(color: _grey, fontSize: 11)),
-            Text('ETA ${p._eta}', style: const TextStyle(color: _grey, fontSize: 11)),
+
+          // Boutons audio + vidéo en bas à droite
+          Positioned(
+            bottom: 8, right: 8,
+            child: Row(children: [
+              _ActionButton(icon: Icons.music_note_rounded, onTap: () => _download(context, 'audio')),
+              const SizedBox(width: 6),
+              _ActionButton(icon: Icons.videocam_rounded, onTap: () => _download(context, 'video')),
+            ]),
+          ),
+        ]),
+      );
+    }
+
+    Widget _thumbPlaceholder() {
+      return Container(
+        color: const Color(0xFF2C2C2E),
+        child: const Center(child: Icon(Icons.play_circle_outline_rounded, color: _grey, size: 48)),
+      );
+    }
+
+    void _download(BuildContext context, String type) async {
+      WatchtowerLog.info('Téléchargement $type : ${result.title}');
+      final args = type == 'audio'
+          ? ['-x', '--audio-format', 'mp3', result.thumbUrl]
+          : ['-f', 'bestvideo+bestaudio', result.thumbUrl];
+      await WatchtowerZeusDL.start(command: 'yt-dlp', args: args);
+    }
+  }
+
+  class _ActionButton extends StatelessWidget {
+    final IconData icon;
+    final VoidCallback onTap;
+    const _ActionButton({required this.icon, required this.onTap});
+
+    @override
+    Widget build(BuildContext context) {
+      return GestureDetector(
+        onTap: onTap,
+        child: Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.60),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: Colors.white, size: 22),
+        ),
+      );
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════════
+  // ONGLET 2 — TÉLÉCHARGEMENTS
+  // ════════════════════════════════════════════════════════════════════════════════
+  class _DownloadsTab extends StatefulWidget {
+    const _DownloadsTab();
+    @override
+    State<_DownloadsTab> createState() => _DownloadsTabState();
+  }
+
+  class _DownloadsTabState extends State<_DownloadsTab> {
+    String _filter = 'all';
+    bool _sortAsc = true;
+
+    @override
+    Widget build(BuildContext context) {
+      return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        // AppBar custom
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 8, 0),
+          child: Row(children: [
+            const Expanded(child: Text('Téléchargements',
+              style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold))),
+            IconButton(icon: const Icon(Icons.search, color: Colors.white, size: 22), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.filter_list_rounded, color: Colors.white, size: 22), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.sync_rounded, color: Colors.white, size: 22), onPressed: () {}),
+            IconButton(icon: const Icon(Icons.more_vert, color: Colors.white, size: 22), onPressed: () {}),
           ]),
-          const SizedBox(height: 10),
-        ],
-        ...p._logs.reversed.take(8).toList().reversed.map((line) => Padding(
-          padding: const EdgeInsets.only(bottom: 2),
-          child: Text(line,
-            style: TextStyle(
-              color: line.startsWith('✅') ? Colors.green
-                   : line.startsWith('❌') ? Colors.red
-                   : line.startsWith('⚠') ? Colors.orange
-                   : const Color(0xFFAAAAAA),
-              fontSize: 12,
-              fontFamily: 'monospace',
+        ),
+        const SizedBox(height: 10),
+
+        // Filtres chips
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Row(children: [
+            _FilterChip(
+              label: _sortAsc ? '↑ Date ajoutée' : '↓ Date ajoutée',
+              selected: true,
+              onTap: () => setState(() => _sortAsc = !_sortAsc),
+            ),
+            const SizedBox(width: 8),
+            _FilterChip(label: 'Audio', selected: _filter == 'audio', onTap: () => setState(() => _filter = _filter == 'audio' ? 'all' : 'audio')),
+            const SizedBox(width: 8),
+            _FilterChip(label: 'Vidéo', selected: _filter == 'video', onTap: () => setState(() => _filter = _filter == 'video' ? 'all' : 'video')),
+            const SizedBox(width: 8),
+            _FilterChip(label: 'Commande', selected: _filter == 'cmd', onTap: () => setState(() => _filter = _filter == 'cmd' ? 'all' : 'cmd')),
+          ]),
+        ),
+        const SizedBox(height: 12),
+
+        // Liste
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            itemCount: _demoDownloads.length,
+            itemBuilder: (ctx, i) => _DownloadCard(item: _demoDownloads[i]),
+          ),
+        ),
+      ]);
+    }
+  }
+
+  class _FilterChip extends StatelessWidget {
+    final String label;
+    final bool selected;
+    final VoidCallback onTap;
+    const _FilterChip({required this.label, required this.selected, required this.onTap});
+
+    @override
+    Widget build(BuildContext context) {
+      return GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: selected ? Colors.white.withOpacity(0.12) : Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white.withOpacity(0.3)),
+          ),
+          child: Text(label, style: TextStyle(
+            color: Colors.white,
+            fontSize: 13,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+          )),
+        ),
+      );
+    }
+  }
+
+  class _DownloadCard extends StatelessWidget {
+    final _DownloadItem item;
+    const _DownloadCard({required this.item});
+
+    @override
+    Widget build(BuildContext context) {
+      return Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: _card,
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(children: [
+          // Thumbnail pleine largeur
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: item.thumbUrl.isNotEmpty
+                ? Image.network(item.thumbUrl, fit: BoxFit.cover, errorBuilder: (c, e, s) => _dlThumbPlaceholder())
+                : _dlThumbPlaceholder(),
+          ),
+
+          // Gradient
+          Positioned.fill(child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.black.withOpacity(0.45), Colors.black.withOpacity(0.75)],
+              ),
+            ),
+          )),
+
+          // Titre + channel
+          Positioned(
+            top: 10, left: 10, right: 80,
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(item.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w700,
+                  shadows: [Shadow(blurRadius: 4, color: Colors.black)]),
+              ),
+              const SizedBox(height: 2),
+              Text(item.channel, style: const TextStyle(color: Color(0xFFCCCCCC), fontSize: 11)),
+            ]),
+          ),
+
+          // Badge bleu (play) en haut à droite
+          Positioned(
+            top: 10, right: 10,
+            child: Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: _blue,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 30),
+            ),
+          ),
+
+          // Durée en bas à gauche
+          Positioned(
+            bottom: 10, left: 10,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+              decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(4)),
+              child: Text(item.duration, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+            ),
+          ),
+
+          // Date en bas à droite
+          Positioned(
+            bottom: 10, right: 10,
+            child: Text(item.date, style: const TextStyle(color: Color(0xFFBBBBBB), fontSize: 11)),
+          ),
+        ]),
+      );
+    }
+
+    Widget _dlThumbPlaceholder() {
+      return Container(
+        color: const Color(0xFF2C2C2E),
+        child: const Center(child: Icon(Icons.video_library_rounded, color: _grey, size: 40)),
+      );
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════════════════════
+  // ONGLET 3 — PLUS
+  // ════════════════════════════════════════════════════════════════════════════════
+  class _MoreTab extends StatelessWidget {
+    const _MoreTab();
+
+    @override
+    Widget build(BuildContext context) {
+      return SingleChildScrollView(
+        child: Column(children: [
+          const SizedBox(height: 40),
+
+          // Icône app — cadenas rouge avec flèche de téléchargement
+          Container(
+            width: 90,
+            height: 90,
+            decoration: BoxDecoration(
+              color: _red,
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: const Icon(Icons.lock_open_rounded, color: Colors.white, size: 50),
+          ),
+          const SizedBox(height: 40),
+
+          // Éléments menu
+          _MenuItem(icon: Icons.terminal_rounded,        label: 'Terminal'),
+          _MenuItem(icon: Icons.article_outlined,         label: 'Journaux'),
+          _MenuItem(icon: Icons.chevron_right_rounded,    label: 'Modèles de commandes'),
+          _MenuItem(icon: Icons.download_for_offline_outlined, label: 'Gestionnaire de téléchargements'),
+          _MenuItem(icon: Icons.cookie_outlined,          label: 'Cookies'),
+          _MenuItem(icon: Icons.calendar_today_outlined,  label: 'Observer les sources'),
+          _MenuItem(icon: Icons.power_settings_new_rounded, label: "Quitter l'application", destructive: true),
+
+          // Séparateur
+          const Divider(color: Color(0xFF2C2C2E), thickness: 1, indent: 20, endIndent: 20),
+
+          _MenuItem(icon: Icons.settings_outlined, label: 'Paramètres'),
+          const SizedBox(height: 16),
+        ]),
+      );
+    }
+  }
+
+  class _MenuItem extends StatelessWidget {
+    final IconData icon;
+    final String label;
+    final bool destructive;
+    const _MenuItem({required this.icon, required this.label, this.destructive = false});
+
+    @override
+    Widget build(BuildContext context) {
+      return InkWell(
+        onTap: () {},
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Row(children: [
+            Icon(icon, color: destructive ? _red : Colors.white, size: 22),
+            const SizedBox(width: 18),
+            Text(label, style: TextStyle(
+              color: destructive ? _red : Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
             )),
-        )),
-      ]),
-    );
+          ]),
+        ),
+      );
+    }
   }
-}
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-class _Label extends StatelessWidget {
-  final String text;
-  final bool required;
-  const _Label({required this.text, this.required = false});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(children: [
-      Text(text.toUpperCase(),
-        style: const TextStyle(
-          color: Color(0xFF888888), fontSize: 11,
-          fontWeight: FontWeight.w600, letterSpacing: 0.5,
-        )),
-      if (required) const Text(' *', style: TextStyle(color: Color(0xFFFF0000), fontSize: 11)),
-    ]);
-  }
-}
+  // ── Retourner l'instance du plugin ─────────────────────────────────────────────
+  YTDownloaderPlugin()
