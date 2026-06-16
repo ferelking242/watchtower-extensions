@@ -258,5 +258,31 @@
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free"
+  },
+  {
+    "name": "ملوك الروايات",
+    "id": 1800002030,
+    "baseUrl": "https://kolnovel.com",
+    "lang": "ar",
+    "typeSource": "single",
+    "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://kolnovel.com",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ar/kolnovel.js",
+    "apiUrl": "",
+    "version": "0.0.1",
+    "isManga": false,
+    "itemType": 2,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
   }
 ]
