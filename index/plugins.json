@@ -245,8 +245,8 @@
       "name": "Telegram Source",
       "version": "1.0.0",
       "author": "Watchtower Team",
-      "description": "Use any Telegram channel as a manga, comics or document source. Stream CBR/CBZ/PDF/EPUB directly in Watchtower.",
-      "longDescription": "Connect to any Telegram channel (public or private) and browse its files as a reading library.\n\nEach channel becomes a source with cover, description and chapter list.\n\n**Powered by Pyrogram** — user account connection, supports chunk streaming, search, and cover extraction.\n\n**First use** requires a Telegram OTP (code sent to your Telegram app).",
+      "description": "Use any Telegram channel as a manga, comics or document source. Stream CBR/CBZ/PDF/EPUB directly in Watchtower. 2FA supported.",
+      "longDescription": "Connect to any Telegram channel (public or private) and browse its files as a reading library in Watchtower. Each channel becomes a source with cover, description and chapter list.\n\n**Powered by Pyrogram** — connects via user account (not bot). Supports chunk streaming, search, thumbnail extraction from archives, and **two-step verification (2FA)**.\n\n**First use** requires a Telegram OTP authentication (code sent to your Telegram app). **Accounts with 2FA** are fully supported — you will be prompted for your cloud password.",
       "icon": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/com.watchtower.telegram-source/assets/icon.svg",
       "banner": "",
       "screenshots": [],
@@ -272,7 +272,17 @@
       "commandScopes": [
         {
           "command": "python",
-          "description": "Pyrogram Telegram source script"
+          "description": "Run Pyrogram Telegram source script",
+          "actions": [
+            "auth_send_code",
+            "auth_verify_code",
+            "auth_check_password",
+            "metadata",
+            "list",
+            "stream",
+            "search",
+            "thumbnail"
+          ]
         }
       ],
       "tags": [
