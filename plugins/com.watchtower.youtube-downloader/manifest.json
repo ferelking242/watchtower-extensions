@@ -1,5 +1,4 @@
 {
-  "schemaVersion": "2",
   "id": "com.watchtower.youtube-downloader",
   "name": "YouTube Downloader",
   "version": "1.0.0",
@@ -8,50 +7,17 @@
   "longDescription": "Téléchargez n'importe quelle vidéo YouTube, playlist ou audio directement dans Watchtower. Supporte le MP4 jusqu'en 4K, l'extraction audio MP3/M4A, les sous-titres et les playlists complètes.\n\n**Requiert ZeusDL** — le moteur de téléchargement intégré de Watchtower qui gère les restrictions YouTube, le renouvellement des tokens et la gestion des streams adaptatifs.",
   "icon": "assets/icon.png",
   "banner": "assets/banner.png",
-  "color": "#FF0000",
   "category": "downloader",
-  "tags": ["youtube", "download", "video", "audio", "playlist", "4k"],
-
-  "flare": {
-    "specVersion": "1.0",
-    "packageFormat": "flare",
-    "minAppVersion": "8.1.0"
-  },
-
-  "ui": {
-    "method": "json",
-    "schema": "ui/schema.json",
-    "htmlFallback": "ui/index.html",
-    "evalSource": "ui/main.dart",
-    "template": "downloader"
-  },
-
-  "requirements": {
-    "zeusdl": {
-      "version": ">=1.0.0",
-      "optional": false,
-      "reason": "ZeusDL gère les streams adaptatifs YouTube, les tokens et l'anti-bot."
-    },
-    "ffmpeg": {
-      "version": ">=5.0.0",
-      "optional": true,
-      "reason": "FFmpeg fusionne audio+video pour les qualités supérieures à 1080p."
-    }
-  },
-
-  "commandScopes": [
-    "zeusdl",
-    "ffmpeg"
+  "tags": [
+    "youtube",
+    "download",
+    "video",
+    "audio",
+    "playlist",
+    "4k"
   ],
-
-  "networkAccess": [
-    "*.youtube.com",
-    "*.youtu.be",
-    "*.googlevideo.com",
-    "*.ytimg.com",
-    "*.ggpht.com"
-  ],
-
+  "runtime": "binary",
+  "ui": "declarative",
   "permissions": [
     "network",
     "downloads",
@@ -60,23 +26,68 @@
     "notifications",
     "filesystem"
   ],
-
-  "writePaths": ["$DOWNLOADS/YouTube"],
-
+  "requirements": [
+    {
+      "id": "zeusdl",
+      "version": ">=1.0.0",
+      "optional": false,
+      "reason": "ZeusDL gère les streams adaptatifs YouTube, les tokens et l'anti-bot."
+    },
+    {
+      "id": "ffmpeg",
+      "version": ">=5.0.0",
+      "optional": true,
+      "reason": "FFmpeg fusionne audio+video pour les qualités supérieures à 1080p."
+    }
+  ],
+  "commandScopes": [
+    {
+      "command": "zeusdl",
+      "description": "Download YouTube videos, playlists and audio tracks"
+    },
+    {
+      "command": "ffmpeg",
+      "description": "Merge audio and video streams for quality above 1080p"
+    }
+  ],
+  "networkAccess": {
+    "allowedDomains": [
+      "*.youtube.com",
+      "*.youtu.be",
+      "*.googlevideo.com",
+      "*.ytimg.com",
+      "*.ggpht.com"
+    ]
+  },
+  "writePaths": [
+    "$DOWNLOADS/YouTube"
+  ],
   "userConfig": {
     "fields": [
       {
         "key": "defaultQuality",
         "type": "select",
         "label": "Qualité par défaut",
-        "options": ["4K", "1080p", "720p", "480p", "360p", "audio only"],
+        "options": [
+          "4K",
+          "1080p",
+          "720p",
+          "480p",
+          "360p",
+          "audio only"
+        ],
         "default": "1080p"
       },
       {
         "key": "defaultFormat",
         "type": "select",
         "label": "Format par défaut",
-        "options": ["mp4", "mp3", "m4a", "webm"],
+        "options": [
+          "mp4",
+          "mp3",
+          "m4a",
+          "webm"
+        ],
         "default": "mp4"
       },
       {
@@ -106,19 +117,19 @@
       }
     ]
   },
-
-  "runtimeTypes": ["downloader"],
-
   "watchtower": {
     "minVersion": "8.1.0",
-    "apis": ["HTTP", "Download", "Notification", "Storage", "Cache", "ZeusDL"]
+    "apis": [
+      "HTTP",
+      "Download",
+      "Notification",
+      "Storage",
+      "Cache"
+    ]
   },
-
   "license": "MIT",
   "repository": "https://github.com/ferelking242/watchtower-extensions/tree/main/plugins/com.watchtower.youtube-downloader",
   "isNsfw": false,
   "requiresAccount": false,
-  "paywall": "free",
-  "featured": true,
-  "publishedAt": "2026-06-16"
+  "paywall": "free"
 }
