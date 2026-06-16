@@ -90,7 +90,10 @@ class _LoginFlowState extends State<_LoginFlow> {
     });
   }
 
-  void _onPhoneDone(String phone, String phoneCodeHash) {
+  void _onPhoneDone(String phone, String phoneCodeHash) async {
+    // Persister temporairement — résiste à un kill Android entre étapes 1 et 2
+    await WPlugin.setPreference('_tmp_pcoh', phoneCodeHash);
+    await WPlugin.setPreference('_tmp_phone', phone);
     setState(() {
       _phone         = phone;
       _phoneCodeHash = phoneCodeHash;
@@ -98,13 +101,22 @@ class _LoginFlowState extends State<_LoginFlow> {
     });
   }
 
-  void _onOTPSuccess(String sessionString) async {
-    await WPlugin.setPreference('tg_session_string', sessionString);
-    await WPlugin.setPreference('tg_api_id',   _apiId);
-    await WPlugin.setPreference('tg_api_hash',  _apiHash);
-    await WPlugin.setPreference('tg_phone',     _phone);
-    widget.onLoginSuccess();
-  }
+  Future<void> _onOTPSuccess(String sessionString) async {
+      await WPlugin.setPreference('tg_session_string', sessionString);
+      await WPlugin.setPreference('tg_api_id',   _apiId);
+      await WPlugin.setPreference('tg_api_hash',  _apiHash);
+      await WPlugin.setPreference('tg_phone',     _phone);
+      // Nettoyer les clés temporaires d'auth
+      await WPlugin.setPreference('_tmp_pcoh',  '');
+      await WPlugin.setPreference('_tmp_phone', '');
+      widget.onLoginSuccess();
+    }
+
+    Future<void> _onPasswordSuccess(String sessionString) async {
+      await _onOTPSuccess(sessionString);
+    }
+
+    void _goToPasswordScreen() => setState(() => _step = 3);
 
   @override
   Widget build(BuildContext context) {
@@ -126,6 +138,14 @@ class _LoginFlowState extends State<_LoginFlow> {
           apiHash: _apiHash,
           onBack: () => setState(() => _step = 1),
           onSuccess: _onOTPSuccess,
+          onTwoFa: _goToPasswordScreen,
+        );
+      case 3:
+        return _PasswordScreen(
+          apiId: _apiId,
+          apiHash: _apiHash,
+          onBack: () => setState(() => _step = 2),
+          onSuccess: _onPasswordSuccess,
         );
       default:
         return _ApiKeysScreen(onDone: _onApiKeysDone);
@@ -502,9 +522,10 @@ class _OTPScreen extends StatefulWidget {
   final String apiHash;
   final VoidCallback onBack;
   final void Function(String sessionString) onSuccess;
+  final VoidCallback? onTwoFa;
   const _OTPScreen({required this.phone, required this.phoneCodeHash,
     required this.apiId, required this.apiHash,
-    required this.onBack, required this.onSuccess});
+    required this.onBack, required this.onSuccess, this.onTwoFa});
   @override
   State<_OTPScreen> createState() => _OTPScreenState();
 }
@@ -570,6 +591,8 @@ class _OTPScreenState extends State<_OTPScreen> {
       if (result['status'] == 'ok') {
         final session = result['data']?['session_string'] ?? '';
         widget.onSuccess(session);
+      } else if (result['status'] == '2fa_required') {
+        widget.onTwoFa?.call();
       } else {
         setState(() => _error = result['error']?.toString() ?? 'Invalid code');
         for (final c in _ctrls) c.clear();
@@ -1733,6 +1756,166 @@ class _TgButton extends StatelessWidget {
             : Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
       ),
     );
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // ÉCRAN 3 — VÉRIFICATION EN 2 ÉTAPES (2FA)
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  class _PasswordScreen extends StatefulWidget {
+    final String apiId;
+    final String apiHash;
+    final VoidCallback onBack;
+    final Function(String) onSuccess;
+    const _PasswordScreen({Key? key, required this.apiId, required this.apiHash,
+      required this.onBack, required this.onSuccess}) : super(key: key);
+    @override
+    _PasswordScreenState createState() => _PasswordScreenState();
+  }
+
+  class _PasswordScreenState extends State<_PasswordScreen> {
+    static const _bg  = Color(0xFF17212B);
+    static const _bg2 = Color(0xFF232E3C);
+    static const _bg3 = Color(0xFF1C2733);
+    static const _acc = Color(0xFF5AABE1);
+    static const _txt = Color(0xFFE5E7EB);
+    static const _sub = Color(0xFF8A9BB0);
+
+    final _ctrl  = TextEditingController();
+    final _focus = FocusNode();
+    bool  _loading = false;
+    bool  _obscure = true;
+    String? _error;
+
+    @override
+    void initState() {
+      super.initState();
+      WidgetsBinding.instance.addPostFrameCallback((_) => _focus.requestFocus());
+    }
+
+    @override
+    void dispose() { _ctrl.dispose(); _focus.dispose(); super.dispose(); }
+
+    Future<void> _verify() async {
+      final pwd = _ctrl.text.trim();
+      if (pwd.isEmpty) return;
+      setState(() { _loading = true; _error = null; });
+      try {
+        final result = await WPlugin.invoke('auth_check_password', {
+          'api_id':   widget.apiId,
+          'api_hash': widget.apiHash,
+          'password': pwd,
+        });
+        if (result['status'] == 'ok') {
+          widget.onSuccess(result['data']?['session_string'] ?? '');
+        } else {
+          setState(() => _error = result['error']?.toString() ?? 'Mot de passe incorrect');
+          _ctrl.clear();
+          _focus.requestFocus();
+        }
+      } catch (e) {
+        setState(() => _error = e.toString());
+      } finally {
+        if (mounted) setState(() => _loading = false);
+      }
+    }
+
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        backgroundColor: _bg,
+        appBar: AppBar(
+          backgroundColor: _bg3,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: _txt),
+            onPressed: widget.onBack,
+          ),
+          title: const Text('Vérification en 2 étapes',
+              style: TextStyle(color: _txt, fontSize: 17, fontWeight: FontWeight.w600)),
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 80, height: 80,
+                  decoration: BoxDecoration(
+                    color: _bg2, shape: BoxShape.circle,
+                    border: Border.all(color: _acc.withOpacity(0.4), width: 1.5),
+                  ),
+                  child: const Icon(Icons.lock_outline, color: _acc, size: 38),
+                ),
+                const SizedBox(height: 24),
+                const Text('Mot de passe Telegram',
+                    style: TextStyle(color: _txt, fontSize: 20, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center),
+                const SizedBox(height: 8),
+                const Text('Ce compte utilise la vérification en 2 étapes.\nEntrez votre mot de passe cloud Telegram.',
+                    style: TextStyle(color: _sub, fontSize: 14, height: 1.4),
+                    textAlign: TextAlign.center),
+                const SizedBox(height: 32),
+                TextField(
+                  controller: _ctrl,
+                  focusNode: _focus,
+                  obscureText: _obscure,
+                  onSubmitted: (_) => _verify(),
+                  style: const TextStyle(color: _txt, fontSize: 16),
+                  decoration: InputDecoration(
+                    hintText: 'Mot de passe',
+                    hintStyle: const TextStyle(color: _sub),
+                    filled: true, fillColor: _bg2,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Color(0xFF334155))),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Color(0xFF334155))),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: _acc, width: 1.5)),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    suffixIcon: IconButton(
+                      icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility,
+                          color: _sub, size: 20),
+                      onPressed: () => setState(() => _obscure = !_obscure),
+                    ),
+                  ),
+                ),
+                if (_error != null) ...[
+                  const SizedBox(height: 12),
+                  Text(_error!, style: const TextStyle(color: Color(0xFFFF6B6B), fontSize: 13),
+                      textAlign: TextAlign.center),
+                ],
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity, height: 48,
+                  child: ElevatedButton(
+                    onPressed: _loading ? null : _verify,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _acc, foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      elevation: 0,
+                    ),
+                    child: _loading
+                        ? const SizedBox(width: 20, height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        : const Text('Continuer',
+                            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: const [
+                  Icon(Icons.security, color: _sub, size: 14),
+                  SizedBox(width: 6),
+                  Text('Chiffré par Telegram',
+                      style: TextStyle(color: _sub, fontSize: 12)),
+                ]),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
   }
 }
 
