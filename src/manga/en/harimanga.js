@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/mangayomi-extensions/main/dart/manga/multisrc/madara/src/en/harimanga/icon.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.2.0",
+    "version": "0.2.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -26,18 +26,16 @@ const watchtowerSources = [
   },
 ];
 
-class DefaultExtension extends MProvider {
-  constructor() {
-    super();
-    this.client = new Client();
-  }
+const BASE_URL = "https://www.harimanga.co.uk";
 
+class DefaultExtension extends MProvider {
   getBaseUrl() {
-    return new SharedPreferences().get("harimanga_override_base_url") || this.source.baseUrl;
+    return new SharedPreferences().get("harimanga_base_url") || BASE_URL;
   }
 
   getHeaders() {
-    return { "Referer": this.getBaseUrl() + "/" };
+    const base = this.getBaseUrl();
+    return { "Referer": base + "/" };
   }
 
   parseMangaFromPageItem(el) {
@@ -45,15 +43,13 @@ class DefaultExtension extends MProvider {
     const imgEl = el.selectFirst("img");
     const name = titleEl ? titleEl.text.trim() : "";
     const link = titleEl ? titleEl.getHref : "";
-    const imageUrl = imgEl
-      ? (imgEl.attr("data-src") || imgEl.getSrc || "")
-      : "";
+    const imageUrl = imgEl ? (imgEl.attr("data-src") || imgEl.attr("src") || "") : "";
     return { name, imageUrl, link };
   }
 
   async getPopular(page) {
     const baseUrl = this.getBaseUrl();
-    const res = await this.client.get(
+    const res = await new Client().get(
       `${baseUrl}/manga/page/${page}/?m_orderby=views`,
       this.getHeaders()
     );
@@ -65,7 +61,7 @@ class DefaultExtension extends MProvider {
 
   async getLatestUpdates(page) {
     const baseUrl = this.getBaseUrl();
-    const res = await this.client.get(
+    const res = await new Client().get(
       `${baseUrl}/manga/page/${page}/?m_orderby=latest`,
       this.getHeaders()
     );
@@ -77,9 +73,8 @@ class DefaultExtension extends MProvider {
 
   async search(query, page, filters) {
     const baseUrl = this.getBaseUrl();
-    const encodedQuery = encodeURIComponent(query);
-    const res = await this.client.get(
-      `${baseUrl}/?s=${encodedQuery}&post_type=wp-manga&paged=${page}`,
+    const res = await new Client().get(
+      `${baseUrl}/?s=${encodeURIComponent(query)}&post_type=wp-manga&paged=${page}`,
       this.getHeaders()
     );
     const doc = new Document(res.body);
@@ -98,7 +93,7 @@ class DefaultExtension extends MProvider {
 
   toStatus(text) {
     const s = (text || "").toLowerCase().trim();
-    if (s.includes("ongoing") || s.includes("publishing") || s.includes("on going")) return 0;
+    if (s.includes("ongoing") || s.includes("on going")) return 0;
     if (s.includes("completed") || s.includes("finished")) return 1;
     if (s.includes("hiatus") || s.includes("on hold")) return 2;
     if (s.includes("dropped") || s.includes("cancelled") || s.includes("canceled")) return 3;
@@ -112,55 +107,43 @@ class DefaultExtension extends MProvider {
   async getDetail(url) {
     const baseUrl = this.getBaseUrl();
     const slug = this.getMangaSlugFromUrl(url);
-    const res = await this.client.get(
+    const res = await new Client().get(
       `${baseUrl}/manga/${slug}/`,
       this.getHeaders()
     );
     const doc = new Document(res.body);
 
-    const imageUrl = (() => {
-      const img = doc.selectFirst("div.summary_image img");
-      return img ? (img.getSrc || img.attr("data-src") || "") : "";
-    })();
+    const imgEl = doc.selectFirst("div.summary_image img");
+    const imageUrl = imgEl ? (imgEl.attr("data-src") || imgEl.attr("src") || "") : "";
 
-    const name = (() => {
-      const h = doc.selectFirst("div.post-title h1");
-      return h ? h.text.trim() : "";
-    })();
+    const titleEl = doc.selectFirst("div.post-title h1");
+    const name = titleEl ? titleEl.text.trim() : "";
 
-    const description = (() => {
-      const d = doc.selectFirst("div.summary__content");
-      return d ? d.text.trim() : "";
-    })();
+    const descEl = doc.selectFirst("div.summary__content");
+    const description = descEl ? descEl.text.trim() : "";
 
     const genre = doc.select(".genres-content a").map((el) => el.text.trim());
 
-    const status = (() => {
-      const items = doc.select(".post-content_item");
-      for (const item of items) {
-        const h = item.selectFirst(".summary-heading h5");
-        if (h && h.text.trim().toLowerCase() === "status") {
-          const sc = item.selectFirst(".summary-content");
-          return this.toStatus(sc ? sc.text : "");
-        }
+    let status = 5;
+    for (const item of doc.select(".post-content_item")) {
+      const h = item.selectFirst(".summary-heading h5");
+      if (h && h.text.trim().toLowerCase() === "status") {
+        const sc = item.selectFirst(".summary-content");
+        status = this.toStatus(sc ? sc.text : "");
+        break;
       }
-      return 5;
-    })();
+    }
 
     const chapters = [];
     let apiPage = 1;
     let lastPage = 1;
     do {
-      const apiRes = await this.client.get(
+      const apiRes = await new Client().get(
         `${baseUrl}/api/comics/${slug}/chapters?per_page=100&page=${apiPage}`,
         { ...this.getHeaders(), "Accept": "application/json" }
       );
       let data;
-      try {
-        data = JSON.parse(apiRes.body);
-      } catch (_) {
-        break;
-      }
+      try { data = JSON.parse(apiRes.body); } catch (_) { break; }
       if (!data.success || !data.data) break;
       lastPage = data.data.last_page || 1;
       for (const ch of data.data.chapters) {
@@ -178,7 +161,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getPageList(url) {
-    const res = await this.client.get(url, this.getHeaders());
+    const res = await new Client().get(url, this.getHeaders());
     const doc = new Document(res.body);
 
     const imgEls = doc.select(".wp-manga-chapter-img");
@@ -186,46 +169,37 @@ class DefaultExtension extends MProvider {
       const seen = new Set();
       const pages = [];
       for (const el of imgEls) {
-        const src = el.attr("data-src") || el.getSrc || "";
-        if (src && !seen.has(src)) {
-          seen.add(src);
-          pages.push(src);
-        }
+        const src = el.attr("data-src") || el.attr("src") || "";
+        if (src && !seen.has(src)) { seen.add(src); pages.push(src); }
       }
       if (pages.length > 0) return pages;
     }
 
-    const body = res.body;
     const seen = new Set();
     const pages = [];
     const re = /https?:\/\/[^\s"'<>]+2xstorage\.com\/[^\s"'<>]+\.(?:webp|jpg|jpeg|png)/g;
     let m;
-    while ((m = re.exec(body)) !== null) {
+    while ((m = re.exec(res.body)) !== null) {
       const imgUrl = m[0];
       if (!seen.has(imgUrl) && !imgUrl.includes("/thumb/")) {
-        seen.add(imgUrl);
-        pages.push(imgUrl);
+        seen.add(imgUrl); pages.push(imgUrl);
       }
     }
     return pages;
   }
 
-  getFilterList() {
-    return [];
-  }
+  getFilterList() { return []; }
 
   getSourcePreferences() {
-    return [
-      {
-        key: "harimanga_override_base_url",
-        editTextPreference: {
-          title: "Override BaseUrl",
-          summary: "https://www.harimanga.co.uk",
-          value: "https://www.harimanga.co.uk",
-          dialogTitle: "Override BaseUrl",
-          dialogMessage: "Default: https://www.harimanga.co.uk",
-        },
+    return [{
+      "key": "harimanga_base_url",
+      "editTextPreference": {
+        "title": "Override BaseUrl",
+        "summary": BASE_URL,
+        "value": BASE_URL,
+        "dialogTitle": "Override BaseUrl",
+        "dialogMessage": `Default: ${BASE_URL}`,
       },
-    ];
+    }];
   }
 }
