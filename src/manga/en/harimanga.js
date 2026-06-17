@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/mangayomi-extensions/main/dart/manga/multisrc/madara/src/en/harimanga/icon.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.2.1",
+    "version": "0.2.2",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -125,10 +125,11 @@ class DefaultExtension extends MProvider {
     const genre = doc.select(".genres-content a").map((el) => el.text.trim());
 
     let status = 5;
-    for (const item of doc.select(".post-content_item")) {
-      const h = item.selectFirst(".summary-heading h5");
+    const postItems = doc.select(".post-content_item");
+    for (let i = 0; i < postItems.length; i++) {
+      const h = postItems[i].selectFirst(".summary-heading h5");
       if (h && h.text.trim().toLowerCase() === "status") {
-        const sc = item.selectFirst(".summary-content");
+        const sc = postItems[i].selectFirst(".summary-content");
         status = this.toStatus(sc ? sc.text : "");
         break;
       }
@@ -140,13 +141,15 @@ class DefaultExtension extends MProvider {
     do {
       const apiRes = await new Client().get(
         `${baseUrl}/api/comics/${slug}/chapters?per_page=100&page=${apiPage}`,
-        { ...this.getHeaders(), "Accept": "application/json" }
+        { "Referer": baseUrl + "/", "Accept": "application/json" }
       );
       let data;
       try { data = JSON.parse(apiRes.body); } catch (_) { break; }
-      if (!data.success || !data.data) break;
+      if (!data || !data.success || !data.data) break;
       lastPage = data.data.last_page || 1;
-      for (const ch of data.data.chapters) {
+      const chs = data.data.chapters || [];
+      for (let j = 0; j < chs.length; j++) {
+        const ch = chs[j];
         const dateMs = ch.updated_at ? String(new Date(ch.updated_at).getTime()) : "";
         chapters.push({
           name: ch.chapter_name,
@@ -164,26 +167,35 @@ class DefaultExtension extends MProvider {
     const res = await new Client().get(url, this.getHeaders());
     const doc = new Document(res.body);
 
+    // Try .wp-manga-chapter-img first — use plain object instead of Set to
+    // avoid QuickJS GC assertion failure (list_empty gc_obj_list) on runtime free
     const imgEls = doc.select(".wp-manga-chapter-img");
     if (imgEls.length > 0) {
-      const seen = new Set();
+      const seen = {};
       const pages = [];
-      for (const el of imgEls) {
-        const src = el.attr("data-src") || el.attr("src") || "";
-        if (src && !seen.has(src)) { seen.add(src); pages.push(src); }
+      for (let i = 0; i < imgEls.length; i++) {
+        const src = imgEls[i].attr("data-src") || imgEls[i].attr("src") || "";
+        if (src && !(src in seen)) {
+          seen[src] = 1;
+          pages.push(src);
+        }
       }
       if (pages.length > 0) return pages;
     }
 
-    const seen = new Set();
+    // Fallback: regex scan for 2xstorage CDN URLs
+    const seen = {};
     const pages = [];
+    const body = res.body;
     const re = /https?:\/\/[^\s"'<>]+2xstorage\.com\/[^\s"'<>]+\.(?:webp|jpg|jpeg|png)/g;
-    let m;
-    while ((m = re.exec(res.body)) !== null) {
+    let m = re.exec(body);
+    while (m !== null) {
       const imgUrl = m[0];
-      if (!seen.has(imgUrl) && !imgUrl.includes("/thumb/")) {
-        seen.add(imgUrl); pages.push(imgUrl);
+      if (!(imgUrl in seen) && imgUrl.indexOf("/thumb/") === -1) {
+        seen[imgUrl] = 1;
+        pages.push(imgUrl);
       }
+      m = re.exec(body);
     }
     return pages;
   }
