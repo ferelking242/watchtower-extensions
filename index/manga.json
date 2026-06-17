@@ -1071,23 +1071,23 @@
   {
     "name": "Harimanga",
     "id": 178905360,
-    "baseUrl": "https://harimanga.me",
+    "baseUrl": "https://www.harimanga.co.uk",
     "lang": "en",
-    "typeSource": "madara",
+    "typeSource": "single",
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/mangayomi-extensions/main/dart/manga/multisrc/madara/src/en/harimanga/icon.png",
-    "dateFormat": "MMMM dd, yyyy",
-    "dateFormatLocale": "en_us",
+    "dateFormat": "",
+    "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": false,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/kodjodevf/mangayomi-extensions/main/dart/manga/multisrc/madara/madara.dart",
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/manga/en/harimanga.js",
     "apiUrl": "",
-    "version": "0.1.3",
+    "version": "0.2.0",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
-    "sourceCodeLanguage": 0,
+    "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
     "hasDRM": false,
@@ -1095,10 +1095,10 @@
     "paywall": "free",
     "subCategories": [
       "WordPress",
-      "Dart"
+      "JavaScript"
     ],
     "supportsComments": false,
-    "upstream": "mangayomi"
+    "upstream": ""
   },
   {
     "name": "Império Scans",
