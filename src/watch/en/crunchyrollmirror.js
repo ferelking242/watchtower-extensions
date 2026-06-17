@@ -7,19 +7,20 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/en.crunchyrollmirror.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.0",
+    "version": "0.1.1",
     "pkgPath": "anime/src/en/crunchyrollmirror.js"
 }];
+
+const BASE_URL = "https://crunchy.metaoe.live";
 
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     getHeaders() {
         return {
-            "Referer": `${this.source.baseUrl}/`,
+            "Referer": `${BASE_URL}/`,
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "Accept": "application/json"
         };
@@ -35,7 +36,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        const res = await this.client.get(
+        const res = await new Client().get(
             `${this.source.apiUrl}/content/v2/discover/browse?n=32&start=${(page - 1) * 32}&sort_by=popularity&content_type=series&locale=en-US`,
             this.getHeaders()
         );
@@ -48,7 +49,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getLatestUpdates(page) {
-        const res = await this.client.get(
+        const res = await new Client().get(
             `${this.source.apiUrl}/content/v2/discover/browse?n=32&start=${(page - 1) * 32}&sort_by=newly_added&content_type=series&locale=en-US`,
             this.getHeaders()
         );
@@ -61,7 +62,7 @@ class DefaultExtension extends MProvider {
     }
 
     async search(query, page, filterList) {
-        const res = await this.client.get(
+        const res = await new Client().get(
             `${this.source.apiUrl}/content/v2/discover/search?q=${encodeURIComponent(query)}&n=32&type=series&locale=en-US`,
             this.getHeaders()
         );
@@ -76,8 +77,8 @@ class DefaultExtension extends MProvider {
     async getDetail(url) {
         const seriesId = url.replace("/series/", "");
         const [metaRes, epRes] = await Promise.all([
-            this.client.get(`${this.source.apiUrl}/content/v2/cms/series/${seriesId}?locale=en-US`, this.getHeaders()),
-            this.client.get(`${this.source.apiUrl}/content/v2/cms/series/${seriesId}/seasons?locale=en-US`, this.getHeaders())
+            new Client().get(`${this.source.apiUrl}/content/v2/cms/series/${seriesId}?locale=en-US`, this.getHeaders()),
+            new Client().get(`${this.source.apiUrl}/content/v2/cms/series/${seriesId}/seasons?locale=en-US`, this.getHeaders())
         ]);
 
         const meta = JSON.parse(metaRes.body).data?.[0] || {};
@@ -85,7 +86,7 @@ class DefaultExtension extends MProvider {
 
         const episodes = [];
         for (const season of seasons) {
-            const sEpRes = await this.client.get(
+            const sEpRes = await new Client().get(
                 `${this.source.apiUrl}/content/v2/cms/seasons/${season.id}/episodes?locale=en-US`,
                 this.getHeaders()
             );
@@ -111,7 +112,7 @@ class DefaultExtension extends MProvider {
 
     async getVideoList(url) {
         const epId = url.replace("/episode/", "");
-        const res = await this.client.get(
+        const res = await new Client().get(
             `${this.source.apiUrl}/content/v2/cms/videos/${epId}/streams?locale=en-US`,
             this.getHeaders()
         );

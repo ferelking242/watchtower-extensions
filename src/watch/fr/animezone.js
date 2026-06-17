@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/fr/icons/animezone.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.2",
+    "version": "0.1.3",
     "pkgPath": "watch/fr/animezone.js",
     "editableBaseUrl": true,
     "customUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -15,15 +15,16 @@ const watchtowerSources = [{
     "contentSubtype": ["anime"]
 }];
 
+const BASE_URL = "https://www.animezone.fr";
+
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     get baseUrl() {
         const p = this.source.prefs?.find(x => x.key === "base_url");
-        return (p && p.value) ? p.value.replace(/\/$/, "") : this.source.baseUrl.replace(/\/$/, "");
+        return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL.replace(/\/$/, "");
     }
 
     _hdrs(ref) {
@@ -36,7 +37,7 @@ class DefaultExtension extends MProvider {
 
     _parseList(html) {
         const list = [];
-        const seen = new Set();
+        const seen = {};
         // animezone.fr uses data attributes on favourite buttons inside each card.
         // Extract all three attributes in order — they always appear in the same sequence
         // on the same element so positional matching is reliable.
@@ -45,8 +46,8 @@ class DefaultExtension extends MProvider {
         const images = [...html.matchAll(/data-anime-image="([^"]+)"/gi)].map(m => m[1]);
         for (let i = 0; i < slugs.length; i++) {
             const url = `${this.baseUrl}/anime/${slugs[i]}/`;
-            if (seen.has(url)) continue;
-            seen.add(url);
+            if ((url in seen)) continue;
+            (seen[url] = 1);
             if (titles[i] && images[i]) {
                 list.push({ link: url, imageUrl: images[i], name: titles[i].trim() });
             }
@@ -55,7 +56,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        const res = await this.client.get(
+        const res = await new Client().get(
             `${this.baseUrl}/animes/?page=${page}&order=popular`,
             this._hdrs()
         );
@@ -66,7 +67,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getLatestUpdates(page) {
-        const res = await this.client.get(
+        const res = await new Client().get(
             `${this.baseUrl}/animes/?page=${page}&order=latest`,
             this._hdrs()
         );
@@ -77,7 +78,7 @@ class DefaultExtension extends MProvider {
     }
 
     async search(query, page, filterList) {
-        const res = await this.client.get(
+        const res = await new Client().get(
             `${this.baseUrl}/animes/?s=${encodeURIComponent(query)}&page=${page}`,
             this._hdrs()
         );
@@ -87,7 +88,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getDetail(url) {
-        const res = await this.client.get(url, this._hdrs(url));
+        const res = await new Client().get(url, this._hdrs(url));
         if (res.statusCode !== 200) throw new Error(`HTTP ${res.statusCode}`);
         const html = res.body;
 
@@ -137,7 +138,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getVideoList(url) {
-        const res = await this.client.get(url, this._hdrs(url));
+        const res = await new Client().get(url, this._hdrs(url));
         if (res.statusCode !== 200) throw new Error(`HTTP ${res.statusCode}`);
         const html = res.body;
         const videos = [];
@@ -162,7 +163,7 @@ class DefaultExtension extends MProvider {
         // Try to get m3u8 from each iframe
         for (const embedUrl of embedUrls.slice(0, 3)) {
             try {
-                const embedRes = await this.client.get(embedUrl, this._hdrs(url));
+                const embedRes = await new Client().get(embedUrl, this._hdrs(url));
                 const ebody = embedRes.body;
                 const hm = ebody.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)/);
                 if (hm) {

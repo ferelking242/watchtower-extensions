@@ -14,7 +14,7 @@ const watchtowerSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.2.5",
+    "version": "1.2.6",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -28,7 +28,6 @@ const watchtowerSources = [
 class DefaultExtension extends MProvider {
   constructor() {
     super();
-    this.client = new Client();
   }
 
   getPreference(key) {
@@ -53,7 +52,7 @@ class DefaultExtension extends MProvider {
     var baseUrl = this.getBaseUrl();
     var url = baseUrl + "/api/show" + slug;
     var hdr = this.getHeaders(url);
-    var res = await this.client.get(url, hdr);
+    var res = await new Client().get(url, hdr);
     return JSON.parse(res.body);
   }
 
@@ -141,7 +140,7 @@ class DefaultExtension extends MProvider {
     var url = baseUrl + "/api/fsearch";
     var hdr = this.getHeaders(url);
 
-    var res = await this.client.post(url, hdr, body);
+    var res = await new Client().post(url, hdr, body);
     var rd = JSON.parse(res.body);
 
     var list = this.formatList(rd.result);
@@ -657,7 +656,7 @@ class DefaultExtension extends MProvider {
 
   async decodeVidStreaming(url, hdr) {
     var id = url.substring(url.indexOf("id=") + 3, url.indexOf("&ln="));
-    var body = (await this.client.get(url, hdr)).body;
+    var body = (await new Client().get(url, hdr)).body;
 
     var sKey = "cid: '";
     var eKey = "',";
@@ -689,7 +688,7 @@ class DefaultExtension extends MProvider {
     var signHash = this.sha1(signature);
     var api = `https://krussdomi.com${route}?id=${id}&e=${timestamp}&s=${signHash}`;
 
-    body = (await this.client.get(api, hdr)).body;
+    body = (await new Client().get(api, hdr)).body;
     var data = JSON.parse(body)["data"];
     var dataSp = data.replace("\\", "").split(":");
     var encText = dataSp[0];
@@ -720,7 +719,7 @@ class DefaultExtension extends MProvider {
 
   async decodeCatStreaming(url, hdr) {
     delete hdr["content-type"];
-    var body = (await this.client.get(url, hdr)).body;
+    var body = (await new Client().get(url, hdr)).body;
 
     var sKey = "props=";
     var eKey = "ssr client";
@@ -821,7 +820,7 @@ class DefaultExtension extends MProvider {
   // --- Episode details
   async getMalId(animeName, type) {
     var jikanApi = `https://api.jikan.moe/v4/anime?q=${animeName}&type=${type}`;
-    var req = await this.client.get(jikanApi);
+    var req = await new Client().get(jikanApi);
     if (req.statusCode != 200) return null;
 
     var res = JSON.parse(req.body);
@@ -836,7 +835,7 @@ class DefaultExtension extends MProvider {
     if (malId == null) return null;
 
     var addInfoApi = `https://api.ani.zip/mappings?mal_id=${malId}`;
-    var infoReq = await this.client.get(addInfoApi);
+    var infoReq = await new Client().get(addInfoApi);
     if (infoReq.statusCode != 200) return null;
 
     var res = JSON.parse(infoReq.body);

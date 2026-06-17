@@ -8,17 +8,18 @@ const watchtowerSources = [
     "iconUrl": "https://comix.to/images/icon_512x512.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.1.0",
+    "version": "0.1.1",
     "pkgPath": "manga/src/en/comix.js"
   }
 ];
 
 const NSFW_GENRE_IDS = ["87264", "87265", "87266", "87268"];
 
+const BASE_URL = "https://comix.to";
+
 class DefaultExtension extends MProvider {
   constructor() {
     super();
-    this.client = new Client();
   }
 
   get apiUrl() {
@@ -27,7 +28,7 @@ class DefaultExtension extends MProvider {
 
   getHeaders(url) {
     return {
-      Referer: `${this.source.baseUrl}/`,
+      Referer: `${BASE_URL}/`,
     };
   }
 
@@ -50,7 +51,7 @@ class DefaultExtension extends MProvider {
   }
 
   async fetchJson(url) {
-    const res = await this.client.get(url, this.getHeaders(url));
+    const res = await new Client().get(url, this.getHeaders(url));
     return JSON.parse(res.body);
   }
 
@@ -377,7 +378,7 @@ class DefaultExtension extends MProvider {
     return result.images.map((img) => ({
       url: img.url,
       headers: {
-        Referer: `${this.source.baseUrl}/`,
+        Referer: `${BASE_URL}/`,
       },
     }));
   }

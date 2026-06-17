@@ -7,19 +7,20 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/en.gogoanime.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.2",
+    "version": "0.1.3",
     "pkgPath": "anime/src/en/gogoanime.js"
 }];
+
+const BASE_URL = "https://gogoanime3.co";
 
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     getHeaders() {
         return {
-            "Referer": `${this.source.baseUrl}/`,
+            "Referer": `${BASE_URL}/`,
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         };
     }
@@ -35,22 +36,22 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        const res = await this.client.get(`${this.source.baseUrl}/popular.html?page=${page}`, this.getHeaders());
+        const res = await new Client().get(`${BASE_URL}/popular.html?page=${page}`, this.getHeaders());
         const list = this._parseList(res.body);
         const hasNext = res.body.includes(`page=${page + 1}"`);
         return { list, hasNextPage: hasNext };
     }
 
     async getLatestUpdates(page) {
-        const res = await this.client.get(`${this.source.baseUrl}/?page=${page}`, this.getHeaders());
+        const res = await new Client().get(`${BASE_URL}/?page=${page}`, this.getHeaders());
         const list = this._parseList(res.body);
         const hasNext = res.body.includes(`page=${page + 1}"`);
         return { list, hasNextPage: hasNext };
     }
 
     async search(query, page, filterList) {
-        const res = await this.client.get(
-            `${this.source.baseUrl}/search.html?keyword=${encodeURIComponent(query)}&page=${page}`,
+        const res = await new Client().get(
+            `${BASE_URL}/search.html?keyword=${encodeURIComponent(query)}&page=${page}`,
             this.getHeaders()
         );
         const list = this._parseList(res.body);
@@ -59,7 +60,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getDetail(url) {
-        const res = await this.client.get(`${this.source.baseUrl}${url.startsWith("http") ? "" : ""}${url}`, this.getHeaders());
+        const res = await new Client().get(`${BASE_URL}${url.startsWith("http") ? "" : ""}${url}`, this.getHeaders());
         const html = res.body;
 
         const nameM = html.match(/<h1>(.*?)<\/h1>/);
@@ -75,7 +76,7 @@ class DefaultExtension extends MProvider {
         if (!movieIdM) return { name, description, imageUrl, genres: [], status: 0, chapters: [] };
         const movieId = movieIdM[1];
 
-        const epRes = await this.client.get(
+        const epRes = await new Client().get(
             `https://ajax.gogocdn.net/ajax/load-list-episode?ep_start=0&ep_end=9999&id=${movieId}&default_ep=0`,
             this.getHeaders()
         );
@@ -95,8 +96,8 @@ class DefaultExtension extends MProvider {
     }
 
     async getVideoList(url) {
-        const fullUrl = url.startsWith("http") ? url : `${this.source.baseUrl}${url}`;
-        const res = await this.client.get(fullUrl, this.getHeaders());
+        const fullUrl = url.startsWith("http") ? url : `${BASE_URL}${url}`;
+        const res = await new Client().get(fullUrl, this.getHeaders());
         const html = res.body;
 
         const videos = [];

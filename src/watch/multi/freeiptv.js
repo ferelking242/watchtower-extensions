@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "isNsfw": false,
     "hasCloudflare": false,
     "pkgPath": "watch/src/multi/freeiptv.js",
@@ -25,7 +25,6 @@ const watchtowerSources = [{
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     // Category definitions — maps display name to iptv-org slug
@@ -123,7 +122,7 @@ class DefaultExtension extends MProvider {
             m3uUrl = `${DefaultExtension.M3U_BASE}/${category}.m3u`;
         }
 
-        const res = await this.client.get(m3uUrl, {
+        const res = await new Client().get(m3uUrl, {
             "User-Agent": "Mozilla/5.0 (compatible; IPTV/1.0)"
         });
         let channels = this.parseM3U(res.body || "");
@@ -169,7 +168,7 @@ class DefaultExtension extends MProvider {
     async getDetail(url) {
         // If URL is an M3U category playlist
         if (url.endsWith(".m3u")) {
-            const res = await this.client.get(url, {
+            const res = await new Client().get(url, {
                 "User-Agent": "Mozilla/5.0 (compatible; IPTV/1.0)"
             });
             const channels = this.parseM3U(res.body || "");

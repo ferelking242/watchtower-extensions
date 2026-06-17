@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 2,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "isNsfw": false,
     "hasCloudflare": false,
     "pkgPath": "novel/src/en/royalroad.js",
@@ -24,7 +24,6 @@ const watchtowerSources = [{
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     get BASE() { return "https://www.royalroad.com"; }
@@ -39,7 +38,7 @@ class DefaultExtension extends MProvider {
 
     async fetch(path) {
         const url = path.startsWith("http") ? path : `${this.BASE}${path}`;
-        const res = await this.client.get(url, this.headers());
+        const res = await new Client().get(url, this.headers());
         return new Document(res.body);
     }
 

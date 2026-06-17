@@ -6,14 +6,15 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/javascript/icon/all.kisskh.jpg",
     "typeSource": "multi",
     "itemType": 1,
-    "version": "0.1.6",
+    "version": "0.1.7",
     "pkgPath": "anime/src/all/kisskh.js"
 }];
+
+const BASE_URL = "https://kisskh.ovh";
 
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     getPreference(key) {
@@ -23,8 +24,8 @@ class DefaultExtension extends MProvider {
     getHeaders() {
         return {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6832.64 Safari/537.36",
-            "Referer": this.source.baseUrl,
-            "Origin": this.source.baseUrl,
+            "Referer": BASE_URL,
+            "Origin": BASE_URL,
         }
     }
 
@@ -33,7 +34,7 @@ class DefaultExtension extends MProvider {
     }
 
     async request(url) {
-        var res = await this.client.get(url, { headers: this.getHeaders() });
+        var res = await new Client().get(url, { headers: this.getHeaders() });
         return res.body
     }
 

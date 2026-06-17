@@ -6,11 +6,13 @@ const watchtowerSources = [{
   "iconUrl": "https://91porn.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "pkgPath": "91porn/zh/zh.91porn.js",
   "notes": "91Porn — Chinese homemade and Asian amateur videos",
   "isNsfw": true
 }];
+
+const BASE_URL = "https://91porn.com";
 
 class DefaultExtension extends MProvider {
   getHeaders(url) {
@@ -22,24 +24,24 @@ class DefaultExtension extends MProvider {
   }
 
   async getPopular(page) {
-    const url = `${this.source.baseUrl}/video.php?viewkey=most_viewed&page=${page}`;
+    const url = `${BASE_URL}/video.php?viewkey=most_viewed&page=${page}`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, this.source.baseUrl);
+    return this._parse(res.body, BASE_URL);
   }
 
   get supportsLatest() { return true; }
 
   async getLatestUpdates(page) {
-    const url = `${this.source.baseUrl}/video.php?viewkey=latest&page=${page}`;
+    const url = `${BASE_URL}/video.php?viewkey=latest&page=${page}`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, this.source.baseUrl);
+    return this._parse(res.body, BASE_URL);
   }
 
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
-    const url = `${this.source.baseUrl}/video.php?viewkey=search&keyword=${q}&page=${page}`;
+    const url = `${BASE_URL}/video.php?viewkey=search&keyword=${q}&page=${page}`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, this.source.baseUrl);
+    return this._parse(res.body, BASE_URL);
   }
 
   _parse(html, base) {

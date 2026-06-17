@@ -7,20 +7,21 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "isNsfw": false,
-    "version": "0.1.0",
+    "version": "0.1.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/de/serienstream.js"
 }];
 
+const BASE_URL = "https://s.to";
+
 class DefaultExtension extends MProvider {
     constructor () {
         super();
-        this.client = new Client();
     }
     async getPopular(page) {
-        const baseUrl = this.source.baseUrl;
-        const res = await this.client.get(`${baseUrl}/beliebte-serien`);
+        const baseUrl = BASE_URL;
+        const res = await new Client().get(`${baseUrl}/beliebte-serien`);
         const elements = new Document(res.body).select("div.seriesListContainer div");
         const list = [];
         for (const element of elements) {
@@ -36,8 +37,8 @@ class DefaultExtension extends MProvider {
         }
     }
     async getLatestUpdates(page) {
-        const baseUrl = this.source.baseUrl;
-        const res = await this.client.get(`${baseUrl}/neu`);
+        const baseUrl = BASE_URL;
+        const res = await new Client().get(`${baseUrl}/neu`);
         const elements = new Document(res.body).select("div.seriesListContainer div");
         const list = [];
         for (const element of elements) {
@@ -53,14 +54,14 @@ class DefaultExtension extends MProvider {
         }
     }
     async search(query, page, filters) {
-        const baseUrl = this.source.baseUrl;
-        const res = await this.client.get(`${baseUrl}/serien`);
+        const baseUrl = BASE_URL;
+        const res = await new Client().get(`${baseUrl}/serien`);
         const elements = new Document(res.body).select("#seriesContainer > div > ul > li > a").filter(e => e.attr("title").toLowerCase().includes(query.toLowerCase()));
         const list = [];
         for (const element of elements) {
             const name = element.text;
             const link = element.attr("href");
-            const img = new Document((await this.client.get(baseUrl + link)).body).selectFirst("div.seriesCoverBox img").attr("data-src");
+            const img = new Document((await new Client().get(baseUrl + link)).body).selectFirst("div.seriesCoverBox img").attr("data-src");
             const imageUrl = baseUrl + img;
             list.push({ name, imageUrl, link });
         }
@@ -110,8 +111,8 @@ class DefaultExtension extends MProvider {
         return Promise.all(ret);
     }
     async getDetail(url) {
-        const baseUrl = this.source.baseUrl;
-        const res = await this.client.get(baseUrl + url);
+        const baseUrl = BASE_URL;
+        const res = await new Client().get(baseUrl + url);
         const document = new Document(res.body);
         const imageUrl = baseUrl +
             document.selectFirst("div.seriesCoverBox img").attr("data-src");
@@ -137,7 +138,7 @@ class DefaultExtension extends MProvider {
     }
     async parseEpisodesFromSeries(element) {
         const seasonId = element.getHref;
-        const res = await this.client.get(this.source.baseUrl + seasonId);
+        const res = await new Client().get(BASE_URL + seasonId);
         const episodeElements = new Document(res.body).select("table.seasonEpisodesList tbody tr");
         // Use asyncPool to limit concurrency while processing episodes of a season
         return await this.asyncPool(13, episodeElements, e => this.episodeFromElement(e));
@@ -159,8 +160,8 @@ class DefaultExtension extends MProvider {
         return name && url ? { name, url, dateUpload } : {};
     }
     async getUploadDateFromEpisode(url) {
-        const baseUrl = this.source.baseUrl;
-        const res = await this.client.get(baseUrl + url);
+        const baseUrl = BASE_URL;
+        const res = await new Client().get(baseUrl + url);
         const document = new Document(res.body);
         const dateString = document.selectFirst('strong[style="color: white;"]').text; // Dienstag, 16.12.2025 19:45
         const cleanDateString = dateString.split(", ")[1]; // 16.12.2025 19:45
@@ -205,8 +206,8 @@ class DefaultExtension extends MProvider {
     }
 
     async getVideoList(url) {
-        const baseUrl = this.source.baseUrl;
-        const res = await this.client.get(baseUrl + url, {
+        const baseUrl = BASE_URL;
+        const res = await new Client().get(baseUrl + url, {
             'Accept': '*/*',
             'Referer': baseUrl + url,
             'Priority': 'u=0, i',
@@ -233,7 +234,7 @@ class DefaultExtension extends MProvider {
                 const redirect = baseUrl + element.selectFirst("a.watchEpisode").attr("href");
                 promises.push((async (redirect, lang, type, host) => {
                     const location = (await dartClient.get(redirect)).headers.location;
-                    return await extractAny(location, host.toLowerCase(), lang, type, host, {'Referer': this.source.baseUrl});
+                    return await extractAny(location, host.toLowerCase(), lang, type, host, {'Referer': BASE_URL});
                 })(redirect, lang, type, host));
             }
         }

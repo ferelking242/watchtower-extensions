@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "isNsfw": false,
     "hasCloudflare": false,
     "pkgPath": "watch/src/multi/internetarchive.js",
@@ -25,7 +25,6 @@ const watchtowerSources = [{
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     get BASE() { return "https://archive.org"; }
@@ -56,7 +55,7 @@ class DefaultExtension extends MProvider {
         });
 
         const url = `${this.API}?${params.toString()}`;
-        const res = await this.client.get(url, this.headers());
+        const res = await new Client().get(url, this.headers());
         const json = JSON.parse(res.body || "{}");
         const docs = json?.response?.docs || [];
         const total = json?.response?.numFound || 0;
@@ -113,7 +112,7 @@ class DefaultExtension extends MProvider {
         const identifier = url.split("/details/")[1]?.split("/")[0]?.split("?")[0];
         if (!identifier) return { name: "Unknown", chapters: [] };
 
-        const metaRes = await this.client.get(`${this.META_API}/${identifier}`, this.headers());
+        const metaRes = await new Client().get(`${this.META_API}/${identifier}`, this.headers());
         const meta = JSON.parse(metaRes.body || "{}");
 
         const m = meta?.metadata || {};
@@ -174,7 +173,7 @@ class DefaultExtension extends MProvider {
         const identifier = url.split("/details/")[1]?.split("/")[0];
         if (!identifier) return [];
 
-        const metaRes = await this.client.get(`${this.META_API}/${identifier}`, this.headers());
+        const metaRes = await new Client().get(`${this.META_API}/${identifier}`, this.headers());
         const meta = JSON.parse(metaRes.body || "{}");
         const files = meta?.files || [];
 

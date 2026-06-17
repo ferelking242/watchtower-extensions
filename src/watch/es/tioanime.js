@@ -6,29 +6,30 @@ const watchtowerSources = [{
     "iconUrl": "https://tioanime.com/assets/img/tio_fb.jpg",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.12",
+    "version": "0.1.13",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/es/tioanime.js"
 }];
 
+const BASE_URL = "https://tioanime.com";
+
 class DefaultExtension extends MProvider {
     constructor () {
         super();
-        this.client = new Client();
     }
     getHeaders(url) {
         throw new Error("getHeaders not implemented");
     }
     async parseAnimeList(url) {
-        const res = await this.client.get(url);
+        const res = await new Client().get(url);
         const doc = new Document(res.body);
         const elements = doc.select("ul.animes > li");
         const list = [];
 
         for (const element of elements) {
             const name = element.selectFirst(".title").text;
-            const imageUrl = this.source.baseUrl + element.selectFirst("img").getSrc;
+            const imageUrl = BASE_URL + element.selectFirst("img").getSrc;
             const link = element.selectFirst("a").getHref;
             list.push({ name, imageUrl, link });
         }
@@ -42,18 +43,18 @@ class DefaultExtension extends MProvider {
         }[status] ?? 5;
     }
     async getPopular(page) {
-        return await this.parseAnimeList(`${this.source.baseUrl}/directorio?p=${page}`);
+        return await this.parseAnimeList(`${BASE_URL}/directorio?p=${page}`);
     }
     async getLatestUpdates(page) {
-        return await this.parseAnimeList(`${this.source.baseUrl}/directorio?p=${page}`);
+        return await this.parseAnimeList(`${BASE_URL}/directorio?p=${page}`);
     }
     async search(query, page, filters) {
         query = query.trim().replaceAll(/\ +/g, "+");
-        let url = `${this.source.baseUrl}/directorio?q=${query}&p=${page}`;
+        let url = `${BASE_URL}/directorio?q=${query}&p=${page}`;
         return await this.parseAnimeList(url);
     }
     async getDetail(url) {
-        const res = await this.client.get(this.source.baseUrl + url);
+        const res = await new Client().get(BASE_URL + url);
         const doc = new Document(res.body);
         const detail = {};
 
@@ -63,7 +64,7 @@ class DefaultExtension extends MProvider {
 
         detail.name = info.selectFirst("h1").text;
         detail.status = this.statusFromString(info.selectFirst("a").text);
-        detail.imageUrl = this.source.baseUrl + info.selectFirst("img").getSrc;
+        detail.imageUrl = BASE_URL + info.selectFirst("img").getSrc;
         detail.description = info.selectFirst("p.sinopsis").text.trim();
         detail.genre = info.select("p.genres a").map(e => e.text.trim());
         detail.episodes = [];
@@ -77,7 +78,7 @@ class DefaultExtension extends MProvider {
     }
     // For anime episode video list
     async getVideoList(url) {
-        const res = await this.client.get(this.source.baseUrl + url);
+        const res = await new Client().get(BASE_URL + url);
         const doc = new Document(res.body);
         let promises = [];
         const videos = [];

@@ -6,14 +6,14 @@ const watchtowerSources = [{
       "iconUrl": "https://www.deezer.com/favicon.ico",
       "typeSource": "single",
       "itemType": 3,
-      "version": "1.0.0",
+      "version": "1.0.1",
       "pkgPath": "music/fr/deezer.js",
       "notes": "Deezer — Catalogue mondial de musique (previews 30s)",
       "isNsfw": false
   }];
 
   class DefaultExtension extends MProvider {
-      constructor() { super(); this.client = new Client(); }
+      constructor() { super();}
 
       getHeaders(url) {
           return {
@@ -26,7 +26,7 @@ const watchtowerSources = [{
 
       async getPopularList(page) {
           const url = `https://api.deezer.com/chart/0/tracks?index=${(page-1)*50}&limit=50`;
-          const res = await this.client.get(url, this.getHeaders(url));
+          const res = await new Client().get(url, this.getHeaders(url));
           let data;
           try { data = JSON.parse(res.body); } catch(e) { return { list: [], hasNextPage: false }; }
           const tracks = (data.data || data.tracks?.data || []);
@@ -40,7 +40,7 @@ const watchtowerSources = [{
 
       async getLatestList(page) {
           const url = `https://api.deezer.com/editorial/0/releases?index=${(page-1)*50}&limit=50`;
-          const res = await this.client.get(url, this.getHeaders(url));
+          const res = await new Client().get(url, this.getHeaders(url));
           let data;
           try { data = JSON.parse(res.body); } catch(e) { return { list: [], hasNextPage: false }; }
           const albums = data.data || [];
@@ -54,7 +54,7 @@ const watchtowerSources = [{
 
       async getSearchList(query, page, filters) {
           const url = `https://api.deezer.com/search?q=${encodeURIComponent(query)}&index=${(page-1)*25}&limit=25`;
-          const res = await this.client.get(url, this.getHeaders(url));
+          const res = await new Client().get(url, this.getHeaders(url));
           let data;
           try { data = JSON.parse(res.body); } catch(e) { return { list: [], hasNextPage: false }; }
           const tracks = data.data || [];
@@ -71,7 +71,7 @@ const watchtowerSources = [{
           if (!id) return { name: url, imageUrl: "", description: "", chapters: [{ name: "Play", url }] };
           const isAlbum = url.includes("/album/");
           const apiUrl = isAlbum ? `https://api.deezer.com/album/${id}` : `https://api.deezer.com/track/${id}`;
-          const res = await this.client.get(apiUrl, this.getHeaders(apiUrl));
+          const res = await new Client().get(apiUrl, this.getHeaders(apiUrl));
           let data;
           try { data = JSON.parse(res.body); } catch(e) { data = {}; }
           const name = data.title || "";
@@ -86,7 +86,7 @@ const watchtowerSources = [{
           const id = url.match(/\/track\/(\d+)/)?.[1];
           if (!id) return [{ quality: "Stream", url }];
           const apiUrl = `https://api.deezer.com/track/${id}`;
-          const res = await this.client.get(apiUrl, this.getHeaders(apiUrl));
+          const res = await new Client().get(apiUrl, this.getHeaders(apiUrl));
           let data;
           try { data = JSON.parse(res.body); } catch(e) { data = {}; }
           const preview = data.preview;

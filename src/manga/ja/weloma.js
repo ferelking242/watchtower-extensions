@@ -13,7 +13,7 @@ const watchtowerSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
@@ -24,10 +24,11 @@ const watchtowerSources = [
     "pkgPath": "manga/src/ja/weloma.js",
   },
 ];
+const BASE_URL = "https://weloma.art";
+
 class DefaultExtension extends MProvider {
   constructor() {
     super();
-    this.client = new Client();
   }
 
   getPreference(key) {
@@ -43,8 +44,8 @@ class DefaultExtension extends MProvider {
   }
 
   async request(slug) {
-    var url = `${this.source.baseUrl}${slug}`;
-    var body = (await this.client.get(url, this.getHeaders())).body;
+    var url = `${BASE_URL}${slug}`;
+    var body = (await new Client().get(url, this.getHeaders())).body;
     return new Document(body);
   }
 
@@ -179,7 +180,7 @@ class DefaultExtension extends MProvider {
       }
       return parseInt(new Date().valueOf()) - ts * 1000;
     }
-    var baseUrl = this.source.baseUrl;
+    var baseUrl = BASE_URL;
     var slug = url.replace(baseUrl, "");
     var link = baseUrl + url;
 

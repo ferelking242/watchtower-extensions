@@ -8,17 +8,19 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=64&domain=https://mangapill.com/",
     "typeSource": "single",
     "isManga": true,
-    "version": "1.0.3",
+    "version": "1.0.4",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/en/mangapill.js"
   }
 ];
 
+const BASE_URL = "https://mangapill.com";
+
 class DefaultExtension extends MProvider {
   getHeaders(url) {
     return {
-      "Referer": this.source.baseUrl,
+      "Referer": BASE_URL,
     };
   }
 
@@ -42,7 +44,7 @@ class DefaultExtension extends MProvider {
   async getMangaList(slug) {
     var lang = await this.getPreference("pref_title_lang");
 
-    var url = `${this.source.baseUrl}/${slug}`;
+    var url = `${BASE_URL}/${slug}`;
     var res = await new Client().get(url, this.getHeaders());
     var doc = new Document(res.body);
     var list = [];
@@ -115,7 +117,7 @@ class DefaultExtension extends MProvider {
 
   async getMangaDetail(slug) {
     var lang = await this.getPreference("pref_title_lang");
-    var baseUrl = this.source.baseUrl;
+    var baseUrl = BASE_URL;
     if (slug.includes(baseUrl)) slug = slug.replace(baseUrl, "");
 
     var link = `${baseUrl}${slug}`;
@@ -168,7 +170,7 @@ class DefaultExtension extends MProvider {
 
   // For manga chapter pages
   async getPageList(url) {
-    var link = `${this.source.baseUrl}${url}`;
+    var link = `${BASE_URL}${url}`;
 
     var res = await new Client().get(link, this.getHeaders());
     var doc = new Document(res.body);

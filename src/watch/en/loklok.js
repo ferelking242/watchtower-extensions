@@ -6,11 +6,13 @@ const watchtowerSources = [{
     "iconUrl": "https://h5-static.aoneroom.com/oneroomProject/icon/moviebox-official.jpg",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "pkgPath": "loklok/en/en.loklok.js",
     "notes": "Free movies + TV series streaming, captions in 12 languages. Backed by aoneroom (LokLok / MovieBox / themoviebox.xyz).",
     "isNsfw": false
 }];
+
+const BASE_URL = "https://lok-lok.cc";
 
 class DefaultExtension extends MProvider {
     _pref(key, def) {
@@ -22,7 +24,7 @@ class DefaultExtension extends MProvider {
     get hideAdult() { return this._pref("loklok_hide_adult", "false") === "true"; }
 
     get apiBase() { return this.source.apiUrl || "https://h5-api.aoneroom.com"; }
-    get webBase() { return this.source.baseUrl || "https://moviebox.ph"; }
+    get webBase() { return BASE_URL || "https://moviebox.ph"; }
 
     apiHeaders() {
         return {
@@ -120,8 +122,8 @@ class DefaultExtension extends MProvider {
             if (title) out.push({ name: title, imageUrl: img, link });
         }
         // dedup
-        const seen = new Set();
-        return out.filter(x => { if (seen.has(x.link)) return false; seen.add(x.link); return true; });
+        const seen = {};
+        return out.filter(x => { if ((x.link in seen)) return false; (seen[x.link] = 1); return true; });
     }
 
     // ---------- search ----------

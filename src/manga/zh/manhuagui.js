@@ -7,7 +7,7 @@ const mangayomiSources = [{
   "typeSource": "single",
   "itemType": 0,
   "isNsfw": false,
-  "version": "0.0.25",
+  "version": "0.0.26",
   "dateFormat": "",
   "dateFormatLocale": "",
   "pkgPath": "manga/src/zh/manhuagui.js"
@@ -116,6 +116,8 @@ function decode(text) {
   return packed(m[1], parseInt(m[2]), parseInt(m[3]), LZString.decompressFromBase64(m[4]).split('|'));
 }
 
+const BASE_URL = "https://www.manhuagui.com";
+
 class DefaultExtension extends MProvider {
   headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
@@ -123,12 +125,12 @@ class DefaultExtension extends MProvider {
 
   getHeaders(url) {
     return {
-      Referer: this.source.baseUrl
+      Referer: BASE_URL
     }
   }
 
   async getItems(url, p) {
-    const res = await new Client().get(this.source.baseUrl + url, this.headers);
+    const res = await new Client().get(BASE_URL + url, this.headers);
     const doc = new Document(res.body);
     const mangas = [];
     const elements = doc.select(p);
@@ -184,7 +186,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    const res = await new Client().get(this.source.baseUrl + url, this.headers);
+    const res = await new Client().get(BASE_URL + url, this.headers);
     const doc = new Document(res.body);
     const title = doc.selectFirst("div.book-title h1").text;
     const cover = "https:" + doc.selectFirst("p.hcover img").attr("src");
@@ -242,7 +244,7 @@ class DefaultExtension extends MProvider {
   async getPageList(url) {
     const preference = new SharedPreferences();
     const image_host = preference.get("imghost");
-    const res = await new Client().get(this.source.baseUrl + url, this.headers);
+    const res = await new Client().get(BASE_URL + url, this.headers);
     const datas = decode(res.body);
     const imgs = [];
     for (const data of datas["files"]) {

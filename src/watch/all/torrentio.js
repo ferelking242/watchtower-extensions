@@ -7,15 +7,16 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/all.torrentio.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.3",
+    "version": "0.1.4",
     "pkgPath": "anime/all/torrentio.js",
     "notes": "Movies + Series + Anime via Torrentio (Stremio addon). Streams play through Watchtower's built-in torrent server. Use 'Catalog' filter to switch."
 }];
 
+const BASE_URL = "https://torrentio.strem.fun";
+
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     _pref(key, def) {
@@ -88,7 +89,7 @@ class DefaultExtension extends MProvider {
 
     async _list(url) {
         try {
-            const res = await this.client.get(url, this.getHeaders());
+            const res = await new Client().get(url, this.getHeaders());
             const data = JSON.parse(res.body || "{}");
             const kind = this._kindForCatalog();
             return (data.metas || []).map(m => this._toItem(m, kind));
@@ -133,7 +134,7 @@ class DefaultExtension extends MProvider {
         const { kind, id } = this._parseLink(url);
         let meta = null;
         try {
-            const res = await this.client.get(this._metaPath(kind, id), this.getHeaders());
+            const res = await new Client().get(this._metaPath(kind, id), this.getHeaders());
             meta = JSON.parse(res.body || "{}").meta;
         } catch (_) { meta = null; }
         if (!meta) {
@@ -223,10 +224,10 @@ class DefaultExtension extends MProvider {
         const kind = m ? m[1] : "movie";
         const id = m ? m[2] : url;
 
-        const apiUrl = `${this.source.baseUrl}/stream/${kind}/${id}.json`;
+        const apiUrl = `${BASE_URL}/stream/${kind}/${id}.json`;
         let streams = [];
         try {
-            const res = await this.client.get(apiUrl, this.getHeaders());
+            const res = await new Client().get(apiUrl, this.getHeaders());
             const data = JSON.parse(res.body || "{}");
             streams = data.streams || [];
         } catch (e) {

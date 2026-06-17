@@ -7,10 +7,12 @@ const watchtowerSources = [{
     "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://olympustaff.com",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.0.3",
+    "version": "0.0.4",
     "isNsfw": false,
     "pkgPath": "manga/src/ar/teamx.js"
 }];
+
+const BASE_URL = "https://olympustaff.com";
 
 class DefaultExtension extends MProvider {
   //  Helper Methods
@@ -43,7 +45,7 @@ class DefaultExtension extends MProvider {
     const preference = new SharedPreferences();
     var base_url = preference.get("domain_url");
     if (base_url.length == 0) {
-      return this.source.baseUrl;
+      return BASE_URL;
     }
     if (base_url.endsWith("/")) {
       return base_url.slice(0, -1);
@@ -54,9 +56,8 @@ class DefaultExtension extends MProvider {
   async request(slug, useBaseUrl = true) {
     const url = useBaseUrl ? `${this.getBaseUrl()}${slug}` : slug;
     if (!this.client) {
-      this.client = new Client();
     }
-    const res = await this.client.get(url);
+    const res = await new Client().get(url);
     return new Document(res.body);
   }
 

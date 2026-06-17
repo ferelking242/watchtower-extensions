@@ -6,11 +6,13 @@ const watchtowerSources = [{
   "iconUrl": "https://cdn.tokyo-motion.net/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "pkgPath": "tokyomotion/ja/ja.tokyomotion.js",
   "notes": "Japanese porn tube — TokyoMotion",
   "isNsfw": true
 }];
+
+const BASE_URL = "https://www.tokyomotion.net";
 
 class DefaultExtension extends MProvider {
   getHeaders(url) {
@@ -21,24 +23,24 @@ class DefaultExtension extends MProvider {
   }
 
   async getPopular(page) {
-    const url = `${this.source.baseUrl}/?page=${page}`;
+    const url = `${BASE_URL}/?page=${page}`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, this.source.baseUrl);
+    return this._parse(res.body, BASE_URL);
   }
 
   get supportsLatest() { return true; }
 
   async getLatestUpdates(page) {
-    const url = `${this.source.baseUrl}/search?search_query=japanese&search_type=videos&page=${page}`;
+    const url = `${BASE_URL}/search?search_query=japanese&search_type=videos&page=${page}`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, this.source.baseUrl);
+    return this._parse(res.body, BASE_URL);
   }
 
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
-    const url = `${this.source.baseUrl}/search?search_query=${q}&search_type=videos&page=${page}`;
+    const url = `${BASE_URL}/search?search_query=${q}&search_type=videos&page=${page}`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, this.source.baseUrl);
+    return this._parse(res.body, BASE_URL);
   }
 
   _parse(html, base) {
@@ -87,7 +89,7 @@ class DefaultExtension extends MProvider {
       // Convert embed to vsrc
       const hash = embedSrc.split("/embed/")[1] || "";
       if (hash) {
-        const vsrc = `${this.source.baseUrl}/vsrc/sd/${hash}`;
+        const vsrc = `${BASE_URL}/vsrc/sd/${hash}`;
         videos.push({ url: vsrc, quality: "SD", originalUrl: vsrc, headers: this.getHeaders(url) });
       }
     }

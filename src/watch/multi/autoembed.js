@@ -10,12 +10,14 @@ const watchtowerSources = [
     "typeSource": "multi",
     "isManga": false,
     "itemType": 1,
-    "version": "1.3.3",
+    "version": "1.3.4",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/all/autoembed.js",
   },
 ];
+
+const BASE_URL = "https://watch.autoembed.cc";
 
 class DefaultExtension extends MProvider {
   decodeBase64 = function (f) {
@@ -112,7 +114,7 @@ class DefaultExtension extends MProvider {
     return await this.getSearchInfo(`tmdb.popular/search=${query}.json`);
   }
   async getDetail(url) {
-    var baseUrl = this.source.baseUrl;
+    var baseUrl = BASE_URL;
     var linkSlug = `${baseUrl}/title/`;
 
     if (url.includes(linkSlug)) {

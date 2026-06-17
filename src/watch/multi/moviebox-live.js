@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "multi",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -26,7 +26,6 @@ const watchtowerSources = [{
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     static get API_BASE() { return "https://h5-api.aoneroom.com"; }
@@ -70,15 +69,15 @@ class DefaultExtension extends MProvider {
         const items = [];
         // Match MP4 highlight clips from lacdn.aoneroom.com
         const mp4Pattern = /https:\/\/lacdn\.aoneroom\.com\/highlight\/[^"'\s]+\.mp4[^"'\s]*/g;
-        const mp4Matches = [...new Set(html.match(mp4Pattern) || [])];
+        const mp4Matches = (html.match(mp4Pattern) || []).filter((v,i,a)=>a.indexOf(v)===i);
 
         // Match image covers from pbcdn
         const imgPattern = /https:\/\/pbcdn\.aoneroom\.com\/image\/[^"'\s?]+\.(?:jpg|png|webp)[^"'\s]*/g;
-        const imgMatches = [...new Set(html.match(imgPattern) || [])];
+        const imgMatches = (html.match(imgPattern) || []).filter((v,i,a)=>a.indexOf(v)===i);
 
         // Match titles from h2/h3 or sport names
         const titlePattern = /(?:Champions League|Premier League|La Liga|Serie A|Bundesliga|UEFA|NBA|NFL|MLB|NHL|MLS|FIFA|Tennis|Cricket|Rugby|F1|Boxing|MMA|Olympics|World Cup|Europa League)[^<"']*/gi;
-        const titleMatches = [...new Set(html.match(titlePattern) || [])];
+        const titleMatches = (html.match(titlePattern) || []).filter((v,i,a)=>a.indexOf(v)===i);
 
         // Build items from found highlights
         for (let i = 0; i < mp4Matches.length; i++) {
@@ -111,7 +110,7 @@ class DefaultExtension extends MProvider {
 
         for (const ep of endpoints) {
             try {
-                const res = await this.client.get(ep, { headers: this.getHeaders() });
+                const res = await new Client().get(ep, { headers: this.getHeaders() });
                 if (res.statusCode === 200) {
                     const data = this.parseApiData(res.body);
                     const list = data.list || data.liveList || data.channels || data.items || [];
@@ -142,7 +141,7 @@ class DefaultExtension extends MProvider {
 
         // Fallback: parse the live web page
         try {
-            const res = await this.client.get(
+            const res = await new Client().get(
                 `${DefaultExtension.WEB_BASE}/live`,
                 { headers: this.getWebHeaders() }
             );

@@ -13,7 +13,7 @@ const watchtowerSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "https://subsplease.org/api",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -24,10 +24,11 @@ const watchtowerSources = [
     "pkgPath": "anime/src/en/subsplease.js",
   },
 ];
+const BASE_URL = "https://subsplease.org";
+
 class DefaultExtension extends MProvider {
   constructor() {
     super();
-    this.client = new Client();
   }
 
   getPreference(key) {
@@ -38,13 +39,13 @@ class DefaultExtension extends MProvider {
     throw new Error("getHeaders not implemented");
   }
   getBaseUrl() {
-    return this.source.baseUrl;
+    return BASE_URL;
   }
 
   async requestAPI(slug) {
     var apiUrl = this.source.apiUrl;
     var api = `${apiUrl}/?${slug}`;
-    var res = await this.client.get(api);
+    var res = await new Client().get(api);
     return JSON.parse(res.body) || {};
   }
 
@@ -85,7 +86,7 @@ class DefaultExtension extends MProvider {
     if (url.includes(baseUrl)) url = url.replace(baseSlug, "");
     var link = baseSlug + url;
 
-    var doc = new Document((await this.client.get(link)).body);
+    var doc = new Document((await new Client().get(link)).body);
     var sid = doc.selectFirst("#show-release-table").attr("sid");
     var description =
       doc.selectFirst("div.series-syn").selectFirst("p").text || "";

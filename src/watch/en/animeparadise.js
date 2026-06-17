@@ -10,10 +10,12 @@ const watchtowerSources = [
       "https://www.google.com/s2/favicons?sz=128&domain=https://animeparadise.moe",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.0",
+    "version": "0.1.1",
     "pkgPath": "anime/src/en/animeparadise.js",
   },
 ];
+
+const BASE_URL = "https://animeparadise.moe";
 
 class DefaultExtension extends MProvider {
   getPreference(key) {
@@ -22,7 +24,7 @@ class DefaultExtension extends MProvider {
   }
 
   async extractFromUrl(url) {
-    var res = await new Client().get(this.source.baseUrl + url);
+    var res = await new Client().get(BASE_URL + url);
     var doc = new Document(res.body);
     var jsonData = doc.selectFirst("#__NEXT_DATA__").text;
     return JSON.parse(jsonData).props.pageProps;
@@ -95,7 +97,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    var linkSlug = this.source.baseUrl + `/anime/`;
+    var linkSlug = BASE_URL + `/anime/`;
     if (url.includes(linkSlug)) url = url.replace(linkSlug, "");
 
     var jsonData = await this.extractFromUrl(`/anime/${url}`);

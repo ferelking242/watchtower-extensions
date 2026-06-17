@@ -9,7 +9,7 @@ const watchtowerSources = [
     "iconUrl":
       "https://www.google.com/s2/favicons?sz=128&domain=https://sudatchi.com",
     "typeSource": "single",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "dateFormat": "",
     "dateFormatLocale": "",
     "itemType": 1,
@@ -17,10 +17,12 @@ const watchtowerSources = [
   },
 ];
 
+const BASE_URL = "https://sudatchi.com";
+
 class DefaultExtension extends MProvider {
   getHeaders(url) {
     return {
-      "Referer": this.source.baseUrl,
+      "Referer": BASE_URL,
     };
   }
 
@@ -34,7 +36,7 @@ class DefaultExtension extends MProvider {
   }
 
   async requestApi(slug) {
-    var url = this.source.baseUrl + "/api" + slug;
+    var url = BASE_URL + "/api" + slug;
 
     var res = await new Client().get(url, this.getHeaders());
 
@@ -129,7 +131,7 @@ class DefaultExtension extends MProvider {
   async search(query, page, filters) {
     var body = await this.requestApi("/fetchAnime");
 
-    var url = this.source.baseUrl + "/api/fetchAnime";
+    var url = BASE_URL + "/api/fetchAnime";
 
     var res = await new Client().post(url, this.getHeaders(), {
       "query": query,

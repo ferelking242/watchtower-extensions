@@ -7,16 +7,18 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "isNsfw": false,
-    "version": "0.0.5",
+    "version": "0.0.6",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/en/allanime.js"
 }];
 
+const BASE_URL = "https://allmanga.to";
+
 class DefaultExtension extends MProvider {
     async request(body) {
         const apiUrl = this.source.apiUrl;
-        const baseUrl = this.source.baseUrl;
+        const baseUrl = BASE_URL;
         return (await new Client().get(apiUrl + body, { "Referer": baseUrl })).body
     }
     async getPopular(page) {
@@ -155,7 +157,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getVideoList(url) {
-        const baseUrl = this.source.baseUrl;
+        const baseUrl = BASE_URL;
         const preferences = new SharedPreferences();
         const subPref = preferences.get("preferred_sub");
         const ep = JSON.parse(url);

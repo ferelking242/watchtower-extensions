@@ -6,20 +6,20 @@ const watchtowerSources = [{
       "iconUrl": "https://s4.bcbits.com/img/favicon/favicon-32x32.png",
       "typeSource": "single",
       "itemType": 3,
-      "version": "1.0.0",
+      "version": "1.0.1",
       "pkgPath": "music/en/bandcamp.js",
       "notes": "Bandcamp — Independent artists & albums",
       "isNsfw": false
   }];
 
   class DefaultExtension extends MProvider {
-      constructor() { super(); this.client = new Client(); }
+      constructor() { super();}
       getHeaders(url) { return { "User-Agent": "Mozilla/5.0", "Referer": "https://bandcamp.com/" }; }
       get supportsLatest() { return true; }
 
       async getPopularList(page) {
           const url = "https://bandcamp.com/discover";
-          const res = await this.client.get(url, this.getHeaders(url));
+          const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
           const items = [];
           doc.select(".discover-item, .col.col-3-12").forEach(el => {
@@ -36,7 +36,7 @@ const watchtowerSources = [{
 
       async getSearchList(query, page, filters) {
           const url = `https://bandcamp.com/search?q=${encodeURIComponent(query)}&page=${page}&item_type=t`;
-          const res = await this.client.get(url, this.getHeaders(url));
+          const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
           const items = [];
           doc.select(".result-info, li.searchresult").forEach(el => {
@@ -50,7 +50,7 @@ const watchtowerSources = [{
       }
 
       async getDetail(url) {
-          const res = await this.client.get(url, this.getHeaders(url));
+          const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
           const name = doc.selectFirst("h2.trackTitle, h2#name-section")?.text?.trim() || "";
           const cover = doc.selectFirst("div#tralbumArt img")?.attr("src") || "";

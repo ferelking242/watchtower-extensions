@@ -7,7 +7,7 @@ var watchtowerSources = [{
     "iconUrl": "https://www.flixgaze.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.8",
+    "version": "1.0.9",
     "pkgPath": "flixgaze/en/en.flixgaze.js",
     "notes": "FlixGaze.com — Free Movies & TV Series streaming via ZeusDL HLS",
     "isNsfw": false
@@ -18,16 +18,17 @@ var FLIXGAZE_NAV_SLUGS = [
     "genre", "category", "tag", "page", "year", "search"
 ];
 
+const BASE_URL = "https://www.flixgaze.com";
+
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     getHeaders(url) {
         return {
-            "Referer": this.source.baseUrl + "/",
-            "Origin": this.source.baseUrl,
+            "Referer": BASE_URL + "/",
+            "Origin": BASE_URL,
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         };
     }
@@ -87,7 +88,7 @@ class DefaultExtension extends MProvider {
                 if (!anchor) continue;
                 const rawHref = (anchor.attr("href") || "").trim();
                 const href = rawHref.indexOf("http") === 0 ? rawHref :
-                             rawHref.indexOf("/") === 0 ? this.source.baseUrl + rawHref : "";
+                             rawHref.indexOf("/") === 0 ? BASE_URL + rawHref : "";
                 if (!this._isContentUrl(href) || seen.indexOf(href) >= 0) continue;
                 const thumb = this._extractThumb(card);
                 if (!thumb) continue;
@@ -106,7 +107,7 @@ class DefaultExtension extends MProvider {
                     if (!anchor) continue;
                     const rawHref = (anchor.attr("href") || "").trim();
                     const href = rawHref.indexOf("http") === 0 ? rawHref :
-                                 rawHref.indexOf("/") === 0 ? this.source.baseUrl + rawHref : "";
+                                 rawHref.indexOf("/") === 0 ? BASE_URL + rawHref : "";
                     if (!this._isContentUrl(href) || seen.indexOf(href) >= 0) continue;
                     const thumb = this._extractThumb(card);
                     if (!thumb) continue;
@@ -125,12 +126,12 @@ class DefaultExtension extends MProvider {
 
     async _fetchPage(baseUrl, page) {
         const url = this._buildPageUrl(baseUrl, page);
-        const res = await this.client.get(url, this.getHeaders(url));
+        const res = await new Client().get(url, this.getHeaders(url));
         return this._parseList(res.body, page);
     }
 
-    async getPopular(page) { return this._fetchPage(this.source.baseUrl, page); }
-    async getLatestUpdates(page) { return this._fetchPage(this.source.baseUrl + "/tv-series", page); }
+    async getPopular(page) { return this._fetchPage(BASE_URL, page); }
+    async getLatestUpdates(page) { return this._fetchPage(BASE_URL + "/tv-series", page); }
 
     async search(query, page, filters) {
         let url = "";
@@ -139,23 +140,23 @@ class DefaultExtension extends MProvider {
             if (typeFilter && typeFilter.state > 0) {
                 const types = { 1: "movie", 2: "tv-series", 3: "foreign-movies", 4: "marvel-cinematic-universe" };
                 const t = types[typeFilter.state];
-                if (t) url = this._buildPageUrl(this.source.baseUrl + "/" + t, page);
+                if (t) url = this._buildPageUrl(BASE_URL + "/" + t, page);
             }
             if (!url) {
                 const yearFilter = filters.find(function(f) { return f.name === "Year"; });
                 if (yearFilter && yearFilter.state) {
                     const y = (yearFilter.state + "").trim();
-                    if (y && y.length === 4) url = this._buildPageUrl(this.source.baseUrl + "/year/" + y, page);
+                    if (y && y.length === 4) url = this._buildPageUrl(BASE_URL + "/year/" + y, page);
                 }
             }
         }
-        if (!url) url = this._buildPageUrl(this.source.baseUrl + "/?s=" + encodeURIComponent((query || "").trim()), page);
-        const res = await this.client.get(url, this.getHeaders(url));
+        if (!url) url = this._buildPageUrl(BASE_URL + "/?s=" + encodeURIComponent((query || "").trim()), page);
+        const res = await new Client().get(url, this.getHeaders(url));
         return this._parseList(res.body, page);
     }
 
     async getDetail(url) {
-        const res = await this.client.get(url, this.getHeaders(url));
+        const res = await new Client().get(url, this.getHeaders(url));
         const doc = new Document(res.body);
         const ogTitle = doc.selectFirst('meta[property="og:title"]');
         const h1El = doc.selectFirst("h1.entry-title") || doc.selectFirst("h1");
@@ -190,7 +191,7 @@ class DefaultExtension extends MProvider {
             for (const a of epEls) {
                 const rawHref = (a.attr("href") || "").trim();
                 const epUrl = rawHref.indexOf("http") === 0 ? rawHref :
-                              rawHref.indexOf("/") === 0 ? this.source.baseUrl + rawHref : "";
+                              rawHref.indexOf("/") === 0 ? BASE_URL + rawHref : "";
                 if (!epUrl || seen.indexOf(epUrl) >= 0) continue;
                 seen.push(epUrl);
                 const epName = (a.text || "").trim() || epUrl.split("/").filter(Boolean).pop().replace(/-/g, " ");
@@ -202,7 +203,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getVideoList(url) {
-        const res = await this.client.get(url, this.getHeaders(url));
+        const res = await new Client().get(url, this.getHeaders(url));
         const html = res.body;
         const zm = html.match(/pathId\s*=\s*["']([^"']+)["'][\s\S]*?domainId\s*=\s*["']([^"']+)["'][\s\S]*?videoId\s*=\s*["']([^"']+)["']/);
         if (zm) {

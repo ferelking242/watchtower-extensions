@@ -53,14 +53,13 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/gato404/kegareta-sauces/main/javascript/icon/all.mangadex.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.0.1",
+    "version": "0.0.2",
     "pkgPath": "manga/src/all/mangadex.js"
 }];
 
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
     getHeaders(url) {
         return {
@@ -70,24 +69,21 @@ class DefaultExtension extends MProvider {
     async getPopular(page) {
         const offset = 20 * (page - 1);
         const url = `${this.source.apiUrl}/manga?limit=20&offset=${offset}&availableTranslatedLanguage[]=${this.source.lang}&includes[]=cover_art${this.preferenceOriginalLanguages()}&order[followedCount]=desc`;
-        const response = await this.client.get(url, this.getHeaders());
+        const response = await new Client().get(url, this.getHeaders());
         return this.mangaRes(response.body);
     }
     async getLatestUpdates(page) {
         const offset = 20 * (page - 1);
         const url = `${this.source.apiUrl}/chapter?limit=20&offset=${offset}&translatedLanguage[]=${this.source.lang}&includeFutureUpdates=0&order[publishAt]=desc&includeFuturePublishAt=0&includeEmptyPages=0`;
-        const response = await this.client.get(url, this.getHeaders());
-        const mangaIds = Array.from(
-            new Set(
-                JSON.parse(response.body).data
+        const response = await new Client().get(url, this.getHeaders());
+        const mangaIds = (JSON.parse(response.body).data
                     .flatMap(item => item.relationships)
                     .filter(relationship => relationship.type === "manga")
-                    .map(mangaData => mangaData.id)
-            )
+                    .map(mangaData => mangaData.id).filter((v,i,a)=>a.indexOf(v)===i)
         );
         const mangaIdss = mangaIds.map(id => `&ids[]=${id}`).join("");
         const newUrl = `${this.source.apiUrl}/manga?includes[]=cover_art&limit=${mangaIds.length}${this.preferenceOriginalLanguages()}${mangaIdss}`;
-        const newResponse = await this.client.get(newUrl, this.getHeaders());
+        const newResponse = await new Client().get(newUrl, this.getHeaders());
         return this.mangaRes(newResponse.body);
     }
     async search(query, page, filters) {
@@ -148,12 +144,12 @@ class DefaultExtension extends MProvider {
             }
         });
 
-        const response = await this.client.get(url, this.getHeaders());
+        const response = await new Client().get(url, this.getHeaders());
         return this.mangaRes(response.body);
     }
     async getDetail(url) {
         const detailUrl = `${this.source.apiUrl}${url}?includes[]=cover_art&includes[]=author&includes[]=artist`;
-        const response = await this.client.get(detailUrl, this.getHeaders());
+        const response = await new Client().get(detailUrl, this.getHeaders());
         const data = JSON.parse(response.body).data;
         const manga = {};
         const coverRel = data.relationships.find(rel => rel.type === "cover_art");
@@ -186,7 +182,7 @@ class DefaultExtension extends MProvider {
 
         while (hasMoreResults) {
             const url = `${this.source.apiUrl}/manga/${mangaId}/feed?limit=500&offset=${offset}&includes[]=user&includes[]=scanlation_group&order[volume]=desc&order[chapter]=desc&translatedLanguage[]=${lang}&includeFuturePublishAt=0&includeEmptyPages=0`;
-            const res = await this.client.get(url, this.getHeaders());
+            const res = await new Client().get(url, this.getHeaders());
             const paginatedData = JSON.parse(res.body);
             const limit = paginatedData?.limit ?? 0;
             const total = paginatedData?.total ?? 0;
@@ -245,7 +241,7 @@ class DefaultExtension extends MProvider {
     }
     async getPageList(url) {
         const pageUrl = `${this.source.apiUrl}/at-home/server/${url}`;
-        const response = await this.client.get(pageUrl, this.getHeaders());
+        const response = await new Client().get(pageUrl, this.getHeaders());
         const bodyJson = JSON.parse(response.body);
         const host = bodyJson.baseUrl;
         const chapter = bodyJson.chapter;

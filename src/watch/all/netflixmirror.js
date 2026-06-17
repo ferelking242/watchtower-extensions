@@ -7,19 +7,20 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/all.netflixmirror.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.1",
+    "version": "0.1.2",
     "pkgPath": "anime/src/all/netflixmirror.js"
 }];
+
+const BASE_URL = "https://www.netflixmirror.com";
 
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     getHeaders() {
         return {
-            "Referer": `${this.source.baseUrl}/`,
+            "Referer": `${BASE_URL}/`,
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         };
     }
@@ -35,20 +36,20 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        const res = await this.client.get(`${this.source.baseUrl}/browse/anime?page=${page}`, this.getHeaders());
+        const res = await new Client().get(`${BASE_URL}/browse/anime?page=${page}`, this.getHeaders());
         const list = this._parseList(res.body);
         return { list, hasNextPage: list.length > 0 && res.body.includes(`page=${page + 1}`) };
     }
 
     async getLatestUpdates(page) {
-        const res = await this.client.get(`${this.source.baseUrl}/new-releases?page=${page}`, this.getHeaders());
+        const res = await new Client().get(`${BASE_URL}/new-releases?page=${page}`, this.getHeaders());
         const list = this._parseList(res.body);
         return { list, hasNextPage: list.length > 0 };
     }
 
     async search(query, page, filterList) {
-        const res = await this.client.get(
-            `${this.source.baseUrl}/search?q=${encodeURIComponent(query)}&page=${page}`,
+        const res = await new Client().get(
+            `${BASE_URL}/search?q=${encodeURIComponent(query)}&page=${page}`,
             this.getHeaders()
         );
         const list = this._parseList(res.body);
@@ -56,7 +57,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getDetail(url) {
-        const res = await this.client.get(`${this.source.baseUrl}${url}`, this.getHeaders());
+        const res = await new Client().get(`${BASE_URL}${url}`, this.getHeaders());
         const html = res.body;
 
         const nameM = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
@@ -79,7 +80,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getVideoList(url) {
-        const res = await this.client.get(`${this.source.baseUrl}${url}`, this.getHeaders());
+        const res = await new Client().get(`${BASE_URL}${url}`, this.getHeaders());
         const html = res.body;
 
         const videos = [];

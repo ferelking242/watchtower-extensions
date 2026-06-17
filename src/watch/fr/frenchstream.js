@@ -30,7 +30,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/Watchtower-extensions/main/extensions/watch/icon/fr.frenchstream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.4.6",
+    "version": "0.4.7",
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -59,14 +59,16 @@ const watchtowerSources = [{
     ]
 }];
 
+const BASE_URL = "https://french-stream.one";
+
 class DefaultExtension extends MProvider {
-    constructor() { super(); this.client = new Client(); }
+    constructor() { super();}
 
     get baseUrl() {
         const p = this.source.prefs
             ? this.source.prefs.find(function(x) { return x.key === "base_url"; })
             : null;
-        return (p && p.value) ? p.value.replace(/\/$/, "") : this.source.baseUrl.replace(/\/$/, "");
+        return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL.replace(/\/$/, "");
     }
 
     _getPref(key) {
@@ -81,7 +83,7 @@ class DefaultExtension extends MProvider {
         var password = this._getPref("password");
         if (!username || !password) return;
         try {
-            await this.client.post(
+            await new Client().post(
                 this.baseUrl + "/index.php?do=login",
                 {
                     headers: Object.assign({}, this._hdrs(), {
@@ -175,7 +177,7 @@ class DefaultExtension extends MProvider {
     // which always returned the same content on every page
     async getPopular(page) {
         var url = this.baseUrl + "/films/page/" + page + "/";
-        var r   = await this.client.get(url, { headers: this._hdrs() });
+        var r   = await new Client().get(url, { headers: this._hdrs() });
         var items = this._parseItems(r.body);
         return { list: items, hasNextPage: items.length >= 10 };
     }
@@ -186,7 +188,7 @@ class DefaultExtension extends MProvider {
         var url = page <= 1
             ? this.baseUrl + "/"
             : this.baseUrl + "/page/" + page + "/";
-        var r     = await this.client.get(url, { headers: this._hdrs() });
+        var r     = await new Client().get(url, { headers: this._hdrs() });
         var items = this._parseItems(r.body);
         return { list: items, hasNextPage: items.length >= 10 };
     }
@@ -200,7 +202,7 @@ class DefaultExtension extends MProvider {
             + encodeURIComponent(query)
             + "&search_start=" + (page - 1)
             + "&full_search=0&result_from=" + from;
-        var r     = await this.client.get(url, { headers: this._hdrs() });
+        var r     = await new Client().get(url, { headers: this._hdrs() });
         var items = this._parseItems(r.body);
         return { list: items, hasNextPage: items.length >= 10 };
     }
@@ -225,7 +227,7 @@ class DefaultExtension extends MProvider {
         var newsId = this._getParam(url, "newsid");
         if (!newsId) {
             try {
-                var pr = await this.client.get(url, { headers: this._hdrs() });
+                var pr = await new Client().get(url, { headers: this._hdrs() });
                 newsId = this._extractNewsId(url, pr.body);
             } catch (_) {}
         }
@@ -238,7 +240,7 @@ class DefaultExtension extends MProvider {
         ];
         for (var ei = 0; ei < endpoints.length; ei++) {
             try {
-                var r = await this.client.get(
+                var r = await new Client().get(
                     this.baseUrl + endpoints[ei],
                     { headers: this._ajaxHdrs(url) }
                 );
@@ -289,7 +291,7 @@ class DefaultExtension extends MProvider {
 
     async getDetail(url) {
         await this._ensureLogin();
-        var r    = await this.client.get(url, { headers: this._hdrs() });
+        var r    = await new Client().get(url, { headers: this._hdrs() });
         var html = r.body;
 
         var newsId   = this._extractNewsId(url, html) || "";
@@ -380,7 +382,7 @@ class DefaultExtension extends MProvider {
             tagz = tagzM[1];
         } else if (newsId) {
             try {
-                var apiR = await this.client.get(
+                var apiR = await new Client().get(
                     this.baseUrl + "/engine/ajax/film_api.php?id=" + newsId,
                     { headers: this._ajaxHdrs(url) }
                 );
@@ -393,7 +395,7 @@ class DefaultExtension extends MProvider {
 
         if (tagz) {
             try {
-                var seasonsR = await this.client.get(
+                var seasonsR = await new Client().get(
                     this.baseUrl + "/engine/ajax/get_seasons.php?serie_tag=" + encodeURIComponent(tagz),
                     { headers: this._ajaxHdrs(url) }
                 );
@@ -411,7 +413,7 @@ class DefaultExtension extends MProvider {
                     ];
                     for (var pi = 0; pi < paths.length; pi++) {
                         try {
-                            var epR = await this.client.get(
+                            var epR = await new Client().get(
                                 this.baseUrl + paths[pi],
                                 { headers: this._hdrs(url) }
                             );
@@ -467,7 +469,7 @@ class DefaultExtension extends MProvider {
         if (chapters.length === 0 && isSerie && newsId) {
             try {
                 var v2  = Math.floor(Date.now() / 30000);
-                var epR2 = await this.client.get(
+                var epR2 = await new Client().get(
                     this.baseUrl + "/static/series/" + newsId + ".js?v=" + v2,
                     { headers: this._hdrs(url) }
                 );
@@ -539,7 +541,7 @@ class DefaultExtension extends MProvider {
         if (!newsId && epNum === null) {
             // Film: fetch the page to extract newsId
             try {
-                var pr = await this.client.get(url, { headers: this._hdrs() });
+                var pr = await new Client().get(url, { headers: this._hdrs() });
                 newsId = this._extractNewsId(url, pr.body);
             } catch (_) {}
         }
@@ -558,7 +560,7 @@ class DefaultExtension extends MProvider {
             ];
             for (var pi = 0; pi < paths.length; pi++) {
                 try {
-                    var r = await this.client.get(
+                    var r = await new Client().get(
                         this.baseUrl + paths[pi],
                         { headers: this._hdrs(url) }
                     );
@@ -572,7 +574,7 @@ class DefaultExtension extends MProvider {
             // Fallback : scrape la page de l'épisode pour les iframes vidéo
             if (videos.length === 0) {
                 try {
-                    var pageR = await this.client.get(url, { headers: this._hdrs(url) });
+                    var pageR = await new Client().get(url, { headers: this._hdrs(url) });
                     var pageBody = pageR.body || "";
                     var iRe = /(?:data-src|src)\s*=\s*["'](https?:\/\/[^"']{10,400})["']/g;
                     var im;
@@ -588,7 +590,7 @@ class DefaultExtension extends MProvider {
                                   || /["']news_id["']\s*:\s*["']?(\d+)/.exec(pageBody);
                         if (apiIdM) {
                             try {
-                                var apiR2 = await this.client.get(
+                                var apiR2 = await new Client().get(
                                     this.baseUrl + "/engine/ajax/film_api.php?id=" + apiIdM[1],
                                     { headers: this._ajaxHdrs(url) }
                                 );
@@ -617,7 +619,7 @@ class DefaultExtension extends MProvider {
         } else {
             // Strategy 1: JSON API
             try {
-                var fr = await this.client.get(
+                var fr = await new Client().get(
                     this.baseUrl + "/engine/ajax/film_api.php?id=" + newsId,
                     { headers: this._ajaxHdrs(url) }
                 );
@@ -630,7 +632,7 @@ class DefaultExtension extends MProvider {
             // Strategy 2: scrape the film detail page directly for player iframes
             if (videos.length === 0) {
                 try {
-                    var pageR = await this.client.get(url, { headers: this._hdrs(url) });
+                    var pageR = await new Client().get(url, { headers: this._hdrs(url) });
                     var pageBody = pageR.body || "";
                     // Extract all iframe/source src URLs that look like video players
                     var iRe = /(?:data-src|src)\s*=\s*["'](https?:\/\/[^"']{10,400})["']/g;
@@ -668,7 +670,7 @@ class DefaultExtension extends MProvider {
         // Fetch the embed page
         var body = "";
         try {
-            var r = await this.client.get(url, { headers: this._hdrs(url) });
+            var r = await new Client().get(url, { headers: this._hdrs(url) });
             body = r.body || "";
         } catch (_) {}
 

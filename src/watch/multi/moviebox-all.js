@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "isNsfw": false,
     "hasCloudflare": false,
     "pkgPath": "watch/src/multi/moviebox-all.js",
@@ -25,7 +25,6 @@ const watchtowerSources = [{
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     get API()      { return "https://h5-api.aoneroom.com"; }
@@ -75,7 +74,7 @@ class DefaultExtension extends MProvider {
             perPage: 30,
             subjectType: parseInt(subjectType)
         });
-        const res = await this.client.post(
+        const res = await new Client().post(
             `${this.API}/wefeed-h5api-bff/subject/search`,
             this.apiHeaders(),
             body
@@ -118,7 +117,7 @@ class DefaultExtension extends MProvider {
             ? url
             : `${this.API}/wefeed-h5api-bff/detail?detailPath=${encodeURIComponent(url)}`;
 
-        const res = await this.client.get(endpoint, this.apiHeaders());
+        const res = await new Client().get(endpoint, this.apiHeaders());
         const json = JSON.parse(res.body || "{}");
         const data = json?.data || json?.result || json;
 
@@ -167,7 +166,7 @@ class DefaultExtension extends MProvider {
     // ── Video ────────────────────────────────────────────────
 
     async getVideoList(url) {
-        const res = await this.client.get(url, this.apiHeaders());
+        const res = await new Client().get(url, this.apiHeaders());
         const json = JSON.parse(res.body || "{}");
         const data = json?.data || json?.result || json;
 

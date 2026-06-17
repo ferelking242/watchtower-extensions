@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "multi",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -26,7 +26,6 @@ const watchtowerSources = [{
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     // ── Config ─────────────────────────────────────────────
@@ -81,7 +80,7 @@ class DefaultExtension extends MProvider {
     async postSearch(keyword, page, subjectType, sortBy) {
         const body = { keyword: keyword || "", page, perPage: 30, subjectType };
         if (sortBy) body.sortBy = sortBy;
-        const res = await this.client.post(
+        const res = await new Client().post(
             `${DefaultExtension.API_BASE}/wefeed-h5api-bff/subject/search`,
             { headers: this.getHeaders() },
             JSON.stringify(body)
@@ -120,7 +119,7 @@ class DefaultExtension extends MProvider {
         const detailPath = info.detailPath;
         const subjectId = info.subjectId;
 
-        const res = await this.client.get(
+        const res = await new Client().get(
             `${DefaultExtension.API_BASE}/wefeed-h5api-bff/detail?detailPath=${detailPath}`,
             { headers: this.getHeaders() }
         );
@@ -164,7 +163,7 @@ class DefaultExtension extends MProvider {
         const { subjectId, detailPath, se, ep } = JSON.parse(url);
         const apiUrl = `${DefaultExtension.API_BASE}/wefeed-h5api-bff/subject/download` +
             `?subjectId=${subjectId}&se=${se}&ep=${ep}&detailPath=${detailPath}`;
-        const res = await this.client.get(apiUrl, { headers: this.getHeaders() });
+        const res = await new Client().get(apiUrl, { headers: this.getHeaders() });
         const data = this.parseApiData(res.body);
 
         const subtitles = [];

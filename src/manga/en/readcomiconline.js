@@ -8,15 +8,16 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=256&domain=https://readcomiconline.li/",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.1.3",
+    "version": "0.1.4",
     "pkgPath": "manga/src/en/readcomiconline.js"
   }
 ];
 
+const BASE_URL = "https://readcomiconline.li";
+
 class DefaultExtension extends MProvider {
   constructor() {
     super();
-    this.client = new Client();
   }
 
   getPreference(key) {
@@ -27,23 +28,23 @@ class DefaultExtension extends MProvider {
     return {
       "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6832.64 Safari/537.36",
-      "Referer": this.source.baseUrl,
-      "Origin": this.source.baseUrl,
+      "Referer": BASE_URL,
+      "Origin": BASE_URL,
     };
   }
 
   async request(slug) {
     var url = slug;
-    var baseUrl = this.source.baseUrl;
+    var baseUrl = BASE_URL;
     if (!slug.includes(baseUrl)) url = baseUrl + slug;
-    var res = await this.client.get(url, this.getHeaders());
+    var res = await new Client().get(url, this.getHeaders());
     return new Document(res.body);
   }
 
   async getListPage(slug, page) {
     var url = `${slug}page=${page}`;
     var doc = await this.request(url);
-    var baseUrl = this.source.baseUrl;
+    var baseUrl = BASE_URL;
     var list = [];
 
     var comicList = doc.select(".list-comic > .item");
@@ -114,7 +115,7 @@ class DefaultExtension extends MProvider {
       );
     }
 
-    var baseUrl = this.source.baseUrl;
+    var baseUrl = BASE_URL;
     if (url.includes(baseUrl)) url = url.replace(baseUrl, "");
 
     var doc = await this.request(url);
@@ -124,7 +125,7 @@ class DefaultExtension extends MProvider {
     var imageSlug = doc.selectFirst(".rightBox").selectFirst("img").getSrc;
     var imageUrl = imageSlug.includes("http")
       ? imageSlug
-      : `${this.source.baseUrl}${imageSlug}`;
+      : `${BASE_URL}${imageSlug}`;
     var pTag = detailsSection.select("p");
 
     var description = pTag[pTag.length - 2].text;

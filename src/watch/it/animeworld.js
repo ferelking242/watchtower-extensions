@@ -7,22 +7,23 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "0.0.12",
+    "version": "0.0.13",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/it/animeworld.js"
 }];
 
+const BASE_URL = "https://www.animeworld.so";
+
 class DefaultExtension extends MProvider {
     constructor () {
         super();
-        this.client = new Client();
     }
     getHeaders(url) {
         throw new Error("getHeaders not implemented");
     }
     async parseAnimeList(url) {
-        const res = await this.client.get(url);
+        const res = await new Client().get(url);
         const doc = new Document(res.body);
         const elements = doc.select("div#main div.film-list div.item");
         const list = [];
@@ -49,7 +50,7 @@ class DefaultExtension extends MProvider {
         }[status.toLowerCase()] ?? 5;
     }
     async getPopular(page) {
-        const res = await this.client.get(this.source.baseUrl + '/tops/ongoing');
+        const res = await new Client().get(BASE_URL + '/tops/ongoing');
         const doc = new Document(res.body);
         const elements = doc.select('div.content div.item');
         const list = [];
@@ -63,17 +64,17 @@ class DefaultExtension extends MProvider {
         return { "list": list, "hasNextPage": false };
     }
     async getLatestUpdates(page) {
-        return await this.parseAnimeList(`${this.source.baseUrl}/filter?sort=1&page=${page}`);
+        return await this.parseAnimeList(`${BASE_URL}/filter?sort=1&page=${page}`);
     }
     async search(query, page, filters) {
         query = query.trim().replaceAll(/\ +/g, "+");
 
         // Search sometimes failed because filters were empty. I experienced this mostly on android...
         if (!filters || filters.length == 0) {
-            return await this.parseAnimeList(`${this.source.baseUrl}/search?keyword=${query}&page=${page}`);
+            return await this.parseAnimeList(`${BASE_URL}/search?keyword=${query}&page=${page}`);
         }
 
-        let url = `${this.source.baseUrl}/filter?sort=${filters[5].values[filters[5].state].value}&keyword=${query}`;
+        let url = `${BASE_URL}/filter?sort=${filters[5].values[filters[5].state].value}&keyword=${query}`;
 
         for (const filter of filters[0].state) {
             if (filter.state == true)
@@ -98,7 +99,7 @@ class DefaultExtension extends MProvider {
         return await this.parseAnimeList(url + `&page=${page}`);
     }
     async getDetail(url) {
-        const res = await this.client.get(this.source.baseUrl + url);
+        const res = await new Client().get(BASE_URL + url);
         const doc = new Document(res.body);
         const detail = {};
 
@@ -111,7 +112,7 @@ class DefaultExtension extends MProvider {
         detail.genre = info.select('dt:contains(Genere) + dd a').map(e => e.text);
         detail.episodes = doc.select('div.server.active li.episode > a').map(e => ({
             name: 'Ep. ' + e.text,
-            url: this.source.baseUrl + e.getHref
+            url: BASE_URL + e.getHref
         })).reverse();
         const type = doc.selectFirst('div.info div.info dt:contains(Audio) + dd').text.trim() == 'Italiano' ?
             'Doppiato' : 'Subbato';
@@ -122,7 +123,7 @@ class DefaultExtension extends MProvider {
     }
     // For anime episode video list
     async getVideoList(url) {
-        const res = await this.client.get(url);
+        const res = await new Client().get(url);
         const doc = new Document(res.body);
         const promises = [];
         const videos = [];

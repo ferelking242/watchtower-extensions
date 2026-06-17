@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.animesama.png",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.1.5",
+    "version": "0.1.6",
     "pkgPath": "watch/fr/animesama.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -15,10 +15,12 @@ const watchtowerSources = [{
     "contentSubtype": ["anime"]
 }];
 
-class DefaultExtension extends MProvider {
-    constructor() { super(); this.client = new Client(); }
+const BASE_URL = "https://anime-sama.to";
 
-    get baseUrl() { const p = this.source.prefs?.find(x => x.key === "base_url"); return (p && p.value) ? p.value.replace(/\/$/, "") : this.source.baseUrl.replace(/\/$/, ""); }
+class DefaultExtension extends MProvider {
+    constructor() { super();}
+
+    get baseUrl() { const p = this.source.prefs?.find(x => x.key === "base_url"); return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL.replace(/\/$/, ""); }
     get logEnabled() { const p = this.source.prefs?.find(x => x.key === "log_enabled"); return p && p.value === "true"; }
     get logTopic() { const p = this.source.prefs?.find(x => x.key === "log_topic"); return (p && p.value) ? p.value : "wtfr-animesama"; }
     get pref_quality() { const p = this.source.prefs?.find(x => x.key === "preferred_quality"); return (p && p.value) ? p.value : "AUTO"; }
@@ -27,24 +29,24 @@ class DefaultExtension extends MProvider {
 
     async _log(msg) {
         if (!this.logEnabled) return;
-        try { await this.client.post(`https://ntfy.sh/${this.logTopic}`, `[AnimeSama] ${msg}`, { "Title": "AnimeSama", "Content-Type": "text/plain" }); } catch(e) {}
+        try { await new Client().post(`https://ntfy.sh/${this.logTopic}`, `[AnimeSama] ${msg}`, { "Title": "AnimeSama", "Content-Type": "text/plain" }); } catch(e) {}
     }
 
     _parse(html) {
-        const list = []; const seen = new Set();
+        const list = []; const seen = {};
         // Match /catalogue/... links — domain-agnostic (works with any baseUrl)
         const re = /<a[^>]+href="((?:https?:\/\/[^"]+)?\/catalogue\/[^"]+\/)"[^>]*>[\s\S]{0,400}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,})"/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
             const url = m[1].startsWith("http") ? m[1] : `${this.baseUrl}${m[1]}`;
-            if (seen.has(url)) continue; seen.add(url);
+            if ((url in seen)) continue; (seen[url] = 1);
             list.push({ link: url, imageUrl: m[2], name: m[3].trim() });
         }
         return list;
     }
 
     async getPopular(page) {
-        const res = await this.client.get(`${this.baseUrl}/catalogue/`, this._hdrs());
+        const res = await new Client().get(`${this.baseUrl}/catalogue/`, this._hdrs());
         await this._log(`popular: ${res.body.length}b`);
         const list = this._parse(res.body);
         await this._log(`popular: ${list.length} items`);
@@ -52,14 +54,14 @@ class DefaultExtension extends MProvider {
     }
 
     async getLatestUpdates(page) {
-        const res = await this.client.get(`${this.baseUrl}/`, this._hdrs());
+        const res = await new Client().get(`${this.baseUrl}/`, this._hdrs());
         const list = this._parse(res.body);
         return { list, hasNextPage: false };
     }
 
     async search(query, page, filterList) {
         await this._log(`search: "${query}"`);
-        const res = await this.client.get(`${this.baseUrl}/catalogue/?search=${encodeURIComponent(query)}`, this._hdrs());
+        const res = await new Client().get(`${this.baseUrl}/catalogue/?search=${encodeURIComponent(query)}`, this._hdrs());
         await this._log(`search: ${res.body.length}b`);
         const list = this._parse(res.body);
         await this._log(`search: ${list.length} items`);
@@ -68,7 +70,7 @@ class DefaultExtension extends MProvider {
 
     async getDetail(url) {
         await this._log(`detail: ${url}`);
-        const res = await this.client.get(url, this._hdrs());
+        const res = await new Client().get(url, this._hdrs());
         const html = res.body;
 
         const nameM = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
@@ -97,7 +99,7 @@ class DefaultExtension extends MProvider {
 
     async getVideoList(url) {
         await this._log(`video: ${url}`);
-        const res = await this.client.get(url, this._hdrs(url));
+        const res = await new Client().get(url, this._hdrs(url));
         const html = res.body || "";
         const videos = [];
         const q = this.pref_quality;
@@ -126,7 +128,7 @@ class DefaultExtension extends MProvider {
         for (const embedUrl of iframeUrls.slice(0, 4)) {
             let resolved = false;
             try {
-                const embedRes = await this.client.get(embedUrl, { ...this._hdrs(url), "Referer": url });
+                const embedRes = await new Client().get(embedUrl, { ...this._hdrs(url), "Referer": url });
                 const ebody = embedRes.body || "";
                 const hlsM = ebody.match(/["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/);
                 if (hlsM) {
@@ -152,7 +154,7 @@ class DefaultExtension extends MProvider {
 
     getSourcePreferences() {
         return [
-            { key: "base_url", listPreference: { title: "URL de base", summary: this.baseUrl, valueIndex: 0, entries: [this.source.baseUrl], entryValues: [this.source.baseUrl] } },
+            { key: "base_url", listPreference: { title: "URL de base", summary: this.baseUrl, valueIndex: 0, entries: [BASE_URL], entryValues: [BASE_URL] } },
             { key: "preferred_quality", listPreference: { title: "Qualité préférée", summary: "AUTO", valueIndex: 0, entries: ["AUTO", "1080p", "720p", "480p", "360p"], entryValues: ["AUTO", "1080p", "720p", "480p", "360p"] } },
             { key: "log_enabled", listPreference: { title: "Logs ntfy.sh", summary: "Voir logs sur ntfy.sh/[topic]", valueIndex: 0, entries: ["Désactivé", "Activé"], entryValues: ["false", "true"] } },
             { key: "log_topic", editTextPreference: { title: "Topic ntfy.sh", summary: "wtfr-animesama", value: "wtfr-animesama", dialogTitle: "Topic ntfy.sh", dialogMessage: "Topic ntfy.sh unique pour vos logs" } }

@@ -50,18 +50,19 @@ const watchtowerSources = [
         "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.comick.png",
         "typeSource": "single",
         "itemType": 0,
-        "version": "0.1.0",
+        "version": "0.1.1",
         "pkgPath": "manga/src/all/comick.js"
     }];
+
+const BASE_URL = "https://comick.io";
 
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
     getHeaders(url) {
         return {
-            "Referer": `${this.source.baseUrl}/`,
+            "Referer": `${BASE_URL}/`,
             'User-Agent':
                 "Tachiyomi Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:110.0) Gecko/20100101 Firefox/110.0"
         };
@@ -69,13 +70,13 @@ class DefaultExtension extends MProvider {
 
     async getPopular(page) {
         const url = `${this.source.apiUrl}/v1.0/search?sort=follow&page=${page}&tachiyomi=true`;
-        const res = await this.client.get(url, this.getHeaders());
+        const res = await new Client().get(url, this.getHeaders());
         return this.mangaRes(res.body);
     }
 
     async getLatestUpdates(page) {
         const url = `${this.source.apiUrl}/v1.0/search?sort=uploaded&page=${page}&tachiyomi=true`;
-        const res = await this.client.get(url, this.getHeaders());
+        const res = await new Client().get(url, this.getHeaders());
         return this.mangaRes(res.body);
     }
     async search(query, page, filterList) {
@@ -117,21 +118,21 @@ class DefaultExtension extends MProvider {
             });
             url += `&page=${page}&tachiyomi=true`;
         }
-        const res = await this.client.get(url, this.getHeaders());
+        const res = await new Client().get(url, this.getHeaders());
         return this.mangaRes(res.body);
     }
 
     async getDetail(url) {
         const apiUrl = `${this.source.apiUrl}${url.replace("#", "")}?tachiyomi=true`;
-        const res = await this.client.get(apiUrl, this.getHeaders());
+        const res = await new Client().get(apiUrl, this.getHeaders());
         const data = JSON.parse(res.body);
         const lang = this.source.lang != "all" ? `&lang=${this.source.lang}` : "";
         const chapUrlReq =
             `${this.source.apiUrl}${url.replaceAll("#", '')}chapters?${lang}&tachiyomi=true&page=1`;
-        const total = JSON.parse((await this.client.get(chapUrlReq, this.getHeaders())).body).total;
+        const total = JSON.parse((await new Client().get(chapUrlReq, this.getHeaders())).body).total;
         const newChapUrlReq =
             `${this.source.apiUrl}${url.replaceAll("#", '')}chapters?limit=${parseInt(total, 10)}${lang}&tachiyomi=true&page=1`;
-        const newRes = await this.client.get(newChapUrlReq, this.getHeaders());
+        const newRes = await new Client().get(newChapUrlReq, this.getHeaders());
         const chapters = JSON.parse(newRes.body).chapters.map(chapter => {
             let title = "";
             let scanlator = "";
@@ -172,7 +173,7 @@ class DefaultExtension extends MProvider {
 
     async getPageList(url) {
         const apiUrl = `${this.source.apiUrl}/chapter/${url}?tachiyomi=true`;
-        const res = await this.client.get(apiUrl, this.getHeaders());
+        const res = await new Client().get(apiUrl, this.getHeaders());
         const data = JSON.parse(res.body);
         return data.chapter.images.map(image => ({
             url: image.url

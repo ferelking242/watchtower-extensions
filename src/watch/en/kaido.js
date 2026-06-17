@@ -13,7 +13,7 @@ const watchtowerSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -24,10 +24,11 @@ const watchtowerSources = [
     "pkgPath": "anime/src/en/kaido.js",
   },
 ];
+const BASE_URL = "https://kaido.to";
+
 class DefaultExtension extends MProvider {
   constructor() {
     super();
-    this.client = new Client();
   }
 
   getPreference(key) {
@@ -39,8 +40,8 @@ class DefaultExtension extends MProvider {
   }
 
   async request(slug) {
-    var url = this.source.baseUrl + slug;
-    var res = await this.client.get(url);
+    var url = BASE_URL + slug;
+    var res = await new Client().get(url);
     return new Document(res.body);
   }
 
@@ -84,8 +85,8 @@ class DefaultExtension extends MProvider {
   }
 
   async ajaxRequest(slug) {
-    var url = this.source.baseUrl + "/ajax/episode" + slug;
-    var res = await this.client.get(url);
+    var url = BASE_URL + "/ajax/episode" + slug;
+    var res = await new Client().get(url);
     var json = JSON.parse(res.body);
     return json["html"] || json["link"];
   }
@@ -101,7 +102,7 @@ class DefaultExtension extends MProvider {
     }
 
     var epTitlePref = this.getPreference("kaido_ep_title_lang");
-    var baseUrl = this.source.baseUrl + "/watch";
+    var baseUrl = BASE_URL + "/watch";
     var slug = url.replace(baseUrl, "");
     var link = baseUrl + slug
 
@@ -315,7 +316,7 @@ class DefaultExtension extends MProvider {
     var streamLink = await this.ajaxRequest(`/sources?id=${dataId}`);
     var streamId = streamLink.split("/").pop().slice(0, -3);
 
-    var res = await this.client.get(
+    var res = await new Client().get(
       `https://rapid-cloud.co/embed-2/v2/e-1/getSources?id=${streamId}`
     );
     if (res.statusCode != 200) return null;

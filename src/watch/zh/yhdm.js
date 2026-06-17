@@ -7,19 +7,20 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/zh.yhdm.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.1",
+    "version": "0.1.2",
     "pkgPath": "anime/src/zh/yhdm.js"
 }];
+
+const BASE_URL = "https://www.yhdmp.cc";
 
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     getHeaders() {
         return {
-            "Referer": `${this.source.baseUrl}/`,
+            "Referer": `${BASE_URL}/`,
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         };
     }
@@ -36,8 +37,8 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        const res = await this.client.get(
-            `${this.source.baseUrl}/acg/hits/?page=${page}`,
+        const res = await new Client().get(
+            `${BASE_URL}/acg/hits/?page=${page}`,
             this.getHeaders()
         );
         const list = this._parseList(res.body);
@@ -45,8 +46,8 @@ class DefaultExtension extends MProvider {
     }
 
     async getLatestUpdates(page) {
-        const res = await this.client.get(
-            `${this.source.baseUrl}/acg/new/?page=${page}`,
+        const res = await new Client().get(
+            `${BASE_URL}/acg/new/?page=${page}`,
             this.getHeaders()
         );
         const list = this._parseList(res.body);
@@ -54,8 +55,8 @@ class DefaultExtension extends MProvider {
     }
 
     async search(query, page, filterList) {
-        const res = await this.client.get(
-            `${this.source.baseUrl}/search/?page=${page}&searchword=${encodeURIComponent(query)}`,
+        const res = await new Client().get(
+            `${BASE_URL}/search/?page=${page}&searchword=${encodeURIComponent(query)}`,
             this.getHeaders()
         );
         const list = this._parseList(res.body);
@@ -63,7 +64,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getDetail(url) {
-        const res = await this.client.get(`${this.source.baseUrl}${url}`, this.getHeaders());
+        const res = await new Client().get(`${BASE_URL}${url}`, this.getHeaders());
         const html = res.body;
 
         const nameM = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
@@ -86,7 +87,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getVideoList(url) {
-        const res = await this.client.get(`${this.source.baseUrl}${url}`, this.getHeaders());
+        const res = await new Client().get(`${BASE_URL}${url}`, this.getHeaders());
         const html = res.body;
 
         const videos = [];

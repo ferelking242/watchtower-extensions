@@ -6,22 +6,23 @@ const watchtowerSources = [{
     "iconUrl": "https://www3.animefenix.tv/themes/fenix-neo/images/AveFenix.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.13",
+    "version": "0.1.14",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/es/animefenix.js"
 }];
 
+const BASE_URL = "https://www3.animefenix.tv";
+
 class DefaultExtension extends MProvider {
     constructor () {
         super();
-        this.client = new Client();
     }
     getHeaders(url) {
         throw new Error("getHeaders not implemented");
     }
     async parseAnimeList(url) {
-        const res = await this.client.get(url);
+        const res = await new Client().get(url);
         const doc = new Document(res.body);
         const elements = doc.select("main div.grid a");
         const list = [];
@@ -44,14 +45,14 @@ class DefaultExtension extends MProvider {
         }[status.toLowerCase()] ?? 5;
     }
     async getPopular(page) {
-        return await this.parseAnimeList(`${this.source.baseUrl}/animes?order=visits&page=${page}`);
+        return await this.parseAnimeList(`${BASE_URL}/animes?order=visits&page=${page}`);
     }
     async getLatestUpdates(page) {
-        return await this.parseAnimeList(`${this.source.baseUrl}/animes?order=updated&page=${page}`);
+        return await this.parseAnimeList(`${BASE_URL}/animes?order=updated&page=${page}`);
     }
     async search(query, page, filters) {
         query = query.trim().replaceAll(/\ +/g, "+");
-        let url = `${this.source.baseUrl}/animes?q=${query}`;
+        let url = `${BASE_URL}/animes?q=${query}`;
 
         // Search sometimes failed because filters were empty. I experienced this mostly on android...
         if (!filters || filters.length == 0) {
@@ -76,7 +77,7 @@ class DefaultExtension extends MProvider {
     }
     async getDetail(url) {
         const detail = {};
-        const res = await this.client.get(url);
+        const res = await new Client().get(url);
         const doc = new Document(res.body);
         const info = doc.selectFirst('main div.flex');
 
@@ -96,7 +97,7 @@ class DefaultExtension extends MProvider {
     }
     // For anime episode video list
     async getVideoList(url) {
-        let res = await this.client.get(url);
+        let res = await new Client().get(url);
         let doc = new Document(res.body);
         let promises = [];
         const videos = [];
@@ -123,13 +124,13 @@ class DefaultExtension extends MProvider {
             const method = renameLUT[lhost] ?? lhost;
             if (method in extractAny.methods) {
                 promises.push((async (redirect) => {
-                    const res = await this.client.get(redirect);
+                    const res = await new Client().get(redirect);
                     const doc = new Document(res.body);
                     const script = doc.selectFirst('script:contains(play)');
                     let link = script.text.match(/src="(.*?)"/)[1];
 
                     if (method == 'amazon')
-                        link = this.source.baseUrl + link.slice(link.search('/'));
+                        link = BASE_URL + link.slice(link.search('/'));
 
                     return await extractAny(link, method, 'Español', type, host);
                 })(redirects[i]));

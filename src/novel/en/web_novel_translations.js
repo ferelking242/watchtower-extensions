@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/entityJY/mangayomi-extensions-eJ/main/javascript/icon/en.webnoveltranslations.png",
     "typeSource": "single",
     "itemType": 2,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "novel/src/en/webnoveltranslations.js",
     "notes": ""
 }];
@@ -14,6 +14,8 @@ const watchtowerSources = [{
 /**
  * @typedef {import("../../../../javascript_api/dom_selector.d").Document} Doc
  */
+
+const BASE_URL = "https://webnoveltranslations.com";
 
 class DefaultExtension extends MProvider {
   
@@ -37,7 +39,7 @@ class DefaultExtension extends MProvider {
     }
     
     async getPopular(page) {
-        let url = `${this.source.baseUrl}/?s=&post_type=wp-manga`;
+        let url = `${BASE_URL}/?s=&post_type=wp-manga`;
         const res = await new Client().get(url, this.headers);
         return this.mangaListFromPage(res);
     }
@@ -48,7 +50,7 @@ class DefaultExtension extends MProvider {
     
     async getLatestUpdates(page) {
         throw new Error("getLatestUpdates not implemented");
-        let url = this.source.baseUrl;
+        let url = BASE_URL;
         const res = await new Client().get(url, this.headers);
         const doc = new Document(res.body);
         const mangaElements = doc.select("#loop-content > div");
@@ -63,7 +65,7 @@ class DefaultExtension extends MProvider {
         return { list: list, hasNextPage };
     }
     async search(query, page, filters) {
-        let url = `${this.source.baseUrl}/?s=${query}&post_type=wp-manga`;
+        let url = `${BASE_URL}/?s=${query}&post_type=wp-manga`;
         const res = await new Client().get(url, this.headers);
         return this.mangaListFromPage(res);
     }

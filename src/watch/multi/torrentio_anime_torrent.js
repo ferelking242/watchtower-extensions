@@ -7,14 +7,15 @@ const watchtowerSources = [{
     "typeSource": "torrent",
     "isManga": false,
     "itemType": 1,
-    "version": "0.0.2",
+    "version": "0.0.3",
     "pkgPath": "anime/src/all/torrentioanime.js"
 }];
+
+const BASE_URL = "https://torrentio.strem.fun";
 
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     anilistQuery() {
@@ -99,7 +100,7 @@ class DefaultExtension extends MProvider {
         `.trim();
     }
     async makeGraphQLRequest(query, variables) {
-        const res = await this.client.post("https://graphql.anilist.co", {},
+        const res = await new Client().post("https://graphql.anilist.co", {},
             {
                 query, variables
             });
@@ -235,12 +236,12 @@ class DefaultExtension extends MProvider {
 
         const tagsList = media?.tags?.map(tag => tag.name).filter(Boolean) || [];
         const genresList = media?.genres || [];
-        anime.genre = [...new Set([...tagsList, ...genresList])].sort();
+        anime.genre = [...tagsList, ...genresList].filter((v,i,a)=>a.indexOf(v)===i).sort();
         const studiosList = media?.studios?.nodes?.map(node => node.name).filter(Boolean) || [];
         anime.author = studiosList.sort().join(", ");
-        const response = await this.client.get(`https://api.ani.zip/mappings?anilist_id=${url}`);
+        const response = await new Client().get(`https://api.ani.zip/mappings?anilist_id=${url}`);
         const kitsuId = JSON.parse(response.body).mappings.kitsu_id.toString();
-        const responseEpisodes = await this.client.get(`https://anime-kitsu.strem.fun/meta/series/kitsu%3A${kitsuId}.json`);
+        const responseEpisodes = await new Client().get(`https://anime-kitsu.strem.fun/meta/series/kitsu%3A${kitsuId}.json`);
         const episodeList = JSON.parse(responseEpisodes.body);
         anime.episodes = (() => {
             switch (episodeList.meta?.type) {
@@ -293,14 +294,14 @@ class DefaultExtension extends MProvider {
     async getVideoList(url) {
         const preferences = new SharedPreferences();
 
-        let mainURL = `${this.source.baseUrl}/`;
+        let mainURL = `${BASE_URL}/`;
         mainURL += this.appendQueryParam("providers", preferences.get("provider_selection"));
         mainURL += this.appendQueryParam("language", preferences.get("lang_selection"));
         mainURL += this.appendQueryParam("qualityfilter", preferences.get("quality_selection"));
-        mainURL += this.appendQueryParam("sort", new Set([preferences.get("sorting_link")]));
+        mainURL += this.appendQueryParam("sort", [preferences.get("sorting_link")]);
         mainURL += url;
         mainURL = mainURL.replace(/\|$/, "");
-        const responseEpisodes = await this.client.get(mainURL);
+        const responseEpisodes = await new Client().get(mainURL);
         const streamList = JSON.parse(responseEpisodes.body);
         const animeTrackers = `
         http://nyaa.tracker.wf:7777/announce,

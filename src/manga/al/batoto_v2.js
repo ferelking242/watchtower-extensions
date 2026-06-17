@@ -6,10 +6,12 @@ const watchtowerSources = [{
     "iconUrl": "https://bato.to/amsta/img/btoto/logo-batoto.png?v0",
     "typeSource": "single",
     "itemType": 0,
-    "version": "1.0.4",
+    "version": "1.0.5",
     "pkgPath": "manga/src/all/batoto.js",
     "notes": "Uses web-scraping to pull details and chapters"
 }];
+
+const BASE_URL = "https://bato.to";
 
 class DefaultExtension extends MProvider {
 
@@ -31,7 +33,7 @@ class DefaultExtension extends MProvider {
         for (const element of elements) {
             const name = element.selectFirst("a.item-title").text;
             const imageUrl = element.selectFirst("img").getSrc;
-            const link = `${this.source.baseUrl}` + element.selectFirst("a.item-title").getHref;
+            const link = `${BASE_URL}` + element.selectFirst("a.item-title").getHref;
             list.push({ name, imageUrl, link });
         }
 
@@ -47,7 +49,7 @@ class DefaultExtension extends MProvider {
         for (const element of elements) {
             const name = element.selectFirst("a.item-title").text;
             const imageUrl = element.selectFirst("img").getSrc;
-            const link = `${this.source.baseUrl}` + element.selectFirst("a.item-title").getHref;
+            const link = `${BASE_URL}` + element.selectFirst("a.item-title").getHref;
             list.push({ name, imageUrl, link });
         }
 
@@ -63,7 +65,7 @@ class DefaultExtension extends MProvider {
         for (const element of elements) {
             const name = element.selectFirst("a.item-title").text;
             const imageUrl = element.selectFirst("img").getSrc;
-            const link = `${this.source.baseUrl}` + element.selectFirst("a.item-title").getHref;
+            const link = `${BASE_URL}` + element.selectFirst("a.item-title").getHref;
             let genre = [];
             const genres = element.select("div.item-genre > *");
             for (const a of genres) {

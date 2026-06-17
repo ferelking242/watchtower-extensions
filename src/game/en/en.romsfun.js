@@ -7,7 +7,7 @@ const watchtowerSources = [{
   "iconUrl": "https://romsfun.com/favicon.ico",
   "typeSource": "single",
   "itemType": 4,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "pkgPath": "game/en/en.romsfun.js",
   "notes": "ROM downloads — PSP, PS2, GBA, SNES, N64, NDS and more",
   "isNsfw": false,
@@ -63,7 +63,7 @@ class DefaultExtension extends MProvider {
   _parseList(html, base) {
     const doc = new Document(html);
     const items = [];
-    const seen = new Set();
+    const seen = {};
 
     const selectors = [
       ".games-list .game-item",
@@ -91,8 +91,8 @@ class DefaultExtension extends MProvider {
       let href = a.attr("href") || "";
       if (!href || href === "#") continue;
       if (!href.startsWith("http")) href = base + href;
-      if (seen.has(href)) continue;
-      seen.add(href);
+      if ((href in seen)) continue;
+      (seen[href] = 1);
 
       const titleEl = card.selectFirst("h3, h2, h4, .title, .name, .game-title");
       const title = (titleEl?.text || a.attr("title") || a.text || "").trim();

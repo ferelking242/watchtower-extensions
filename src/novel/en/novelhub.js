@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://novelhubapp.com/favicon.ico",
     "typeSource": "single",
     "itemType": 2,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "pkgPath": "novel/en/novelhub.js",
     "notes": "Free web novels (Romance, Fantasy, Mystery, Sci-fi, LGBT+, Urban...). Same publisher as LokLok / MovieBox.",
     "isNsfw": false
@@ -49,8 +49,8 @@ class DefaultExtension extends MProvider {
     _resolve(arr, idx, seen) {
         if (idx === undefined || idx === null) return null;
         if (typeof idx !== "number") return idx;
-        if (seen.has(idx)) return null;
-        seen.add(idx);
+        if ((idx in seen)) return null;
+        (seen[idx] = 1);
         const v = arr[idx];
         if (v === null || v === undefined) return v;
         if (typeof v !== "object") return v;
@@ -59,10 +59,10 @@ class DefaultExtension extends MProvider {
             if (v.length === 2 && (v[0] === "ShallowReactive" || v[0] === "Reactive")) {
                 return this._resolve(arr, v[1], seen);
             }
-            return v.map(i => this._resolve(arr, i, new Set(seen)));
+            return v.map(i => this._resolve(arr, i, Object.assign({}, seen)));
         }
         const out = {};
-        for (const k of Object.keys(v)) out[k] = this._resolve(arr, v[k], new Set(seen));
+        for (const k of Object.keys(v)) out[k] = this._resolve(arr, v[k], Object.assign({}, seen));
         return out;
     }
     _findResData(arr) {
@@ -71,7 +71,7 @@ class DefaultExtension extends MProvider {
         for (let i = 0; i < arr.length; i++) {
             const v = arr[i];
             if (v && typeof v === "object" && !Array.isArray(v) && "$sresData" in v) {
-                return this._resolve(arr, v.$sresData, new Set());
+                return this._resolve(arr, v.$sresData, {});
             }
         }
         return null;
@@ -105,12 +105,12 @@ class DefaultExtension extends MProvider {
         const html = await this._get(url);
         const arr = this._parseNuxtData(html);
         if (!arr) return [];
-        const data = this._findResData(arr) || this._resolve(arr, 7, new Set());
+        const data = this._findResData(arr) || this._resolve(arr, 7, {});
         const out = [];
         this._collectNovels(data, out);
         // Dedup by link.
-        const seen = new Set();
-        return out.filter(x => x.link && !seen.has(x.link) && seen.add(x.link));
+        const seen = {};
+        return out.filter(x => x.link && !(x.link in seen) && (seen[x.link] = 1));
     }
 
     // ---------- popular / latest ----------

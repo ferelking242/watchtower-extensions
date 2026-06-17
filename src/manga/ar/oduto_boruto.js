@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://blogger.googleusercontent.com/img/a/AVvXsEgKFmNQCUC7ARtXurDIwfOimVn3wogUvH7VaUOfjdutG44-cT4ajgh0KYkqSbRIoQ0b8YG3H6Edx-y1O3GW5SL88jymLZsO6cmS0QRtsp1y4gc24vmF4OGqyIY3PYSjxUYR1iJ5J-sP-00A7NwhNa19SPc0R_62KcuG6dbu2Rg-2YiMV1uUgaB0DGB6IBY_=s1600",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.0.1",
+    "version": "0.0.2",
     "isNsfw": false,
     "pkgPath": "manga/src/ar/oduto.js",
     "notes": "This Source Just For Boruto"
@@ -15,8 +15,7 @@ const watchtowerSources = [{
 
 class DefaultExtension extends MProvider {
   async request(slug) {
-    this.client ??= new Client();
-    const res = await this.client.get(slug);
+    const res = await new Client().get(slug);
     return new Document(res.body);
   }
 

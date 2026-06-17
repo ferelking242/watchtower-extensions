@@ -7,10 +7,12 @@ const mangayomiSources = [{
     "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://kolnovel.com",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.0.1",
+    "version": "0.0.2",
     "pkgPath": "novel/src/ar/kolnovel.js",
     "notes": ""
 }];
+
+const BASE_URL = "https://kolnovel.com";
 
 class DefaultExtension extends MProvider {
   headers = {
@@ -440,7 +442,7 @@ class DefaultExtension extends MProvider {
     const preference = new SharedPreferences();
     var base_url = preference.get("base_url");
     if (base_url.length == 0) {
-      return this.source.baseUrl;
+      return BASE_URL;
     }
     if (base_url.endsWith("/")) {
       return base_url.slice(0, -1);
@@ -455,9 +457,9 @@ class DefaultExtension extends MProvider {
         editTextPreference: {
           title: "تعديل الرابط",
           summary: "",
-          value: this.source.baseUrl,
+          value: BASE_URL,
           dialogTitle: "تعديل",
-          dialogMessage: `Defaul URL ${this.source.baseUrl}`,
+          dialogMessage: `Defaul URL ${BASE_URL}`,
         },
       },
     ];

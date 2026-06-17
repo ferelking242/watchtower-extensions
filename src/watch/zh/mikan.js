@@ -7,19 +7,20 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/zh.mikan.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.1",
+    "version": "0.1.2",
     "pkgPath": "anime/src/zh/mikan.js"
 }];
+
+const BASE_URL = "https://mikanani.me";
 
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     getHeaders() {
         return {
-            "Referer": `${this.source.baseUrl}/`,
+            "Referer": `${BASE_URL}/`,
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         };
     }
@@ -44,8 +45,8 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        const res = await this.client.get(
-            `${this.source.baseUrl}/RSS/Classic`,
+        const res = await new Client().get(
+            `${BASE_URL}/RSS/Classic`,
             this.getHeaders()
         );
         const list = this._parseRSS(res.body).slice((page - 1) * 20, page * 20);
@@ -53,8 +54,8 @@ class DefaultExtension extends MProvider {
     }
 
     async getLatestUpdates(page) {
-        const res = await this.client.get(
-            `${this.source.baseUrl}/RSS/Classic`,
+        const res = await new Client().get(
+            `${BASE_URL}/RSS/Classic`,
             this.getHeaders()
         );
         const list = this._parseRSS(res.body).slice((page - 1) * 20, page * 20);
@@ -62,8 +63,8 @@ class DefaultExtension extends MProvider {
     }
 
     async search(query, page, filterList) {
-        const res = await this.client.get(
-            `${this.source.baseUrl}/RSS/Search?searchstr=${encodeURIComponent(query)}`,
+        const res = await new Client().get(
+            `${BASE_URL}/RSS/Search?searchstr=${encodeURIComponent(query)}`,
             this.getHeaders()
         );
         const list = this._parseRSS(res.body);

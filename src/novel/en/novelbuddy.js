@@ -13,7 +13,7 @@ const watchtowerSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "isManga": false,
     "itemType": 2,
     "isFullData": false,
@@ -24,10 +24,11 @@ const watchtowerSources = [
     "pkgPath": "novel/src/en/novelbuddy.js",
   },
 ];
+const BASE_URL = "https://novelbuddy.com";
+
 class DefaultExtension extends MProvider {
   constructor() {
     super();
-    this.client = new Client();
   }
 
   getPreference(key) {
@@ -39,8 +40,8 @@ class DefaultExtension extends MProvider {
   }
 
   async request(slug) {
-    var url = `${this.source.baseUrl}${slug}`;
-    var body = (await this.client.get(url)).body;
+    var url = `${BASE_URL}${slug}`;
+    var body = (await new Client().get(url)).body;
     return new Document(body);
   }
 
@@ -130,7 +131,7 @@ class DefaultExtension extends MProvider {
         }[status] ?? 5
       );
     }
-    var baseUrl = this.source.baseUrl;
+    var baseUrl = BASE_URL;
     var slug = url.replace(baseUrl, "");
     var link = baseUrl + url;
 

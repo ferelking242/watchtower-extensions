@@ -9,7 +9,7 @@ const watchtowerSources = [
       "https://www.google.com/s2/favicons?sz=256&domain=https://animeyy.com",
     "typeSource": "multi",
     "itemType": 1,
-    "version": "1.1.1",
+    "version": "1.1.2",
     "pkgPath": "anime/src/en/animez.js",
   },
 ];
@@ -17,7 +17,6 @@ const watchtowerSources = [
 class DefaultExtension extends MProvider {
   constructor() {
     super();
-    this.client = new Client();
   }
 
   getBaseUrl() {
@@ -36,7 +35,7 @@ class DefaultExtension extends MProvider {
 
   async request(slug) {
     var url = this.getBaseUrl() + slug;
-    var res = await this.client.get(url, this.getHeaders());
+    var res = await new Client().get(url, this.getHeaders());
     return new Document(res.body);
   }
   async page(slug) {

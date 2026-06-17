@@ -6,10 +6,12 @@ const watchtowerSources = [{
     "iconUrl": "https://m.media-amazon.com/images/I/31957gKv8WL.jpg",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.0.1",
+    "version": "0.0.2",
     "pkgPath": "novel/src/en/novelfire.js",
     "notes": ""
 }];
+
+const BASE_URL = "https://novelfire.net";
 
 class DefaultExtension extends MProvider {
     getHeaders(url) {
@@ -29,10 +31,10 @@ class DefaultExtension extends MProvider {
         for (const book of books) {
             const bookAncher = book.selectFirst('a');
             const bookTitle = bookAncher.attr("title");
-            const bookLink = `${this.source.baseUrl}${bookAncher.attr("href")}`;
+            const bookLink = `${BASE_URL}${bookAncher.attr("href")}`;
             const bookImg = book.selectFirst('figure.novel-cover img');
             const imgAttr = bookImg.attr("data-src") || bookImg.attr("src");
-            const imageUrl = imgAttr.startsWith('http') ? imgAttr : `${this.source.baseUrl}${imgAttr}`;
+            const imageUrl = imgAttr.startsWith('http') ? imgAttr : `${BASE_URL}${imgAttr}`;
           
             bookList.push({
                 'name': bookTitle,
@@ -52,7 +54,7 @@ class DefaultExtension extends MProvider {
     }
     
     async getPopular(page) {
-        const baseUrl = this.source.baseUrl;
+        const baseUrl = BASE_URL;
         const url = `${baseUrl}/genre-all/sort-popular/status-all/all-novel?page=${page}`
         return await this.getBooks(url);
     }
@@ -60,12 +62,12 @@ class DefaultExtension extends MProvider {
         return true;
     }
     async getLatestUpdates(page) {
-        const baseUrl = this.source.baseUrl;
+        const baseUrl = BASE_URL;
         const url = `${baseUrl}/latest-release-novels?page=${page}`
         return await this.getBooks(url);
     }
     async search(query, page, filters) {
-        const baseUrl = this.source.baseUrl;
+        const baseUrl = BASE_URL;
         let searchUrl = `${baseUrl}/search?keyword=${query}&type=both&page=${page}`
         return await this.getBooks(searchUrl);
     }
@@ -119,7 +121,7 @@ class DefaultExtension extends MProvider {
           const nextButton = chaptersDoc.selectFirst("ul.pagination li.page-item a[rel='next']");
           const nextHref = nextButton.attr("href");
           if (nextHref && nextHref !== "#" && nextHref !== chaptersUrl) {
-            chaptersUrl = nextHref.startsWith('http') ? nextHref : `${this.source.baseUrl}${nextHref}`;
+            chaptersUrl = nextHref.startsWith('http') ? nextHref : `${BASE_URL}${nextHref}`;
           } else {
             chaptersUrl = null;
           }

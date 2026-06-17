@@ -7,12 +7,14 @@ const watchtowerSources = [
     "iconUrl": "https://mangafire.to/assets/sites/mangafire/favicon.png?v3",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.2.20",
+    "version": "0.2.21",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/all/mangafire.js"
   }
 ];
+
+const BASE_URL = "https://mangafire.to";
 
 class DefaultExtension extends MProvider {
   getPreference(key) {
@@ -81,7 +83,7 @@ class DefaultExtension extends MProvider {
     slug = `keyword=${keyword}&${slug}`;
     if (vrf != "") slug += `&vrf=${vrf}`;
 
-    const res = await new Client().get(`${this.source.baseUrl}/filter?${slug}`);
+    const res = await new Client().get(`${BASE_URL}/filter?${slug}`);
     return this.mangaListFromPage(res);
   }
 
@@ -132,13 +134,13 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    url = url.replace(this.source.baseUrl, "");
+    url = url.replace(BASE_URL, "");
     const viewType = this.getPreference("mangafire_pref_content_view");
     const id = url.split(".").pop();
     const detail = {};
 
     // extract info
-    const infoUrl = this.source.baseUrl + url;
+    const infoUrl = BASE_URL + url;
     const infoRes = await new Client().get(infoUrl);
     const infoDoc = new Document(infoRes.body);
     const info = infoDoc.selectFirst("div.info");
@@ -159,7 +161,7 @@ class DefaultExtension extends MProvider {
     var vrf = this.generate_vrf(vrfKey);
 
     const chapterUrl =
-      this.source.baseUrl +
+      BASE_URL +
       `/ajax/read/${id}/${viewType}/${this.source.lang}?vrf=${vrf}`;
 
     const idRes = await new Client().get(chapterUrl);
@@ -171,7 +173,7 @@ class DefaultExtension extends MProvider {
       // upload date is not present in volumes
       // /manga/ is needed to get chapter upload date
       const chapRes = await new Client().get(
-        this.source.baseUrl +
+        BASE_URL +
         `/ajax/manga/${id}/${viewType}/${this.source.lang}?vrf=${vrf}`
       );
       const chapDoc = new Document(JSON.parse(chapRes.body).result);
@@ -212,7 +214,7 @@ class DefaultExtension extends MProvider {
       const vrf = this.generate_vrf(vrfKey);
 
       const reqUrl =
-        this.source.baseUrl + `/ajax/read/${viewType}/${chapid}?vrf=${vrf}`;
+        BASE_URL + `/ajax/read/${viewType}/${chapid}?vrf=${vrf}`;
       return await new Client().get(reqUrl);
     };
     var chapid = url;
@@ -226,7 +228,7 @@ class DefaultExtension extends MProvider {
     }
     const data = JSON.parse(res.body);
     const pages = [];
-    var hdr = { "Referer": this.source.baseUrl };
+    var hdr = { "Referer": BASE_URL };
     data.result.images.forEach((img) => {
       pages.push({ url: img[0], headers: hdr });
     });

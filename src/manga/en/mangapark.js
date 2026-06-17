@@ -13,7 +13,7 @@ const watchtowerSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
@@ -27,7 +27,6 @@ const watchtowerSources = [
 class DefaultExtension extends MProvider {
   constructor() {
     super();
-    this.client = new Client();
   }
 
   getPreference(key) {
@@ -55,7 +54,7 @@ class DefaultExtension extends MProvider {
       headers["Cookie"] += `;${cookies}`;
     }
 
-    var res = await this.client.get(url, headers);
+    var res = await new Client().get(url, headers);
     if (res.statusCode == 200) {
       return new Document(res.body);
     }

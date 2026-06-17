@@ -13,9 +13,11 @@ const watchtowerSources = [{
     "pkgPath": "anime/src/all/vivamaxph.js"
 }];
 
+const BASE_URL = "https://vivamaxph.com";
+
 class DefaultExtension extends MProvider {
     async getPopular(page) {
-        const baseUrl = this.source.baseUrl;
+        const baseUrl = BASE_URL;
         const res = await new Client().get(`${baseUrl}/page/${page}/?filter=most-viewed`);
         const elements = new Document(res.body).select("article");
         const list = [];          
@@ -34,7 +36,7 @@ class DefaultExtension extends MProvider {
         }
     }
     async getLatestUpdates(page) {
-        const baseUrl = this.source.baseUrl;
+        const baseUrl = BASE_URL;
         const res = await new Client().get(`${baseUrl}/page/${page}/?filter=latest`);
         const elements = new Document(res.body).select("article");
         const list = [];          
@@ -53,7 +55,7 @@ class DefaultExtension extends MProvider {
         };
     }
     async search(query, page, filters) {
-        const baseUrl = this.source.baseUrl;
+        const baseUrl = BASE_URL;
         const res = await new Client().get(`${baseUrl}?s=${query}`);
         // console.log(res.body);
         const elements = new Document(res.body).select("article");
@@ -74,7 +76,7 @@ class DefaultExtension extends MProvider {
     }
     
     async getDetail(url) {
-        const baseUrl = this.source.baseUrl;
+        const baseUrl = BASE_URL;
         const res = await new Client().get(url);
         const elements = new Document(res.body);
         const movieURL = elements.selectFirst("meta[property='og:url']").attr("content"); 

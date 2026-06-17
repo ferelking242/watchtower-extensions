@@ -6,22 +6,23 @@ const watchtowerSources = [{
     "iconUrl": "https://cdn.jkanime.net/logo_jk.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.13",
+    "version": "0.1.14",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/es/jkanime.js"
 }];
 
+const BASE_URL = "https://jkanime.net";
+
 class DefaultExtension extends MProvider {
     constructor () {
         super();
-        this.client = new Client();
     }
     getHeaders(url) {
         throw new Error("getHeaders not implemented");
     }
     async parseAnimeList(url) {
-        const res = await this.client.get(url);
+        const res = await new Client().get(url);
         const doc = new Document(res.body);
         const code = doc.selectFirst("script:contains(var animes)").text;
         const list = [];
@@ -30,7 +31,7 @@ class DefaultExtension extends MProvider {
             const data = JSON.parse(element[0]);
             const name = data.title;
             const imageUrl = data.image;
-            const link = this.source.baseUrl + '/' + data.slug;
+            const link = BASE_URL + '/' + data.slug;
             list.push({ name, imageUrl, link });
         }
         
@@ -46,7 +47,7 @@ class DefaultExtension extends MProvider {
         }[status] ?? 5;
     }
     async getPopular(page) {
-        const res = await this.client.get('https://jkanime.net/top/');
+        const res = await new Client().get('https://jkanime.net/top/');
         const doc = new Document(res.body);
         const list = [];
 
@@ -61,21 +62,21 @@ class DefaultExtension extends MProvider {
         return { "list": list, "hasNextPage": false };
     }
     async getLatestUpdates(page) {
-        return await this.parseAnimeList(`${this.source.baseUrl}/directorio/${page}/`);
+        return await this.parseAnimeList(`${BASE_URL}/directorio/${page}/`);
     }
     async search(query, page, filters) {
         query = query.trim().replaceAll(/\ +/g, "_");
 
         // Search sometimes failed because filters were empty. I experienced this mostly on android...
         if (!filters || filters.length == 0) {
-            return this.parseAnimeList(`${this.source.baseUrl}/buscar/${query}/${page}/`);
+            return this.parseAnimeList(`${BASE_URL}/buscar/${query}/${page}/`);
         } else if (query) {
-            var url = `${this.source.baseUrl}/buscar/${query}/${page}/`;
+            var url = `${BASE_URL}/buscar/${query}/${page}/`;
             url += `?filtro=${filters[1].values[filters[1].state].value}`;
             url += `&tipo=${filters[5].values[filters[5].state].value}`;
             url += `&estado=${filters[6].values[filters[6].state].value}`;
         } else {
-            var url = `${this.source.baseUrl}/directorio/${query}/${page}`;
+            var url = `${BASE_URL}/directorio/${query}/${page}`;
             url += `/${filters[1].values[filters[1].state].value}`;
             url += `/${filters[2].values[filters[2].state].value}`;
             url += `/${filters[3].values[filters[3].state].value}`;
@@ -88,12 +89,12 @@ class DefaultExtension extends MProvider {
         return await this.parseAnimeList(url);
     }
     async getDetail(url) {
-        let res = await this.client.get(url);
+        let res = await new Client().get(url);
         const doc = new Document(res.body);
         const detail = {};
 
         const id = res.body.match(/data-anime="(\d+)"/)[1];
-        const lastEpisodeUrl = `${this.source.baseUrl}/ajax/last_episode/${id}`;
+        const lastEpisodeUrl = `${BASE_URL}/ajax/last_episode/${id}`;
 
         const info = doc.selectFirst("div.anime__details__content");
         const extInfo = doc.selectFirst('div.aninfo');
@@ -106,7 +107,7 @@ class DefaultExtension extends MProvider {
 
         // get episodes
         detail.episodes = [];
-        res = await this.client.get(lastEpisodeUrl, {'User-Agent': 'Mangayomi'});
+        res = await new Client().get(lastEpisodeUrl, {'User-Agent': 'Mangayomi'});
         const end = parseInt(JSON.parse(res.body)[0].number);
         for (let i = 1; i <= end; i++) {
             detail.episodes.push({
@@ -118,13 +119,13 @@ class DefaultExtension extends MProvider {
         return detail;
     }
     async extractRedirect(redirect, referer, lang, type, host) {
-        const res = await this.client.get(this.source.baseUrl + redirect, {'Referer': referer});
+        const res = await new Client().get(BASE_URL + redirect, {'Referer': referer});
         const m3u = res.body.match(/http.*?.m3u8/)[0];
         return [{ url: m3u, originalUrl: m3u, headers: {'Referer': referer}, quality: `${lang} ${type} ${host}` }];
     };
     // For anime episode video list
     async getVideoList(url) {
-        const res = await this.client.get(url);
+        const res = await new Client().get(url);
         const doc = new Document(res.body);
         let promises = [];
         const videos = [];

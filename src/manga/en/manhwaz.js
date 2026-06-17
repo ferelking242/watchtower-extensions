@@ -7,15 +7,17 @@ const watchtowerSources = [{
     "iconUrl": "https://manhwaz.com/apple-touch-icon.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.1.0",
+    "version": "0.1.1",
     "pkgPath": "manga/src/en/manhwaz.js",
     "notes": ""
 }];
 
+const BASE_URL = "https://manhwaz.com";
+
 class DefaultExtension extends MProvider {
   getHeaders(url) {
     return {
-      Referer: this.source.baseUrl,
+      Referer: BASE_URL,
       "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
     };
@@ -395,7 +397,7 @@ class DefaultExtension extends MProvider {
     const preference = new SharedPreferences();
     var base_url = preference.get("domain_url");
     if (base_url.length == 0) {
-      return this.source.baseUrl;
+      return BASE_URL;
     }
     if (base_url.endsWith("/")) {
       return base_url.slice(0, -1);
@@ -410,7 +412,7 @@ class DefaultExtension extends MProvider {
         editTextPreference: {
           title: "Edit URL",
           summary: "",
-          value: this.source.baseUrl,
+          value: BASE_URL,
           dialogTitle: "URL",
           dialogMessage: "",
         },

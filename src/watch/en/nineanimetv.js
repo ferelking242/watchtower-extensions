@@ -6,14 +6,14 @@ const watchtowerSources = [{
       "iconUrl": "https://9animetv.to/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.2",
+      "version": "0.1.3",
       "pkgPath": "watch/en/nineanimetv.js",
       "notes": "9AnimeTv — Anime streaming (restored)",
       "isNsfw": false
   }];
 
   class DefaultExtension extends MProvider {
-      constructor() { super(); this.client = new Client(); }
+      constructor() { super();}
 
       getHeaders(url) {
           return {
@@ -26,7 +26,7 @@ const watchtowerSources = [{
 
       async getPopularList(page) {
           const url = "https://9animetv.to/home";
-          const res = await this.client.get(url, this.getHeaders(url));
+          const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
           const items = [];
           doc.select(".flw-item").forEach(el => {
@@ -43,7 +43,7 @@ const watchtowerSources = [{
 
       async getLatestList(page) {
           const url = `https://9animetv.to/recently-updated?page=${page}`;
-          const res = await this.client.get(url, this.getHeaders(url));
+          const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
           const items = [];
           doc.select(".flw-item").forEach(el => {
@@ -61,7 +61,7 @@ const watchtowerSources = [{
 
       async getSearchList(query, page, filters) {
           const url = `https://9animetv.to/search?keyword=${encodeURIComponent(query)}&page=${page}`;
-          const res = await this.client.get(url, this.getHeaders(url));
+          const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
           const items = [];
           doc.select(".flw-item").forEach(el => {
@@ -78,7 +78,7 @@ const watchtowerSources = [{
       }
 
       async getDetail(url) {
-          const res = await this.client.get(url, this.getHeaders(url));
+          const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
           const name = doc.selectFirst("h2.film-name, .anisc-detail h2")?.text?.trim() || "";
           const cover = doc.selectFirst("img.film-poster-img")?.attr("src") || "";
@@ -93,7 +93,7 @@ const watchtowerSources = [{
       }
 
       async getVideoList(url) {
-          const res = await this.client.get(url, this.getHeaders(url));
+          const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
           const servers = [];
           doc.select(".server-item, .ps__-list li").forEach(item => {

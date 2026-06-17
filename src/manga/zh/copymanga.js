@@ -7,7 +7,7 @@ const mangayomiSources = [{
     "typeSource": "single",
     "itemType": 0,
     "isNsfw": false,
-    "version": "0.0.25",
+    "version": "0.0.26",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/zh/copymanga.js"
@@ -97,7 +97,7 @@ const mangayomiSources = [{
   
     getHeaders(url) {
       return {
-        Referer: this.source.baseUrl
+        Referer: BASE_URL
       };
     }
 
@@ -189,7 +189,7 @@ const mangayomiSources = [{
       const status = data["status"]["value"];
       const genres = data["theme"].map(e => this.stringUTF8(e["name"]));
       const chapters = [];
-      const res_ = await new Client().get(this.source.baseUrl + `/comicdetail/${url}/chapters`, {
+      const res_ = await new Client().get(BASE_URL + `/comicdetail/${url}/chapters`, {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
       });
       const ch_text = JSON.parse(res_.body)["results"];
@@ -215,7 +215,7 @@ const mangayomiSources = [{
   
     async getPageList(url) {
       const urls = url.split("|");
-      const res = await new Client().get(this.source.baseUrl + `/comic/${urls[0]}/chapter/${urls[1]}`, {
+      const res = await new Client().get(BASE_URL + `/comic/${urls[0]}/chapter/${urls[1]}`, {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36"
       });
       const img_text = res.body.match(/contentKey="(.*)"/)[1];

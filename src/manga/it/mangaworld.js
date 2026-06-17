@@ -6,16 +6,17 @@ const watchtowerSources = [{
     "iconUrl": "https://www.mangaworld.ac/public/assets/images/MangaWorldSquareLogo.png",
     "typeSource": "single",
     "isManga": true,
-    "version": "0.0.1",
+    "version": "0.0.2",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/it/mangaworld.js"
 }];
 
+const BASE_URL = "https://www.mangaworld.ac";
+
 class DefaultExtension extends MProvider {
     constructor () {
         super();
-        this.client = new Client();
         this.getPageCount = /totalPages["']:\s*(\d+).*?page["']:\s*(\d+)/i; // totalPages:\s*(\d+).*?page:\s*(\d+)
         this.getMangas = /['"]mangas['"]:([\s\S]+?])\s*\}/i; // mangas:([\s\S]+?])\s*\}
         this.getManga = /manga['"]:\s*(\{[\S\s]*?\}),\s*['"]image/i; // manga:\s*(\{[\S\s]*?\}),\s*image
@@ -33,7 +34,7 @@ class DefaultExtension extends MProvider {
         }[status] ?? 5;
     }
     async parseMangaList(url) {
-        const res = await this.client.get(url);
+        const res = await new Client().get(url);
         const json = this.getMangas.exec(res.body)[1];
         let mangas = JSON.parse(json).map(manga => ({
             name: manga.title,
@@ -43,19 +44,19 @@ class DefaultExtension extends MProvider {
             status: this.parseStatus(manga.statusT),
             description: manga.trama,
             genre: manga.genres.map(g => g.name),
-            link: `${this.source.baseUrl}/manga/${manga.linkId}/${manga.slug}`,
+            link: `${BASE_URL}/manga/${manga.linkId}/${manga.slug}`,
         }));
         const pageNums = this.getPageCount.exec(res.body);
         return { "list": mangas, "hasNextPage": pageNums[1] > pageNums[2] };
     }
     async getPopular(page) {
-        return await this.parseMangaList(this.source.baseUrl + `/archive?sort=most_read&page=${page}`);
+        return await this.parseMangaList(BASE_URL + `/archive?sort=most_read&page=${page}`);
     }
     async getLatestUpdates(page) {
-        return await this.parseMangaList(this.source.baseUrl + `/archive?sort=newest&page=${page}`);
+        return await this.parseMangaList(BASE_URL + `/archive?sort=newest&page=${page}`);
     }
     async search(query, page, filters) {
-        let url = `${this.source.baseUrl}/archive?keyword=${query}`
+        let url = `${BASE_URL}/archive?keyword=${query}`
         // Search sometimes failed because filters were empty. I experienced this mostly on android...
         if (!filters || filters.length == 0) {
             return await this.parseMangaList(url + `&page=${page}`);
@@ -86,12 +87,12 @@ class DefaultExtension extends MProvider {
         return await this.parseMangaList(url + `&page=${page}`);
     }
     async getDetail(url) {
-        const res = await this.client.get(url);
+        const res = await new Client().get(url);
         const chapters = [];
 
         const manga = JSON.parse(this.getManga.exec(res.body)[1]);
         const pages = JSON.parse(this.getPages.exec(res.body)[1]);
-        const baseUrl = `${this.source.baseUrl}/manga/${manga.linkId}/${manga.slug}/read/`;
+        const baseUrl = `${BASE_URL}/manga/${manga.linkId}/${manga.slug}/read/`;
 
         for (const v of pages.volumes) {
             for (const c of v.chapters) {

@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.hdss.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.5",
+    "version": "0.1.6",
     "pkgPath": "watch/fr/hdss.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -15,15 +15,16 @@ const watchtowerSources = [{
     "contentSubtype": ["film", "serie"]
 }];
 
+const BASE_URL = "https://www.hdss.art";
+
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     get baseUrl() {
         const pref = this.source.prefs?.find(p => p.key === "base_url");
-        return (pref && pref.value) ? pref.value.replace(/\/$/, "") : this.source.baseUrl.replace(/\/$/, "");
+        return (pref && pref.value) ? pref.value.replace(/\/$/, "") : BASE_URL.replace(/\/$/, "");
     }
 
     get userAgent() {
@@ -65,14 +66,14 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        const res = await this.client.get(`${this.baseUrl}/films/page/${page}/`, this.getHeaders());
+        const res = await new Client().get(`${this.baseUrl}/films/page/${page}/`, this.getHeaders());
         const list = this._parseItems(res.body);
         const hasNext = res.body.includes(`/page/${page + 1}/`) || res.body.includes('class="next"');
         return { list, hasNextPage: hasNext };
     }
 
     async getLatestUpdates(page) {
-        const res = await this.client.get(`${this.baseUrl}/page/${page}/`, this.getHeaders());
+        const res = await new Client().get(`${this.baseUrl}/page/${page}/`, this.getHeaders());
         const list = this._parseItems(res.body);
         const hasNext = res.body.includes(`/page/${page + 1}/`) || res.body.includes('class="next"');
         return { list, hasNextPage: hasNext };
@@ -83,12 +84,12 @@ class DefaultExtension extends MProvider {
         const gf = (filterList || []).find(f => f && f.name === "Genre");
         const genrePath = (gf && gf.values && gf.state > 0) ? gf.values[gf.state].value : "";
         if (!query && genrePath) {
-            const res = await this.client.get(`${this.baseUrl}${genrePath}page/${page}/`, this.getHeaders());
+            const res = await new Client().get(`${this.baseUrl}${genrePath}page/${page}/`, this.getHeaders());
             const list = this._parseItems(res.body);
             const hasNext = res.body.includes(`/page/${page + 1}/`);
             return { list, hasNextPage: hasNext };
         }
-        const res = await this.client.get(
+        const res = await new Client().get(
             `${this.baseUrl}/?s=${encodeURIComponent(query)}&paged=${page}`,
             this.getHeaders()
         );
@@ -99,7 +100,7 @@ class DefaultExtension extends MProvider {
 
     async getDetail(url) {
         const fullUrl = url.startsWith("http") ? url : `${this.baseUrl}${url}`;
-        const res = await this.client.get(fullUrl, this.getHeaders());
+        const res = await new Client().get(fullUrl, this.getHeaders());
         const html = res.body;
 
         // Title: prefer og:title (clean), else strip "Regarder le Film X (Year) en streaming HDSS" from h1
@@ -140,7 +141,7 @@ class DefaultExtension extends MProvider {
 
     async getVideoList(url) {
         const fullUrl = url.startsWith("http") ? url : `${this.baseUrl}${url}`;
-        const res = await this.client.get(fullUrl, this.getHeaders());
+        const res = await new Client().get(fullUrl, this.getHeaders());
         const html = res.body || "";
         const videos = [];
         const q = this.preferredQuality;
@@ -169,7 +170,7 @@ class DefaultExtension extends MProvider {
         for (const embedUrl of iframeUrls.slice(0, 4)) {
             let resolved = false;
             try {
-                const embedRes = await this.client.get(embedUrl, { ...this.getHeaders(), "Referer": fullUrl });
+                const embedRes = await new Client().get(embedUrl, { ...this.getHeaders(), "Referer": fullUrl });
                 const ebody = embedRes.body || "";
                 const hlsM = ebody.match(/["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/);
                 if (hlsM) {
@@ -224,8 +225,8 @@ class DefaultExtension extends MProvider {
                     title: "URL de base (modifiable si le site change de domaine)",
                     summary: this.baseUrl,
                     valueIndex: 0,
-                    entries: [this.source.baseUrl],
-                    entryValues: [this.source.baseUrl]
+                    entries: [BASE_URL],
+                    entryValues: [BASE_URL]
                 }
             },
             {

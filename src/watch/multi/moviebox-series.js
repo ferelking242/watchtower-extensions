@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "multi",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -26,7 +26,6 @@ const watchtowerSources = [{
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     static get API_BASE() { return "https://h5-api.aoneroom.com"; }
@@ -88,7 +87,7 @@ class DefaultExtension extends MProvider {
     async postSearch(keyword, page, subjectType, sortBy) {
         const body = { keyword: keyword || "", page, perPage: 30, subjectType };
         if (sortBy) body.sortBy = sortBy;
-        const res = await this.client.post(
+        const res = await new Client().post(
             `${DefaultExtension.API_BASE}/wefeed-h5api-bff/subject/search`,
             { headers: this.getWebHeaders() },
             JSON.stringify(body)
@@ -116,7 +115,7 @@ class DefaultExtension extends MProvider {
         for (const base of DefaultExtension.API_V3_BASES) {
             try {
                 const url = `${base}/wefeed-mobile-bff/subject-api/season-info?subjectId=${subjectId}`;
-                const res = await this.client.get(url, { headers: this.getMobileHeaders() });
+                const res = await new Client().get(url, { headers: this.getMobileHeaders() });
                 if (res.statusCode === 200) {
                     const data = this.parseApiData(res.body);
                     if (data && (data.seasons || data.totalSeasonNum)) return data;
@@ -191,7 +190,7 @@ class DefaultExtension extends MProvider {
         const { detailPath, subjectId } = info;
 
         const [detailRes, seasonInfo] = await Promise.all([
-            this.client.get(
+            new Client().get(
                 `${DefaultExtension.API_BASE}/wefeed-h5api-bff/detail?detailPath=${detailPath}`,
                 { headers: this.getWebHeaders() }
             ).then(r => this.parseApiData(r.body)).catch(() => ({})),
@@ -230,7 +229,7 @@ class DefaultExtension extends MProvider {
         const { subjectId, detailPath, se, ep } = JSON.parse(url);
         const apiUrl = `${DefaultExtension.API_BASE}/wefeed-h5api-bff/subject/download` +
             `?subjectId=${subjectId}&se=${se}&ep=${ep}&detailPath=${detailPath}`;
-        const res = await this.client.get(apiUrl, { headers: this.getWebHeaders() });
+        const res = await new Client().get(apiUrl, { headers: this.getWebHeaders() });
         const data = this.parseApiData(res.body);
 
         const subtitles = [];

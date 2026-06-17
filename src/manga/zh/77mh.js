@@ -7,7 +7,7 @@ const mangayomiSources = [{
     "typeSource": "single",
     "itemType": 0,
     "isNsfw": false,
-    "version": "0.0.35",
+    "version": "0.0.36",
     "apiUrl": "",
     "dateFormat": "",
     "dateFormatLocale": "",
@@ -67,7 +67,7 @@ const mangayomiSources = [{
       const preference = new SharedPreferences();
       var base_url = preference.get("domain_url");
       if (base_url.length == 0) {
-        return this.source.baseUrl;
+        return BASE_URL;
       }
       if (base_url.endsWith("/")) {
         return base_url.slice(0, -1);

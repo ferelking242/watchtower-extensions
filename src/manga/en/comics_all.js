@@ -8,17 +8,18 @@ const watchtowerSources = [
     "iconUrl": "https://comics-all.com/templates/creamy-melons7/images/favicon.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.0",
+    "version": "0.1.1",
     "pkgPath": "manga/src/en/comics_all.js",
     "isNsfw": false,
     "appMinVerReq": "0.5.0"
   }
 ];
 
+const BASE_URL = "https://comics-all.com";
+
 class DefaultExtension extends MProvider {
   constructor() {
     super();
-    this.client = new Client();
   }
 
   // ─── Helpers ─────────────────────────────────────────────────────────────
@@ -61,19 +62,19 @@ class DefaultExtension extends MProvider {
   publisherUrl(slug, page) {
     if (!slug) {
       return page <= 1
-        ? this.source.baseUrl + "/"
-        : `${this.source.baseUrl}/page/${page}/`;
+        ? BASE_URL + "/"
+        : `${BASE_URL}/page/${page}/`;
     }
     return page <= 1
-      ? `${this.source.baseUrl}/${slug}`
-      : `${this.source.baseUrl}/${slug}/page/${page}/`;
+      ? `${BASE_URL}/${slug}`
+      : `${BASE_URL}/${slug}/page/${page}/`;
   }
 
   // ─── Core Methods ─────────────────────────────────────────────────────────
 
   async getPopular(page) {
     const url = this.publisherUrl("", page);
-    const res = await this.client.get(url, this.getHeaders());
+    const res = await new Client().get(url, this.getHeaders());
     return this.parseList(res.body);
   }
 
@@ -100,30 +101,30 @@ class DefaultExtension extends MProvider {
     if (query) {
       // Search always returns all results on one page — only show page 1
       if (page > 1) return { list: [], hasNextPage: false };
-      url = `${this.source.baseUrl}/index.php?do=search&subaction=search&story=${encodeURIComponent(query)}`;
+      url = `${BASE_URL}/index.php?do=search&subaction=search&story=${encodeURIComponent(query)}`;
     } else if (tag) {
       const encoded = encodeURIComponent(tag);
       url = page <= 1
-        ? `${this.source.baseUrl}/tags/${encoded}/`
-        : `${this.source.baseUrl}/tags/${encoded}/page/${page}/`;
+        ? `${BASE_URL}/tags/${encoded}/`
+        : `${BASE_URL}/tags/${encoded}/page/${page}/`;
     } else if (year) {
       url = page <= 1
-        ? `${this.source.baseUrl}/${year}/`
-        : `${this.source.baseUrl}/${year}/page/${page}/`;
+        ? `${BASE_URL}/${year}/`
+        : `${BASE_URL}/${year}/page/${page}/`;
     } else if (publisher) {
       url = this.publisherUrl(publisher, page);
     } else {
       return this.getPopular(page);
     }
 
-    const res = await this.client.get(url, this.getHeaders());
+    const res = await new Client().get(url, this.getHeaders());
     const result = this.parseList(res.body);
     if (query) result.hasNextPage = false;
     return result;
   }
 
   async getDetail(url) {
-    const res = await this.client.get(url, this.getHeaders());
+    const res = await new Client().get(url, this.getHeaders());
     const html = res.body;
 
     const title = (html.match(/<h1[^>]*>([^<]+)<\/h1>/) || [])[1]?.trim() || "";

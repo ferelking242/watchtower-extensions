@@ -6,14 +6,14 @@ const watchtowerSources = [{
       "iconUrl": "https://soundcloud.com/favicon.ico",
       "typeSource": "single",
       "itemType": 3,
-      "version": "1.0.0",
+      "version": "1.0.1",
       "pkgPath": "music/en/soundcloud.js",
       "notes": "SoundCloud — Free music streaming",
       "isNsfw": false
   }];
 
   class DefaultExtension extends MProvider {
-      constructor() { super(); this.client = new Client(); }
+      constructor() { super();}
 
       getHeaders(url) {
           return {
@@ -26,7 +26,7 @@ const watchtowerSources = [{
 
       async getPopularList(page) {
           const url = "https://soundcloud.com/charts/top?genre=all-music&country=all-countries";
-          const res = await this.client.get(url, this.getHeaders(url));
+          const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
           const items = [];
           doc.select(".chartTrack, .sound__artwork, .trackItem, .chart-track").forEach(el => {
@@ -45,7 +45,7 @@ const watchtowerSources = [{
 
       async getLatestList(page) {
           const url = "https://soundcloud.com/charts/new?genre=all-music&country=all-countries";
-          const res = await this.client.get(url, this.getHeaders(url));
+          const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
           const items = [];
           doc.select(".chartTrack, .sound__artwork").forEach(el => {
@@ -62,7 +62,7 @@ const watchtowerSources = [{
 
       async getSearchList(query, page, filters) {
           const url = `https://soundcloud.com/search/sounds?q=${encodeURIComponent(query)}&page=${page}`;
-          const res = await this.client.get(url, this.getHeaders(url));
+          const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
           const items = [];
           doc.select(".searchList__item, .sound__header").forEach(el => {
@@ -79,7 +79,7 @@ const watchtowerSources = [{
       }
 
       async getDetail(url) {
-          const res = await this.client.get(url, this.getHeaders(url));
+          const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
           const name = doc.selectFirst("h1.soundTitle__title, h1[itemprop='name']")?.text?.trim() || "";
           const cover = doc.selectFirst("meta[property='og:image']")?.attr("content") || "";

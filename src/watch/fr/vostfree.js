@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.vostfree.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.9",
+    "version": "0.1.10",
     "pkgPath": "watch/fr/vostfree.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -15,12 +15,14 @@ const watchtowerSources = [{
     "contentSubtype": ["anime", "film"]
 }];
 
+const BASE_URL = "https://vostfree.ws";
+
 class DefaultExtension extends MProvider {
-    constructor() { super(); this.client = new Client(); }
+    constructor() { super();}
 
     get baseUrl() {
         const p = this.source.prefs?.find(x => x.key === "base_url");
-        return (p && p.value) ? p.value.replace(/\/$/, "") : this.source.baseUrl.replace(/\/$/, "");
+        return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL.replace(/\/$/, "");
     }
 
     _hdrs(ref) {
@@ -34,7 +36,7 @@ class DefaultExtension extends MProvider {
     // Parse listing pages — handles both relative and absolute hrefs, any attribute order
     _parseList(html) {
         const list = [];
-        const seen = new Set();
+        const seen = {};
         // Match anchor tags: extract attributes string then parse href+title independently
         const anchorRe = /<a\b([^>]+)>[\s\S]{0,600}?<img\b[^>]*?\bsrc="([^"]+)"/gi;
         let m;
@@ -46,8 +48,8 @@ class DefaultExtension extends MProvider {
             let link = hrefM[1];
             if (link.startsWith("/")) link = `${this.baseUrl}${link}`;
             else if (!link.startsWith("http")) link = `${this.baseUrl}/${link}`;
-            if (seen.has(link)) continue;
-            seen.add(link);
+            if ((link in seen)) continue;
+            (seen[link] = 1);
             let imageUrl = m[2];
             if (imageUrl.startsWith("/")) imageUrl = `${this.baseUrl}${imageUrl}`;
             else if (!imageUrl.startsWith("http")) imageUrl = `${this.baseUrl}/${imageUrl}`;
@@ -57,13 +59,13 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        const res = await this.client.get(`${this.baseUrl}/animes-vostfr/?page=${page}`, this._hdrs());
+        const res = await new Client().get(`${this.baseUrl}/animes-vostfr/?page=${page}`, this._hdrs());
         const list = this._parseList(res.body);
         return { list, hasNextPage: list.length >= 8 };
     }
 
     async getLatestUpdates(page) {
-        const res = await this.client.get(`${this.baseUrl}/?page=${page}`, this._hdrs());
+        const res = await new Client().get(`${this.baseUrl}/?page=${page}`, this._hdrs());
         const list = this._parseList(res.body);
         return { list, hasNextPage: list.length >= 8 };
     }
@@ -72,16 +74,16 @@ class DefaultExtension extends MProvider {
         const gf = (filterList || []).find(f => f && f.name === "Genre");
         const genrePath = (gf && gf.values && gf.state > 0) ? gf.values[gf.state].value : "";
         if (!query && genrePath) {
-            const res = await this.client.get(`${this.baseUrl}${genrePath}page/${page}/`, this._hdrs());
+            const res = await new Client().get(`${this.baseUrl}${genrePath}page/${page}/`, this._hdrs());
             return { list: this._parseList(res.body), hasNextPage: true };
         }
-        const res = await this.client.get(`${this.baseUrl}/?search=${encodeURIComponent(query)}&page=${page}`, this._hdrs());
+        const res = await new Client().get(`${this.baseUrl}/?search=${encodeURIComponent(query)}&page=${page}`, this._hdrs());
         const list = this._parseList(res.body);
         return { list, hasNextPage: list.length >= 8 };
     }
 
     async getDetail(url) {
-        const res = await this.client.get(url, this._hdrs());
+        const res = await new Client().get(url, this._hdrs());
         const html = res.body;
 
         // Title
@@ -125,7 +127,7 @@ class DefaultExtension extends MProvider {
     async _resolveSibnet(videoId) {
         try {
             const embedUrl = `https://video.sibnet.ru/shell.php?videoid=${videoId}`;
-            const res = await this.client.get(embedUrl, {
+            const res = await new Client().get(embedUrl, {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
                 "Referer": `${this.baseUrl}/`
             });
@@ -143,7 +145,7 @@ class DefaultExtension extends MProvider {
     async _resolveUqload(embedId) {
         try {
             const embedUrl = `https://uqload.io/embed-${embedId}.html`;
-            const res = await this.client.get(embedUrl, {
+            const res = await new Client().get(embedUrl, {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
                 "Referer": "https://uqload.io/"
             });
@@ -157,7 +159,7 @@ class DefaultExtension extends MProvider {
     async _resolveMp4Upload(embedId) {
         try {
             const embedUrl = `https://www.mp4upload.com/embed-${embedId}.html`;
-            const res = await this.client.get(embedUrl, {
+            const res = await new Client().get(embedUrl, {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
                 "Referer": "https://www.mp4upload.com/"
             });
@@ -174,7 +176,7 @@ class DefaultExtension extends MProvider {
         const epNum = hashM ? hashM[1] : "1";
         const pageUrl = url.replace(/#.*$/, "");
 
-        const res = await this.client.get(pageUrl, this._hdrs(pageUrl));
+        const res = await new Client().get(pageUrl, this._hdrs(pageUrl));
         const html = res.body;
 
         // Find: <div id="buttons_N" class="button_box"><div id="player_X" class="new_player_TYPE">...</div></div>
@@ -254,8 +256,8 @@ class DefaultExtension extends MProvider {
                     title: "URL de base",
                     summary: this.baseUrl,
                     valueIndex: 0,
-                    entries: [this.source.baseUrl],
-                    entryValues: [this.source.baseUrl]
+                    entries: [BASE_URL],
+                    entryValues: [BASE_URL]
                 }
             }
         ];

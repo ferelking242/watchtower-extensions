@@ -13,7 +13,7 @@ const watchtowerSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.2.2",
+    "version": "1.2.3",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -27,7 +27,6 @@ const watchtowerSources = [
 class DefaultExtension extends MProvider {
   constructor() {
     super();
-    this.client = new Client();
   }
 
   getPreference(key) {
@@ -55,7 +54,7 @@ class DefaultExtension extends MProvider {
     var proxy =
       "https://translate.google.com/translate?sl=ta&tl=en&hl=en&client=webapp&u=";
     var baseUrl = slug.includes("https://") ? "" : this.getBaseUrl();
-    var req = await this.client.get(baseUrl + slug);
+    var req = await new Client().get(baseUrl + slug);
     return new Document(req.body);
   }
 
@@ -254,7 +253,7 @@ class DefaultExtension extends MProvider {
     var fileId = dlink.substring(dlink.indexOf("/download/file/") + 15);
 
     var finalPage = `https://download.moviespage.site/download/page/${fileId}`;
-    var req = await this.client.get(finalPage);
+    var req = await new Client().get(finalPage);
     doc = new Document(req.body);
     var streamUrl = doc.selectFirst(".dlink").selectFirst("a").getHref;
 
@@ -268,7 +267,7 @@ class DefaultExtension extends MProvider {
     });
 
     var embedUrl = `https://play.onestream.watch/stream/page/${fileId}`;
-    var req = await this.client.get(embedUrl);
+    var req = await new Client().get(embedUrl);
     doc = new Document(req.body);
     streamUrl = doc.selectFirst("source").attr("src");
     streams.push({
@@ -494,7 +493,7 @@ class DefaultExtension extends MProvider {
     // Sometimes there wont be any title provided
     if (title.length < 1) return imdbId;
     var api = `https://v3.sg.media-imdb.com/suggestion/x/${title}.json?includeVideos=0`;
-    var res = await this.client.get(api);
+    var res = await new Client().get(api);
     if (res.statusCode != 200) {
       return imdbId;
     }

@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/en.novelupdates.png",
   "typeSource": "single",
   "itemType": 2,
-  "version": "0.0.5",
+  "version": "0.0.6",
   "dateFormat": "",
   "dateFormatLocale": "",
   "pkgPath": "novel/src/en/novelupdates.js",
@@ -16,10 +16,12 @@ const watchtowerSources = [{
   "notes": "This extension requires you to login to view the chapters!"
 }];
 
+const BASE_URL = "https://www.novelupdates.com";
+
 class DefaultExtension extends MProvider {
   headers = {
-    Referer: this.source.baseUrl,
-    Origin: this.source.baseUrl,
+    Referer: BASE_URL,
+    Origin: BASE_URL,
     Connection: "keep-alive",
     Accept: "*/*",
     "Accept-Language": "*",
@@ -58,7 +60,7 @@ class DefaultExtension extends MProvider {
 
   async getPopular(page) {
     const res = await new Client().get(
-      `${this.source.baseUrl}/series-ranking/?rank=popmonth&pg=${page}`,
+      `${BASE_URL}/series-ranking/?rank=popmonth&pg=${page}`,
       this.headers
     );
     return this.mangaListFromPage(res);
@@ -66,14 +68,14 @@ class DefaultExtension extends MProvider {
 
   async getLatestUpdates(page) {
     const res = await new Client().get(
-      `${this.source.baseUrl}/series-finder/?sf=1&sh=&sort=sdate&order=desc&pg=${page}`,
+      `${BASE_URL}/series-finder/?sf=1&sh=&sort=sdate&order=desc&pg=${page}`,
       this.headers
     );
     return this.mangaListFromPage(res);
   }
 
   async search(query, page, filters) {
-    let url = `${this.source.baseUrl}/series-finder/?sf=1&sh=${query}&pg=${page}`;
+    let url = `${BASE_URL}/series-finder/?sf=1&sh=${query}&pg=${page}`;
 
     if (!filters || filters.length == 0) {
       const res = await new Client().get(url, this.headers);

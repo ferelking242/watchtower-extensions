@@ -8,7 +8,7 @@ const watchtowerSources = [
       "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.annasarchive.png",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.0.2",
+    "version": "0.0.3",
     "appMinVerReq": "0.6.1",
     "dateFormat": "",
     "dateFormatLocale": "",
@@ -18,6 +18,8 @@ const watchtowerSources = [
     "notes": "EPUBs are automatically downloaded to view chapters! Downloads from Libgen might be slow!"
   }
 ];
+
+const BASE_URL = "https://annas-archive.li";
 
 class DefaultExtension extends MProvider {
   headers = {
@@ -47,7 +49,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getPopular(page) {
-    let url = `${this.source.baseUrl}/search?index=&page=${page}&q=&display=&ext=epub&src=lgli&sort=`;
+    let url = `${BASE_URL}/search?index=&page=${page}&q=&display=&ext=epub&src=lgli&sort=`;
     if (this.source.lang != "all") {
       url += `&lang=${this.source.lang}`;
     }
@@ -56,7 +58,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getLatestUpdates(page) {
-    let url = `${this.source.baseUrl}/search?index=&page=${page}&q=&display=&ext=epub&src=lgli&sort=newest`;
+    let url = `${BASE_URL}/search?index=&page=${page}&q=&display=&ext=epub&src=lgli&sort=newest`;
     if (this.source.lang != "all") {
       url += `&lang=${this.source.lang}`;
     }
@@ -65,7 +67,7 @@ class DefaultExtension extends MProvider {
   }
 
   async search(query, page, filters) {
-    let url = `${this.source.baseUrl}/search?index=&page=${page}&q=${query}&display=&ext=epub&src=lgli&sort=`;
+    let url = `${BASE_URL}/search?index=&page=${page}&q=${query}&display=&ext=epub&src=lgli&sort=`;
     if (this.source.lang != "all") {
       url += `&lang=${this.source.lang}`;
     }
@@ -75,7 +77,7 @@ class DefaultExtension extends MProvider {
 
   async getDetail(url) {
     const client = new Client();
-    const res = await client.get(this.source.baseUrl + url, this.headers);
+    const res = await client.get(BASE_URL + url, this.headers);
     const doc = new Document(res.body);
     const main = doc.selectFirst('main[class="main"]');
 
@@ -131,7 +133,7 @@ class DefaultExtension extends MProvider {
 
   async _getMirrorLink(client, mirrorLink) {
     const res = await client.get(mirrorLink, {
-      Origin: this.source.baseUrl,
+      Origin: BASE_URL,
       ...this.headers,
     });
     const doc = new Document(res.body);

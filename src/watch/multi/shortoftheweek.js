@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "isNsfw": false,
     "hasCloudflare": false,
     "pkgPath": "watch/src/multi/shortoftheweek.js",
@@ -25,7 +25,6 @@ const watchtowerSources = [{
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     get BASE() { return "https://www.shortoftheweek.com"; }
@@ -58,7 +57,7 @@ class DefaultExtension extends MProvider {
 
     async fetch(path) {
         const url = path.startsWith("http") ? path : `${this.BASE}${path}`;
-        const res = await this.client.get(url, this.headers());
+        const res = await new Client().get(url, this.headers());
         return new Document(res.body);
     }
 
@@ -261,7 +260,7 @@ class DefaultExtension extends MProvider {
             const vimeoId = url.match(/video\/(\d+)/)?.[1];
             if (vimeoId) {
                 try {
-                    const apiRes = await this.client.get(
+                    const apiRes = await new Client().get(
                         `https://vimeo.com/api/v2/video/${vimeoId}.json`,
                         this.headers()
                     );

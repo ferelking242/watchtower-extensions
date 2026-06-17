@@ -7,19 +7,20 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/en.animesuge.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.0",
+    "version": "0.1.1",
     "pkgPath": "anime/src/en/animesuge.js"
 }];
+
+const BASE_URL = "https://animesuge.to";
 
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     getHeaders() {
         return {
-            "Referer": `${this.source.baseUrl}/`,
+            "Referer": `${BASE_URL}/`,
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "X-Requested-With": "XMLHttpRequest"
         };
@@ -31,7 +32,7 @@ class DefaultExtension extends MProvider {
         let m;
         while ((m = re.exec(html)) !== null) {
             list.push({
-                link: m[1].replace(this.source.baseUrl, ""),
+                link: m[1].replace(BASE_URL, ""),
                 imageUrl: m[2],
                 name: m[3].replace(/<[^>]+>/g, "").trim()
             });
@@ -40,20 +41,20 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        const res = await this.client.get(`${this.source.baseUrl}/anime-list/?page=${page}&order=popular`, this.getHeaders());
+        const res = await new Client().get(`${BASE_URL}/anime-list/?page=${page}&order=popular`, this.getHeaders());
         const list = this._parseGrid(res.body);
         return { list, hasNextPage: res.body.includes(`page=${page + 1}`) };
     }
 
     async getLatestUpdates(page) {
-        const res = await this.client.get(`${this.source.baseUrl}/?page=${page}`, this.getHeaders());
+        const res = await new Client().get(`${BASE_URL}/?page=${page}`, this.getHeaders());
         const list = this._parseGrid(res.body);
         return { list, hasNextPage: res.body.includes(`page=${page + 1}`) };
     }
 
     async search(query, page, filterList) {
-        const res = await this.client.get(
-            `${this.source.baseUrl}/?s=${encodeURIComponent(query)}&page=${page}`,
+        const res = await new Client().get(
+            `${BASE_URL}/?s=${encodeURIComponent(query)}&page=${page}`,
             this.getHeaders()
         );
         const list = this._parseGrid(res.body);
@@ -61,8 +62,8 @@ class DefaultExtension extends MProvider {
     }
 
     async getDetail(url) {
-        const fullUrl = url.startsWith("http") ? url : `${this.source.baseUrl}${url}`;
-        const res = await this.client.get(fullUrl, this.getHeaders());
+        const fullUrl = url.startsWith("http") ? url : `${BASE_URL}${url}`;
+        const res = await new Client().get(fullUrl, this.getHeaders());
         const html = res.body;
 
         const nameM = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
@@ -77,7 +78,7 @@ class DefaultExtension extends MProvider {
         const idM = html.match(/data-id="(\d+)"/);
         if (!idM) return { name, description, imageUrl, genres: [], status: 0, chapters: [] };
 
-        const epRes = await this.client.get(
+        const epRes = await new Client().get(
             `${this.source.apiUrl}/episode/list/${idM[1]}`,
             this.getHeaders()
         );
@@ -98,7 +99,7 @@ class DefaultExtension extends MProvider {
         const epIdM = url.match(/ep=(\d+)/);
         if (!epIdM) return [];
 
-        const srvRes = await this.client.get(
+        const srvRes = await new Client().get(
             `${this.source.apiUrl}/server/list/${epIdM[1]}`,
             this.getHeaders()
         );
@@ -110,7 +111,7 @@ class DefaultExtension extends MProvider {
         let m;
         while ((m = idRe.exec(srvHtml)) !== null) {
             try {
-                const srcRes = await this.client.get(
+                const srcRes = await new Client().get(
                     `${this.source.apiUrl}/server/${m[1]}`,
                     this.getHeaders()
                 );

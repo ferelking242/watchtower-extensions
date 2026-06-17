@@ -7,13 +7,15 @@ const watchtowerSources = [{
     "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/en.wordrain69.png",
   "typeSource": "single",
   "itemType": 2,
-  "version": "0.0.4",
+  "version": "0.0.5",
   "dateFormat": "",
   "dateFormatLocale": "",
   "pkgPath": "novel/src/en/wordrain69.js",
   "isNsfw": false,
   "hasCloudflare": false
 }];
+
+const BASE_URL = "https://wordrain69.com";
 
 class DefaultExtension extends MProvider {
   getHeaders(url) {
@@ -45,20 +47,20 @@ class DefaultExtension extends MProvider {
 
   async getPopular(page) {
     const res = await new Client().get(
-      `${this.source.baseUrl}/manga-genre/novel/page/${page}/?m_orderby=trending`,
+      `${BASE_URL}/manga-genre/novel/page/${page}/?m_orderby=trending`,
     );
     return this.mangaListFromPage(res);
   }
 
   async getLatestUpdates(page) {
     const res = await new Client().get(
-      `${this.source.baseUrl}/manga-genre/novel/page/${page}/?m_orderby=latest`,
+      `${BASE_URL}/manga-genre/novel/page/${page}/?m_orderby=latest`,
     );
     return this.mangaListFromPage(res);
   }
 
   async search(query, page, filters) {
-    let url = `${this.source.baseUrl}/?s=${query}`;
+    let url = `${BASE_URL}/?s=${query}`;
     const res = await new Client().get(url);
     return this.mangaListFromPage(res);
   }
@@ -81,7 +83,7 @@ class DefaultExtension extends MProvider {
     const chapters = [];
     const chapterRes = await client.post(`${url}ajax/chapters/`, {
       Priority: "u=0, i",
-      "Origin": this.source.baseUrl,
+      "Origin": BASE_URL,
       "Referer": url,
     });
     const chapterDoc = new Document(chapterRes.body);

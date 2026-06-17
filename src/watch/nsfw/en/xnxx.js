@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.xnxx.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.4",
+    "version": "1.0.5",
     "pkgPath": "watch/nsfw/en/xnxx.js",
     "notes": "Adult content (18+)",
     "isNsfw": true
@@ -53,7 +53,7 @@ class DefaultExtension extends MProvider {
     _parseVideoList(html) {
         const doc = new Document(html);
         const items = [];
-        const seen = new Set();
+        const seen = {};
         const cards = doc.select(".mozaique .thumb-block");
         for (const card of cards) {
             // Title is on the anchor in .thumb-under (its `title` attr or text), not on the inner thumb anchor.
@@ -69,8 +69,8 @@ class DefaultExtension extends MProvider {
             const href = anchor.attr("href") || "";
             if (!href || href === "#") continue;
             const link = href.startsWith("http") ? href : `https://www.xnxx.com${href}`;
-            if (seen.has(link)) continue;
-            seen.add(link);
+            if ((link in seen)) continue;
+            (seen[link] = 1);
 
             const imgEl = card.selectFirst("img");
             const thumb = imgEl ? (imgEl.attr("data-src") || imgEl.attr("data-original") || imgEl.attr("src") || "") : "";
@@ -107,10 +107,10 @@ class DefaultExtension extends MProvider {
         // Tags as plain strings (not {name:...} objects).
         const tagEls = doc.select(".video-tags a, .metadata-row.tags a, a[href*='/tags/'], a[href*='/categories/']");
         const tags = [];
-        const seen = new Set();
+        const seen = {};
         for (const el of tagEls) {
             const t = (el.text || "").trim();
-            if (t && !seen.has(t)) { seen.add(t); tags.push(t); }
+            if (t && !(t in seen)) { (seen[t] = 1); tags.push(t); }
         }
         return {
             name: title || "Untitled",

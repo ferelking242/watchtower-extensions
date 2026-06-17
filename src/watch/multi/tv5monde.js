@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "isNsfw": false,
     "hasCloudflare": false,
     "pkgPath": "watch/src/multi/tv5monde.js",
@@ -25,7 +25,6 @@ const watchtowerSources = [{
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     get BASE() { return "https://www.tv5mondeplus.com"; }
@@ -56,7 +55,7 @@ class DefaultExtension extends MProvider {
 
     async fetch(path) {
         const url = path.startsWith("http") ? path : `${this.BASE}${path}`;
-        const res = await this.client.get(url, this.headers());
+        const res = await new Client().get(url, this.headers());
         return new Document(res.body);
     }
 

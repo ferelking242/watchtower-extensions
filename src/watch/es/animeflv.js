@@ -7,33 +7,35 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "isNsfw": false,
-    "version": "0.0.1",
+    "version": "0.0.2",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/es/animeflv.js"
 }];
 
+const BASE_URL = "https://www3.animeflv.net";
+
 class DefaultExtension extends MProvider {
     async getPopular(page) {
-        const baseUrl = this.source.baseUrl;
+        const baseUrl = BASE_URL;
         const res = await new Client().get(`${baseUrl}/browse?order=rating&page=${page}`);
 
         return this.animeFromElement(res.body);
     }
     async getLatestUpdates(page) {
-        const baseUrl = this.source.baseUrl;
+        const baseUrl = BASE_URL;
         const res = await new Client().get(`${baseUrl}/browse?order=added&page=${page}`);
 
         return this.animeFromElement(res.body);
     }
     async search(query, page, filters) {
-        const baseUrl = this.source.baseUrl;
+        const baseUrl = BASE_URL;
         const res = await new Client().get(`${baseUrl}/browse?&q=${query}&page=${page}`);
 
         return this.animeFromElement(res.body);
     }
     async getDetail(url) {
-        const baseUrl = this.source.baseUrl;
+        const baseUrl = BASE_URL;
         const res = await new Client().get(baseUrl + url);
         const document = new Document(res.body);
         const genre = document.select("nav.Nvgnrs a").map(e => e.text);

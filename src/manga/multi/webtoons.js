@@ -8,11 +8,13 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": true,
     "isNsfw": false,
-    "version": "0.0.45",
+    "version": "0.0.46",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/all/webtoons.js"
 }];
+
+const BASE_URL = "https://www.webtoons.com";
 
 class DefaultExtension extends MProvider {
   headers = {
@@ -24,7 +26,7 @@ class DefaultExtension extends MProvider {
 
   getFormattedUrl(preferenceKey) {
     const preference = new SharedPreferences();
-    let url = preference.get(preferenceKey) || this.source.baseUrl;
+    let url = preference.get(preferenceKey) || BASE_URL;
 
     return url.endsWith("/") ? url.slice(0, -1) : url;
   }
@@ -614,7 +616,7 @@ class DefaultExtension extends MProvider {
         editTextPreference: {
           title: "Override BaseUrl",
           summary: "",
-          value: this.source.baseUrl,
+          value: BASE_URL,
           dialogTitle: "URL",
           dialogMessage: "",
         },

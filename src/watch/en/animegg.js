@@ -9,7 +9,7 @@ const watchtowerSources = [
         "https://www.google.com/s2/favicons?sz=256&domain=https://www.animegg.org/",
       "typeSource": "single",
       "itemType": 1,
-      "version": "1.0.6",
+      "version": "1.0.7",
       "pkgPath": "anime/src/en/animegg.js"
     }
   ];
@@ -19,13 +19,12 @@ const watchtowerSources = [
   class DefaultExtension extends MProvider {
     constructor() {
       super();
-      this.client = new Client();
     }
 
     getHeaders(url) {
       return {
-        Referer: this.source.baseUrl,
-        Origin: this.source.baseUrl,
+        Referer: BASE_URL,
+        Origin: BASE_URL,
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
       };
     }
@@ -35,8 +34,8 @@ const watchtowerSources = [
     }
 
     async requestText(slug) {
-      const url = slug.startsWith("http") ? slug : `${this.source.baseUrl}${slug}`;
-      var res = await this.client.get(url, this.getHeaders());
+      const url = slug.startsWith("http") ? slug : `${BASE_URL}${slug}`;
+      var res = await new Client().get(url, this.getHeaders());
       return res.body;
     }
     async request(slug) {
@@ -110,7 +109,7 @@ const watchtowerSources = [
     }
 
     async getDetail(url) {
-      var baseUrl = this.source.baseUrl;
+      var baseUrl = BASE_URL;
       var slug = url.replace(baseUrl, "");
       var link = baseUrl + slug;
       var body = await this.request(slug);
@@ -197,7 +196,7 @@ const watchtowerSources = [
 
       // ââ Strategy 2: regex fallback on raw HTML ââ
       if (chapters.length === 0) {
-        const seen = new Set([link, url]);
+        const seen = {}; seen[link] = 1; seen[url] = 1;
         // Match any internal animegg.org link that looks like an episode page
         const epPatterns = [
           // /series-name/episode-X or /watch/X
@@ -211,10 +210,10 @@ const watchtowerSources = [
           while ((m = re.exec(html)) !== null) {
             let epUrl = m[1];
             if (!epUrl.startsWith("http")) epUrl = baseUrl + epUrl;
-            if (seen.has(epUrl)) continue;
+            if ((epUrl in seen)) continue;
             // Only accept URLs that look like episode pages (contain /episode, /ep-, /watch, numbers)
             if (!/\/(episode|ep[-_\d]|watch\/?\d)/i.test(epUrl) && !/\/\d+[/-]/.test(epUrl)) continue;
-            seen.add(epUrl);
+            (seen[epUrl] = 1);
             const raw = m[2].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
             const epName = raw || `Episode`;
             chapters.push({ name: epName, url: epUrl, scanlator: "" });
@@ -247,7 +246,7 @@ const watchtowerSources = [
         var slug = div.selectFirst("iframe").getSrc;
         var streams = [];
         if (!slug || slug.length < 1) return streams;
-        if (!slug.startsWith("http")) slug = this.source.baseUrl + slug;
+        if (!slug.startsWith("http")) slug = BASE_URL + slug;
         var body = await this.requestText(slug);
         var sKey = "var videoSources = ";
         var eKey = "var httpProtocol";
@@ -258,7 +257,7 @@ const watchtowerSources = [
         let videoSources = eval("(" + videoSourcesStr + ")");
         var headers = this.getHeaders();
         videoSources.forEach((videoSource) => {
-          var url = this.source.baseUrl + videoSource.file;
+          var url = BASE_URL + videoSource.file;
           var quality = `${videoSource.label} - ${audio}`;
           streams.push({ url, originalUrl: url, quality, headers });
         });

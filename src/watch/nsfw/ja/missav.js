@@ -6,11 +6,13 @@ const watchtowerSources = [{
   "iconUrl": "https://missav.ws/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "pkgPath": "missav/ja/ja.missav.js",
   "notes": "JAV streaming — content always Japanese, multi-language UI",
   "isNsfw": true
 }];
+
+const BASE_URL = "https://missav.ws";
 
 class DefaultExtension extends MProvider {
   getHeaders(url) {
@@ -22,24 +24,24 @@ class DefaultExtension extends MProvider {
   }
 
   async getPopular(page) {
-    const url = `${this.source.baseUrl}/en/new?page=${page}`;
+    const url = `${BASE_URL}/en/new?page=${page}`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, this.source.baseUrl);
+    return this._parse(res.body, BASE_URL);
   }
 
   get supportsLatest() { return true; }
 
   async getLatestUpdates(page) {
-    const url = `${this.source.baseUrl}/en/new?page=${page}`;
+    const url = `${BASE_URL}/en/new?page=${page}`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, this.source.baseUrl);
+    return this._parse(res.body, BASE_URL);
   }
 
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
-    const url = `${this.source.baseUrl}/en/search/${q}?page=${page}`;
+    const url = `${BASE_URL}/en/search/${q}?page=${page}`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, this.source.baseUrl);
+    return this._parse(res.body, BASE_URL);
   }
 
   _parse(html, base) {

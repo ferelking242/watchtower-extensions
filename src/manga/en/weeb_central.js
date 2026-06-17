@@ -7,22 +7,23 @@ const watchtowerSources = [{
     "iconUrl": "https://www.google.com/s2/favicons?sz=128&domain=https://weebcentral.com",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.1.0",
+    "version": "0.1.1",
     "pkgPath": "manga/src/en/weebcentral.js"
 }];
+
+const BASE_URL = "https://weebcentral.com";
 
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
     getHeaders(url) {
-        return { "Referer": `${this.source.baseUrl}/` };
+        return { "Referer": `${BASE_URL}/` };
     }
 
     async request(slug) {
-        var url = `${this.source.baseUrl}${slug}`
-        var res = await this.client.get(url);
+        var url = `${BASE_URL}${slug}`
+        var res = await new Client().get(url);
         return new Document(res.body);
     }
 
@@ -131,7 +132,7 @@ class DefaultExtension extends MProvider {
 
         doc.select("section > img").forEach(page => urls.push(page.attr("src")))
 
-        return urls.map(x => ({ url: x, headers: { Referer: `${this.source.baseUrl}/`, Accept: "image/avif,image/webp,*/*", Host: `${x.match(/^(?:https?:\/\/)?([^\/:]+)(:\d+)?/)[1]}` } }));
+        return urls.map(x => ({ url: x, headers: { Referer: `${BASE_URL}/`, Accept: "image/avif,image/webp,*/*", Host: `${x.match(/^(?:https?:\/\/)?([^\/:]+)(:\d+)?/)[1]}` } }));
     }
 
 

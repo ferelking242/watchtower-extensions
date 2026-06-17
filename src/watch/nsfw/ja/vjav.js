@@ -6,11 +6,13 @@ const watchtowerSources = [{
   "iconUrl": "https://vjav.com/images/favicons/favicon-32x32.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "pkgPath": "vjav/ja/ja.vjav.js",
   "notes": "JAV streaming site",
   "isNsfw": true
 }];
+
+const BASE_URL = "https://vjav.com";
 
 class DefaultExtension extends MProvider {
   getHeaders(url) {
@@ -21,24 +23,24 @@ class DefaultExtension extends MProvider {
   }
 
   async getPopular(page) {
-    const url = `${this.source.baseUrl}/videos/filtered/?t=mr&m=${page}`;
+    const url = `${BASE_URL}/videos/filtered/?t=mr&m=${page}`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, this.source.baseUrl);
+    return this._parse(res.body, BASE_URL);
   }
 
   get supportsLatest() { return true; }
 
   async getLatestUpdates(page) {
-    const url = `${this.source.baseUrl}/videos/filtered/?t=n&m=${page}`;
+    const url = `${BASE_URL}/videos/filtered/?t=n&m=${page}`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, this.source.baseUrl);
+    return this._parse(res.body, BASE_URL);
   }
 
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
-    const url = `${this.source.baseUrl}/videos/filtered/?q=${q}&m=${page}`;
+    const url = `${BASE_URL}/videos/filtered/?q=${q}&m=${page}`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, this.source.baseUrl);
+    return this._parse(res.body, BASE_URL);
   }
 
   _parse(html, base) {

@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": true,
     "isNsfw": true,
-    "version": "0.0.1",
+    "version": "0.0.2",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/ru/mangalib.js"
@@ -22,7 +22,6 @@ const watchtowerSources = [{
 class DefaultExtension extends MProvider {
     constructor () {
         super();
-        this.client = new Client();
         this.apiHeaders = {
             'accept': '*/*',
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'};
@@ -38,7 +37,7 @@ class DefaultExtension extends MProvider {
         }[status] ?? 5;
     }
     async parseMangaList(url) {
-        const res = await this.client.get(url, this.apiHeaders);
+        const res = await new Client().get(url, this.apiHeaders);
         const json = JSON.parse(res.body);
         let mangas = json.data.map(manga => ({
             name: manga.rus_name,
@@ -110,8 +109,8 @@ class DefaultExtension extends MProvider {
         return await this.parseMangaList(url + `&page=${page}`);
     }
     async getDetail(url) {
-        const infoRes = await this.client.get(`${this.source.apiUrl}/manga/${url}?fields[]=chap_count&fields[]=summary&fields[]=genres&fields[]=authors&fields[]=artists`, this.apiHeaders);
-        const chapterRes = await this.client.get(`${this.source.apiUrl}/manga/${url}/chapters`, this.apiHeaders);
+        const infoRes = await new Client().get(`${this.source.apiUrl}/manga/${url}?fields[]=chap_count&fields[]=summary&fields[]=genres&fields[]=authors&fields[]=artists`, this.apiHeaders);
+        const chapterRes = await new Client().get(`${this.source.apiUrl}/manga/${url}/chapters`, this.apiHeaders);
         
         const info = JSON.parse(infoRes.body).data;
         const chapters = JSON.parse(chapterRes.body).data;
@@ -137,11 +136,11 @@ class DefaultExtension extends MProvider {
     async getPageList(url) {
         const serverId = new SharedPreferences().get('imageServer');
 
-        let res = await this.client.get(`${this.source.apiUrl}/constants?fields[]=imageServers`, this.apiHeaders);
+        let res = await new Client().get(`${this.source.apiUrl}/constants?fields[]=imageServers`, this.apiHeaders);
         const imageServers = JSON.parse(res.body).data.imageServers;
         const imageServer = imageServers.find(x => x.id == serverId).url;
 
-        res = await this.client.get(url, this.apiHeaders);
+        res = await new Client().get(url, this.apiHeaders);
         const chapter = JSON.parse(res.body).data;
         return chapter.pages.map(img => ({url: imageServer + img.url, headers: this.apiHeaders}));
     }

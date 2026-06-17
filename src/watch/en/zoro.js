@@ -7,19 +7,20 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/en.zoro.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.2",
+    "version": "0.1.3",
     "pkgPath": "anime/src/en/zoro.js"
 }];
+
+const BASE_URL = "https://aniwatch.to";
 
 class DefaultExtension extends MProvider {
     constructor() {
         super();
-        this.client = new Client();
     }
 
     getHeaders(url) {
         return {
-            "Referer": `${this.source.baseUrl}/`,
+            "Referer": `${BASE_URL}/`,
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "X-Requested-With": "XMLHttpRequest"
         };
@@ -36,22 +37,22 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        const res = await this.client.get(`${this.source.baseUrl}/most-popular?page=${page}`, this.getHeaders());
+        const res = await new Client().get(`${BASE_URL}/most-popular?page=${page}`, this.getHeaders());
         const list = this._parseAnimeList(res.body);
         const hasNext = res.body.includes('class="next"') || res.body.includes('aria-label="Next"');
         return { list, hasNextPage: hasNext };
     }
 
     async getLatestUpdates(page) {
-        const res = await this.client.get(`${this.source.baseUrl}/recently-updated?page=${page}`, this.getHeaders());
+        const res = await new Client().get(`${BASE_URL}/recently-updated?page=${page}`, this.getHeaders());
         const list = this._parseAnimeList(res.body);
         const hasNext = res.body.includes('class="next"') || res.body.includes('aria-label="Next"');
         return { list, hasNextPage: hasNext };
     }
 
     async search(query, page, filterList) {
-        const res = await this.client.get(
-            `${this.source.baseUrl}/search?keyword=${encodeURIComponent(query)}&page=${page}`,
+        const res = await new Client().get(
+            `${BASE_URL}/search?keyword=${encodeURIComponent(query)}&page=${page}`,
             this.getHeaders()
         );
         const list = this._parseAnimeList(res.body);
@@ -60,7 +61,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getDetail(url) {
-        const res = await this.client.get(`${this.source.baseUrl}${url}`, this.getHeaders());
+        const res = await new Client().get(`${BASE_URL}${url}`, this.getHeaders());
         const html = res.body;
 
         const nameM = html.match(/<h2[^>]+class="[^"]*film-name[^"]*"[^>]*>([^<]+)</);
@@ -73,8 +74,8 @@ class DefaultExtension extends MProvider {
         const imageUrl = imageM ? imageM[1] : "";
 
         const animeId = url.split("-").pop();
-        const epRes = await this.client.get(
-            `${this.source.baseUrl}/ajax/v2/episode/list/${animeId}`,
+        const epRes = await new Client().get(
+            `${BASE_URL}/ajax/v2/episode/list/${animeId}`,
             this.getHeaders()
         );
         const epData = JSON.parse(epRes.body);
@@ -99,8 +100,8 @@ class DefaultExtension extends MProvider {
         if (!epIdM) return [];
         const epId = epIdM[1];
 
-        const serverRes = await this.client.get(
-            `${this.source.baseUrl}/ajax/v2/episode/servers?episodeId=${epId}`,
+        const serverRes = await new Client().get(
+            `${BASE_URL}/ajax/v2/episode/servers?episodeId=${epId}`,
             this.getHeaders()
         );
         const serverData = JSON.parse(serverRes.body);
@@ -116,8 +117,8 @@ class DefaultExtension extends MProvider {
         const videos = [];
         for (const server of servers.slice(0, 4)) {
             try {
-                const srcRes = await this.client.get(
-                    `${this.source.baseUrl}/ajax/v2/episode/sources?id=${server.id}`,
+                const srcRes = await new Client().get(
+                    `${BASE_URL}/ajax/v2/episode/sources?id=${server.id}`,
                     this.getHeaders()
                 );
                 const srcData = JSON.parse(srcRes.body);
