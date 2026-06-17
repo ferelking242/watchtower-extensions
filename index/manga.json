@@ -1081,7 +1081,7 @@
     "hasCloudflare": false,
     "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/manga/en/harimanga.js",
     "apiUrl": "",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
