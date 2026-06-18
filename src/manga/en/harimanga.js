@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/mangayomi-extensions/main/dart/manga/multisrc/madara/src/en/harimanga/icon.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.2.2",
+    "version": "0.2.3",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -43,7 +43,22 @@ class DefaultExtension extends MProvider {
     const imgEl = el.selectFirst("img");
     const name = titleEl ? titleEl.text.trim() : "";
     const link = titleEl ? titleEl.getHref : "";
-    const imageUrl = imgEl ? (imgEl.attr("data-src") || imgEl.attr("src") || "") : "";
+    let imageUrl = "";
+      if (imgEl) {
+        const src = imgEl.attr("src") || "";
+        const dataSrc = imgEl.attr("data-src") || "";
+        if (src.startsWith("http")) {
+          imageUrl = src;
+        } else if (dataSrc.startsWith("http")) {
+          imageUrl = dataSrc;
+        } else if (dataSrc && !dataSrc.startsWith("data:")) {
+          const base = this.getBaseUrl();
+          imageUrl = base + (dataSrc.startsWith("/") ? dataSrc : "/" + dataSrc);
+        } else if (src && !src.startsWith("data:")) {
+          const base = this.getBaseUrl();
+          imageUrl = base + (src.startsWith("/") ? src : "/" + src);
+        }
+      }
     return { name, imageUrl, link };
   }
 
@@ -114,7 +129,13 @@ class DefaultExtension extends MProvider {
     const doc = new Document(res.body);
 
     const imgEl = doc.selectFirst("div.summary_image img");
-    const imageUrl = imgEl ? (imgEl.attr("data-src") || imgEl.attr("src") || "") : "";
+    const imgSrc = imgEl ? imgEl.attr("src") || "" : "";
+      const imgDataSrc = imgEl ? imgEl.attr("data-src") || "" : "";
+      const imageUrl = imgSrc.startsWith("http") ? imgSrc
+        : imgDataSrc.startsWith("http") ? imgDataSrc
+        : imgDataSrc && !imgDataSrc.startsWith("data:") ? this.getBaseUrl() + (imgDataSrc.startsWith("/") ? imgDataSrc : "/" + imgDataSrc)
+        : imgSrc && !imgSrc.startsWith("data:") ? this.getBaseUrl() + (imgSrc.startsWith("/") ? imgSrc : "/" + imgSrc)
+        : "";
 
     const titleEl = doc.selectFirst("div.post-title h1");
     const name = titleEl ? titleEl.text.trim() : "";
