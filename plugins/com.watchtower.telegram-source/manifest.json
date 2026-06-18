@@ -20,7 +20,10 @@
     "source"
   ],
   "runtime": "binary",
-  "ui": "flutter_eval",
+  "ui": {
+    "method": "eval",
+    "evalSource": "ui/main.dart"
+  },
   "entry": "script.py",
   "scriptRuntime": "python3.11",
   "permissions": [
