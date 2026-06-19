@@ -12,7 +12,7 @@
     "hasCloudflare": false,
     "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/watch/fr/tropistream.js",
     "apiUrl": "https://tropistream.fr",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -34,12 +34,16 @@
       "VO"
     ],
     "subCategories": [
-      "film",
-      "serie",
-      "anime"
+      "films",
+      "series",
+      "animes",
+      "tropi-tv"
     ],
     "supportsForYou": true,
-    "supportsComments": false
+    "supportsComments": false,
+    "langs": [
+      "fr"
+    ]
   },
   {
     "name": "Anime-Sama",
