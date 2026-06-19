@@ -53,7 +53,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.mangadex.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.1.8",
+    "version": "0.1.9",
     "pkgPath": "manga/src/all/mangadex.js"
 }];
 
@@ -80,7 +80,7 @@ class DefaultExtension extends MProvider {
 
     /** Cover filename suffix ("" / ".512.jpg" / ".256.jpg"). */
     coverSuffix() {
-        return this.pref("coverQuality", "");
+        return this.pref("coverQuality", "") ?? "";
     }
 
     /**
