@@ -1757,6 +1757,7 @@ class _TgButton extends StatelessWidget {
       ),
     );
   }
+}
 
   // ─────────────────────────────────────────────────────────────────────────────
   // ÉCRAN 3 — VÉRIFICATION EN 2 ÉTAPES (2FA)
