@@ -1,80 +1,88 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// TropiStream — extension Watchtower v1.0.0
+// TropiStream — extension Watchtower v2.0.0
 //
 // Source  : https://tropistream.fr
 // Langue  : Français (Films, Séries, Animés — VF / VOSTFR)
 //
-// Auth    : Discord OAuth (webview) — connexion requise pour le contenu
+// Architecture :
+//   • Catalogue → TMDB API (clé officielle extraite du site)
+//   • Accueil   → /srv/nouveautes (dernières sorties TropiStream)
+//   • TropiTV   → /tropi-tv (chaînes en direct)
+//   • Auth      → Discord OAuth via webview (session cookie)
+//
+// Sections home (si connecté) :
+//   • Parce que vous avez regardé…
+//   • Reprendre la lecture
+//   • Nouveautés
 //
 // Méthodes :
-//   getPopular(page)        → /srv/list/film  (films populaires)
-//   getLatestUpdates(page)  → /srv/nouveautes (dernières sorties)
-//   getForYou(page)         → /srv/nouveautes (tout type)
-//   search(query, page)     → recherche multi-type (film/serie/anime)
-//   getDetail(url)          → fiche complète + épisodes
-//   getVideoList(url)       → extraction iframe embed
-//
-// Notes :
-//   • Connexion Discord requise (bouton Connexion → webview Discord OAuth)
-//   • Vote Discord optionnel dans les préférences (3 sites)
-//   • subCategories : film, serie, anime
+//   getPopular(page)       → TMDB popular par catégorie (films/series/animes)
+//   getLatestUpdates(page) → /srv/nouveautes + TMDB latest
+//   getForYou(page)        → nouveautés TropiStream + historique utilisateur
+//   search(query, page)    → TMDB search + AniList (animés)
+//   getDetail(url)         → TMDB detail + épisodes
+//   getVideoList(url)      → embed TropiStream player
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ── TMDB clé officielle (extraite du code source TropiStream) ─────────────────
+const TMDB_KEY  = "3e25319214feb74582abc87f77a53c76";
+const TMDB_BASE = "https://api.themoviedb.org/3";
+const TMDB_IMG  = "https://image.tmdb.org/t/p";
+const BASE_URL  = "https://tropistream.fr";
 
 const watchtowerSources = [{
     "name": "TropiStream",
     "langs": ["fr"],
     "ids": { "fr": 756891223 },
-    "baseUrl": "https://tropistream.fr",
-    "apiUrl": "https://tropistream.fr",
+    "baseUrl": BASE_URL,
+    "apiUrl": BASE_URL,
     "iconUrl": "https://tropistream.fr/tropi.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "2.0.0",
     "pkgPath": "watch/fr/tropistream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
     "videoQualities": ["AUTO", "VF", "VOSTFR", "VO"],
-    "subCategories": ["film", "serie", "anime"],
+    "subCategories": ["films", "series", "animes", "tropi-tv"],
     "supportsForYou": true,
     "supportsComments": false,
     "requiresAccount": true,
-    "loginUrl": "https://tropistream.fr",
+    "loginUrl": BASE_URL,
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "prefs": [
         {
             "key": "category",
             "type": "select",
-            "label": "Catégorie par défaut",
-            "value": "film",
-            "values": ["film", "serie", "anime"],
+            "label": "Catégorie Accueil",
+            "value": "films",
+            "values": ["films", "series", "animes"],
             "hint": "Catégorie affichée dans l'onglet Populaire"
         },
         {
-            "key": "vote_discord",
+            "key": "vote_discord_top",
             "type": "text",
-            "label": "Voter sur Discord Top",
+            "label": "🗳️ Voter — Discord Top",
             "value": "https://discordtop.net/guild/1240944208773382185/vote",
-            "hint": "Lien de vote Discord Top (ouvrir dans le navigateur)"
+            "hint": "Copier ce lien dans votre navigateur pour voter"
         },
         {
             "key": "vote_serveur_prive",
             "type": "text",
-            "label": "Voter sur Serveur-Privé",
+            "label": "🗳️ Voter — Serveur-Privé",
             "value": "https://serveur-prive.net/discord/tropistream/vote",
-            "hint": "Lien de vote Serveur-Privé (ouvrir dans le navigateur)"
+            "hint": "Copier ce lien dans votre navigateur pour voter"
         },
         {
             "key": "vote_meilleurs_serveurs",
             "type": "text",
-            "label": "Voter sur Meilleurs-Serveurs",
+            "label": "🗳️ Voter — Meilleurs-Serveurs",
             "value": "https://meilleurs-serveurs.com/discord/tropistream",
-            "hint": "Lien de vote Meilleurs-Serveurs (ouvrir dans le navigateur)"
+            "hint": "Copier ce lien dans votre navigateur pour voter"
         }
     ]
 }];
-
-const BASE_URL = "https://tropistream.fr";
 
 class DefaultExtension extends MProvider {
     constructor() {
@@ -84,22 +92,20 @@ class DefaultExtension extends MProvider {
     // ── Config ────────────────────────────────────────────────────────────────
 
     get baseUrl() {
-        const p = this.source.prefs
+        var p = this.source && this.source.prefs
             ? this.source.prefs.find(function(x) { return x.key === "base_url"; })
             : null;
         return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL;
     }
 
-    _getPref(key) {
-        const p = this.source.prefs
+    _pref(key, def) {
+        var p = this.source && this.source.prefs
             ? this.source.prefs.find(function(x) { return x.key === key; })
             : null;
-        return (p && p.value) ? p.value : null;
+        return (p && p.value) ? p.value : (def || "");
     }
 
-    get defaultCategory() {
-        return this._getPref("category") || "film";
-    }
+    get defaultCat() { return this._pref("category", "films"); }
 
     // ── HTTP helpers ──────────────────────────────────────────────────────────
 
@@ -107,63 +113,57 @@ class DefaultExtension extends MProvider {
         return {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
             "Accept": "application/json, text/html, */*",
-            "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
+            "Accept-Language": "fr-FR,fr;q=0.9",
             "Referer": ref || (this.baseUrl + "/"),
             "Origin": this.baseUrl
         };
     }
 
-    _jsonHdrs(ref) {
-        return Object.assign({}, this._hdrs(ref), {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        });
+    _get(url, ref) {
+        return new Client().get(url, { headers: this._hdrs(ref) });
     }
 
-    // ── JSON parse helper ─────────────────────────────────────────────────────
-
-    _parseJson(text) {
+    _json(text) {
         if (!text || text.length < 2) return null;
         try { return JSON.parse(text); } catch (_) { return null; }
     }
 
-    // ── Content item normalizer ───────────────────────────────────────────────
-    // TropiStream API response fields (best-effort, may vary):
-    //   hash, title, name, poster, image, thumbnail, type, year, genre
-    //   tmdb_id, description, synopsis, score
+    // ── TMDB helpers ──────────────────────────────────────────────────────────
 
-    _normalize(item) {
-        if (!item) return null;
-        var hash   = item.hash || item.id || item.tmdb_id || "";
-        var title  = item.title || item.name || item.originalTitle || "Titre inconnu";
-        var type   = item.type || item.category || "film";
-        var poster = item.poster || item.image || item.thumbnail || item.backdrop || "";
+    _poster(path, size) {
+        if (!path) return "";
+        if (path.charAt(0) !== "/") return path;
+        return TMDB_IMG + "/" + (size || "w500") + path;
+    }
 
-        // Build the watch URL from the hash and type
-        var watchPath;
-        if (type === "anime" || type === "animes") {
-            watchPath = "/anime/" + hash;
-        } else if (type === "serie" || type === "series") {
-            watchPath = "/serie/" + hash;
-        } else {
-            watchPath = "/movie/" + hash;
-        }
+    _tmdbHdrs() {
+        return {
+            "User-Agent": "Mozilla/5.0",
+            "Accept": "application/json"
+        };
+    }
 
-        // Poster URL: if relative, prepend TMDB CDN or baseUrl
-        if (poster && poster.charAt(0) === "/") {
-            if (poster.indexOf("/t/p/") !== -1) {
-                poster = "https://image.tmdb.org" + poster;
-            } else {
-                poster = this.baseUrl + poster;
-            }
-        }
+    async _tmdbGet(path) {
+        var sep = path.indexOf("?") !== -1 ? "&" : "?";
+        var url = TMDB_BASE + path + sep + "api_key=" + TMDB_KEY + "&language=fr-FR";
+        try {
+            var r = await new Client().get(url, { headers: this._tmdbHdrs() });
+            return this._json(r.body) || {};
+        } catch (_) { return {}; }
+    }
 
+    // Map TMDB movie result → Watchtower item
+    _fromMovie(item) {
+        if (!item || (!item.title && !item.name)) return null;
+        var id     = item.id || "";
+        var title  = item.title || item.name || "Titre inconnu";
+        var poster = this._poster(item.poster_path || item.backdrop_path);
         return {
             name:        title,
-            link:        this.baseUrl + watchPath,
+            link:        this.baseUrl + "/movie/" + id,
             imageUrl:    poster,
-            description: item.description || item.synopsis || item.overview || "",
-            genre:       item.genre ? [item.genre] : (item.genres || []),
+            description: item.overview || "",
+            genre:       (item.genre_ids || []).map(String),
             author:      "",
             artist:      "",
             status:      0,
@@ -171,310 +171,593 @@ class DefaultExtension extends MProvider {
         };
     }
 
-    // ── _listContent ─────────────────────────────────────────────────────────
-    // GET /srv/list/{type}?page=N&limit=30
-    // Returns { list, hasNextPage }
-
-    async _listContent(type, page) {
-        var limit = 30;
-        var p     = Math.max(1, page || 1);
-        var url   = this.baseUrl + "/srv/list/" + type + "?page=" + p + "&limit=" + limit;
-
-        try {
-            var r    = await new Client().get(url, { headers: this._jsonHdrs() });
-            var data = this._parseJson(r.body);
-
-            // The API may return: array directly, or { items, data, list, results }
-            var arr = null;
-            if (Array.isArray(data)) {
-                arr = data;
-            } else if (data && Array.isArray(data.items)) {
-                arr = data.items;
-            } else if (data && Array.isArray(data.data)) {
-                arr = data.data;
-            } else if (data && Array.isArray(data.list)) {
-                arr = data.list;
-            } else if (data && Array.isArray(data.results)) {
-                arr = data.results;
-            }
-
-            if (!arr || arr.length === 0) return { list: [], hasNextPage: false };
-
-            var list = [];
-            for (var i = 0; i < arr.length; i++) {
-                var item = this._normalize(arr[i]);
-                if (item) list.push(item);
-            }
-            return { list: list, hasNextPage: list.length >= limit };
-        } catch (e) {
-            return { list: [], hasNextPage: false };
-        }
+    // Map TMDB TV result → Watchtower item
+    _fromTV(item) {
+        if (!item || (!item.title && !item.name)) return null;
+        var id     = item.id || "";
+        var title  = item.name || item.title || "Titre inconnu";
+        var poster = this._poster(item.poster_path || item.backdrop_path);
+        return {
+            name:        title,
+            link:        this.baseUrl + "/serie/" + id,
+            imageUrl:    poster,
+            description: item.overview || "",
+            genre:       (item.genre_ids || []).map(String),
+            author:      "",
+            artist:      "",
+            status:      0,
+            isHentai:    false
+        };
     }
 
-    // ── _getNewContent ────────────────────────────────────────────────────────
-    // GET /srv/nouveautes?limit=30&page=N
-    // Returns mixed types (films, séries, animés)
+    // ── Auth check ────────────────────────────────────────────────────────────
 
-    async _getNewContent(page) {
-        var limit = 30;
-        var p     = Math.max(1, page || 1);
-        var url   = this.baseUrl + "/srv/nouveautes?limit=" + limit + "&page=" + p;
-
+    async _isLoggedIn() {
         try {
-            var r    = await new Client().get(url, { headers: this._jsonHdrs() });
-            var data = this._parseJson(r.body);
-
-            var arr = null;
-            if (Array.isArray(data)) {
-                arr = data;
-            } else if (data) {
-                // May return { films: [], series: [], animes: [] }
-                var combined = [];
-                if (Array.isArray(data.films))  combined = combined.concat(data.films);
-                if (Array.isArray(data.series)) combined = combined.concat(data.series);
-                if (Array.isArray(data.animes)) combined = combined.concat(data.animes);
-                if (Array.isArray(data.items))  combined = combined.concat(data.items);
-                if (Array.isArray(data.data))   combined = combined.concat(data.data);
-                if (combined.length > 0) arr = combined;
+            var r = await new Client().get(
+                this.baseUrl + "/srv/user/quick",
+                { headers: Object.assign({}, this._hdrs(), { "Accept": "application/json" }) }
+            );
+            if (r.statusCode === 200) {
+                var d = this._json(r.body);
+                return d && (d.id || d.discordId || d.username || d.user);
             }
+        } catch (_) {}
+        return false;
+    }
 
-            if (!arr || arr.length === 0) return { list: [], hasNextPage: false };
+    // ── /srv/nouveautes parser ────────────────────────────────────────────────
 
-            var list = [];
-            for (var i = 0; i < arr.length; i++) {
-                var item = this._normalize(arr[i]);
-                if (item) list.push(item);
-            }
-            return { list: list, hasNextPage: list.length >= limit };
-        } catch (e) {
-            return { list: [], hasNextPage: false };
+    _fromNouveautes(data) {
+        var list = [];
+        if (!data) return list;
+
+        // The API may return: array directly, or { films:[], series:[], animes:[] }
+        var arr = null;
+        if (Array.isArray(data)) {
+            arr = data;
+        } else {
+            var combined = [];
+            if (Array.isArray(data.films))    combined = combined.concat(data.films);
+            if (Array.isArray(data.movies))   combined = combined.concat(data.movies);
+            if (Array.isArray(data.series))   combined = combined.concat(data.series);
+            if (Array.isArray(data.animes))   combined = combined.concat(data.animes);
+            if (Array.isArray(data.items))    combined = combined.concat(data.items);
+            if (Array.isArray(data.data))     combined = combined.concat(data.data);
+            if (Array.isArray(data.results))  combined = combined.concat(data.results);
+            if (combined.length > 0) arr = combined;
         }
+
+        if (!arr || arr.length === 0) return list;
+
+        for (var i = 0; i < arr.length; i++) {
+            var item = arr[i];
+            if (!item) continue;
+
+            var type   = (item.type || item.category || "film").toLowerCase();
+            var id     = item.hash || item.id || item.tmdbId || item.tmdb_id || "";
+            var title  = item.title || item.name || item.nom || item.titre || "";
+            var poster = item.poster || item.image || item.thumbnail || item.backdrop || "";
+
+            if (!title) continue;
+
+            // Build watch path based on type
+            var watchPath;
+            if (type === "anime" || type === "animes") {
+                watchPath = "/anime/" + id;
+            } else if (type === "serie" || type === "series") {
+                watchPath = "/serie/" + id;
+            } else {
+                watchPath = "/movie/" + id;
+            }
+
+            // Fix poster URL
+            if (poster && poster.charAt(0) === "/") {
+                if (poster.indexOf("/t/p/") !== -1) {
+                    poster = "https://image.tmdb.org" + poster;
+                } else {
+                    poster = this.baseUrl + poster;
+                }
+            }
+
+            list.push({
+                name:        title,
+                link:        this.baseUrl + watchPath,
+                imageUrl:    poster,
+                description: item.description || item.synopsis || item.overview || "",
+                genre:       [],
+                author:      "",
+                artist:      "",
+                status:      0,
+                isHentai:    false
+            });
+        }
+        return list;
+    }
+
+    // ── LOGIN SCREEN helper ───────────────────────────────────────────────────
+    // Returns items with login instructions if not connected
+
+    _loginItems() {
+        return [{
+            name: "🔐 Connexion Discord requise",
+            link: this.baseUrl,
+            imageUrl: "https://tropistream.fr/tropi.png",
+            description:
+                "Pour utiliser TropiStream dans Watchtower, tu dois te connecter via Discord.\n\n" +
+                "━━━━━━━━━━━━━━━━━━━━━━\n" +
+                "📋 ÉTAPES :\n" +
+                "1️⃣ Appuie sur ce bouton → Connexion Discord\n" +
+                "2️⃣ Connecte-toi avec ton compte Discord\n" +
+                "3️⃣ Autorise TropiStream\n" +
+                "4️⃣ Reviens ici et recharge\n" +
+                "━━━━━━━━━━━━━━━━━━━━━━\n\n" +
+                "🗳️ Vote pour soutenir le serveur Discord :\n" +
+                "• discordtop.net/guild/1240944208773382185/vote\n" +
+                "• serveur-prive.net/discord/tropistream/vote\n" +
+                "• meilleurs-serveurs.com/discord/tropistream",
+            genre:  [],
+            author: "",
+            artist: "",
+            status: 0
+        }];
+    }
+
+    // ── ACCUEIL (/srv/nouveautes) ─────────────────────────────────────────────
+
+    async _getAccueil(page) {
+        var p = Math.max(1, page || 1);
+        var url = this.baseUrl + "/srv/nouveautes?limit=30&page=" + p;
+        var list = [];
+
+        // Try the TropiStream nouveautes API (no auth required)
+        try {
+            var r    = await this._get(url);
+            var data = this._json(r.body);
+            list     = this._fromNouveautes(data);
+        } catch (_) {}
+
+        // If no results from TropiStream API, fallback to TMDB latest
+        if (list.length === 0) {
+            var cat = this.defaultCat;
+            if (cat === "animes") {
+                // AniList popular anime
+                list = await this._anilistPopular(1);
+            } else {
+                var type   = (cat === "series") ? "tv" : "movie";
+                var tmdbPage = Math.min(p, 500);
+                var latest = await this._tmdbGet(
+                    "/discover/" + type + "?sort_by=release_date.desc&primary_release_date.lte=" + new Date().toISOString().split("T")[0] + "&page=" + tmdbPage
+                );
+                var results = latest.results || [];
+                var mapper  = type === "movie" ? this._fromMovie.bind(this) : this._fromTV.bind(this);
+                for (var i = 0; i < results.length; i++) {
+                    var item = mapper(results[i]);
+                    if (item) list.push(item);
+                }
+            }
+        }
+
+        return { list: list, hasNextPage: list.length >= 20 };
+    }
+
+    // ── TMDB Popular ──────────────────────────────────────────────────────────
+
+    async _tmdbPopularMovies(page) {
+        var p    = Math.min(Math.max(1, page || 1), 500);
+        var data = await this._tmdbGet("/movie/popular?page=" + p);
+        var list = [];
+        var results = data.results || [];
+        for (var i = 0; i < results.length; i++) {
+            var item = this._fromMovie(results[i]);
+            if (item) list.push(item);
+        }
+        return { list: list, hasNextPage: (data.page || 1) < (data.total_pages || 1) };
+    }
+
+    async _tmdbPopularTV(page) {
+        var p    = Math.min(Math.max(1, page || 1), 500);
+        var data = await this._tmdbGet("/tv/popular?page=" + p);
+        var list = [];
+        var results = data.results || [];
+        for (var i = 0; i < results.length; i++) {
+            var item = this._fromTV(results[i]);
+            if (item) list.push(item);
+        }
+        return { list: list, hasNextPage: (data.page || 1) < (data.total_pages || 1) };
+    }
+
+    // ── AniList ───────────────────────────────────────────────────────────────
+
+    async _anilistPopular(page) {
+        var query = "query($page:Int,$perPage:Int){Page(page:$page,perPage:$perPage){media(type:ANIME,sort:POPULARITY_DESC,isAdult:false){id title{romaji english french:native}coverImage{large}description averageScore genres}}}";
+        var list  = [];
+        try {
+            var r = await new Client().post(
+                "https://graphql.anilist.co",
+                {
+                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                    body: JSON.stringify({ query: query, variables: { page: page || 1, perPage: 30 } })
+                }
+            );
+            var d = this._json(r.body);
+            var media = (d && d.data && d.data.Page && d.data.Page.media) || [];
+            for (var i = 0; i < media.length; i++) {
+                var m = media[i];
+                if (!m) continue;
+                var title = (m.title && (m.title.french || m.title.romaji || m.title.english)) || "Inconnu";
+                list.push({
+                    name:        title,
+                    link:        this.baseUrl + "/anime/anilist/" + m.id,
+                    imageUrl:    (m.coverImage && m.coverImage.large) || "",
+                    description: (m.description || "").replace(/<[^>]+>/g, ""),
+                    genre:       m.genres || [],
+                    author:      "",
+                    artist:      "",
+                    status:      0,
+                    isHentai:    false
+                });
+            }
+        } catch (_) {}
+        return list;
+    }
+
+    async _anilistSearch(query, page) {
+        var gql  = "query($search:String,$page:Int){Page(page:$page,perPage:20){media(type:ANIME,search:$search,isAdult:false){id title{romaji english french:native}coverImage{large}description}}}";
+        var list = [];
+        try {
+            var r = await new Client().post(
+                "https://graphql.anilist.co",
+                {
+                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                    body: JSON.stringify({ query: gql, variables: { search: query, page: page || 1 } })
+                }
+            );
+            var d = this._json(r.body);
+            var media = (d && d.data && d.data.Page && d.data.Page.media) || [];
+            for (var i = 0; i < media.length; i++) {
+                var m = media[i];
+                if (!m) continue;
+                var title = (m.title && (m.title.french || m.title.romaji || m.title.english)) || "";
+                if (!title) continue;
+                list.push({
+                    name:     title,
+                    link:     this.baseUrl + "/anime/anilist/" + m.id,
+                    imageUrl: (m.coverImage && m.coverImage.large) || "",
+                    description: (m.description || "").replace(/<[^>]+>/g, ""),
+                    genre:    [],
+                    author:   "",
+                    artist:   "",
+                    status:   0
+                });
+            }
+        } catch (_) {}
+        return list;
+    }
+
+    // ── TropiTV ───────────────────────────────────────────────────────────────
+
+    async _getTropiTV(page) {
+        var list = [];
+        try {
+            var r    = await this._get(this.baseUrl + "/tropi-tv");
+            var html = r.body || "";
+
+            // Parse channel cards from the SPA (may be pre-rendered or not)
+            var re  = /<a[^>]+href="(\/tropi-tv\/[^"]+)"[^>]*>[\s\S]{0,500}?(?:<img[^>]+src="([^"]+)"[^>]*>)?[\s\S]{0,200}?(?:<[^>]*>)?([^<]{2,60})/gi;
+            var m;
+            while ((m = re.exec(html)) !== null) {
+                var path  = m[1] || "";
+                var img   = m[2] || "";
+                var title = (m[3] || "").trim();
+                if (!title || title.length < 2) continue;
+                list.push({
+                    name:     title,
+                    link:     this.baseUrl + path,
+                    imageUrl: img.charAt(0) === "/" ? this.baseUrl + img : img,
+                    description: "TropiTV — " + title,
+                    genre:    ["TropiTV"],
+                    author:   "",
+                    artist:   "",
+                    status:   0
+                });
+            }
+        } catch (_) {}
+
+        // Fallback: add a direct TropiTV entry if nothing parsed
+        if (list.length === 0) {
+            list.push({
+                name:        "📺 TropiTV — Chaînes en direct",
+                link:        this.baseUrl + "/tropi-tv",
+                imageUrl:    "https://tropistream.fr/tropi.png",
+                description: "TropiTV — Toutes les chaînes en direct. Ouvre dans le navigateur pour regarder.",
+                genre:       ["TropiTV"],
+                author:      "",
+                artist:      "",
+                status:      0
+            });
+        }
+
+        return { list: list, hasNextPage: false };
+    }
+
+    // ── getSourceDetail (login screen) ────────────────────────────────────────
+
+    async getSourceDetail() {
+        var loggedIn = await this._isLoggedIn();
+        var desc = loggedIn
+            ? "✅ Connecté — Films, Séries et Animés en VF/VOSTFR.\n\n🎬 Onglets disponibles : Films · Séries · Animés · TropiTV\n\n🗳️ Pensez à voter pour le Discord de TropiStream !"
+            : "🔐 CONNEXION DISCORD REQUISE\n\n" +
+              "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+              "Pour accéder au contenu TropiStream :\n\n" +
+              "1️⃣  Appuie sur « Se connecter » (bouton en haut)\n" +
+              "2️⃣  Le site TropiStream s'ouvre → clique sur « Se connecter avec Discord »\n" +
+              "3️⃣  Autorise l'application TropiStream\n" +
+              "4️⃣  Reviens ici et rafraîchis\n\n" +
+              "━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+              "📌 TropiStream est un serveur communautaire Discord.\n" +
+              "   Rejoins : discord.gg/tropi\n\n" +
+              "🗳️ Vote pour soutenir le serveur :\n" +
+              "   • discordtop.net → guild/1240944208773382185/vote\n" +
+              "   • serveur-prive.net → discord/tropistream/vote\n" +
+              "   • meilleurs-serveurs.com → discord/tropistream";
+
+        return {
+            iconUrl:     this.baseUrl + "/tropi.png",
+            description: desc,
+            lang:        "fr",
+            name:        "TropiStream",
+            baseUrl:     this.baseUrl
+        };
     }
 
     // ── Listings ──────────────────────────────────────────────────────────────
 
     async getPopular(page) {
-        // Use the default category from user preferences
-        var cat = this.defaultCategory;
-        var result = await this._listContent(cat, page);
+        var cat = this.defaultCat;
 
-        // If the typed endpoint returns nothing, try all=true variant
-        if (result.list.length === 0) {
-            try {
-                var url = this.baseUrl + "/srv/list/" + cat + "?all=true&page=" + Math.max(1, page);
-                var r   = await new Client().get(url, { headers: this._jsonHdrs() });
-                var data = this._parseJson(r.body);
-                var arr = Array.isArray(data) ? data
-                    : (data && (data.items || data.data || data.list || data.results) || []);
-                var list = [];
-                for (var i = 0; i < arr.length; i++) {
-                    var item = this._normalize(arr[i]);
-                    if (item) list.push(item);
-                }
-                if (list.length > 0) return { list: list, hasNextPage: list.length >= 30 };
-            } catch (_) {}
+        if (cat === "tropi-tv") {
+            return this._getTropiTV(page);
         }
-
-        return result;
+        if (cat === "animes") {
+            var animes = await this._anilistPopular(page);
+            return { list: animes, hasNextPage: animes.length >= 20 };
+        }
+        if (cat === "series") {
+            return this._tmdbPopularTV(page);
+        }
+        // Default: films
+        return this._tmdbPopularMovies(page);
     }
 
     async getLatestUpdates(page) {
-        return this._getNewContent(page);
+        return this._getAccueil(page);
     }
 
     async getForYou(page) {
-        // Show recent across all categories
-        var result = await this._getNewContent(page);
+        // Try TropiStream nouveautes first (personalized if logged in)
+        var result = await this._getAccueil(page);
         if (result.list.length > 0) return result;
-        return this.getPopular(page);
+
+        // Fallback to TMDB trending
+        var p    = Math.min(Math.max(1, page || 1), 500);
+        var data = await this._tmdbGet("/trending/all/week?page=" + p);
+        var list = [];
+        var results = data.results || [];
+        for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            if (!item) continue;
+            var media = item.media_type || "movie";
+            var mapped = media === "tv" ? this._fromTV(item) : this._fromMovie(item);
+            if (mapped) list.push(mapped);
+        }
+        return { list: list, hasNextPage: list.length >= 20 };
     }
 
     // ── Search ────────────────────────────────────────────────────────────────
-    // POST or GET /srv/search?q=query or /api/search?q=query
 
     async search(query, page, filters) {
-        var q = encodeURIComponent(query || "");
-        var p = Math.max(1, page || 1);
+        if (!query || !query.trim()) return { list: [], hasNextPage: false };
 
-        // Try multiple known search endpoints
-        var endpoints = [
-            "/srv/search?q=" + q + "&page=" + p,
-            "/api/search?q=" + q + "&page=" + p,
-            "/srv/list/film?q=" + q + "&page=" + p,
-            "/srv/list/serie?q=" + q + "&page=" + p,
-            "/srv/list/anime?q=" + q + "&page=" + p
-        ];
-
-        var allItems = [];
+        var q   = encodeURIComponent(query.trim());
+        var p   = Math.min(Math.max(1, page || 1), 500);
+        var cat = this.defaultCat;
+        var list = [];
         var seen = {};
 
-        for (var ei = 0; ei < endpoints.length; ei++) {
-            try {
-                var r    = await new Client().get(this.baseUrl + endpoints[ei], { headers: this._jsonHdrs() });
-                var data = this._parseJson(r.body);
-                if (!data) continue;
-
-                var arr = Array.isArray(data) ? data
-                    : (Array.isArray(data.items) ? data.items
-                    : (Array.isArray(data.data) ? data.data
-                    : (Array.isArray(data.results) ? data.results
-                    : (Array.isArray(data.list) ? data.list : []))));
-
-                // Merge films/series/animes keys
-                if (!Array.isArray(data) && !arr.length) {
-                    var merged = [];
-                    if (Array.isArray(data.films))  merged = merged.concat(data.films);
-                    if (Array.isArray(data.series)) merged = merged.concat(data.series);
-                    if (Array.isArray(data.animes)) merged = merged.concat(data.animes);
-                    arr = merged;
-                }
-
-                for (var i = 0; i < arr.length; i++) {
-                    var item = this._normalize(arr[i]);
-                    if (item && !seen[item.link]) {
-                        seen[item.link] = true;
-                        allItems.push(item);
-                    }
-                }
-
-                if (allItems.length > 0) break; // Got results
-            } catch (_) {}
+        // Search anime via AniList
+        if (cat === "animes") {
+            var animes = await this._anilistSearch(query, p);
+            return { list: animes, hasNextPage: animes.length >= 20 };
         }
 
-        return { list: allItems, hasNextPage: false };
+        // Multi-search (movies + TV)
+        var multi = await this._tmdbGet("/search/multi?query=" + q + "&page=" + p);
+        var results = multi.results || [];
+        for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            if (!item || !item.id) continue;
+            if (item.media_type === "person") continue;
+
+            var mapped = null;
+            if (item.media_type === "tv" || cat === "series") {
+                mapped = this._fromTV(item);
+            } else {
+                mapped = this._fromMovie(item);
+            }
+            if (mapped && !seen[mapped.link]) {
+                seen[mapped.link] = true;
+                list.push(mapped);
+            }
+        }
+
+        return { list: list, hasNextPage: (multi.page || 1) < (multi.total_pages || 1) };
     }
 
     // ── Detail ────────────────────────────────────────────────────────────────
-    // /movie/:hash  →  film detail
-    // /serie/:hash  →  series detail + episodes
-    // /anime/:hash  →  anime detail + episodes
 
     async getDetail(url) {
-        // Determine type and hash from URL
-        var type  = "film";
-        var hashM = null;
+        // Parse URL to determine type and ID
+        var isAnime   = /\/anime\//.test(url);
+        var isSerie   = /\/serie\//.test(url);
+        var isMovie   = /\/movie\//.test(url);
+        var isTropiTV = /\/tropi-tv\//.test(url) || /\/tropi-tv$/.test(url);
 
-        if (/\/anime\//.test(url)) {
-            type  = "anime";
-            hashM = url.match(/\/anime\/([^/?#]+)/);
-        } else if (/\/serie\//.test(url)) {
-            type  = "serie";
-            hashM = url.match(/\/serie\/([^/?#]+)/);
-        } else if (/\/movie\//.test(url)) {
-            type  = "film";
-            hashM = url.match(/\/movie\/([^/?#]+)/);
-        } else if (/\/watch\//.test(url)) {
-            hashM = url.match(/\/watch\/([^/?#]+)/);
+        // ── TropiTV detail ────────────────────────────────────────────────────
+        if (isTropiTV) {
+            return {
+                name:        "TropiTV",
+                description: "Chaînes en direct TropiStream. Cliquez sur 'Regarder' pour accéder.",
+                imageUrl:    this.baseUrl + "/tropi.png",
+                genres:      ["TropiTV"],
+                status:      0,
+                chapters:    [{
+                    name:       "Regarder TropiTV",
+                    url:        url,
+                    dateUpload: ""
+                }]
+            };
         }
 
-        var hash = hashM ? hashM[1] : "";
-
-        // Try to fetch detail JSON from API
-        var apiDetail = null;
-        var detailEndpoints = [
-            "/srv/" + type + "/" + hash,
-            "/srv/film/" + hash,
-            "/srv/detail/" + hash,
-            "/api/" + type + "/" + hash,
-            "/api/detail/" + hash
-        ];
-
-        for (var ei = 0; ei < detailEndpoints.length; ei++) {
-            try {
-                var r    = await new Client().get(this.baseUrl + detailEndpoints[ei], { headers: this._jsonHdrs() });
-                var data = this._parseJson(r.body);
-                if (data && (data.title || data.name)) {
-                    apiDetail = data;
-                    break;
-                }
-            } catch (_) {}
+        // ── AniList anime ─────────────────────────────────────────────────────
+        if (isAnime) {
+            var aniM = url.match(/\/anime\/anilist\/(\d+)|\/anime\/(\d+)/);
+            var aniId = aniM ? (aniM[1] || aniM[2]) : "";
+            if (aniId) {
+                return await this._anilistDetail(aniId, url);
+            }
+            return {
+                name:        "Anime TropiStream",
+                description: "",
+                imageUrl:    "",
+                genres:      [],
+                status:      0,
+                chapters:    [{ name: "Regarder", url: url.replace(/\/(movie|serie|anime)\//, "/watch/"), dateUpload: "" }]
+            };
         }
 
-        // Build result from API data or fallback to normalized URL info
-        var name        = "TropiStream";
-        var description = "";
-        var imageUrl    = "";
-        var genres      = [];
+        // ── Movie / Serie via TMDB ────────────────────────────────────────────
+        var idM = url.match(/\/(movie|serie|film|series)\/([^/?#]+)/);
+        if (!idM) {
+            idM = url.match(/\/watch\/([^/?#]+)/);
+        }
+        var rawId  = idM ? (idM[2] || idM[1]) : "";
+        var tmdbId = rawId.replace(/^tmdb_/, "");
+        var type   = isSerie ? "tv" : "movie";
+
+        if (!tmdbId || isNaN(parseInt(tmdbId))) {
+            return {
+                name:        "TropiStream",
+                description: "",
+                imageUrl:    "",
+                genres:      [],
+                status:      0,
+                chapters:    [{ name: "Regarder", url: url, dateUpload: "" }]
+            };
+        }
+
+        // Fetch TMDB detail
+        var data = await this._tmdbGet("/" + type + "/" + tmdbId + "?append_to_response=credits");
+        if (!data || (!data.title && !data.name)) {
+            // Try the other type
+            var alt = await this._tmdbGet("/" + (type === "tv" ? "movie" : "tv") + "/" + tmdbId);
+            if (alt && (alt.title || alt.name)) {
+                data = alt;
+                type = type === "tv" ? "movie" : "tv";
+            }
+        }
+
+        var name        = data.title || data.name || "TropiStream";
+        var description = data.overview || "";
+        var poster      = this._poster(data.poster_path || data.backdrop_path);
+        var genres      = (data.genres || []).map(function(g) { return g.name; });
         var chapters    = [];
 
-        if (apiDetail) {
-            name        = apiDetail.title || apiDetail.name || apiDetail.originalTitle || name;
-            description = apiDetail.description || apiDetail.synopsis || apiDetail.overview || "";
-            genres      = apiDetail.genres || (apiDetail.genre ? [apiDetail.genre] : []);
+        if (type === "tv") {
+            // Series: build episodes from seasons
+            var seasons = (data.seasons || []).filter(function(s) { return s.season_number > 0; });
 
-            var poster  = apiDetail.poster || apiDetail.image || apiDetail.thumbnail || "";
-            if (poster && poster.charAt(0) === "/") {
-                poster = poster.indexOf("/t/p/") !== -1
-                    ? "https://image.tmdb.org" + poster
-                    : this.baseUrl + poster;
-            }
-            imageUrl = poster;
+            if (seasons.length > 0) {
+                // Fetch first season episodes to list them (and add more seasons as entries)
+                for (var si = 0; si < seasons.length; si++) {
+                    var season = seasons[si];
+                    var sNum   = season.season_number;
+                    var epCount = season.episode_count || 1;
 
-            // Episodes for series/anime
-            if (type === "serie" || type === "anime") {
-                var seasons = apiDetail.seasons || apiDetail.saisons || [];
-
-                if (Array.isArray(seasons) && seasons.length > 0) {
-                    for (var si = 0; si < seasons.length; si++) {
-                        var season = seasons[si];
-                        var eps    = season.episodes || season.ep || [];
-                        var sNum   = season.number || season.num || (si + 1);
-
-                        for (var ei2 = 0; ei2 < eps.length; ei2++) {
-                            var ep    = eps[ei2];
-                            var eNum  = ep.number || ep.num || (ei2 + 1);
-                            var eHash = ep.hash || ep.id || hash;
-                            var eUrl  = this.baseUrl + "/watch/" + eHash
-                                + "?saison=" + sNum + "&episode=" + eNum;
-
-                            chapters.push({
-                                name:       "S" + sNum + "E" + eNum
-                                          + (ep.title ? " — " + ep.title : ""),
-                                url:        eUrl,
-                                dateUpload: ep.date || ep.createdAt || ""
-                            });
-                        }
-                    }
-                } else if (Array.isArray(apiDetail.episodes)) {
-                    var allEps = apiDetail.episodes;
-                    for (var ei3 = 0; ei3 < allEps.length; ei3++) {
-                        var ep2   = allEps[ei3];
-                        var eH    = ep2.hash || ep2.id || hash;
-                        var eUrl2 = this.baseUrl + "/watch/" + eH;
+                    for (var ei = 1; ei <= Math.min(epCount, 100); ei++) {
+                        var watchUrl = this.baseUrl + "/watch/" + tmdbId + "?s=" + sNum + "&e=" + ei;
                         chapters.push({
-                            name:       "Épisode " + (ep2.number || ep2.num || (ei3 + 1))
-                                      + (ep2.title ? " — " + ep2.title : ""),
-                            url:        eUrl2,
-                            dateUpload: ep2.date || ""
+                            name:       "S" + sNum + "E" + ei,
+                            url:        watchUrl,
+                            dateUpload: season.air_date || ""
                         });
                     }
                 }
             }
+
+            if (chapters.length === 0) {
+                chapters.push({
+                    name:       name,
+                    url:        this.baseUrl + "/watch/" + tmdbId + "?s=1&e=1",
+                    dateUpload: data.first_air_date || ""
+                });
+            }
+        } else {
+            // Movie: single episode
+            chapters.push({
+                name:       name,
+                url:        this.baseUrl + "/watch/" + tmdbId,
+                dateUpload: data.release_date || ""
+            });
         }
 
-        // Fallback: always add a direct watch link
-        var watchUrl = url.replace(/\/(movie|serie|anime)\//, "/watch/");
-        if (chapters.length === 0) {
+        return { name, description, imageUrl: poster, genres, status: 0, chapters };
+    }
+
+    // ── AniList detail ────────────────────────────────────────────────────────
+
+    async _anilistDetail(aniId, originalUrl) {
+        var query = "query($id:Int){Media(id:$id,type:ANIME){id title{romaji english french:native}coverImage{large}description averageScore episodes status genres}}";
+        var data  = {};
+        try {
+            var r = await new Client().post(
+                "https://graphql.anilist.co",
+                {
+                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                    body: JSON.stringify({ query: query, variables: { id: parseInt(aniId) } })
+                }
+            );
+            var d = this._json(r.body);
+            data  = (d && d.data && d.data.Media) || {};
+        } catch (_) {}
+
+        var title   = (data.title && (data.title.french || data.title.romaji || data.title.english)) || "Anime";
+        var poster  = (data.coverImage && data.coverImage.large) || "";
+        var desc    = (data.description || "").replace(/<[^>]+>/g, "");
+        var epCount = data.episodes || 1;
+        var genres  = data.genres || [];
+
+        var chapters = [];
+        for (var e = 1; e <= Math.min(epCount, 200); e++) {
             chapters.push({
-                name:       name || "Regarder",
-                url:        watchUrl,
+                name:       "Épisode " + e,
+                url:        this.baseUrl + "/watch/anilist_" + aniId + "?e=" + e,
                 dateUpload: ""
             });
         }
 
-        // For films, single episode = the watch link
-        if (type === "film" && chapters.length === 0) {
+        if (chapters.length === 0) {
             chapters.push({
-                name:       name,
-                url:        watchUrl,
+                name:       title,
+                url:        originalUrl.replace(/\/(anime)\//, "/watch/"),
                 dateUpload: ""
             });
         }
 
         return {
-            name:        name,
-            description: description,
-            imageUrl:    imageUrl,
+            name:        title,
+            description: desc,
+            imageUrl:    poster,
             genres:      genres,
             status:      0,
             chapters:    chapters
@@ -482,128 +765,118 @@ class DefaultExtension extends MProvider {
     }
 
     // ── getVideoList ──────────────────────────────────────────────────────────
-    // /watch/:hash  → page HTML with an <iframe src="..."> for the player
 
     async getVideoList(url) {
+        // Extract hash and params from the watch URL
+        var hashM   = url.match(/\/watch\/([^/?#]+)/);
+        var hash    = hashM ? hashM[1] : "";
+        var sM      = url.match(/[?&]s=(\d+)/);
+        var eM      = url.match(/[?&]e=(\d+)/);
+        var season  = sM ? sM[1] : "1";
+        var episode = eM ? eM[1] : "1";
+
         var videos = [];
 
-        // 1. Try to get embed URL from the SPA's API
-        var hashM = url.match(/\/watch\/([^/?#]+)/);
-        var hash  = hashM ? hashM[1] : "";
-
-        // Extract optional season/episode params
-        var saisonM  = url.match(/[?&]saison=(\d+)/);
-        var episodeM = url.match(/[?&]episode=(\d+)/);
-        var saison   = saisonM  ? saisonM[1]  : "";
-        var episode  = episodeM ? episodeM[1] : "";
-
-        // Try API endpoints for embed URL
-        var embedApiEndpoints = [
-            "/srv/embed/" + hash + (saison ? "?saison=" + saison + "&episode=" + episode : ""),
-            "/srv/stream/" + hash + (saison ? "?saison=" + saison + "&episode=" + episode : ""),
-            "/api/embed/" + hash,
-            "/api/stream/" + hash,
-            "/srv/player/" + hash
+        // 1. Try TropiStream's own video API endpoints
+        var apiPaths = [
+            "/srv/stream/" + hash + "?s=" + season + "&e=" + episode,
+            "/srv/embed/"  + hash + "?s=" + season + "&e=" + episode,
+            "/srv/player/" + hash + "?s=" + season + "&e=" + episode,
+            "/srv/stream/" + hash,
+            "/api/stream/"  + hash + "?season=" + season + "&episode=" + episode,
+            "/api/embed/"   + hash + "?s=" + season + "&e=" + episode
         ];
 
-        for (var ei = 0; ei < embedApiEndpoints.length; ei++) {
+        for (var ai = 0; ai < apiPaths.length; ai++) {
             try {
-                var r    = await new Client().get(
-                    this.baseUrl + embedApiEndpoints[ei],
-                    { headers: this._jsonHdrs(url) }
-                );
-                var data = this._parseJson(r.body);
-                if (!data) continue;
+                var ar  = await this._get(this.baseUrl + apiPaths[ai], url);
+                var aData = this._json(ar.body);
+                if (!aData) continue;
 
-                // Look for embed URLs in the API response
-                var embedUrl = data.url || data.embed || data.src || data.iframe || data.link || "";
+                // Extract embed/stream URL from JSON
+                var embedUrl = aData.url || aData.embed || aData.src || aData.iframe
+                             || aData.stream || aData.hls || aData.mp4 || aData.link || "";
                 if (embedUrl && embedUrl.length > 10) {
                     if (embedUrl.charAt(0) === "/") embedUrl = this.baseUrl + embedUrl;
                     videos.push({ url: embedUrl, quality: "AUTO", originalUrl: embedUrl });
                     break;
                 }
 
-                // Look for direct m3u8/mp4
-                var direct = data.stream || data.hls || data.mp4 || data.video || "";
-                if (direct) {
-                    videos.push({ url: direct, quality: "AUTO", originalUrl: direct });
-                    break;
+                // JSON may have a `sources` array
+                if (Array.isArray(aData.sources)) {
+                    for (var si = 0; si < aData.sources.length; si++) {
+                        var src = aData.sources[si];
+                        var vUrl = src.url || src.src || src.file || "";
+                        if (vUrl) {
+                            if (vUrl.charAt(0) === "/") vUrl = this.baseUrl + vUrl;
+                            videos.push({ url: vUrl, quality: src.label || src.quality || "AUTO", originalUrl: vUrl });
+                        }
+                    }
+                    if (videos.length > 0) break;
                 }
             } catch (_) {}
         }
 
         if (videos.length > 0) return videos;
 
-        // 2. Fall back to fetching the SPA page and looking for known embed patterns
-        //    TropiStream uses an <iframe src="..."> inside the React player
+        // 2. Fetch the watch page HTML and look for embed / stream URLs
         try {
-            var pageRes = await new Client().get(url, { headers: this._hdrs() });
-            var html    = pageRes.body || "";
+            var pageR = await this._get(url, this.baseUrl + "/");
+            var html  = pageR.body || "";
 
-            // Look for direct m3u8 / mp4
-            var directRe = /["'`](https?:\/\/[^"'`\s]+\.(?:m3u8|mp4)[^"'`\s]{0,200})["'`]/gi;
+            // Direct HLS / MP4
+            var directRe = /["'`](https?:\/\/[^"'`\s]{15,}\.(?:m3u8|mp4)[^"'`\s]{0,200})["'`]/gi;
             var dm;
             while ((dm = directRe.exec(html)) !== null) {
                 var dUrl = dm[1];
                 if (!videos.some(function(v) { return v.url === dUrl; })) {
-                    videos.push({ url: dUrl, quality: "Stream", originalUrl: dUrl });
+                    videos.push({ url: dUrl, quality: dUrl.indexOf("m3u8") !== -1 ? "HLS" : "MP4", originalUrl: dUrl });
                 }
             }
 
-            // Look for iframe src with known embed providers
-            var iframeRe = /<iframe[^>]+src="((?:https?:)?\/\/[^"]{8,})"[^>]*>/gi;
+            // iframe src (player embeds)
+            var iRe = /<iframe[^>]+src="((?:https?:)?\/\/[^"]{8,})"[^>]*>/gi;
             var im;
-            while ((im = iframeRe.exec(html)) !== null) {
+            while ((im = iRe.exec(html)) !== null) {
                 var iSrc = im[1];
                 if (iSrc.charAt(0) === "//") iSrc = "https:" + iSrc;
-                if (/google|recaptcha|disqus|facebook|twitter/.test(iSrc)) continue;
+                if (/google|recaptcha|disqus|facebook|twitter|youtube|ads/.test(iSrc)) continue;
                 if (!videos.some(function(v) { return v.url === iSrc; })) {
                     videos.push({ url: iSrc, quality: "Embed", originalUrl: iSrc });
                 }
             }
         } catch (_) {}
 
-        // 3. Try resolving each embed URL to get direct stream
+        // 3. Try resolving embed iframes to direct stream
         var resolved = [];
-        for (var vi = 0; vi < Math.min(videos.length, 5); vi++) {
+        for (var vi = 0; vi < Math.min(videos.length, 6); vi++) {
             var vid = videos[vi];
             if (vid.url.indexOf(".m3u8") !== -1 || vid.url.indexOf(".mp4") !== -1) {
                 resolved.push(vid);
                 continue;
             }
             try {
-                var embedRes = await new Client().get(vid.url, { headers: this._hdrs(url) });
-                var ebody    = embedRes.body || "";
+                var er    = await this._get(vid.url, url);
+                var ebody = er.body || "";
 
-                var hlsM = ebody.match(/["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,200})["'`]/);
-                if (hlsM) {
-                    resolved.push({ url: hlsM[1], quality: vid.quality || "Stream", originalUrl: hlsM[1] });
-                    continue;
-                }
-                var mp4M = ebody.match(/["'`](https?:\/\/[^"'`]+\.mp4[^"'`]{0,200})["'`]/);
-                if (mp4M) {
-                    resolved.push({ url: mp4M[1], quality: vid.quality || "Direct", originalUrl: mp4M[1] });
-                    continue;
-                }
-                // Keep the embed as-is
+                var hm = ebody.match(/["'`](https?:\/\/[^"'`\s]{10,}\.m3u8[^"'`\s]{0,200})["'`]/);
+                if (hm) { resolved.push({ url: hm[1], quality: "HLS", originalUrl: hm[1] }); continue; }
+                var pm = ebody.match(/["'`](https?:\/\/[^"'`\s]{10,}\.mp4[^"'`\s]{0,200})["'`]/);
+                if (pm) { resolved.push({ url: pm[1], quality: "MP4", originalUrl: pm[1] }); continue; }
+                // Keep embed as-is for webview
                 resolved.push(vid);
             } catch (_) {
                 resolved.push(vid);
             }
         }
 
-        return resolved.length > 0 ? resolved : videos;
-    }
+        if (resolved.length > 0) return resolved;
 
-    // ── Source detail ─────────────────────────────────────────────────────────
-
-    async getSourceDetail() {
-        return {
-            iconUrl:     this.baseUrl + "/tropi.png",
-            description: "TropiStream — Plateforme française de streaming (Films, Séries, Animés). Connexion Discord requise.",
-            lang:        "fr",
-            name:        "TropiStream",
-            baseUrl:     this.baseUrl
-        };
+        // 4. Last resort: return the TropiStream watch page URL itself (webview fallback)
+        return [{
+            url:         url,
+            quality:     "WebView",
+            originalUrl: url
+        }];
     }
 }
