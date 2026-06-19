@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/mangayomi-extensions/main/dart/manga/multisrc/madara/src/en/harimanga/icon.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.2.4",
+    "version": "0.2.5",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -82,9 +82,8 @@ class DefaultExtension extends MProvider {
       || el.selectFirst("div.post-title h3 a")
       || el.selectFirst("div.post-title a");
 
-    let name = titleEl
-      ? titleEl.text.replace(/^HOT\s*/i, "").trim()
-      : "";
+    let name = titleEl ? (titleEl.attr("title") || "").trim() : "";
+    if (!name && titleEl) name = (titleEl.text || "").replace(/\b(HOT|NEW|UPDATE|COMPLETED?)\b\s*/gi, "").trim();
 
     // Fallback: derive title from img alt (e.g. "Manga Name on HariManga")
     if (!name && imgEl) {
@@ -198,7 +197,10 @@ class DefaultExtension extends MProvider {
 
     // ── Title ─────────────────────────────────────────────────────────────
     const titleEl = doc.selectFirst("div.post-title h1");
-    const name = titleEl ? titleEl.text.replace(/^HOT\s*/i, "").trim() : "";
+    const name = titleEl
+      ? ((titleEl.attr("title") || "").trim() ||
+         (titleEl.text || "").replace(/\b(HOT|NEW|UPDATE|COMPLETED?)\b\s*/gi, "").trim())
+      : "";
 
     // ── Description ───────────────────────────────────────────────────────
     const descEl = doc.selectFirst("div.summary__content")
