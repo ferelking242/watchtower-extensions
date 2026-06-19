@@ -53,7 +53,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.mangadex.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.1.7",
+    "version": "0.1.8",
     "pkgPath": "manga/src/all/mangadex.js"
 }];
 
@@ -202,11 +202,17 @@ class DefaultExtension extends MProvider {
 
     // ─── Listings ────────────────────────────────────────────────────────────
 
+    /** Returns true when the source covers all languages (lang = "multi" / "all" / empty). */
+    isMultiLang() {
+        const l = (this.source.lang ?? '').toLowerCase();
+        return !l || l === 'multi' || l === 'all';
+    }
+
     async getPopular(page) {
         const offset = 20 * (page - 1);
         const url = `${this.source.apiUrl}/manga`
             + `?limit=20&offset=${offset}`
-            + `&availableTranslatedLanguage[]=${this.source.lang}`
+            + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
             + `&includes[]=cover_art`
             + this.contentRatingParams()
             + this.originalLanguageParams()
@@ -222,7 +228,7 @@ class DefaultExtension extends MProvider {
         // Step 1: recently published chapters, filtered by blocked groups/uploaders
         const chapUrl = `${this.source.apiUrl}/chapter`
             + `?limit=40&offset=${offset}`
-            + `&translatedLanguage[]=${lang}`
+            + (this.isMultiLang() ? '' : `&translatedLanguage[]=${lang}`)
             + `&includeFutureUpdates=0`
             + `&order[publishAt]=desc`
             + `&includeFuturePublishAt=0`
@@ -275,7 +281,7 @@ class DefaultExtension extends MProvider {
         filters.forEach(filter => {
             if (filter.type === "HasAvailableChaptersFilter") {
                 if (filter.state) {
-                    url += `&hasAvailableChapters=true&availableTranslatedLanguage[]=${this.source.lang}`;
+                    url += `&hasAvailableChapters=true` + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`);
                 }
             } else if (filter.type === "OriginalLanguageList") {
                 filter.state.filter(e => e.state).forEach(lang => { url += `&${lang.value}`; });
@@ -363,11 +369,12 @@ class DefaultExtension extends MProvider {
         const v = this.pref("showUnavailableChapters", true);
         const showUnavailable = (v === true || v === "true");
 
+        const isMultiLang = !lang || lang.toLowerCase() === 'multi' || lang.toLowerCase() === 'all';
         const baseUrl = `${this.source.apiUrl}/manga/${mangaId}/feed`
             + `?limit=500`
             + `&includes[]=user&includes[]=scanlation_group`
             + `&order[volume]=desc&order[chapter]=desc`
-            + `&translatedLanguage[]=${lang}`
+            + (isMultiLang ? '' : `&translatedLanguage[]=${lang}`)
             + `&includeFuturePublishAt=0`
             + `&includeEmptyPages=0`
             + `&includeExternalUrl=${showUnavailable ? 1 : 0}`

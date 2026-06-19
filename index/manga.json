@@ -12,7 +12,7 @@
     "hasCloudflare": false,
     "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/manga/multi/mangadex.js",
     "apiUrl": "https://api.mangadex.org",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "isManga": true,
     "itemType": 0,
     "isFullData": false,
