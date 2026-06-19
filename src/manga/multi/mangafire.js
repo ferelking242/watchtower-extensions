@@ -7,7 +7,7 @@ const watchtowerSources = [
     "iconUrl": "https://mangafire.to/assets/sites/mangafire/favicon.png?v3",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.2.21",
+    "version": "0.2.22",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/all/mangafire.js"
@@ -649,4 +649,27 @@ class DefaultExtension extends MProvider {
     // Base64URL
     return this.base64UrlEncodeBytes(bytes);
   }
+    getCustomLists() {
+      return [
+        { id: "new_manga", name: "New Manga" },
+        { id: "trending", name: "Trending" },
+      ];
+    }
+
+    async getCustomList(listId, page) {
+      if (listId === "new_manga") {
+        return await this.filterPage({
+          keyword: "",
+          slug: `language=${this.source.lang}&sort=new&page=${page}`,
+        });
+      }
+      if (listId === "trending") {
+        return await this.filterPage({
+          keyword: "",
+          slug: `language=${this.source.lang}&sort=trending&page=${page}`,
+        });
+      }
+      return this.getPopular(page);
+    }
+  
 }
