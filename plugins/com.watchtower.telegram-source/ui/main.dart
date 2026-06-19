@@ -1922,4 +1922,4 @@ class _TgButton extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 // Entry point retourné au runtime
 // ─────────────────────────────────────────────────────────────────────────────
-TelegramSourcePlugin()
+TelegramSourcePlugin();
