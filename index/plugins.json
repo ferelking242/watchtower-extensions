@@ -2,7 +2,7 @@
   "_comment": "Plugin registry — submit a PR to add your plugin",
   "_schema": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/schema.json",
   "_templates": "https://github.com/ferelking242/watchtower-extensions/tree/main/plugins/_templates",
-  "_lastUpdated": "2026-06-16",
+  "_lastUpdated": "2026-06-19",
   "plugins": [
     {
       "id": "com.watchtower.tiktok-downloader",
@@ -310,7 +310,8 @@
           "SecureStorage",
           "Cache"
         ]
-      }
+      },
+      "zipUrl": "https://github.com/ferelking242/watchtower-telegram-plugin/releases/download/latest/com.watchtower.telegram-source_1.0.0.zip"
     }
   ]
 }
