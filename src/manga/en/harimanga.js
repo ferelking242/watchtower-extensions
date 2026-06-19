@@ -319,4 +319,30 @@ class DefaultExtension extends MProvider {
       },
     }];
   }
+      getCustomLists() {
+          return [
+          { id: "popular", name: "Popular" },
+        { id: "latest", name: "Latest Updates" },
+          ];
+      }
+
+      async getCustomList(listId, page) {
+          if (listId === "popular") {
+              const baseUrl = this.getBaseUrl();
+              const res = await new Client().get(`${baseUrl}/manga/page/${page}/?m_orderby=trending`, this.getHeaders());
+              const doc = new Document(res.body);
+              const list = [];
+              for (const el of doc.select(".page-item-detail")) {
+                  const a = el.selectFirst("h3.h5 a") ?? el.selectFirst("a[href]");
+                  const nameEl = el.selectFirst("a[title]");
+                  const name = nameEl?.attr("title") ?? a?.text ?? "";
+                  const link = a?.getHref ?? "";
+                  const img = el.selectFirst("img")?.getSrc ?? "";
+                  if (name && link) list.push({ name, imageUrl: img, link });
+              }
+              return { list, hasNextPage: true };
+          }
+          return this.getLatestUpdates(page);
+      }
+  
 }

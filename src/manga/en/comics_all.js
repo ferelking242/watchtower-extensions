@@ -398,4 +398,18 @@ class DefaultExtension extends MProvider {
     }
     return "";
   }
+      getCustomLists() {
+          return [
+          { id: "popular", name: "Popular" },
+        { id: "latest", name: "Latest Updates" },
+          ];
+      }
+
+      async getCustomList(listId, page) {
+          if (listId === "popular") {
+              return this.getPopular(page);
+          }
+          return this.getLatestUpdates(page);
+      }
+  
 }

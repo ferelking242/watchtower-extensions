@@ -633,4 +633,27 @@ class DefaultExtension extends MProvider {
       },
     ];
   }
+      getCustomLists() {
+          return [
+          { id: "originals", name: "Originals" },
+        { id: "canvas", name: "Canvas" },
+          ];
+      }
+
+      async getCustomList(listId, page) {
+          if (listId === "canvas") {
+              const res = await new Client().get(`${this.getBaseUrl()}/${this.langCode()}/canvas?sortOrder=UPDATE`);
+              const doc = new Document(res.body);
+              const list = [];
+              for (const el of doc.select("li.col-item")) {
+                  const link = el.selectFirst("a")?.getHref ?? "";
+                  const name = el.selectFirst(".subj span, .info .subj")?.text ?? "";
+                  const img = el.selectFirst("img")?.getSrc ?? "";
+                  if (name) list.push({ name, imageUrl: img, link });
+              }
+              return { list, hasNextPage: false };
+          }
+          return this.getLatestUpdates(page);
+      }
+  
 }
