@@ -464,19 +464,34 @@ class DefaultExtension extends MProvider {
       // ─── Custom lists: Accueil uses getPopular (list), Popular & Recently Added use grids ───
 
       getCustomLists() {
-          return [
-              { id: "popular",        name: "Popular"        },
-              { id: "recently_added", name: "Recently Added" }
-          ];
-      }
+            return [
+                { id: "new_titles",     name: "New Titles"     },
+                { id: "recently_added", name: "Recently Added" }
+            ];
+        }
 
-      async getCustomList(listId, page) {
-          if (listId === "recently_added") {
-              return this.getLatestUpdates(page);
-          }
-          // "popular"
-          return this.getPopular(page);
-      }
+        async getCustomList(listId, page) {
+            if (listId === "recently_added") {
+                return this.getLatestUpdates(page);
+            }
+            if (listId === "new_titles") {
+                return this.getNewTitles(page);
+            }
+            return this.getPopular(page);
+        }
+
+        async getNewTitles(page) {
+            const offset = 20 * (page - 1);
+            const url = `${this.source.apiUrl}/manga`
+                + `?limit=20&offset=${offset}`
+                + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
+                + `&includes[]=cover_art`
+                + this.contentRatingParams()
+                + this.originalLanguageParams()
+                + `&order[createdAt]=desc`;
+            const res = await new Client().get(url, this.getHeaders());
+            return this.mangaRes(res.body);
+        }
 
       // ─── Source preferences (mirrors Aidoku settings) ────────────────────────
 
