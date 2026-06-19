@@ -1,4 +1,18 @@
-const mangayomiSources = [{
+
+      getCustomLists() {
+          return [
+          { id: "popular", name: "Popular" },
+        { id: "latest", name: "Latest Updates" },
+          ];
+      }
+
+      async getCustomList(listId, page) {
+          if (listId === "popular") {
+              return await this.getManga(`/api/v3/comics?free_type=1&limit=16&offset=${(page-1)*16}&ordering=-popular&_update=true`);
+          }
+          return this.getLatestUpdates(page);
+      }
+  const mangayomiSources = [{
     "name": "拷贝漫画",
     "lang": "zh",
     "baseUrl": "https://www.mangacopy.com",
