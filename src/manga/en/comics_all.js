@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://comics-all.com/templates/creamy-melons7/images/favicon.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.1",
+    "version": "0.1.2",
     "pkgPath": "manga/src/en/comics_all.js",
     "isNsfw": false,
     "appMinVerReq": "0.5.0"
@@ -35,35 +35,39 @@ class DefaultExtension extends MProvider {
     return (url || "").replace(/&#58;/g, ":").replace(/&#47;/g, "/");
   }
 
+  // Ensure a URL is absolute — prepend BASE_URL for relative paths
+  fixUrl(url) {
+    if (!url) return "";
+    if (url.startsWith("http")) return url;
+    if (url.startsWith("//")) return "https:" + url;
+    if (url.startsWith("/")) return BASE_URL + url;
+    return BASE_URL + "/" + url;
+  }
+
   // Parse a list page HTML into { list, hasNextPage }
   parseList(html) {
     const list = [];
-    // Each item: <div class="vidos"><div class="preview-in"><a class="preview-img img-box" href="URL"><img src="COVER"...
     const pattern = /class="preview-img img-box"\s+href="([^"]+)"[\s\S]*?<img\s+src="([^"]+)"[^>]*alt="([^"]+)"/g;
     let m;
     while ((m = pattern.exec(html)) !== null) {
       list.push({
-        link: m[1],
-        imageUrl: this.decodeUrl(m[2]),
-        name: m[3]
+        link:     this.fixUrl(m[1]),
+        imageUrl: this.fixUrl(this.decodeUrl(m[2])),
+        name:     m[3]
       });
     }
-    // hasNextPage: navigation exists and current page is not the last one
     const navMatch = html.match(/class="navigation"[^>]*>([\s\S]*?)<\/div>/);
     let hasNextPage = false;
     if (navMatch && list.length > 0) {
-      // If there is a link after the current active <span>, there's a next page
       hasNextPage = /class="navigation"[\s\S]*?<a\s+href/.test(navMatch[0]);
     }
     return { list, hasNextPage: hasNextPage || list.length >= 10 };
   }
 
-  // Build publisher URL for a page
+  // Build URL for a page
   publisherUrl(slug, page) {
     if (!slug) {
-      return page <= 1
-        ? BASE_URL + "/"
-        : `${BASE_URL}/page/${page}/`;
+      return page <= 1 ? BASE_URL + "/" : `${BASE_URL}/page/${page}/`;
     }
     return page <= 1
       ? `${BASE_URL}/${slug}`
@@ -99,7 +103,6 @@ class DefaultExtension extends MProvider {
     let url;
 
     if (query) {
-      // Search always returns all results on one page — only show page 1
       if (page > 1) return { list: [], hasNextPage: false };
       url = `${BASE_URL}/index.php?do=search&subaction=search&story=${encodeURIComponent(query)}`;
     } else if (tag) {
@@ -130,7 +133,7 @@ class DefaultExtension extends MProvider {
     const title = (html.match(/<h1[^>]*>([^<]+)<\/h1>/) || [])[1]?.trim() || "";
 
     const rawCover = (html.match(/<div class="mc-left"><img\s+src="([^"]+)"/) || [])[1] || "";
-    const imageUrl = this.decodeUrl(rawCover);
+    const imageUrl = this.fixUrl(this.decodeUrl(rawCover));
 
     const publisher = (html.match(/<b>Publisher:<\/b>\s*<a[^>]+>([^<]+)<\/a>/) || [])[1]?.trim() || "";
     const year      = (html.match(/<b>Year:<\/b>\s*([^<\n]+?)\s*<br>/) || [])[1]?.trim() || "";
@@ -149,7 +152,6 @@ class DefaultExtension extends MProvider {
 
     // Description block
     const descBlock = html.match(/<div class="mc-right"[^>]*>([\s\S]*?)<\/div>/)?.[1] || "";
-    // Strip HTML tags and build clean description
     const descClean = descBlock
       .replace(/<br\s*\/?>/gi, "\n")
       .replace(/<[^>]+>/g, "")
@@ -166,7 +168,7 @@ class DefaultExtension extends MProvider {
     ].filter(Boolean);
     const description = descParts.join("  •  ");
 
-    // Download links — can be multiple (mirrors)
+    // Download links
     const chapters = [];
     const dlPat = /href="(https?:\/\/[^"]+)"[^>]*(?:class="button"[^>]*|[^>]*class="button")[^>]*>([^<]*(?:DOWNLOAD|download|Download)[^<]*)</g;
     let dlm;
@@ -184,7 +186,6 @@ class DefaultExtension extends MProvider {
       idx++;
     }
 
-    // Fallback: find any .button link
     if (chapters.length === 0) {
       const fallback = (html.match(/href="(https?:\/\/[^"]+)"[^>]*class="button"/) ||
                         html.match(/class="button"[^>]*href="(https?:\/\/[^"]+)"/))?.[1];
@@ -205,15 +206,13 @@ class DefaultExtension extends MProvider {
       imageUrl,
       description,
       genre,
-      status: 1,       // completed (single-issue comics)
+      status: 1,
       author: publisher,
       artist: "",
       chapters
     };
   }
 
-  // getPageList: the "chapter" URL is a file-host download page.
-  // Return it as a single external page so the app can open it.
   async getPageList(url) {
     return [{ url, index: 0 }];
   }
@@ -268,7 +267,6 @@ class DefaultExtension extends MProvider {
     }
 
     return [
-      // ── Publisher ──────────────────────────────────────────────────────
       {
         type_name: "SelectFilter",
         name: "Publisher",
@@ -279,16 +277,12 @@ class DefaultExtension extends MProvider {
           value
         }))
       },
-
-      // ── Year ──────────────────────────────────────────────────────────
       {
         type_name: "SelectFilter",
         name: "Year",
         state: 0,
         values: years
       },
-
-      // ── Tag (free text, browse /tags/TAG/) ────────────────────────────
       {
         type_name: "HeaderFilter",
         name: "Browse by tag — enter tag name exactly as on the site"
@@ -298,8 +292,6 @@ class DefaultExtension extends MProvider {
         name: "Tag",
         state: ""
       },
-
-      // ── Common tags as quick checkboxes ───────────────────────────────
       {
         type_name: "HeaderFilter",
         name: "Common Tags (enter one name above, or use quick picks below)"
@@ -339,8 +331,6 @@ class DefaultExtension extends MProvider {
           value
         }))
       },
-
-      // ── Publisher as tags ────────────────────────────────────────────
       {
         type_name: "GroupFilter",
         name: "Publisher Tags",
@@ -361,8 +351,6 @@ class DefaultExtension extends MProvider {
           value
         }))
       },
-
-      // ── Character tags ───────────────────────────────────────────────
       {
         type_name: "GroupFilter",
         name: "Character Tags",
@@ -395,7 +383,6 @@ class DefaultExtension extends MProvider {
     ];
   }
 
-  // Handle quick-pick checkboxes: if any checkbox is checked, use it as the Tag value
   _resolveTag(filterList) {
     const tagFilter = filterList.find(f => f.name === "Tag");
     if (tagFilter?.state?.trim()) return tagFilter.state.trim();

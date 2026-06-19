@@ -53,7 +53,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.mangadex.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.1.5",
+    "version": "0.1.6",
     "pkgPath": "manga/src/all/mangadex.js"
 }];
 
@@ -76,11 +76,16 @@ class DefaultExtension extends MProvider {
         const offset = 20 * (page - 1);
         const url = `${this.source.apiUrl}/chapter?limit=20&offset=${offset}&translatedLanguage[]=${this.source.lang}&includeFutureUpdates=0&order[publishAt]=desc&includeFuturePublishAt=0&includeEmptyPages=0`;
         const response = await new Client().get(url, this.getHeaders());
-        const mangaIds = (JSON.parse(response.body).data
-                    .flatMap(item => item.relationships)
+        let parsed;
+        try { parsed = JSON.parse(response.body); } catch (_) { return { list: [], hasNextPage: false }; }
+        const data = parsed?.data;
+        if (!data || !Array.isArray(data)) return { list: [], hasNextPage: false };
+        const mangaIds = (data
+                    .flatMap(item => item.relationships || [])
                     .filter(relationship => relationship.type === "manga")
                     .map(mangaData => mangaData.id).filter((v,i,a)=>a.indexOf(v)===i)
         );
+        if (mangaIds.length === 0) return { list: [], hasNextPage: false };
         const mangaIdss = mangaIds.map(id => `&ids[]=${id}`).join("");
         const newUrl = `${this.source.apiUrl}/manga?includes[]=cover_art&limit=${mangaIds.length}&contentRating[]=safe&contentRating[]=suggestive${this.preferenceOriginalLanguages()}${mangaIdss}`;
         const newResponse = await new Client().get(newUrl, this.getHeaders());
@@ -198,10 +203,10 @@ class DefaultExtension extends MProvider {
     extractChapters(paginatedData) {
         const chaptersList = [];
 
-        const dataList = paginatedData.data ?? [];
+        const dataList = paginatedData?.data ?? [];
         for (const res of dataList) {
             let scan = "";
-            const groups = res?.relationships?.filter(
+            const groups = (res?.relationships ?? []).filter(
                 rel => rel.id !== "00e03853-1b96-4f41-9542-c71b8692033b"
             );
             for (const group of groups) {
@@ -249,11 +254,11 @@ class DefaultExtension extends MProvider {
         const chapterDatas = chapter.data;
         return chapterDatas.map(file => `${host}/data/${hash}/${file}`);
     }
-    getFilterList() {
-        throw new Error("getFilterList not implemented");
-    }
     mangaRes(res) {
-        const data = JSON.parse(res).data;
+        let parsed;
+        try { parsed = JSON.parse(res); } catch (_) { return { list: [], hasNextPage: false }; }
+        const data = parsed?.data;
+        if (!data || !Array.isArray(data)) return { list: [], hasNextPage: false };
         return {
             list: data.map(e => ({
                 name: this.findTitle(e, this.source.lang),
@@ -454,8 +459,7 @@ class DefaultExtension extends MProvider {
                     ["Fan Colored", "7b2ce280-79ef-4c09-9b58-12b7c23a9b78"],
                     ["Full Color", "f5ba408b-0e7a-484d-8d49-4e9125ac96de"],
                     ["Long Strip", "3e2b8dae-350e-4ab8-a8ce-016e844b9f0d"],
-                    [
-                        "Official Colored", "320831a8-4026-470b-94f6-8353740e6f04"],
+                    ["Official Colored", "320831a8-4026-470b-94f6-8353740e6f04"],
                     ["Oneshot", "0234a31e-a729-4e28-9d6a-3f87c4966b9e"],
                     ["User Created", "891cf039-b895-47f0-9229-bef4c96eccd4"],
                     ["Web Comic", "e197df38-d0e7-43b5-9b09-2842d0c326dd"]
@@ -517,31 +521,25 @@ class DefaultExtension extends MProvider {
                     ["Monsters", "36fd93ea-e8b8-445e-b836-358f02b3d33d"],
                     ["Music", "f42fbf9e-188a-447b-9fdc-f19dc1e4d685"],
                     ["Ninja", "489dd859-9b61-4c37-af75-5b18e88daafc"],
-                    [
-                        "Office Workers", "92d6d951-ca5e-429c-ac78-451071cbf064"],
+                    ["Office Workers", "92d6d13f-e113-4f3e-b648-c5e13b8b3f17"],
                     ["Police", "df33b754-73a3-4c54-80e6-1a74a8058539"],
-                    [
-                        "Post-Apocalyptic", "9467335a-1b83-4497-9231-765337a00b96"],
-                    ["Reincarnation", "0bc90acb-ccc1-44ca-a34a-b9f3a73259d0"],
+                    ["Post-Apocalyptic", "9467335a-1b83-4497-9231-765337925a7c"],
+                    ["Reincarnation", "0bc90acb-ccc1-44ca-a34a-b9f855843f40"],
                     ["Reverse Harem", "65761a2a-415e-47f3-bef2-a9dababba7a6"],
                     ["Samurai", "81183756-1453-4c81-aa9e-f6e1b63be016"],
                     ["School Life", "caaa44eb-cd40-4177-b930-79d3ef2afe87"],
                     ["Shota", "ddefd648-5140-4e5f-ba18-4eca4071d19b"],
-                    ["Supernatural", "eabc5b4c-6aff-42f3-b657-3e90cbd00b75"],
                     ["Survival", "5fff9cde-849c-4d78-aab0-0d52b2ee1d25"],
                     ["Time Travel", "292e862b-2d17-4062-90a2-0356caa4ae27"],
-                    [
-                        "Traditional Games", "31932a7e-5b8e-49a6-9f12-2afa39dc544c"],
-                    ["Vampires", "d7d1730f-6eb0-4ba6-9437-602cac38664c"],
+                    ["Traditional Games", "31932a7e-5b8e-49a6-9f12-2afa39dc544f"],
+                    ["Vampires", "d7d1730f-6eb0-469c-9b0e-5bcd2b912a4d"],
                     ["Video Games", "9438db5a-7e2a-4ac0-b39e-e0d95a34b8a8"],
                     ["Villainess", "d14322ac-4d6f-4e9b-afd9-629d5f4d8a41"],
-                    [
-                        "Virtual Reality", "8c86611e-fab7-4986-9dec-d1a2f44acdd5"],
-                    ["Zombies", "631ef465-9aba-4afb-b0fc-ea10efe274a8"]
+                    ["Virtual Reality", "8c86611e-fab7-4986-9dec-d1a2f44acdd5"],
+                    ["Wuxia", "acc803a4-c95a-4c22-86fc-eb6b582d82a2"],
+                    ["Zombies", "631ef465-1f4e-477f-a90f-d37a52b2fab2"]
                 ].map(x => ({ type_name: 'TriState', name: x[0], value: x[1] }))
             },
-
         ];
     }
-
 }
