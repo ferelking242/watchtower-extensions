@@ -454,8 +454,24 @@ class DefaultExtension extends MProvider {
 
         return files.map(f => `${host}/${segment}/${hash}/${f}`);
     }
+      // ─── Custom lists: Accueil uses getPopular (list), Popular & Recently Added use grids ───
 
-    // ─── Source preferences (mirrors Aidoku settings) ────────────────────────
+      getCustomLists() {
+          return [
+              { id: "popular",        name: "Popular"        },
+              { id: "recently_added", name: "Recently Added" }
+          ];
+      }
+
+      async getCustomList(listId, page) {
+          if (listId === "recently_added") {
+              return this.getLatestUpdates(page);
+          }
+          // "popular"
+          return this.getPopular(page);
+      }
+
+      // ─── Source preferences (mirrors Aidoku settings) ────────────────────────
 
     getSourcePreferences() {
         return [
