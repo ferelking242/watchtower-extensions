@@ -1,5 +1,47 @@
 [
   {
+    "name": "TropiStream",
+    "id": 756891223,
+    "baseUrl": "https://tropistream.fr",
+    "lang": "fr",
+    "typeSource": "single",
+    "iconUrl": "https://tropistream.fr/tropi.png",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/watch/fr/tropistream.js",
+    "apiUrl": "https://tropistream.fr",
+    "version": "1.0.0",
+    "isManga": false,
+    "itemType": 1,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "TropiStream — Films, Séries et Animés en VF/VOSTFR. Connexion Discord requise. Vote Discord pour soutenir le serveur.",
+    "requiresAccount": true,
+    "loginUrl": "https://tropistream.fr",
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": true,
+    "videoQualities": [
+      "AUTO",
+      "VF",
+      "VOSTFR",
+      "VO"
+    ],
+    "subCategories": [
+      "film",
+      "serie",
+      "anime"
+    ],
+    "supportsForYou": true,
+    "supportsComments": false
+  },
+  {
     "name": "Anime-Sama",
     "id": 32228290,
     "baseUrl": "https://anime-sama.fr",
