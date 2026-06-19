@@ -50,7 +50,7 @@ const watchtowerSources = [
         "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.comick.png",
         "typeSource": "single",
         "itemType": 0,
-        "version": "0.1.1",
+        "version": "0.1.2",
         "pkgPath": "manga/src/all/comick.js"
     }];
 
@@ -422,4 +422,26 @@ class DefaultExtension extends MProvider {
     ll(url) {
         return url.includes("?") ? "&" : "?";
     }
+      getCustomLists() {
+          // Extra home sections for the Accueil carousel
+          return [
+              { id: "trending", name: "Trending" },
+              { id: "new_titles", name: "New Titles" },
+          ];
+      }
+
+      async getCustomList(listId, page) {
+          if (listId === "new_titles") {
+              const url = `${this.source.apiUrl}/v1.0/search?sort=new&page=${page}&tachiyomi=true`;
+              const res = await new Client().get(url, this.getHeaders());
+              return this.mangaRes(res.body);
+          }
+          if (listId === "trending") {
+              const url = `${this.source.apiUrl}/v1.0/search?sort=hot&page=${page}&tachiyomi=true`;
+              const res = await new Client().get(url, this.getHeaders());
+              return this.mangaRes(res.body);
+          }
+          return this.getPopular(page);
+      }
+  
 }
