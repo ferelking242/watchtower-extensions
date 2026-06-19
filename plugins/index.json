@@ -134,7 +134,10 @@
       "screenshots": [],
       "category": "downloader",
       "runtime": "javascript",
-      "ui": "webview",
+      "ui": {
+        "method": "html",
+        "htmlFallback": "ui/index.html"
+      },
       "permissions": [
         "network",
         "downloads",
@@ -255,7 +258,10 @@
       "screenshots": [],
       "category": "downloader",
       "runtime": "javascript",
-      "ui": "webview",
+      "ui": {
+        "method": "html",
+        "htmlFallback": "ui/index.html"
+      },
       "permissions": [
         "network",
         "downloads",
@@ -375,7 +381,7 @@
         "reader"
       ],
       "ui": {
-        "method": "flutter_eval",
+        "method": "eval",
         "evalSource": "ui/main.dart"
       },
       "permissions": [

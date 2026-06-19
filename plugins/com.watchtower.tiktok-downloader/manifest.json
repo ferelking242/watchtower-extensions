@@ -8,7 +8,10 @@
   "icon": "assets/icon.png",
   "category": "downloader",
   "runtime": "javascript",
-  "ui": "webview",
+  "ui": {
+    "method": "html",
+    "htmlFallback": "ui/index.html"
+  },
   "permissions": [
     "network",
     "downloads",

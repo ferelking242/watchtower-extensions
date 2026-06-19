@@ -17,7 +17,12 @@
     "4k"
   ],
   "runtime": "binary",
-  "ui": "declarative",
+  "ui": {
+    "method": "json",
+    "schema": "ui/schema.json",
+    "htmlFallback": "ui/index.html",
+    "evalSource": "ui/main.dart"
+  },
   "permissions": [
     "network",
     "downloads",

@@ -16,7 +16,10 @@
     "social"
   ],
   "runtime": "binary",
-  "ui": "declarative",
+  "ui": {
+    "method": "json",
+    "schema": "ui/schema.json"
+  },
   "permissions": [
     "network",
     "downloads",
