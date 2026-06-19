@@ -124,7 +124,7 @@ class DefaultExtension extends MProvider {
 
     /** "&originalLanguage[]=…" from the multi-select preference. */
     originalLanguageParams() {
-        const langs = this.pref("original_languages", []);
+        const langs = this.pref("original_languages", []) || [];
         return langs.length ? `&${langs.join("&")}` : "";
     }
 
