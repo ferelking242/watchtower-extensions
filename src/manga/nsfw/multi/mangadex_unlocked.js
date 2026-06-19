@@ -279,7 +279,7 @@ class DefaultExtension extends MProvider {
         return coverArt ? `https://uploads.mangadex.org/covers/${data.id}/${coverArt.attributes.fileName}` : "";
     }
     preferenceOriginalLanguages() {
-        const originalLanguages = this.getPreference("original_languages", []);
+        const originalLanguages = this.getPreference("original_languages", []) || [];
         return originalLanguages.length ? `&${originalLanguages.join("&")}` : "";
     }
     getPreference(key, defaulValue) {
