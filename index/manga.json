@@ -1101,7 +1101,7 @@
     "upstream": ""
   },
   {
-    "name": "ImpÃ©rio Scans",
+    "name": "ImpÃÂ©rio Scans",
     "id": 721205416,
     "baseUrl": "https://imperioscans.com.br",
     "lang": "pt-BR",
@@ -1171,7 +1171,7 @@
     "lang": "en",
     "typeSource": "madara",
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/mangayomi-extensions/main/dart/manga/multisrc/madara/src/en/isekaiscanmanga/icon.png",
-    "dateFormat": "dd MMMØ yyyy",
+    "dateFormat": "dd MMMÃÂ yyyy",
     "dateFormatLocale": "en_us",
     "isNsfw": false,
     "hasCloudflare": false,
@@ -1549,7 +1549,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "Manga Åehri",
+    "name": "Manga ÃÂehri",
     "id": 865354788,
     "baseUrl": "https://mangasehri.com",
     "lang": "tr",
@@ -1619,7 +1619,7 @@
     "lang": "en",
     "typeSource": "madara",
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/mangayomi-extensions/main/dart/manga/multisrc/madara/src/en/mangafreakonline/icon.png",
-    "dateFormat": "d MMMMØ yyy",
+    "dateFormat": "d MMMMÃÂ yyy",
     "dateFormatLocale": "en_us",
     "isNsfw": false,
     "hasCloudflare": false,
@@ -1773,7 +1773,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "MangÃ¡ Nanquim",
+    "name": "MangÃÂ¡ Nanquim",
     "id": 92850584,
     "baseUrl": "https://mangananquim.com",
     "lang": "pt-BR",
@@ -2157,7 +2157,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "ROG MangÃ¡s",
+    "name": "ROG MangÃÂ¡s",
     "id": 876053235,
     "baseUrl": "https://rogmangas.com",
     "lang": "pt-BR",
@@ -2765,7 +2765,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "ÙØ§ÙØ¬Ø§ Ø§ÙØ¹Ø§Ø´Ù",
+    "name": "ÃÂÃÂ§ÃÂÃÂ¬ÃÂ§ ÃÂ§ÃÂÃÂ¹ÃÂ§ÃÂ´ÃÂ",
     "id": 913767194,
     "baseUrl": "https://3asq.org",
     "lang": "ar",
@@ -2894,7 +2894,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "ÙØ§ÙØ¬Ø§ ÙÙÙÙ",
+    "name": "ÃÂÃÂ§ÃÂÃÂ¬ÃÂ§ ÃÂÃÂÃÂÃÂ",
     "id": 933815485,
     "baseUrl": "https://link-manga.com",
     "lang": "ar",
@@ -2926,7 +2926,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "ÙØ§ÙØ¬Ø§ ÙÙÙ",
+    "name": "ÃÂÃÂ§ÃÂÃÂ¬ÃÂ§ ÃÂÃÂÃÂ",
     "id": 290673359,
     "baseUrl": "https://lekmanga.net",
     "lang": "ar",
@@ -3028,7 +3028,7 @@
     "lang": "ar",
     "typeSource": "madara",
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/mangayomi-extensions/main/dart/manga/multisrc/madara/src/ar/mangaspark/icon.png",
-    "dateFormat": "d MMMMØ yyyy",
+    "dateFormat": "d MMMMÃÂ yyyy",
     "dateFormatLocale": "ar",
     "isNsfw": false,
     "hasCloudflare": false,
@@ -3060,7 +3060,7 @@
     "lang": "ar",
     "typeSource": "madara",
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/mangayomi-extensions/main/dart/manga/multisrc/madara/src/ar/mangastarz/icon.png",
-    "dateFormat": "d MMMMØ yyyy",
+    "dateFormat": "d MMMMÃÂ yyyy",
     "dateFormatLocale": "ar",
     "isNsfw": false,
     "hasCloudflare": false,
@@ -3150,7 +3150,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "Ø´Ø¨ÙØ© ÙÙÙØ§Ù Ø§ÙØ¹Ø±Ø¨ÙØ©",
+    "name": "ÃÂ´ÃÂ¨ÃÂÃÂ© ÃÂÃÂÃÂÃÂ§ÃÂ ÃÂ§ÃÂÃÂ¹ÃÂ±ÃÂ¨ÃÂÃÂ©",
     "id": 1012312232,
     "baseUrl": "https://manga.detectiveconanar.com",
     "lang": "ar",
@@ -4398,7 +4398,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "Sagrado ImpÃ©rio da Britannia",
+    "name": "Sagrado ImpÃÂ©rio da Britannia",
     "id": 825744254,
     "baseUrl": "https://imperiodabritannia.com",
     "lang": "pt-br",
@@ -4430,7 +4430,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "ImpÃ©rio Scans",
+    "name": "ImpÃÂ©rio Scans",
     "id": 721205416,
     "baseUrl": "https://imperioscans.com.br",
     "lang": "pt-BR",
@@ -4462,7 +4462,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "Leitor de MangÃ¡",
+    "name": "Leitor de MangÃÂ¡",
     "id": 1053799132,
     "baseUrl": "https://leitordemanga.com",
     "lang": "pt-br",
@@ -5198,7 +5198,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "RÃ¼ya Manga",
+    "name": "RÃÂ¼ya Manga",
     "id": 913158953,
     "baseUrl": "https://www.ruyamanga.com",
     "lang": "tr",
@@ -5230,7 +5230,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "TÃ¼rkÃ§e Manga Oku",
+    "name": "TÃÂ¼rkÃÂ§e Manga Oku",
     "id": 1065180352,
     "baseUrl": "https://turkcemangaoku.com",
     "lang": "tr",
@@ -6320,7 +6320,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "Ø£Ø±ÙØ§ ÙØ§ÙØ¬Ø§",
+    "name": "ÃÂ£ÃÂ±ÃÂÃÂ§ ÃÂÃÂ§ÃÂÃÂ¬ÃÂ§",
     "id": 101767587,
     "baseUrl": "https://ar.kenmanga.com",
     "lang": "ar",
@@ -6448,7 +6448,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "ÙØ§ÙØ¬Ø§ ÙÙÙ",
+    "name": "ÃÂÃÂ§ÃÂÃÂ¬ÃÂ§ ÃÂÃÂÃÂ",
     "id": 360286753,
     "baseUrl": "https://manjanoon.org",
     "lang": "ar",
@@ -7344,7 +7344,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "MangÃ¡s Chan",
+    "name": "MangÃÂ¡s Chan",
     "id": 413321827,
     "baseUrl": "https://mangaschan.net",
     "lang": "pt-br",
@@ -7376,7 +7376,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "MangÃ¡s Online",
+    "name": "MangÃÂ¡s Online",
     "id": 607918644,
     "baseUrl": "https://mangasonline.cc",
     "lang": "pt-br",
@@ -7440,7 +7440,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "Tsundoku TraduÃ§Ãµes",
+    "name": "Tsundoku TraduÃÂ§ÃÂµes",
     "id": 958388028,
     "baseUrl": "https://tsundoku.com.br",
     "lang": "pt-br",
@@ -8016,7 +8016,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "ÙØ§ÙØ¬Ø§ Ø§ÙÙ ÙØ§ÙÙ",
+    "name": "ÃÂÃÂ§ÃÂÃÂ¬ÃÂ§ ÃÂ§ÃÂÃÂ ÃÂÃÂ§ÃÂÃÂ",
     "id": 19018595,
     "baseUrl": "https://onma.top",
     "lang": "ar",
@@ -8335,7 +8335,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "æ°æ°æ¼«ç»",
+    "name": "Ã¦ÂÂ°Ã¦ÂÂ°Ã¦Â¼Â«Ã§ÂÂ»",
     "id": 652112892,
     "baseUrl": "http://www.77mh.xyz",
     "lang": "zh",
@@ -8366,7 +8366,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "å¤é£æ¼«ç»",
+    "name": "Ã¥ÂÂ¤Ã©Â£ÂÃ¦Â¼Â«Ã§ÂÂ»",
     "id": 69940013,
     "baseUrl": "https://www.gufengmh.com",
     "lang": "zh",
@@ -8397,7 +8397,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "æ·è´æ¼«ç»",
+    "name": "Ã¦ÂÂ·Ã¨Â´ÂÃ¦Â¼Â«Ã§ÂÂ»",
     "id": 109412435,
     "baseUrl": "https://www.mangacopy.com",
     "lang": "zh",
@@ -8428,7 +8428,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "å¨æ¼«ä¹å®¶",
+    "name": "Ã¥ÂÂ¨Ã¦Â¼Â«Ã¤Â¹ÂÃ¥Â®Â¶",
     "id": 434793864,
     "baseUrl": "https://www.dmzj.com",
     "lang": "zh",
@@ -8459,7 +8459,7 @@
     "upstream": "mangayomi"
   },
   {
-    "name": "æ¼«ç»æ",
+    "name": "Ã¦Â¼Â«Ã§ÂÂ»Ã¦ÂÂ",
     "id": 219867496,
     "baseUrl": "https://www.manhuagui.com",
     "lang": "zh",
@@ -8546,5 +8546,86 @@
     "subCategories": [],
     "supportsComments": false,
     "upstream": "mangayomi"
+  },
+  {
+    "name": "CrunchyScan",
+    "id": 518392047,
+    "baseUrl": "https://crunchyscan.fr",
+    "lang": "fr",
+    "typeSource": "single",
+    "iconUrl": "https://crunchyscan.fr/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/manga/fr/crunchyscan.js",
+    "apiUrl": "https://crunchyscan.fr",
+    "version": "0.1.0",
+    "isManga": true,
+    "itemType": 2,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Scans manga FR",
+    "editableBaseUrl": true,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
+  },
+  {
+    "name": "Japscan",
+    "id": 738291504,
+    "baseUrl": "https://www.japscan.lol",
+    "lang": "fr",
+    "typeSource": "single",
+    "iconUrl": "https://www.japscan.lol/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/manga/fr/japscan.js",
+    "apiUrl": "https://www.japscan.lol",
+    "version": "0.1.0",
+    "isManga": true,
+    "itemType": 2,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Scans manga FR",
+    "editableBaseUrl": true,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
+  },
+  {
+    "name": "BentoBento",
+    "id": 492817305,
+    "baseUrl": "https://bentobento.fr",
+    "lang": "fr",
+    "typeSource": "single",
+    "iconUrl": "https://bentobento.fr/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/manga/fr/bentobento.js",
+    "apiUrl": "https://bentobento.fr",
+    "version": "0.1.0",
+    "isManga": true,
+    "itemType": 2,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Scans manga FR",
+    "editableBaseUrl": true,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
   }
 ]
