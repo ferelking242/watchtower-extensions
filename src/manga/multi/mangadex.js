@@ -243,6 +243,24 @@ class DefaultExtension extends MProvider {
         const chapters = chapData?.data;
         if (!Array.isArray(chapters)) return { list: [], hasNextPage: false };
 
+        // Build chapterMap: mangaUUID -> latest chapter info (first occurrence = most recent)
+        const chapterMap = {};
+        for (const chap of chapters) {
+            const mangaRel = (chap.relationships || []).find(r => r.type === "manga");
+            if (mangaRel && !chapterMap[mangaRel.id]) {
+                const attr = chap.attributes || {};
+                const vol   = attr.volume  ? `Vol.${attr.volume} ` : "";
+                const ch    = attr.chapter ? `Ch.${attr.chapter} ` : "";
+                const title = attr.title   || "";
+                const chapName = (vol + ch + title).trim() || "Oneshot";
+                chapterMap[mangaRel.id] = {
+                    name: chapName,
+                    url: `/chapter/${chap.id}`,
+                    dateUpload: String(new Date(attr.publishAt || 0).valueOf())
+                };
+            }
+        }
+
         // Deduplicated manga IDs from chapter relationships
         const mangaIds = [...new Set(
             chapters
@@ -263,7 +281,16 @@ class DefaultExtension extends MProvider {
             + idsParam;
 
         const mangaResponse = await new Client().get(mangaUrl, this.getHeaders());
-        return this.mangaRes(mangaResponse.body);
+        const result = this.mangaRes(mangaResponse.body);
+
+        // Inject latest chapter info into each manga entry
+        for (const manga of result.list) {
+            const uuid = manga.link ? manga.link.replace('/manga/', '') : '';
+            if (uuid && chapterMap[uuid]) {
+                manga.chapters = [chapterMap[uuid]];
+            }
+        }
+        return result;
     }
 
     // ─── Search ──────────────────────────────────────────────────────────────
