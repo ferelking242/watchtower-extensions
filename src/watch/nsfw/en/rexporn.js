@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.rexporn.st/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "pkgPath": "watch/nsfw/en/rexporn.js",
   "notes": "Adult content (18+) — multi-quality MP4 streaming",
   "isNsfw": true
@@ -50,45 +50,48 @@ class DefaultExtension extends MProvider {
   _parseList(html) {
     const doc = new Document(html);
     const items = [];
+    // Use simple class selector only, no child combinator
     const cards = doc.select(".pitem");
     for (const card of cards) {
-      const a = card.selectFirst(".pitem_screen > a");
+      // Avoid child combinator > — use attribute contains selector instead
+      const a = card.selectFirst("a[href*='/watch/']");
       if (!a) continue;
       const href = a.attr("href") || "";
-      if (!href || !href.includes("/watch/")) continue;
-      const img = card.selectFirst("img");
-      const thumb = img?.attr("src") || "";
-      const title = card.selectFirst(".ftitle")?.text?.trim()
-        || img?.attr("alt")?.replace(/^Watch\s+/i, "").replace(/\s+video$/i, "").trim()
-        || "Unknown";
-      const dur = card.selectFirst(".length")?.text?.trim() || "";
-      const qual = card.selectFirst(".hdqual")?.text?.trim() || "";
-      const desc = [dur, qual].filter(Boolean).join(" · ");
+      if (!href) continue;
+      // img is directly inside the anchor tag
+      const img = a.selectFirst("img") || card.selectFirst("img");
+      const thumb = img ? (img.attr("src") || "") : "";
+      // title: prefer .ftitle text, fall back to img alt without prefix/suffix
+      const ftitle = card.selectFirst(".ftitle");
+      let title = ftitle
+        ? ftitle.text.trim()
+        : (img ? img.attr("alt").replace(/^Watch\s+/i, "").replace(/\s+video$/i, "").trim() : "Unknown");
+      const dur  = card.selectFirst(".length") ? card.selectFirst(".length").text.trim() : "";
+      const qual = card.selectFirst(".hdqual") ? card.selectFirst(".hdqual").text.trim() : "";
+      const desc = [dur, qual].filter(function(x){ return !!x; }).join(" \u00b7 ");
       items.push({
-        name: title,
+        name: title || "Unknown",
         imageUrl: thumb,
         link: href.startsWith("http") ? href : "https://www.rexporn.st" + href,
         description: desc
       });
     }
-    const hasNext = !!doc.selectFirst(".next-page, a[rel='next'], .pager .next")
-      || html.includes('class="next"')
-      || html.includes('rel="next"');
+    const hasNext = html.indexOf("page-" + 2) !== -1 || html.indexOf('rel="next"') !== -1;
     return { list: items, hasNextPage: hasNext };
   }
 
   async getDetail(url) {
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
     const doc = new Document(res.body);
-    const title = doc.selectFirst("h1")?.text?.trim()
-      || doc.selectFirst('meta[property="og:title"]')?.attr("content")?.trim()
-      || "Unknown";
-    const thumb = doc.selectFirst('link[itemprop="thumbnailUrl"]')?.attr("href")
-      || doc.selectFirst('meta[property="og:image"]')?.attr("content")
-      || "";
-    const tags = doc.select(".video-tags a, .tags a, .category a").map(el => ({
-      name: el.text.trim()
-    }));
+    const h1 = doc.selectFirst("h1");
+    const ogTitle = doc.selectFirst('meta[property="og:title"]');
+    const title = (h1 ? h1.text.trim() : null) || (ogTitle ? ogTitle.attr("content").trim() : "Unknown");
+    const ogImg = doc.selectFirst('meta[property="og:image"]');
+    const thumbLink = doc.selectFirst('link[itemprop="thumbnailUrl"]');
+    const thumb = (thumbLink ? thumbLink.attr("href") : null) || (ogImg ? ogImg.attr("content") : "");
+    const tagEls = doc.select(".video-tags a, .tags a, .category a");
+    const tags = [];
+    for (const el of tagEls) tags.push({ name: el.text.trim() });
     return {
       name: title,
       imageUrl: thumb,
@@ -103,52 +106,51 @@ class DefaultExtension extends MProvider {
     const html = res.body;
     const videos = [];
 
-    // Extract player data attributes
-    const dataQ = html.match(/id="player"[^>]*data-q="([^"]+)"/)?.[1]
-      || html.match(/data-q="([^"]+)"[^>]*id="player"/)?.[1];
-    const dataN = html.match(/id="player"[^>]*data-n="([^"]+)"/)?.[1]
-      || html.match(/data-n="([^"]+)"/)?.[1];
-    const dataId = html.match(/id="player"[^>]*data-id="([^"]+)"/)?.[1]
-      || html.match(/data-id="(\d+)"/)?.[1];
+    // Extract the full <div id="player" ...> tag first, then pick attributes
+    const playerTagMatch = html.match(/<div[^>]+id="player"[^>]*>/);
+    if (!playerTagMatch) return videos;
+    const playerTag = playerTagMatch[0];
 
-    if (dataQ && dataN && dataId) {
-      const vid = parseInt(dataId, 10);
-      const folder = Math.floor(vid / 1000) * 1000;
-      const vPut = `${folder}/${vid}`;
-      const qualities = dataQ.split(",");
+    const dataQMatch  = playerTag.match(/data-q="([^"]+)"/);
+    const dataNMatch  = playerTag.match(/data-n="([^"]+)"/);
+    const dataIdMatch = playerTag.match(/data-id="([^"]+)"/);
+    if (!dataQMatch || !dataNMatch || !dataIdMatch) return videos;
 
-      // Quality order: prefer highest first
-      const qualOrder = ["1080p", "720p", "480p", "240p", "360p", "2160p"];
+    const dataQ = dataQMatch[1];
+    const dataN = dataNMatch[1];
+    const vid   = parseInt(dataIdMatch[1], 10);
+    const folder = Math.floor(vid / 1000) * 1000;
+    const vPut  = folder + "/" + vid;
 
-      for (const qStr of qualities) {
-        // Each quality: res;hash;label;size;timestamp;token
-        const parts = qStr.replace(/&nbsp;/g, " ").split(";");
-        if (parts.length < 6) continue;
-        const res    = parts[0].trim();  // e.g. "1080p"
-        const label  = parts[2].trim();  // e.g. "FHD 1080p"
-        const ts     = parts[4].trim();  // timestamp
-        const token  = parts[5].trim();  // signed token
+    const qualOrder = ["1080p", "720p", "480p", "360p", "240p", "2160p"];
+    const qualEntries = dataQ.split(",");
 
-        let prefix = res === "720p" ? "" : `_${res}`;
-        if (prefix === "_2160p") prefix = "_4k";
+    for (const qStr of qualEntries) {
+      // parts: res ; hash ; label ; size ; timestamp ; token
+      const parts = qStr.replace(/&nbsp;/g, " ").replace(/\u00a0/g, " ").split(";");
+      if (parts.length < 6) continue;
+      const res    = parts[0].trim();
+      const label  = parts[2].trim();
+      const ts     = parts[4].trim();
+      const token  = parts[5].trim();
 
-        const videoUrl = `https://${dataN}.vstor.top/whp/vid/${ts}/${token}/${vPut}/${vid}${prefix}.mp4`;
-        videos.push({
-          url: videoUrl,
-          quality: label || res,
-          originalUrl: videoUrl,
-          headers: this.getHeaders(url)
-        });
-      }
+      let prefix = res === "720p" ? "" : ("_" + res);
+      if (prefix === "_2160p") prefix = "_4k";
 
-      // Sort by quality preference
-      videos.sort((a, b) => {
-        const ai = qualOrder.findIndex(q => a.quality.includes(q.replace("p", "")));
-        const bi = qualOrder.findIndex(q => b.quality.includes(q.replace("p", "")));
-        return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+      const videoUrl = "https://" + dataN + ".vstor.top/whp/vid/" + ts + "/" + token + "/" + vPut + "/" + vid + prefix + ".mp4";
+      videos.push({
+        url: videoUrl,
+        quality: label || res,
+        originalUrl: videoUrl,
+        headers: this.getHeaders(url)
       });
     }
 
+    videos.sort(function(a, b) {
+      const ai = qualOrder.findIndex(function(q){ return a.quality.indexOf(q.replace("p","")) !== -1; });
+      const bi = qualOrder.findIndex(function(q){ return b.quality.indexOf(q.replace("p","")) !== -1; });
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+    });
     return videos;
   }
 
