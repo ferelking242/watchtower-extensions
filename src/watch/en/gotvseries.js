@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// GoTVSeries — extension Watchtower v0.1.4
+// GoTVSeries — extension Watchtower v0.1.5
 //
 // Source  : https://gotvseries.top
 // Content : English TV series — metadata & cast directly from TMDB
@@ -26,7 +26,7 @@ const watchtowerSources = [{
     "iconUrl": "https://gotvseries.top/images/favicon.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.4",
+    "version": "0.1.5",
     "pkgPath": "watch/en/gotvseries.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
