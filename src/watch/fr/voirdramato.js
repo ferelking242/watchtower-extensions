@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.voirdramato.png",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.1.5",
+    "version": "0.1.6",
     "pkgPath": "watch/fr/voirdramato.js",
     "editableBaseUrl": true,
     "customUserAgent": "",

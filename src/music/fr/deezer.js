@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.deezer.com/favicon.ico",
       "typeSource": "single",
       "itemType": 3,
-      "version": "1.0.1",
+      "version": "1.0.2",
       "pkgPath": "music/fr/deezer.js",
       "notes": "Deezer — Catalogue mondial de musique (previews 30s)",
       "isNsfw": false

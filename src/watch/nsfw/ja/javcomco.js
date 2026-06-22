@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javcom.co/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "javcomco/ja/ja.javcomco.js",
   "notes": "JAVComCo — JAV streaming and download portal",
   "isNsfw": true

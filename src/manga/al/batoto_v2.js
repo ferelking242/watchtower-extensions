@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://bato.to/amsta/img/btoto/logo-batoto.png?v0",
     "typeSource": "single",
     "itemType": 0,
-    "version": "1.0.5",
+    "version": "1.0.6",
     "pkgPath": "manga/src/all/batoto.js",
     "notes": "Uses web-scraping to pull details and chapters"
 }];

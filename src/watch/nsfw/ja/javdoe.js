@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javdoe.sh/logo/javdoe.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "javdoe/ja/ja.javdoe.js",
   "notes": "JAV free streaming — Japanese porn HD",
   "isNsfw": true

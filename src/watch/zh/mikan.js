@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/zh.mikan.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.2",
+    "version": "0.1.3",
     "pkgPath": "anime/src/zh/mikan.js"
 }];
 

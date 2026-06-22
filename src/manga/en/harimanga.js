@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/mangayomi-extensions/main/dart/manga/multisrc/madara/src/en/harimanga/icon.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.2.5",
+    "version": "0.2.6",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,

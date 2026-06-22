@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://supjav.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "supjav/ja/ja.supjav.js",
   "notes": "JAV streaming — subtitled Japanese AV",
   "isNsfw": true

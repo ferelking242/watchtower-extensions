@@ -9,7 +9,7 @@ const watchtowerSources = [
         "https://www.google.com/s2/favicons?sz=256&domain=https://www.animegg.org/",
       "typeSource": "single",
       "itemType": 1,
-      "version": "1.0.7",
+      "version": "1.0.8",
       "pkgPath": "anime/src/en/animegg.js"
     }
   ];

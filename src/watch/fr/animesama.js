@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.animesama.png",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.1.6",
+    "version": "0.1.7",
     "pkgPath": "watch/fr/animesama.js",
     "editableBaseUrl": true,
     "customUserAgent": "",

@@ -8,7 +8,7 @@ const watchtowerSources = [
       "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.annasarchive.png",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.0.3",
+    "version": "0.0.4",
     "appMinVerReq": "0.6.1",
     "dateFormat": "",
     "dateFormatLocale": "",

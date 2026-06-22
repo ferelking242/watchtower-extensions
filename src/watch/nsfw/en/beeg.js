@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://beeg.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "pkgPath": "beeg/en/en.beeg.js",
     "notes": "Adult content (18+) — ZeusDL powered streaming",
     "isNsfw": true

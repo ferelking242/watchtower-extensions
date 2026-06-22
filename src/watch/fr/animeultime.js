@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.anime-ultime.net/favicon.ico",
       "typeSource": "single",
       "itemType": 2,
-      "version": "0.1.0",
+      "version": "0.1.1",
       "pkgPath": "watch/fr/animeultime.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,

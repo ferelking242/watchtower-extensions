@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://xkorean.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "xkorean/ko/ko.xkorean.js",
   "notes": "XKorean — Korean adult videos and BJ content",
   "isNsfw": true

@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/en.animesuge.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.1",
+    "version": "0.1.2",
     "pkgPath": "anime/src/en/animesuge.js"
 }];
 

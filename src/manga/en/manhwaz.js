@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://manhwaz.com/apple-touch-icon.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.1.1",
+    "version": "0.1.2",
     "pkgPath": "manga/src/en/manhwaz.js",
     "notes": ""
 }];

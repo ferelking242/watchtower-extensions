@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://comics-all.com/templates/creamy-melons7/images/favicon.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.2",
+    "version": "0.1.3",
     "pkgPath": "manga/src/en/comics_all.js",
     "isNsfw": false,
     "appMinVerReq": "0.5.0"

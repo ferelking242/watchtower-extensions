@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 2,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "isNsfw": false,
     "hasCloudflare": false,
     "pkgPath": "novel/src/en/wuxiaworld.js",

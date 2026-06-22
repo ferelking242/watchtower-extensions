@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://cdn.javmiku.com/wp-content/uploads/2018/12/logofinal6.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "javguru/ja/ja.javguru.js",
   "notes": "JAV WordPress site — Japanese AV streaming",
   "isNsfw": true

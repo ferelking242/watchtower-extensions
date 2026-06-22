@@ -7,7 +7,7 @@ const mangayomiSources = [{
     "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://kolnovel.com",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.0.2",
+    "version": "0.0.3",
     "pkgPath": "novel/src/ar/kolnovel.js",
     "notes": ""
 }];

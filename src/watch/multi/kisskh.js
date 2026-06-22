@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/javascript/icon/all.kisskh.jpg",
     "typeSource": "multi",
     "itemType": 1,
-    "version": "0.1.7",
+    "version": "0.1.8",
     "pkgPath": "anime/src/all/kisskh.js"
 }];
 

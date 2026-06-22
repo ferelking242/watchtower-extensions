@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "isNsfw": false,
-    "version": "0.0.2",
+    "version": "0.0.3",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/es/animeflv.js"

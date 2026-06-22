@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://avporner.com/favicon.ico?v=1.1",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "avporner/ja/ja.avporner.js",
   "notes": "AV porn streaming — Japanese and Asian content",
   "isNsfw": true

@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.xnxx.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.5",
+    "version": "1.0.6",
     "pkgPath": "watch/nsfw/en/xnxx.js",
     "notes": "Adult content (18+)",
     "isNsfw": true

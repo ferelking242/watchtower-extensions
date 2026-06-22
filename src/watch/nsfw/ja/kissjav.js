@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://kissjav.li/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "kissjav/ja/ja.kissjav.js",
   "notes": "Kiss JAV — free Japanese AV streaming",
   "isNsfw": true

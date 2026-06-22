@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://rjav.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "rjav/ja/ja.rjav.js",
   "notes": "RJAV — Japanese AV streaming portal",
   "isNsfw": true

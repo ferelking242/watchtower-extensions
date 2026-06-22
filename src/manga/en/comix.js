@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://comix.to/images/icon_512x512.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.1.1",
+    "version": "0.1.2",
     "pkgPath": "manga/src/en/comix.js"
   }
 ];

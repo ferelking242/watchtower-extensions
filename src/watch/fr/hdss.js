@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.hdss.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.6",
+    "version": "0.1.7",
     "pkgPath": "watch/fr/hdss.js",
     "editableBaseUrl": true,
     "customUserAgent": "",

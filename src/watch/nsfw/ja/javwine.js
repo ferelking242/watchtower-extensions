@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javwine.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "javwine/ja/ja.javwine.js",
   "notes": "JAVWine — curated Japanese AV streaming",
   "isNsfw": true

@@ -35,7 +35,7 @@ const watchtowerSources = [{
     "iconUrl": "https://tropistream.fr/tropi.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "3.0.0",
+    "version": "3.0.1",
     "pkgPath": "watch/fr/tropistream.js",
     "editableBaseUrl": true,
     "videoQualities": ["AUTO", "VF", "VOSTFR", "VO"],

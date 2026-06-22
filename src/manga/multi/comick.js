@@ -50,7 +50,7 @@ const watchtowerSources = [
         "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.comick.png",
         "typeSource": "single",
         "itemType": 0,
-        "version": "0.1.2",
+        "version": "0.1.3",
         "pkgPath": "manga/src/all/comick.js"
     }];
 

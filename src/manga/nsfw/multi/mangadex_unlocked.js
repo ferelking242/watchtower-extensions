@@ -53,7 +53,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/gato404/kegareta-sauces/main/javascript/icon/all.mangadex.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.0.2",
+    "version": "0.0.3",
     "pkgPath": "manga/src/all/mangadex.js"
 }];
 

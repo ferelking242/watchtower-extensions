@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "0.0.13",
+    "version": "0.0.14",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/it/animeworld.js"

@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://bestjavporn.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "bestjavporn/ja/ja.bestjavporn.js",
   "notes": "Best JAV Porn — free Japanese adult videos",
   "isNsfw": true

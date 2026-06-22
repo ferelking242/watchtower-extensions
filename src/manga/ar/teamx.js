@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://olympustaff.com",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.0.4",
+    "version": "0.0.5",
     "isNsfw": false,
     "pkgPath": "manga/src/ar/teamx.js"
 }];

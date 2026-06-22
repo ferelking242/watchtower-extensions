@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://missav.ws/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "missav/ja/ja.missav.js",
   "notes": "JAV streaming — content always Japanese, multi-language UI",
   "isNsfw": true

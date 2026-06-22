@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.mangaworld.ac/public/assets/images/MangaWorldSquareLogo.png",
     "typeSource": "single",
     "isManga": true,
-    "version": "0.0.2",
+    "version": "0.0.3",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/it/mangaworld.js"

@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://bestjapaneseporntv.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "bestjapaneseporntv/ja/ja.bestjapaneseporntv.js",
   "notes": "BestJapanesePornTV — curated Japanese porn streaming",
   "isNsfw": true

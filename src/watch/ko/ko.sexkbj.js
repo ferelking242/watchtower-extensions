@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://sexkbj.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "sexkbj/ko/ko.sexkbj.js",
   "notes": "SexKBJ — Korean BJ and Asian cam videos",
   "isNsfw": true

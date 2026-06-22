@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javmost.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "javmost/ja/ja.javmost.js",
   "notes": "Watch free JAV online streaming",
   "isNsfw": true

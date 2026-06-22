@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://tioanime.com/assets/img/tio_fb.jpg",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.13",
+    "version": "0.1.14",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/es/tioanime.js"

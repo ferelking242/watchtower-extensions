@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javking.net/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "javking/ja/ja.javking.js",
   "notes": "JAVKing — free Japanese AV streaming",
   "isNsfw": true

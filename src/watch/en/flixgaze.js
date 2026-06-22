@@ -7,7 +7,7 @@ var watchtowerSources = [{
     "iconUrl": "https://www.flixgaze.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.9",
+    "version": "1.0.10",
     "pkgPath": "flixgaze/en/en.flixgaze.js",
     "notes": "FlixGaze.com — Free Movies & TV Series streaming via ZeusDL HLS",
     "isNsfw": false

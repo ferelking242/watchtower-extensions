@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "isNsfw": false,
-    "version": "0.0.6",
+    "version": "0.0.7",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/en/allanime.js"

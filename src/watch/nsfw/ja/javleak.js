@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javleak.com/wp-content/uploads/2023/08/favicon.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "javleak/ja/ja.javleak.js",
   "notes": "JAVLeak — JAV HD streaming, Japanese porn movies",
   "isNsfw": true

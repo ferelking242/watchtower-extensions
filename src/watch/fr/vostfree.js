@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.vostfree.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.10",
+    "version": "0.1.11",
     "pkgPath": "watch/fr/vostfree.js",
     "editableBaseUrl": true,
     "customUserAgent": "",

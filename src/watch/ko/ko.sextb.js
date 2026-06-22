@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://sextb.net/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "sextb/ko/ko.sextb.js",
   "notes": "SexTB — Korean adult and Asian videos",
   "isNsfw": true

@@ -7,7 +7,7 @@ const mangayomiSources = [{
   "typeSource": "single",
   "itemType": 0,
   "isNsfw": false,
-  "version": "0.0.26",
+  "version": "0.0.27",
   "dateFormat": "",
   "dateFormatLocale": "",
   "pkgPath": "manga/src/zh/manhuagui.js"

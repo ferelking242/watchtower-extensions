@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.7mmtv.sx/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "7mmtv/ja/ja.7mmtv.js",
   "notes": "7MMTV — censored and uncensored JAV online",
   "isNsfw": true

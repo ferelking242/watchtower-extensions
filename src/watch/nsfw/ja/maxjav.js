@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://maxjav.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "maxjav/ja/ja.maxjav.js",
   "notes": "MaxJav — free JAV streaming",
   "isNsfw": true

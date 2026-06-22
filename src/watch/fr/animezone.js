@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/fr/icons/animezone.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.3",
+    "version": "0.1.4",
     "pkgPath": "watch/fr/animezone.js",
     "editableBaseUrl": true,
     "customUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",

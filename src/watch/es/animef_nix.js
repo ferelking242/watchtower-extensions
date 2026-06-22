@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www3.animefenix.tv/themes/fenix-neo/images/AveFenix.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.14",
+    "version": "0.1.15",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/es/animefenix.js"

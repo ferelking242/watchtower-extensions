@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.google.com/s2/favicons?sz=128&domain=https://weebcentral.com",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.1.1",
+    "version": "0.1.2",
     "pkgPath": "manga/src/en/weebcentral.js"
 }];
 

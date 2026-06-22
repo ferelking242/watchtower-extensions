@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.fyndfilms.com/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.0",
+      "version": "0.1.1",
       "pkgPath": "watch/fr/fyndfilms.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,

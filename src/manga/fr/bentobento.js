@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://bentobento.fr/favicon.ico",
       "typeSource": "single",
       "itemType": 2,
-      "version": "0.1.0",
+      "version": "0.1.1",
       "pkgPath": "watch/fr/bentobento.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,

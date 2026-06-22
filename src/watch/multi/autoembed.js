@@ -10,7 +10,7 @@ const watchtowerSources = [
     "typeSource": "multi",
     "isManga": false,
     "itemType": 1,
-    "version": "1.3.4",
+    "version": "1.3.5",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/all/autoembed.js",

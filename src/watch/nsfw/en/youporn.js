@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.youporn.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "pkgPath": "youporn/en/en.youporn.js",
     "notes": "Adult content (18+) — ZeusDL powered streaming",
     "isNsfw": true

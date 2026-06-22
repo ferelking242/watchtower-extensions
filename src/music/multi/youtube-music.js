@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "iconUrl": "https://music.youtube.com/img/favicon_144.png",
       "typeSource": "single",
       "itemType": 3,
-      "version": "1.0.1",
+      "version": "1.0.2",
       "pkgPath": "music/multi/youtube-music.js",
       "notes": "YouTube Music — Stream music via YouTube",
       "isNsfw": false

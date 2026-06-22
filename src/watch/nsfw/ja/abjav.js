@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://abjav.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "abjav/ja/ja.abjav.js",
   "notes": "ABJav — uncensored and censored JAV streaming",
   "isNsfw": true

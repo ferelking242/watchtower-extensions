@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://njav.tv/assets/123av/images/favicon.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "njav/ja/ja.njav.js",
   "notes": "NJAV — HD JAV streaming, multi-language (en/ja/zh)",
   "isNsfw": true

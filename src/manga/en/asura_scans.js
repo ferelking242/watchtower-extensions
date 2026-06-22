@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/en.asurascans.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.1.8",
+    "version": "0.1.9",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/en/asurascans.js"

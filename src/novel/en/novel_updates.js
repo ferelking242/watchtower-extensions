@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/en.novelupdates.png",
   "typeSource": "single",
   "itemType": 2,
-  "version": "0.0.6",
+  "version": "0.0.7",
   "dateFormat": "",
   "dateFormatLocale": "",
   "pkgPath": "novel/src/en/novelupdates.js",

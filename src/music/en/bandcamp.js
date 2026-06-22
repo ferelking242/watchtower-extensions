@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "iconUrl": "https://s4.bcbits.com/img/favicon/favicon-32x32.png",
       "typeSource": "single",
       "itemType": 3,
-      "version": "1.0.1",
+      "version": "1.0.2",
       "pkgPath": "music/en/bandcamp.js",
       "notes": "Bandcamp — Independent artists & albums",
       "isNsfw": false

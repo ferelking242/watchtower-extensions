@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://novelhubapp.com/favicon.ico",
     "typeSource": "single",
     "itemType": 2,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "novel/en/novelhub.js",
     "notes": "Free web novels (Romance, Fantasy, Mystery, Sci-fi, LGBT+, Urban...). Same publisher as LokLok / MovieBox.",
     "isNsfw": false

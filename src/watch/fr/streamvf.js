@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://streamvf.fr/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.0",
+      "version": "0.1.1",
       "pkgPath": "watch/fr/streamvf.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,

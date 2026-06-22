@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javgiga.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "javgiga/ja/ja.javgiga.js",
   "notes": "JAVGiga — free JAV streaming online",
   "isNsfw": true

@@ -13,7 +13,7 @@ const watchtowerSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,

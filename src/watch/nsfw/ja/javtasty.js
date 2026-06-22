@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javtasty.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "javtasty/ja/ja.javtasty.js",
   "notes": "JAVTasty — free Japanese porn streaming",
   "isNsfw": true

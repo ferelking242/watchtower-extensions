@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://91porn.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "91porn/zh/zh.91porn.js",
   "notes": "91Porn — Chinese homemade and Asian amateur videos",
   "isNsfw": true

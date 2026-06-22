@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.asiansgonewild.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "asiansgonewild/en/en.asiansgonewild.js",
   "notes": "AsiansGoneWild — amateur Asian adult videos",
   "isNsfw": true

@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "iconUrl": "https://soundcloud.com/favicon.ico",
       "typeSource": "single",
       "itemType": 3,
-      "version": "1.0.1",
+      "version": "1.0.2",
       "pkgPath": "music/en/soundcloud.js",
       "notes": "SoundCloud — Free music streaming",
       "isNsfw": false

@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "isNsfw": false,
     "hasCloudflare": false,
     "pkgPath": "watch/src/multi/tv5monde.js",

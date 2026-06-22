@@ -53,7 +53,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.mangadex.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.2.0",
+    "version": "0.2.1",
     "pkgPath": "manga/src/all/mangadex.js"
 }];
 

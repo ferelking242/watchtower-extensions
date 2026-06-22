@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.japanwhores.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "japanwhores/ja/ja.japanwhores.js",
   "notes": "JapanWhores — free Japanese porn tube",
   "isNsfw": true

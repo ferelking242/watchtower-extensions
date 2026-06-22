@@ -6,7 +6,7 @@ const mangayomiSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/mangayomi-extensions/main/javascript/icon/zh.gfmanhua.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.0.1",
+    "version": "0.0.2",
     "pkgPath": "manga/src/zh/gfmanhua.js"
 }];
 

@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "torrent",
     "isManga": false,
     "itemType": 1,
-    "version": "0.0.3",
+    "version": "0.0.4",
     "pkgPath": "anime/src/all/torrentioanime.js"
 }];
 

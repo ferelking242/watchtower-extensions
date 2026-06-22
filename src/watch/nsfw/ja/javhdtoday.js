@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javhd.today/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "javhdtoday/ja/ja.javhdtoday.js",
   "notes": "JAVHDToday — high definition JAV streaming",
   "isNsfw": true

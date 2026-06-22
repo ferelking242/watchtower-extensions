@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/entityJY/mangayomi-extensions-eJ/main/javascript/icon/en.webnoveltranslations.png",
     "typeSource": "single",
     "itemType": 2,
-    "version": "1.0.2",
+    "version": "1.0.3",
     "pkgPath": "novel/src/en/webnoveltranslations.js",
     "notes": ""
 }];

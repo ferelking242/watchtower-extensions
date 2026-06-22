@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/en.wordrain69.png",
   "typeSource": "single",
   "itemType": 2,
-  "version": "0.0.5",
+  "version": "0.0.6",
   "dateFormat": "",
   "dateFormatLocale": "",
   "pkgPath": "novel/src/en/wordrain69.js",

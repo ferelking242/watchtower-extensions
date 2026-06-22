@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://animevostfr.tv/favicon.ico",
       "typeSource": "single",
       "itemType": 2,
-      "version": "0.1.0",
+      "version": "0.1.1",
       "pkgPath": "watch/fr/animevostfr.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,

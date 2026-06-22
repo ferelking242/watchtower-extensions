@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://cdn.jkanime.net/logo_jk.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.14",
+    "version": "0.1.15",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/es/jkanime.js"

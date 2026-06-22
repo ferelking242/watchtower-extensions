@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "isNsfw": false,
-    "version": "0.0.1",
+    "version": "0.0.2",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/zh/360zy.js"

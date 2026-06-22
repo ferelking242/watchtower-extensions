@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javsb.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "javsb/ja/ja.javsb.js",
   "notes": "JAVsb — Japanese adult video streaming",
   "isNsfw": true

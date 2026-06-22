@@ -30,7 +30,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/Watchtower-extensions/main/extensions/watch/icon/fr.frenchstream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.4.7",
+    "version": "0.4.8",
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",

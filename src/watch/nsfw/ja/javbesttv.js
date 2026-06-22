@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javbesttv.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "javbesttv/ja/ja.javbesttv.js",
   "notes": "JAVBestTV — best quality JAV streaming",
   "isNsfw": true

@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://h5-static.aoneroom.com/oneroomProject/icon/moviebox-official.jpg",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "loklok/en/en.loklok.js",
     "notes": "Free movies + TV series streaming, captions in 12 languages. Backed by aoneroom (LokLok / MovieBox / themoviebox.xyz).",
     "isNsfw": false

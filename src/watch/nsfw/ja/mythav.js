@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://mythav.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "mythav/ja/ja.mythav.js",
   "notes": "MyThav — JAV streaming portal",
   "isNsfw": true

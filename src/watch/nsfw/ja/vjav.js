@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://vjav.com/images/favicons/favicon-32x32.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "vjav/ja/ja.vjav.js",
   "notes": "JAV streaming site",
   "isNsfw": true

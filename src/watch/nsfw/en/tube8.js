@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.tube8.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "pkgPath": "tube8/en/en.tube8.js",
     "notes": "Adult content (18+) — ZeusDL powered streaming",
     "isNsfw": true

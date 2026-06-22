@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://cdn.tokyo-motion.net/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "pkgPath": "tokyomotion/ja/ja.tokyomotion.js",
   "notes": "Japanese porn tube — TokyoMotion",
   "isNsfw": true

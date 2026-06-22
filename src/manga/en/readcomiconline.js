@@ -8,7 +8,7 @@ const mangayomiSources = [
       "https://www.google.com/s2/favicons?sz=256&domain=https://readcomiconline.li/",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.1.4",
+    "version": "0.1.5",
     "pkgPath": "manga/src/en/readcomiconline.js"
   }
 ];

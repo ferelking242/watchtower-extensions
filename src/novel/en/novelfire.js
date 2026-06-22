@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://m.media-amazon.com/images/I/31957gKv8WL.jpg",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.0.2",
+    "version": "0.0.3",
     "pkgPath": "novel/src/en/novelfire.js",
     "notes": ""
 }];

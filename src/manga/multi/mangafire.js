@@ -7,7 +7,7 @@ const watchtowerSources = [
     "iconUrl": "https://mangafire.to/assets/sites/mangafire/favicon.png?v3",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.2.22",
+    "version": "0.2.23",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/all/mangafire.js"
