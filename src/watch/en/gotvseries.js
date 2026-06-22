@@ -38,7 +38,7 @@ const watchtowerSources = [{
     "sourceCodeLanguage": 1
 }];
 
-class DefaultExtension extends DefaultExtensionRunner {
+class DefaultExtension extends MProvider {
     constructor() {
         super();
         this.id = 285745821;
