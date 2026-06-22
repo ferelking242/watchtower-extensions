@@ -4411,5 +4411,39 @@
     ],
     "supportsForYou": true,
     "supportsComments": false
+  },
+  {
+    "name": "RexPorn",
+    "id": 783452901,
+    "baseUrl": "https://www.rexporn.st",
+    "lang": "en",
+    "typeSource": "single",
+    "iconUrl": "https://www.rexporn.st/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": true,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/watch/nsfw/en/rexporn.js",
+    "apiUrl": "",
+    "version": "1.0.0",
+    "isManga": false,
+    "itemType": 1,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Adult content (18+) — multi-quality MP4 streaming",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false,
+    "videoQualities": [
+      "FHD 1080p",
+      "HD 720p",
+      "HQ 480p",
+      "LQ 240p"
+    ]
   }
 ]
