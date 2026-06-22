@@ -4624,14 +4624,14 @@
     "hasCloudflare": false,
     "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/watch/fr/mlpfrance.js",
     "apiUrl": "https://mlp-france.com",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Hub FR — My Little Pony (G4/G5/Retro), Star VS, The Owl House, LPS. VF + VOSTFR. MP4 direct.",
+    "notes": "MLP France — G5, FiM, EqG, Retro, Luz, Star, LPS, Extras. VF + VO. MP4 direct.",
     "requiresAccount": false,
     "hasDRM": false,
     "isAggregator": false,
@@ -4647,37 +4647,12 @@
       "cartoon",
       "film",
       "serie",
-      "animation"
+      "animation",
+      "extras"
     ],
     "langs": [
       "fr",
       "en"
     ]
-  },
-  {
-    "name": "MLP France Comics",
-    "id": 748291036,
-    "baseUrl": "https://mlp-france.com",
-    "lang": "fr",
-    "typeSource": "single",
-    "iconUrl": "https://mlp-france.com/source/lyra16.png",
-    "dateFormat": "",
-    "dateFormatLocale": "",
-    "isNsfw": false,
-    "hasCloudflare": false,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/manga/fr/mlpfrancecomics.js"
-  },
-  {
-    "name": "MLP France — Chansons",
-    "id": 563741892,
-    "baseUrl": "https://mlp-france.com",
-    "lang": "fr",
-    "typeSource": "single",
-    "iconUrl": "https://mlp-france.com/source/lyra16.png",
-    "dateFormat": "",
-    "dateFormatLocale": "",
-    "isNsfw": false,
-    "hasCloudflare": false,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/watch/fr/mlpfrancechansons.js"
   }
 ]

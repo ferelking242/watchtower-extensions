@@ -6,13 +6,11 @@ const watchtowerSources = [{
     "apiUrl": "https://mlp-france.com",
     "iconUrl": "https://mlp-france.com/source/lyra16.png",
     "typeSource": "single",
-    "itemType": 1,
-    "version": "1.0.0",
-    "pkgPath": "watch/fr/mlpfrancechansons.js",
+    "itemType": 3,
+    "version": "1.1.0",
+    "pkgPath": "music/fr/mlpfrancechansons.js",
     "editableBaseUrl": false,
     "hasCloudflare": false,
-    "videoQualities": ["MP3"],
-    "subCategories": ["music"],
     "supportsForYou": false,
     "supportsComments": false,
     "requiresAccount": false,
@@ -24,7 +22,7 @@ const watchtowerSources = [{
   const BASE = "https://mlp-france.com";
 
   const SONGS_CATALOG = [
-    // FiM (extras/chansons/saison*.php)
+    // FiM
     { n: "FiM — Saison 1", u: `${BASE}/extras/chansons/saison1.php`, i: `${BASE}/source/bansaison1.png` },
     { n: "FiM — Saison 2", u: `${BASE}/extras/chansons/saison2.php`, i: `${BASE}/source/bansaison2.png` },
     { n: "FiM — Saison 3", u: `${BASE}/extras/chansons/saison3.php`, i: `${BASE}/source/bansaison3.png` },
@@ -37,21 +35,21 @@ const watchtowerSources = [{
     { n: "FiM — Spéciaux", u: `${BASE}/extras/chansons/specials.php`, i: `${BASE}/source/Logo-MLPFrance-default.png` },
     { n: "MLP: Le Film (2017)", u: `${BASE}/extras/chansons/movie.php`, i: `${BASE}/source/banmlp2017.png` },
     // Equestria Girls
-    { n: "Equestria Girls", u: `${BASE}/extras/chansons/eqg.php`, i: `${BASE}/source/baneqg.png` },
-    { n: "EqG: Rainbow Rocks", u: `${BASE}/extras/chansons/rbr.php`, i: `${BASE}/source/banrbr.png` },
-    { n: "EqG: Friendship Games", u: `${BASE}/extras/chansons/fsg.php`, i: `${BASE}/source/banfsg.png` },
+    { n: "Equestria Girls",         u: `${BASE}/extras/chansons/eqg.php`, i: `${BASE}/source/baneqg.png` },
+    { n: "EqG: Rainbow Rocks",      u: `${BASE}/extras/chansons/rbr.php`, i: `${BASE}/source/banrbr.png` },
+    { n: "EqG: Friendship Games",   u: `${BASE}/extras/chansons/fsg.php`, i: `${BASE}/source/banfsg.png` },
     { n: "EqG: Legend of Everfree", u: `${BASE}/extras/chansons/loe.php`, i: `${BASE}/source/banloe.png` },
-    { n: "EqG — Spéciaux", u: `${BASE}/extras/chansons/egs.php`, i: `${BASE}/source/baneqg.png` },
+    { n: "EqG — Spéciaux",          u: `${BASE}/extras/chansons/egs.php`, i: `${BASE}/source/baneqg.png` },
     // Compilations
-    { n: "Albums Officiels (EN)", u: `${BASE}/extras/chansons/albumen.php`, i: `${BASE}/source/Logo-MLPFrance-default.png` },
-    { n: "Albums Officiels (FR)", u: `${BASE}/extras/chansons/albumfr.php`, i: `${BASE}/source/Logo-MLPFrance-default.png` },
-    { n: "Remix Officiels", u: `${BASE}/extras/chansons/remix.php`, i: `${BASE}/source/Logo-MLPFrance-default.png` },
-    { n: "Extended & Alternatives", u: `${BASE}/extras/chansons/extended.php`, i: `${BASE}/source/Logo-MLPFrance-default.png` },
+    { n: "Albums Officiels (EN)", u: `${BASE}/extras/chansons/albumen.php`,  i: `${BASE}/source/Logo-MLPFrance-default.png` },
+    { n: "Albums Officiels (FR)", u: `${BASE}/extras/chansons/albumfr.php`,  i: `${BASE}/source/Logo-MLPFrance-default.png` },
+    { n: "Remix Officiels",       u: `${BASE}/extras/chansons/remix.php`,    i: `${BASE}/source/Logo-MLPFrance-default.png` },
+    { n: "Extended & Alternatives",u: `${BASE}/extras/chansons/extended.php`,i: `${BASE}/source/Logo-MLPFrance-default.png` },
     // G5
-    { n: "G5 — A New Generation", u: `${BASE}/mlpg5/chansons/newgen.php`, i: `${BASE}/source/banmlpnewgen.png` },
-    { n: "G5 — Make Your Mark", u: `${BASE}/mlpg5/chansons/mym.php`, i: `${BASE}/source/banmym.png` },
-    { n: "G5 — Tell Your Tale", u: `${BASE}/mlpg5/chansons/tyt.php`, i: `${BASE}/source/bantlts.png` },
-    { n: "G5 — Podcast", u: `${BASE}/mlpg5/chansons/podcast.php`, i: `${BASE}/source/Logo-MLPFrance-default.png` },
+    { n: "G5 — A New Generation", u: `${BASE}/mlpg5/chansons/newgen.php`,  i: `${BASE}/source/banmlpnewgen.png` },
+    { n: "G5 — Make Your Mark",    u: `${BASE}/mlpg5/chansons/mym.php`,     i: `${BASE}/source/banmym.png` },
+    { n: "G5 — Tell Your Tale",    u: `${BASE}/mlpg5/chansons/tyt.php`,     i: `${BASE}/source/bantlts.png` },
+    { n: "G5 — Podcast",           u: `${BASE}/mlpg5/chansons/podcast.php`, i: `${BASE}/source/Logo-MLPFrance-default.png` },
   ];
 
   class DefaultExtension extends MProvider {
@@ -74,7 +72,7 @@ const watchtowerSources = [{
     }
 
     async getLatestUpdates(page) { return this.getPopular(page); }
-    async getForYou(page) { return this.getPopular(page); }
+    async getForYou(page)        { return this.getPopular(page); }
 
     async search(query, page) {
       const q = (query || "").toLowerCase();
@@ -82,13 +80,13 @@ const watchtowerSources = [{
       return { list: res.map(c => ({ link: c.u, imageUrl: c.i, name: c.n })), hasNextPage: false };
     }
 
-    // ── getDetail : parse le player JS pour extraire la playlist MP3 ──────────
+    // ── getDetail : extraire la playlist MP3 depuis le player JS ──────────────
     async getDetail(url) {
-      const r = await new Client().get(url, { headers: this._h(url) });
+      const r    = await new Client().get(url, { headers: this._h(url) });
       const html = r.body;
 
       const tM = html.match(/<title>([^<]+)<\/title>/i);
-      const name = tM ? tM[1].replace(/^MLP France\s*[-—]\s*/i,"").trim() : "";
+      const name = tM ? tM[1].replace(/^MLP France\s*[-—]\s*/i, "").trim() : "";
 
       const bM = html.match(/<img[^>]+src="([^"]+)"[^>]+width="960"/i);
       const rawImg = bM ? bM[1] : "";
@@ -101,17 +99,20 @@ const watchtowerSources = [{
       const episodes = [];
 
       // Playlist JS : { path: '...mp3', title: '...', artist: '...' }
-      const plRe = /\{\s*path\s*:\s*['"]([^'"]+\.mp3[^'"]*)['"],[\s\S]{0,200}?title\s*:\s*['"]([^'"]+)['"]/gi;
+      const plRe = /\{\s*path\s*:\s*['"]([^'"]+\.mp3[^'"]*)['"][,\s\S]{0,200}?title\s*:\s*['"]([^'"]+)['"]/gi;
       let m;
       while ((m = plRe.exec(html)) !== null) {
         episodes.push({ name: m[2].trim(), url: m[1].trim() });
       }
 
-      // Fallback : liens MP3 directs
+      // Fallback : liens MP3 directs dans la page
       if (episodes.length === 0) {
         const mp3Re = /href="(https?:\/\/[^'"]+\.mp3[^'""]*)"/gi;
         while ((m = mp3Re.exec(html)) !== null) {
-          episodes.push({ name: m[1].split("/").pop().replace(/%20/g," ").replace(/\.mp3$/,""), url: m[1] });
+          episodes.push({
+            name: m[1].split("/").pop().replace(/%20/g, " ").replace(/\.mp3$/, ""),
+            url: m[1]
+          });
         }
       }
 
@@ -120,20 +121,20 @@ const watchtowerSources = [{
       return { name: name || description, imageUrl, description, episodes };
     }
 
-    // ── getVideoList : retourne l'URL MP3 directement ─────────────────────────
+    // ── getVideoList : retourne l'URL MP3 ─────────────────────────────────────
     async getVideoList(url) {
-      // Si c'est déjà un MP3, on le retourne tel quel
       if (/\.mp3(\?[^?]*)?$/i.test(url)) {
         return [{ url, quality: "MP3", headers: this._h() }];
       }
-      // Sinon on cherche dans la page
-      const r = await new Client().get(url, { headers: this._h(url) });
+      const r    = await new Client().get(url, { headers: this._h(url) });
       const html = r.body;
       const videos = [];
       const mp3Re = /['"](https?:\/\/[^'"]+\.mp3[^'"]*)['"]/gi;
       let m;
       while ((m = mp3Re.exec(html)) !== null) {
-        videos.push({ url: m[1], quality: "MP3", headers: this._h() });
+        if (!videos.some(v => v.url === m[1])) {
+          videos.push({ url: m[1], quality: "MP3", headers: this._h() });
+        }
       }
       if (videos.length === 0) videos.push({ url, quality: "MP3", headers: this._h() });
       return videos;
@@ -141,4 +142,3 @@ const watchtowerSources = [{
 
     getComments(url, page) { return Promise.resolve([]); }
   }
-  

@@ -7,12 +7,12 @@ const watchtowerSources = [{
     "iconUrl": "https://mlp-france.com/source/lyra16.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.1.0",
+    "version": "1.2.0",
     "pkgPath": "watch/fr/mlpfrance.js",
     "editableBaseUrl": false,
     "hasCloudflare": false,
     "videoQualities": ["720p", "480p", "360p"],
-    "subCategories": ["film", "serie", "cartoon"],
+    "subCategories": ["film", "serie", "cartoon", "extras"],
     "supportsForYou": true,
     "supportsComments": false,
     "requiresAccount": false,
@@ -20,68 +20,68 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MLP France — G5, FiM, EqG, Retro, Luz, Star, LPS. VF + VO. Accueil catégorisé."
+    "notes": "MLP France — G5, FiM, EqG, Retro, Luz, Star, LPS, Extras. VF + VO. MP4 direct."
   }];
 
   const BASE = "https://mlp-france.com";
 
-  // ── CATALOG ──────────────────────────────────────────────────────────────────
-  // Chaque entrée = UNE page de saison/film directe (jamais un index.php
-  // intermédiaire) afin que getDetail() tombe directement sur les épisodes.
+  // ── CATALOGUE ─────────────────────────────────────────────────────────────────
   const CATALOG = [
-    // ── G5 NEW GEN ──────────────────────────────────────────────────────────
-    { n: "MLP: Nouvelle Génération (Film)", u: `${BASE}/mlpg5/mlpnewgen.php`, i: `${BASE}/source/banmlpnewgen.png`, cat:"g5", d:"My Little Pony: A New Generation (2021)" },
-    { n: "Make Your Mark",                  u: `${BASE}/mlpg5/mym.php`,         i: `${BASE}/source/banmym.png`,      cat:"g5", d:"MLP: Make Your Mark" },
-    { n: "Tell Your Tale — S1",             u: `${BASE}/mlpg5/tlts1.php`,       i: `${BASE}/source/bantlts.png`,    cat:"g5", d:"Tell Your Tale Saison 1" },
-    { n: "Tell Your Tale — S2",             u: `${BASE}/mlpg5/tlts2.php`,       i: `${BASE}/source/bantlts.png`,    cat:"g5", d:"Tell Your Tale Saison 2" },
-    { n: "Tell Your Tale — S3",             u: `${BASE}/mlpg5/tlts3.php`,       i: `${BASE}/source/bantlts.png`,    cat:"g5", d:"Tell Your Tale Saison 3" },
-    // ── FILM G4 ─────────────────────────────────────────────────────────────
-    { n: "MLP: Le Film (2017)",             u: `${BASE}/films/mlp2017.php`,     i: `${BASE}/source/banmlp2017.png`, cat:"film", d:"My Little Pony: Le Film (2017)" },
-    // ── EQUESTRIA GIRLS — Films ─────────────────────────────────────────────
-    { n: "Equestria Girls (Film 1)",        u: `${BASE}/films/eqg.php`,         i: `${BASE}/source/baneqg.png`,     cat:"eqg",  d:"Equestria Girls" },
-    { n: "EqG: Rainbow Rocks",             u: `${BASE}/films/rbr.php`,         i: `${BASE}/source/banrbr.png`,     cat:"eqg",  d:"Equestria Girls: Rainbow Rocks" },
-    { n: "EqG: Friendship Games",          u: `${BASE}/films/fsg.php`,         i: `${BASE}/source/banfsg.png`,     cat:"eqg",  d:"Equestria Girls: Friendship Games" },
-    { n: "EqG: Legend of Everfree",        u: `${BASE}/films/loe.php`,         i: `${BASE}/source/banloe.png`,     cat:"eqg",  d:"Equestria Girls: Legend of Everfree" },
-    // ── EQUESTRIA GIRLS — Séries ────────────────────────────────────────────
-    { n: "EqG — Spéciaux",                 u: `${BASE}/episodes/egs.php`,      i: `${BASE}/source/baneqg.png`,     cat:"eqg",  d:"Equestria Girls Spéciaux" },
-    { n: "EqG — Mini-Séries S1",           u: `${BASE}/episodes/egms.php`,     i: `${BASE}/source/baneqg.png`,     cat:"eqg",  d:"EqG Mini-Séries Saison 1" },
-    { n: "EqG — Mini-Séries S2",           u: `${BASE}/episodes/egms2.php`,    i: `${BASE}/source/baneqg.png`,     cat:"eqg",  d:"EqG Mini-Séries Saison 2" },
-    // ── MLP FiM ─────────────────────────────────────────────────────────────
-    { n: "MLP FiM — Saison 1",  u: `${BASE}/episodes/saison1.php`, i: `${BASE}/source/bansaison1.png`, cat:"fim", d:"Friendship is Magic S1 (26 éps)" },
-    { n: "MLP FiM — Saison 2",  u: `${BASE}/episodes/saison2.php`, i: `${BASE}/source/bansaison2.png`, cat:"fim", d:"Friendship is Magic S2 (26 éps)" },
-    { n: "MLP FiM — Saison 3",  u: `${BASE}/episodes/saison3.php`, i: `${BASE}/source/bansaison3.png`, cat:"fim", d:"Friendship is Magic S3 (13 éps)" },
-    { n: "MLP FiM — Saison 4",  u: `${BASE}/episodes/saison4.php`, i: `${BASE}/source/bansaison4.png`, cat:"fim", d:"Friendship is Magic S4 (26 éps)" },
-    { n: "MLP FiM — Saison 5",  u: `${BASE}/episodes/saison5.php`, i: `${BASE}/source/bansaison5.png`, cat:"fim", d:"Friendship is Magic S5 (26 éps)" },
-    { n: "MLP FiM — Saison 6",  u: `${BASE}/episodes/saison6.php`, i: `${BASE}/source/bansaison6.png`, cat:"fim", d:"Friendship is Magic S6 (26 éps)" },
-    { n: "MLP FiM — Saison 7",  u: `${BASE}/episodes/saison7.php`, i: `${BASE}/source/bansaison7.png`, cat:"fim", d:"Friendship is Magic S7 (26 éps)" },
-    { n: "MLP FiM — Saison 8",  u: `${BASE}/episodes/saison8.php`, i: `${BASE}/source/bansaison8.png`, cat:"fim", d:"Friendship is Magic S8 (26 éps)" },
-    { n: "MLP FiM — Saison 9",  u: `${BASE}/episodes/saison9.php`, i: `${BASE}/source/bansaison9.png`, cat:"fim", d:"Friendship is Magic S9 — Finale" },
-    { n: "MLP FiM — Spéciaux",  u: `${BASE}/episodes/specials.php`, i: `${BASE}/source/Logo-MLPFrance-default.png`, cat:"fim", d:"FiM Épisodes spéciaux" },
-    { n: "Pony Life",            u: `${BASE}/episodes/ponylife.php`, i: `${BASE}/source/Logo-MLPFrance-default.png`, cat:"fim", d:"My Little Pony: Pony Life" },
-    // ── RETRO ───────────────────────────────────────────────────────────────
-    { n: "Mon Petit Poney G1 (1983)", u: `${BASE}/retro/g1.php`, i: `${BASE}/source/bang1.png`, cat:"retro", d:"Génération 1 (1983)" },
-    { n: "MLP Tales G2",              u: `${BASE}/retro/g2.php`, i: `${BASE}/source/bang2.png`, cat:"retro", d:"My Little Pony Tales" },
-    { n: "MLP G3",                    u: `${BASE}/retro/g3.php`, i: `${BASE}/source/bang3.png`, cat:"retro", d:"My Little Pony Génération 3" },
-    // ── LUZ À OSVILLE (The Owl House) ────── CORRIGÉ : saisons directes ────
-    { n: "Luz à Osville — S1", u: `${BASE}/luz/saison1.php`, i: `${BASE}/source/luzban.png`, cat:"cartoon", d:"The Owl House — Saison 1" },
-    { n: "Luz à Osville — S2", u: `${BASE}/luz/saison2.php`, i: `${BASE}/source/luzban.png`, cat:"cartoon", d:"The Owl House — Saison 2" },
-    { n: "Luz à Osville — S3", u: `${BASE}/luz/saison3.php`, i: `${BASE}/source/luzban.png`, cat:"cartoon", d:"The Owl House — Saison 3" },
-    { n: "Luz à Osville — Extras", u: `${BASE}/luz/extras.php`, i: `${BASE}/source/luzban.png`, cat:"cartoon", d:"The Owl House — Extras" },
-    // ── STAR BUTTERFLY ──────────────────────────────────────────────────────
-    { n: "Star VS — S1", u: `${BASE}/star/saison1.php`, i: `${BASE}/source/starban.png`, cat:"cartoon", d:"Star VS the Forces of Evil S1" },
-    { n: "Star VS — S2", u: `${BASE}/star/saison2.php`, i: `${BASE}/source/starban.png`, cat:"cartoon", d:"Star VS the Forces of Evil S2" },
-    { n: "Star VS — S3", u: `${BASE}/star/saison3.php`, i: `${BASE}/source/starban.png`, cat:"cartoon", d:"Star VS the Forces of Evil S3" },
-    { n: "Star VS — S4", u: `${BASE}/star/saison4.php`, i: `${BASE}/source/starban.png`, cat:"cartoon", d:"Star VS the Forces of Evil S4" },
-    // ── LITTLEST PET SHOP ──────── CORRIGÉ : saisons directes ────────────
-    { n: "Littlest Pet Shop — S1", u: `${BASE}/lps/saison1.php`, i: `${BASE}/source/lpsban.png`, cat:"cartoon", d:"Littlest Pet Shop Saison 1" },
-    { n: "Littlest Pet Shop — S2", u: `${BASE}/lps/saison2.php`, i: `${BASE}/source/lpsban.png`, cat:"cartoon", d:"Littlest Pet Shop Saison 2" },
-    { n: "Littlest Pet Shop — S3", u: `${BASE}/lps/saison3.php`, i: `${BASE}/source/lpsban.png`, cat:"cartoon", d:"Littlest Pet Shop Saison 3" },
-    { n: "Littlest Pet Shop — S4", u: `${BASE}/lps/saison4.php`, i: `${BASE}/source/lpsban.png`, cat:"cartoon", d:"Littlest Pet Shop Saison 4" },
+    // ── G5 NEW GEN ──────────────────────────────────────────────────────────────
+    { n: "MLP: Nouvelle Génération (Film)", u: `${BASE}/mlpg5/mlpnewgen.php`,  i: `${BASE}/source/banmlpnewgen.png`, cat: "g5",      d: "My Little Pony: A New Generation (2021)" },
+    { n: "Make Your Mark",                  u: `${BASE}/mlpg5/mym.php`,        i: `${BASE}/source/banmym.png`,      cat: "g5",      d: "MLP: Make Your Mark" },
+    { n: "Tell Your Tale — S1",             u: `${BASE}/mlpg5/tlts1.php`,      i: `${BASE}/source/bantlts.png`,     cat: "g5",      d: "Tell Your Tale Saison 1" },
+    { n: "Tell Your Tale — S2",             u: `${BASE}/mlpg5/tlts2.php`,      i: `${BASE}/source/bantlts.png`,     cat: "g5",      d: "Tell Your Tale Saison 2" },
+    { n: "Tell Your Tale — S3",             u: `${BASE}/mlpg5/tlts3.php`,      i: `${BASE}/source/bantlts.png`,     cat: "g5",      d: "Tell Your Tale Saison 3" },
+    // ── FILM G4 ─────────────────────────────────────────────────────────────────
+    { n: "MLP: Le Film (2017)",             u: `${BASE}/films/mlp2017.php`,    i: `${BASE}/source/banmlp2017.png`,  cat: "film",    d: "My Little Pony: Le Film (2017)" },
+    // ── EQUESTRIA GIRLS — Films ─────────────────────────────────────────────────
+    { n: "Equestria Girls (Film 1)",        u: `${BASE}/films/eqg.php`,        i: `${BASE}/source/baneqg.png`,      cat: "eqg",     d: "Equestria Girls" },
+    { n: "EqG: Rainbow Rocks",             u: `${BASE}/films/rbr.php`,        i: `${BASE}/source/banrbr.png`,      cat: "eqg",     d: "Equestria Girls: Rainbow Rocks" },
+    { n: "EqG: Friendship Games",          u: `${BASE}/films/fsg.php`,        i: `${BASE}/source/banfsg.png`,      cat: "eqg",     d: "Equestria Girls: Friendship Games" },
+    { n: "EqG: Legend of Everfree",        u: `${BASE}/films/loe.php`,        i: `${BASE}/source/banloe.png`,      cat: "eqg",     d: "Equestria Girls: Legend of Everfree" },
+    // ── EQUESTRIA GIRLS — Séries ────────────────────────────────────────────────
+    { n: "EqG — Spéciaux",                 u: `${BASE}/episodes/egs.php`,     i: `${BASE}/source/baneqg.png`,      cat: "eqg",     d: "Equestria Girls Spéciaux" },
+    { n: "EqG — Mini-Séries S1",           u: `${BASE}/episodes/egms.php`,    i: `${BASE}/source/baneqg.png`,      cat: "eqg",     d: "EqG Mini-Séries Saison 1" },
+    { n: "EqG — Mini-Séries S2",           u: `${BASE}/episodes/egms2.php`,   i: `${BASE}/source/baneqg.png`,      cat: "eqg",     d: "EqG Mini-Séries Saison 2" },
+    // ── MLP FiM ─────────────────────────────────────────────────────────────────
+    { n: "MLP FiM — Saison 1",  u: `${BASE}/episodes/saison1.php`,  i: `${BASE}/source/bansaison1.png`,             cat: "fim", d: "Friendship is Magic S1 (26 éps)" },
+    { n: "MLP FiM — Saison 2",  u: `${BASE}/episodes/saison2.php`,  i: `${BASE}/source/bansaison2.png`,             cat: "fim", d: "Friendship is Magic S2 (26 éps)" },
+    { n: "MLP FiM — Saison 3",  u: `${BASE}/episodes/saison3.php`,  i: `${BASE}/source/bansaison3.png`,             cat: "fim", d: "Friendship is Magic S3 (13 éps)" },
+    { n: "MLP FiM — Saison 4",  u: `${BASE}/episodes/saison4.php`,  i: `${BASE}/source/bansaison4.png`,             cat: "fim", d: "Friendship is Magic S4 (26 éps)" },
+    { n: "MLP FiM — Saison 5",  u: `${BASE}/episodes/saison5.php`,  i: `${BASE}/source/bansaison5.png`,             cat: "fim", d: "Friendship is Magic S5 (26 éps)" },
+    { n: "MLP FiM — Saison 6",  u: `${BASE}/episodes/saison6.php`,  i: `${BASE}/source/bansaison6.png`,             cat: "fim", d: "Friendship is Magic S6 (26 éps)" },
+    { n: "MLP FiM — Saison 7",  u: `${BASE}/episodes/saison7.php`,  i: `${BASE}/source/bansaison7.png`,             cat: "fim", d: "Friendship is Magic S7 (26 éps)" },
+    { n: "MLP FiM — Saison 8",  u: `${BASE}/episodes/saison8.php`,  i: `${BASE}/source/bansaison8.png`,             cat: "fim", d: "Friendship is Magic S8 (26 éps)" },
+    { n: "MLP FiM — Saison 9",  u: `${BASE}/episodes/saison9.php`,  i: `${BASE}/source/bansaison9.png`,             cat: "fim", d: "Friendship is Magic S9 — Finale" },
+    { n: "MLP FiM — Spéciaux",  u: `${BASE}/episodes/specials.php`, i: `${BASE}/source/Logo-MLPFrance-default.png`, cat: "fim", d: "FiM Épisodes spéciaux" },
+    { n: "Pony Life",            u: `${BASE}/episodes/ponylife.php`, i: `${BASE}/source/Logo-MLPFrance-default.png`, cat: "fim", d: "My Little Pony: Pony Life" },
+    // ── RETRO ───────────────────────────────────────────────────────────────────
+    { n: "Mon Petit Poney G1 (1983)", u: `${BASE}/retro/g1.php`, i: `${BASE}/source/bang1.png`, cat: "retro", d: "Génération 1 (1983)" },
+    { n: "MLP Tales G2",              u: `${BASE}/retro/g2.php`, i: `${BASE}/source/bang2.png`, cat: "retro", d: "My Little Pony Tales" },
+    { n: "MLP G3",                    u: `${BASE}/retro/g3.php`, i: `${BASE}/source/bang3.png`, cat: "retro", d: "My Little Pony Génération 3" },
+    // ── LUZ À OSVILLE (The Owl House) ───────────────────────────────────────────
+    { n: "Luz à Osville — S1",    u: `${BASE}/luz/saison1.php`, i: `${BASE}/source/luzban.png`, cat: "cartoon", d: "The Owl House — Saison 1" },
+    { n: "Luz à Osville — S2",    u: `${BASE}/luz/saison2.php`, i: `${BASE}/source/luzban.png`, cat: "cartoon", d: "The Owl House — Saison 2" },
+    { n: "Luz à Osville — S3",    u: `${BASE}/luz/saison3.php`, i: `${BASE}/source/luzban.png`, cat: "cartoon", d: "The Owl House — Saison 3" },
+    { n: "Luz à Osville — Extras",u: `${BASE}/luz/extras.php`,  i: `${BASE}/source/luzban.png`, cat: "cartoon", d: "The Owl House — Extras" },
+    // ── STAR BUTTERFLY ──────────────────────────────────────────────────────────
+    { n: "Star VS — S1", u: `${BASE}/star/saison1.php`, i: `${BASE}/source/starban.png`, cat: "cartoon", d: "Star VS the Forces of Evil S1" },
+    { n: "Star VS — S2", u: `${BASE}/star/saison2.php`, i: `${BASE}/source/starban.png`, cat: "cartoon", d: "Star VS the Forces of Evil S2" },
+    { n: "Star VS — S3", u: `${BASE}/star/saison3.php`, i: `${BASE}/source/starban.png`, cat: "cartoon", d: "Star VS the Forces of Evil S3" },
+    { n: "Star VS — S4", u: `${BASE}/star/saison4.php`, i: `${BASE}/source/starban.png`, cat: "cartoon", d: "Star VS the Forces of Evil S4" },
+    // ── LITTLEST PET SHOP ───────────────────────────────────────────────────────
+    { n: "Littlest Pet Shop — S1", u: `${BASE}/lps/saison1.php`, i: `${BASE}/source/lpsban.png`, cat: "cartoon", d: "Littlest Pet Shop Saison 1" },
+    { n: "Littlest Pet Shop — S2", u: `${BASE}/lps/saison2.php`, i: `${BASE}/source/lpsban.png`, cat: "cartoon", d: "Littlest Pet Shop Saison 2" },
+    { n: "Littlest Pet Shop — S3", u: `${BASE}/lps/saison3.php`, i: `${BASE}/source/lpsban.png`, cat: "cartoon", d: "Littlest Pet Shop Saison 3" },
+    { n: "Littlest Pet Shop — S4", u: `${BASE}/lps/saison4.php`, i: `${BASE}/source/lpsban.png`, cat: "cartoon", d: "Littlest Pet Shop Saison 4" },
+    // ── EXTRAS ──────────────────────────────────────────────────────────────────
+    { n: "Extras — Bonus Officiels", u: `${BASE}/extras/bonus.php`,  i: `${BASE}/source/banbonus.png`,              cat: "extras", d: "Bonus officiels — Behind the Scenes, Shorts, Featurettes" },
+    { n: "Extras — Mashup Films",    u: `${BASE}/extras/mashup.php`, i: `${BASE}/source/banextra.png`,              cat: "extras", d: "Mashup Films FiM (résumés animés)" },
+    { n: "Extras — Vidéos Fandom",   u: `${BASE}/extras/fandom.php`, i: `${BASE}/source/Logo-MLPFrance-default.png`, cat: "extras", d: "Vidéos de la communauté brony" },
   ];
 
-  // ── Ordre pour l'accueil (getForYou) ────────────────────────────────────────
-  // G5 (nouveau) → Films → EqG → FiM → Retro → Cartoons
-  const CAT_ORDER = ["g5", "film", "eqg", "fim", "retro", "cartoon"];
+  const CAT_ORDER = ["g5", "film", "eqg", "fim", "retro", "cartoon", "extras"];
 
   class DefaultExtension extends MProvider {
     constructor() { super(); }
@@ -104,6 +104,7 @@ const watchtowerSources = [{
 
     _abs(href, base) {
       if (!href) return "";
+      href = href.trim();
       if (href.startsWith("http")) return href;
       if (href.startsWith("/")) return `${BASE}${href}`;
       const dir = base.split("/").slice(0, -1).join("/");
@@ -119,7 +120,7 @@ const watchtowerSources = [{
       };
     }
 
-    // ── getForYou : accueil catégorisé G5 → Films → EqG → FiM → Retro → Cartoons ──
+    // ── getForYou ──────────────────────────────────────────────────────────────
     async getForYou(page) {
       const ordered = [];
       for (const cat of CAT_ORDER) {
@@ -132,9 +133,9 @@ const watchtowerSources = [{
       };
     }
 
-    // ── getLatestUpdates : G5 + cartoons récents ──────────────────────────────
+    // ── getLatestUpdates ───────────────────────────────────────────────────────
     async getLatestUpdates(page) {
-      const recent = CATALOG.filter(c => c.cat === "g5" || c.cat === "cartoon");
+      const recent = CATALOG.filter(c => c.cat === "g5" || c.cat === "cartoon" || c.cat === "extras");
       const pp = 20, s = (page - 1) * pp;
       return {
         list: recent.slice(s, s + pp).map(c => ({ link: c.u, imageUrl: c.i, name: c.n })),
@@ -142,25 +143,30 @@ const watchtowerSources = [{
       };
     }
 
-    // ── search ────────────────────────────────────────────────────────────────
+    // ── search ─────────────────────────────────────────────────────────────────
     async search(query, page, filterList) {
       const q = (query || "").toLowerCase();
       const res = CATALOG.filter(c => c.n.toLowerCase().includes(q) || c.d.toLowerCase().includes(q));
       return { list: res.map(c => ({ link: c.u, imageUrl: c.i, name: c.n })), hasNextPage: false };
     }
 
-    // ── getDetail ─────────────────────────────────────────────────────────────
-    // Appelé avec l'URL d'une page de saison/film.
-    // Retourne la liste des épisodes regardables.
+    // ── getDetail ──────────────────────────────────────────────────────────────
+    // Gère TOUS les formats de page du site mlp-france.com :
+    //   • list3 FiM    : <b>Episode N</b><br>Titre<br><a class="link">VF</a>
+    //   • list3 Bonus  : <br>Episode N<br><b>Titre</b><br><a class="link">VO</a>
+    //   • list3 MYM    : <b>Chapitre X<br>Episode N</b><br>Titre<br>
+    //   • list1        : même structure que list3
+    //   • list2 Mashup : <p><b>Titre</b></p><p><a class="link">VO</a></p>
+    //   • list4 G1     : <p><b>Episode</b><br/>Titre<br/><a class="link">VO</a></p>
+    //   • list4 NewGen : <a href="...php?ep=FR"><img .../></a>  (pas de class="link")
+    //   • table Fandom : <td><a href="url" class="link"><b>Titre</b></a></td>
     async getDetail(url) {
-      const r   = await new Client().get(url, { headers: this._h(url) });
+      const r    = await new Client().get(url, { headers: this._h(url) });
       const html = r.body;
 
-      // Titre depuis <title>
       const tM = html.match(/<title>([^<]+)<\/title>/i);
       let name = tM ? this._dec(tM[1]).replace(/^MLP France\s*[-—]\s*/i, "").trim() : "";
 
-      // Image bannière (width="960")
       const bM = html.match(/<img[^>]+src="([^"]+)"[^>]+width="960"/i);
       const imageUrl = bM ? this._abs(bM[1], url) : "";
 
@@ -170,46 +176,89 @@ const watchtowerSources = [{
       const episodes = [];
       const seen = new Set();
 
-      // ── Format 1 : <li class="list3"> — épisodes avec liens VF/VO ────────
-      const li3Re = /<li class="list3">([\/\s\S]{1,1000}?)<\/li>/gi;
+      // ── Items de liste : list1, list2, list3, list4 ───────────────────────────
+      const liRe = /<li class="list[1-4]">([\s\S]{1,2500}?)<\/li>/gi;
       let m;
-      while ((m = li3Re.exec(html)) !== null) {
+      while ((m = liRe.exec(html)) !== null) {
         const item = m[1];
-        const epbM = item.match(/<b>((?:Episode|Épisode)\s*\d+[^<]*)<\/b>/i);
-        const epNum   = epbM ? this._dec(epbM[1]) : "";
-        const epTM    = item.match(/<\/b><br\s*\/?>[\s]*([\/\s\S]*?)<br\s*\/>/i);
-        const epTitle = epTM ? this._dec(epTM[1]) : "";
-        const base2   = [epNum, epTitle].filter(Boolean).join(" — ");
 
-        const lkRe = /<a[^>]+href="([^"]+\.php[^"]*)"[^>]*class="link"[^>]*>([^<]+)<\/a>/gi;
+        // ── Extraire le texte des balises <b> (aplatir <br> interne) ──────────
+        const bTexts = [];
+        const bRe = /<b>([\s\S]{1,400}?)<\/b>/gi;
+        let bm;
+        while ((bm = bRe.exec(item)) !== null) {
+          const t = this._dec(bm[1].replace(/<br\s*\/?>/gi, " "));
+          if (t) bTexts.push(t);
+        }
+        const bLabel = bTexts.join(" — ");
+
+        // ── Texte brut (sans balises HTML) ────────────────────────────────────
+        const plain = item
+          .replace(/<img[^>]+>/gi, "")
+          .replace(/<[^>]+>/g, " ")
+          .replace(/&nbsp;/g, " ")
+          .replace(/\s{2,}/g, " ")
+          .trim();
+
+        // ── Partie "titre" = texte brut moins les bLabel et les labels lang ───
+        let titlePart = plain;
+        for (const bt of bTexts) {
+          titlePart = titlePart.replace(bt, " ");
+        }
+        titlePart = titlePart
+          .replace(/\b(VOSTFR|VOSTF|VF|VO)\b/gi, "")
+          .replace(/\s{2,}/g, " ")
+          .trim();
+
+        const base2 = bLabel
+          ? (titlePart ? `${bLabel} — ${titlePart}` : bLabel)
+          : titlePart;
+
+        const beforeCount = episodes.length;
+
+        // ── Liens class="link" (format standard) ──────────────────────────────
+        const lkRe = /href="([^"]+)"[^>]*class="link"[^>]*>([^<]{1,40})<\/a>/gi;
         let lm;
         while ((lm = lkRe.exec(item)) !== null) {
-          const eu   = this._abs(lm[1], url);
+          const eu = this._abs(lm[1], url);
           if (seen.has(eu)) continue;
           seen.add(eu);
           const lang = this._dec(lm[2]).toUpperCase();
           episodes.push({ name: base2 ? `${base2} [${lang}]` : lang, url: eu });
         }
-      }
 
-      // ── Format 2 : <li class="list4"> — sélecteur de langue (films G5) ──
-      if (episodes.length === 0) {
-        const li4Re = /<li class="list4">([\/\s\S]{1,600}?)<\/li>/gi;
-        while ((m = li4Re.exec(html)) !== null) {
-          const item = m[1];
-          const lkM  = item.match(/href="([^"]+\.php[^"]*)"/i);
-          const lbM  = item.match(/<b>([^<]+)<\/b>/i) || item.match(/<p>([^<]+)<\/p>/i);
-          if (lkM) {
-            const eu = this._abs(lkM[1], url);
+        // ── Fallback : liens sans class="link" (ex: G5 New Gen img-flags) ─────
+        if (episodes.length === beforeCount) {
+          const anyRe = /href="([^"]+\.php[^"]*)"/gi;
+          while ((lm = anyRe.exec(item)) !== null) {
+            const eu = this._abs(lm[1], url);
             if (seen.has(eu)) continue;
             seen.add(eu);
-            const lb = lbM ? this._dec(lbM[1]) : (eu.split("ep=").pop() || "Version");
-            episodes.push({ name: lb, url: eu });
+            const ctx = item.slice(Math.max(0, lm.index - 20), lm.index + 150);
+            const lang = /french|vf|fr\.png/i.test(ctx) ? "VF"
+                       : /english|vostfr|vo\.php|en\.png/i.test(ctx) ? "VO"
+                       : "VOIR";
+            const label = base2 || lang;
+            episodes.push({ name: label !== lang ? `${label} [${lang}]` : lang, url: eu });
           }
         }
       }
 
-      // ── Format 3 : page déjà un player MP4 ──────────────────────────────
+      // ── Format table (page fandom) : liens YouTube, Dailymotion, internes ────
+      if (episodes.length === 0) {
+        const tdRe = /<td[^>]*>([\s\S]{1,600}?)<\/td>/gi;
+        while ((m = tdRe.exec(html)) !== null) {
+          const cell = m[1];
+          const lkM = cell.match(/href="([^"]+)"[^>]*class="link"[^>]*>([\s\S]{1,200}?)<\/a>/i);
+          if (!lkM) continue;
+          const eu = lkM[1].startsWith("http") ? lkM[1] : this._abs(lkM[1], url);
+          if (seen.has(eu)) continue;
+          seen.add(eu);
+          episodes.push({ name: this._dec(lkM[2]), url: eu });
+        }
+      }
+
+      // ── Fallback : page déjà un player NPlayer/MP4 ───────────────────────────
       if (episodes.length === 0 &&
           (html.includes("NPlayer") || html.includes("makamour") || html.includes(".mp4"))) {
         episodes.push({ name: name || "Regarder", url });
@@ -220,36 +269,45 @@ const watchtowerSources = [{
       return { name: name || cat?.n || url, imageUrl, description, episodes };
     }
 
-    // ── getVideoList ──────────────────────────────────────────────────────────
+    // ── getVideoList ───────────────────────────────────────────────────────────
+    // Extrait les sources vidéo depuis la page player.
+    // Structure NPlayer : 'QUALITE': 'URL.mp4'  ou  'URL.webm'
     async getVideoList(url) {
+      // URL déjà une vidéo directe
+      if (/\.(mp4|webm|m3u8)(\?[^?]*)?$/i.test(url)) {
+        return [{ url, quality: "AUTO", headers: this._h(url) }];
+      }
+
       const r    = await new Client().get(url, { headers: this._h(url) });
       const html = r.body;
       const videos = [];
 
-      // NPlayer : '720p': 'https://...mp4'
-      const qRe = /['"]?(\d+p)['"]?\s*:\s*['"]([^'"]+\.mp4[^'"]*)['"]/gi;
+      // NPlayer MP4 : '720p': 'https://...mp4'
+      const mp4Re = /['"](\d+p)['"]\s*:\s*['"]([^'"]+\.mp4[^'"]*)['"]/gi;
       let m;
-      while ((m = qRe.exec(html)) !== null) {
+      while ((m = mp4Re.exec(html)) !== null) {
         videos.push({ url: m[2], quality: m[1], headers: this._h(url) });
       }
 
-      // WebM
+      // NPlayer WebM (fallback qualité)
       if (videos.length === 0) {
-        const wRe = /['"]?(\d+p)['"]?\s*:\s*['"]([^'"]+\.webm[^'"]*)['"]/gi;
-        while ((m = wRe.exec(html)) !== null) {
+        const webmRe = /['"](\d+p)['"]\s*:\s*['"]([^'"]+\.webm[^'"]*)['"]/gi;
+        while ((m = webmRe.exec(html)) !== null) {
           videos.push({ url: m[2], quality: m[1] + " (WebM)", headers: this._h(url) });
         }
       }
 
-      // Direct mp4 / webm / m3u8
+      // Lien direct MP4 / WebM / M3U8
       if (videos.length === 0) {
-        const dRe = /['"](https?:\/\/[^'"]+\.(?:mp4|webm|m3u8)[^'"]*)['"]/gi;
-        while ((m = dRe.exec(html)) !== null) {
-          videos.push({ url: m[1], quality: "AUTO", headers: this._h(url) });
+        const directRe = /['"](https?:\/\/[^'"]+\.(?:mp4|webm|m3u8)[^'"]*)['"]/gi;
+        while ((m = directRe.exec(html)) !== null) {
+          if (!videos.some(v => v.url === m[1])) {
+            videos.push({ url: m[1], quality: "AUTO", headers: this._h(url) });
+          }
         }
       }
 
-      // Iframe fallback
+      // Iframe vidéo (YouTube, Dailymotion, hôtes externes)
       if (videos.length === 0) {
         const ifRe = /<iframe[^>]+src="([^"]+)"/gi;
         while ((m = ifRe.exec(html)) !== null) {
@@ -265,4 +323,3 @@ const watchtowerSources = [{
 
     getComments(url, page) { return Promise.resolve([]); }
   }
-  

@@ -8627,5 +8627,34 @@
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free"
+  },
+  {
+    "name": "MLP France Comics",
+    "id": 748291036,
+    "baseUrl": "https://mlp-france.com",
+    "lang": "fr",
+    "typeSource": "single",
+    "iconUrl": "https://mlp-france.com/source/lyra16.png",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/manga/fr/mlpfrancecomics.js",
+    "apiUrl": "https://mlp-france.com",
+    "version": "1.2.0",
+    "isManga": true,
+    "itemType": 0,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "MLP France Comics — PDF streamé. Série principale, Annuels, Micro-Séries, Friends Forever, Legends of Magic, G5 Comics.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "subCategories": [
+      "comics"
+    ]
   }
 ]

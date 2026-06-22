@@ -6,8 +6,9 @@ const watchtowerSources = [{
     "apiUrl": "https://mlp-france.com",
     "iconUrl": "https://mlp-france.com/source/lyra16.png",
     "typeSource": "single",
-    "itemType": 1,
-    "version": "1.1.0",
+    "isManga": true,
+    "itemType": 0,
+    "version": "1.2.0",
     "pkgPath": "manga/fr/mlpfrancecomics.js",
     "editableBaseUrl": false,
     "hasCloudflare": false,
@@ -16,22 +17,21 @@ const watchtowerSources = [{
     "paywall": "free",
     "supportsForYou": false,
     "supportsComments": false,
-    "notes": "MLP France Comics — PDF streamé via iframe (watch type). Chaque numéro = un épisode lisible sans téléchargement."
+    "notes": "MLP France Comics — PDF streamé via iframe. Chaque numéro = un épisode lisible sans téléchargement."
   }];
 
   const BASE = "https://mlp-france.com";
 
-  // Catalogue des séries de comics (pages d'index)
   const COMIC_CATALOG = [
-    { n: "Série Principale",      u: `${BASE}/comics/issues.php`,      i: `${BASE}/source/banbookg4.png` },
-    { n: "Annuels & Spéciaux",   u: `${BASE}/comics/annual.php`,      i: `${BASE}/source/banbookg4.png` },
-    { n: "Micro-Séries",          u: `${BASE}/comics/microseries.php`, i: `${BASE}/source/banbookg4.png` },
-    { n: "Friends Forever",       u: `${BASE}/comics/friends.php`,     i: `${BASE}/source/banbookg4.png` },
-    { n: "Legends of Magic",      u: `${BASE}/comics/lomagic.php`,     i: `${BASE}/source/banbookg4.png` },
-    { n: "Séries Courtes",        u: `${BASE}/comics/shorts.php`,      i: `${BASE}/source/banbookg4.png` },
-    { n: "Divers",                u: `${BASE}/comics/divers.php`,      i: `${BASE}/source/banbookg4.png` },
-    { n: "Livres",                u: `${BASE}/comics/livres.php`,      i: `${BASE}/source/banbookg4.png` },
-    { n: "Comics G5",             u: `${BASE}/mlpg5/comics.php`,       i: `${BASE}/source/banbookg5.png` },
+    { n: "Série Principale",    u: `${BASE}/comics/issues.php`,      i: `${BASE}/source/banbookg4.png` },
+    { n: "Annuels & Spéciaux",  u: `${BASE}/comics/annual.php`,      i: `${BASE}/source/banbookg4.png` },
+    { n: "Micro-Séries",        u: `${BASE}/comics/microseries.php`, i: `${BASE}/source/banbookg4.png` },
+    { n: "Friends Forever",     u: `${BASE}/comics/friends.php`,     i: `${BASE}/source/banbookg4.png` },
+    { n: "Legends of Magic",    u: `${BASE}/comics/lomagic.php`,     i: `${BASE}/source/banbookg4.png` },
+    { n: "Séries Courtes",      u: `${BASE}/comics/shorts.php`,      i: `${BASE}/source/banbookg4.png` },
+    { n: "Divers",              u: `${BASE}/comics/divers.php`,      i: `${BASE}/source/banbookg4.png` },
+    { n: "Livres",              u: `${BASE}/comics/livres.php`,      i: `${BASE}/source/banbookg4.png` },
+    { n: "Comics G5",           u: `${BASE}/mlpg5/comics.php`,       i: `${BASE}/source/banbookg5.png` },
   ];
 
   class DefaultExtension extends MProvider {
@@ -55,9 +55,9 @@ const watchtowerSources = [{
 
     _dec(s) {
       return String(s || "")
-        .replace(/&amp;/g,"&").replace(/&quot;/g,'"').replace(/&#039;/g,"'")
-        .replace(/&eacute;/g,"é").replace(/&agrave;/g,"à").replace(/&ccedil;/g,"ç")
-        .replace(/<[^>]+>/g,"").replace(/\s+/g," ").trim();
+        .replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#039;/g, "'")
+        .replace(/&eacute;/g, "é").replace(/&agrave;/g, "à").replace(/&ccedil;/g, "ç")
+        .replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
     }
 
     async getPopular(page) {
@@ -69,7 +69,7 @@ const watchtowerSources = [{
     }
 
     async getLatestUpdates(page) { return this.getPopular(page); }
-    async getForYou(page) { return this.getPopular(page); }
+    async getForYou(page)        { return this.getPopular(page); }
 
     async search(query, page) {
       const q = (query || "").toLowerCase();
@@ -77,13 +77,13 @@ const watchtowerSources = [{
       return { list: res.map(c => ({ link: c.u, imageUrl: c.i, name: c.n })), hasNextPage: false };
     }
 
-    // ── getDetail : parse la page de série et liste les numéros ──────────────
+    // ── getDetail : liste les numéros depuis la page de série ────────────────
     async getDetail(url) {
-      const r = await new Client().get(url, { headers: this._h(url) });
+      const r    = await new Client().get(url, { headers: this._h(url) });
       const html = r.body;
 
       const tM = html.match(/<title>([^<]+)<\/title>/i);
-      const name = tM ? this._dec(tM[1]).replace(/^MLP France\s*[-—]\s*/i,"").trim() : "";
+      const name = tM ? this._dec(tM[1]).replace(/^MLP France\s*[-—]\s*/i, "").trim() : "";
 
       const bM = html.match(/<img[^>]+src="([^"]+)"[^>]+width="960"/i);
       const imageUrl = bM ? this._abs(bM[1], url) : "";
@@ -99,51 +99,45 @@ const watchtowerSources = [{
       let m;
       while ((m = li4Re.exec(html)) !== null) {
         const item = m[1];
-        // Trouver le lien "Lire" (page viewer avec iframe PDF)
         const lireM = item.match(/href="([^"]+\.php[^"]*)"[^>]*class="link"[^>]*>\s*Lire\s*<\/a>/i)
                    || item.match(/href="([^"]+\.php[^"]*)"[^>]*>\s*Lire\s*<\/a>/i);
         if (!lireM) continue;
         const eu = this._abs(lireM[1], url);
         if (seen.has(eu)) continue;
         seen.add(eu);
-
-        // Titre du numéro (depuis <b>Comic #N</b> ou similaire)
         const titleM = item.match(/<b>([^<]+)<\/b>/i);
         const epName = titleM ? this._dec(titleM[1]) : eu.split("ep=").pop() || "Numéro";
         episodes.push({ name: epName, url: eu });
       }
 
-      // Fallback : lien "Lire" hors list4
+      // Fallback : liens "Lire" hors list4
       if (episodes.length === 0) {
-        const fallbackRe = /href="([^"]+\.php[^"]*)"[^>]*class="link"[^>]*>\s*Lire\s*<\/a>/gi;
-        while ((m = fallbackRe.exec(html)) !== null) {
+        const fbRe = /href="([^"]+\.php[^"]*)"[^>]*class="link"[^>]*>\s*Lire\s*<\/a>/gi;
+        while ((m = fbRe.exec(html)) !== null) {
           const eu = this._abs(m[1], url);
-          if (!seen.has(eu)) { seen.add(eu); episodes.push({ name: eu.split("ep=").pop() || "Lire", url: eu }); }
+          if (!seen.has(eu)) {
+            seen.add(eu);
+            episodes.push({ name: eu.split("ep=").pop() || "Lire", url: eu });
+          }
         }
       }
 
       if (episodes.length === 0) episodes.push({ name: name || "Ouvrir", url });
-
       return { name: name || description, imageUrl, description, episodes };
     }
 
-    // ── getVideoList : extrait l'iframe PDF de la page viewer ────────────────
-    // La page viewer (ex: comics/issues/vf.php?ep=01) contient :
-    //   <iframe src="https://mlpfr.ponies.fr/spike/...pdf" ...></iframe>
-    // On retourne l'URL du PDF directement → streaming natif dans la webview.
+    // ── getVideoList : extrait l'URL PDF depuis la page viewer ───────────────
     async getVideoList(url) {
-      const r = await new Client().get(url, { headers: this._h(url) });
+      const r    = await new Client().get(url, { headers: this._h(url) });
       const html = r.body;
       const videos = [];
 
-      // Iframe PDF (priorité)
       const ifRe = /<iframe[^>]+src="([^"]+\.pdf[^"]*)"[^>]*>/gi;
       let m;
       while ((m = ifRe.exec(html)) !== null) {
         videos.push({ url: m[1], quality: "PDF", headers: this._h(url) });
       }
 
-      // Lien de téléchargement PDF en fallback
       if (videos.length === 0) {
         const dlRe = /href="([^"]+\.pdf[^"]*)"[^>]*class="link"/gi;
         while ((m = dlRe.exec(html)) !== null) {
@@ -151,7 +145,6 @@ const watchtowerSources = [{
         }
       }
 
-      // Tout PDF trouvé sur la page
       if (videos.length === 0) {
         const anyPdf = /['"](https?:\/\/[^'"]+\.pdf[^'"]*)['"]/gi;
         while ((m = anyPdf.exec(html)) !== null) {
@@ -165,4 +158,3 @@ const watchtowerSources = [{
 
     getComments(url, page) { return Promise.resolve([]); }
   }
-  
