@@ -1,24 +1,17 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// French-Stream — extension Watchtower v0.4.6
+// French-Stream — extension Watchtower v0.6.0
 //
-// Ce fichier est le seul point d'entrée de l'extension.
-// Il exporte `watchtowerSources` (métadonnées) et la classe `DefaultExtension`
-// qui implémente l'API MProvider attendue par le moteur Watchtower.
-//
-// Méthodes fournies :
-//   getPopular(page)         → films populaires (page browsing)
-//   getLatestUpdates(page)   → dernières sorties
-//   search(query, page)      → recherche textuelle
-//   getDetail(url)           → fiche détail (titre, poster, épisodes…)
-//   getVideoList(url)        → liste des liens vidéo pour un épisode/film
-//   getForYou(page)          → contenu « Pour vous » (alias getPopular pour l'instant)
-//   getComments(url, page)   → commentaires (non supporté → tableau vide)
-//
-// Champs `watchtowerSources` :
-//   supportsForYou     → true  : l'onglet « Pour vous » est activé
-//   supportsComments   → false : l'onglet « Commentaires » reste vide
-//   subCategories      → sous-catégories disponibles dans cette source
-//                         (remplace l'ancien champ contentSubtype)
+// Méthodes :
+//   getPopular(page)            → films populaires
+//   getLatestUpdates(page)      → dernières sorties
+//   search(query, page, filters)→ recherche avec filtres
+//   getDetail(url)              → fiche détail
+//   getVideoList(url)           → liens vidéo
+//   getForYou(page)             → « Pour vous »
+//   getComments(url, page)      → commentaires
+//   getFilterList()             → tous les filtres disponibles
+//   getCustomLists()            → sections accueil
+//   getCustomList(id, page)     → contenu d'une section
 // ─────────────────────────────────────────────────────────────────────────────
 
 const watchtowerSources = [{
@@ -30,70 +23,44 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/Watchtower-extensions/main/extensions/watch/icon/fr.frenchstream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.4.9",
+    "version": "0.6.0",
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
-    // Langues/pistes audio disponibles sur French-Stream
-    "videoQualities": ["AUTO", "VF", "VOSTFR", "VO", "VFQ"],
-    // Sous-catégories de contenu (renommé depuis contentSubtype)
+    "videoQualities": ["AUTO", "VF", "VOSTFR", "VO", "VFQ", "TrueFrench"],
     "subCategories": ["film", "serie"],
-    // Fonctionnalités optionnelles exposées par cette extension
     "supportsForYou": true,
     "supportsComments": true,
     "prefs": [
-        {
-            "key": "username",
-            "type": "text",
-            "label": "Nom d'utilisateur",
-            "value": "",
-            "hint": "Votre identifiant French-Stream"
-        },
-        {
-            "key": "password",
-            "type": "password",
-            "label": "Mot de passe",
-            "value": "",
-            "hint": "Votre mot de passe French-Stream"
-        }
+        { "key": "username", "type": "text",     "label": "Nom d'utilisateur", "value": "", "hint": "Votre identifiant French-Stream" },
+        { "key": "password", "type": "password", "label": "Mot de passe",       "value": "", "hint": "Votre mot de passe French-Stream" }
     ]
 }];
 
 const BASE_URL = "https://french-stream.one";
 
 class DefaultExtension extends MProvider {
-    constructor() { super();}
+    constructor() { super(); }
 
     get baseUrl() {
-        const p = this.source.prefs
-            ? this.source.prefs.find(function(x) { return x.key === "base_url"; })
-            : null;
+        const p = this.source.prefs ? this.source.prefs.find(x => x.key === "base_url") : null;
         return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL.replace(/\/$/, "");
     }
 
     _getPref(key) {
-        const p = this.source.prefs
-            ? this.source.prefs.find(function(x) { return x.key === key; })
-            : null;
+        const p = this.source.prefs ? this.source.prefs.find(x => x.key === key) : null;
         return (p && p.value) ? p.value : null;
     }
 
     async _ensureLogin() {
-        var username = this._getPref("username");
-        var password = this._getPref("password");
+        const username = this._getPref("username");
+        const password = this._getPref("password");
         if (!username || !password) return;
         try {
-            await new Client().post(
-                this.baseUrl + "/index.php?do=login",
-                {
-                    headers: Object.assign({}, this._hdrs(), {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    }),
-                    body: "login_name=" + encodeURIComponent(username) +
-                          "&login_password=" + encodeURIComponent(password) +
-                          "&login_submit=1&action=login"
-                }
-            );
+            await new Client().post(this.baseUrl + "/index.php?do=login", {
+                headers: Object.assign({}, this._hdrs(), { "Content-Type": "application/x-www-form-urlencoded" }),
+                body: "login_name=" + encodeURIComponent(username) + "&login_password=" + encodeURIComponent(password) + "&login_submit=1&action=login"
+            });
         } catch (_) {}
     }
 
@@ -116,793 +83,684 @@ class DefaultExtension extends MProvider {
     }
 
     _getParam(url, key) {
-        var re = new RegExp("[?&]" + key + "=([^&]+)");
-        var m  = re.exec(url);
+        const re = new RegExp("[?&]" + key + "=([^&]+)");
+        const m  = re.exec(url);
         return m ? decodeURIComponent(m[1]) : null;
     }
 
+    // ── Card parser — extracts title, url, image, language badge, rating, episode info ──
     _parseItems(html) {
-        var items   = [];
+        const items = [];
+        const seen  = {};
 
-        // Strategy 1: classic short-poster links (original FS layout)
-        var blockRe = /<a[^>]+class="short-poster[^"]*"([^>]*)>([\s\S]*?)<\/a>/gi;
-        var bm;
+        // Each .short block
+        const blockRe = /<div[^>]+class="[^"]*\bshort\b[^"]*"[^>]*>([\s\S]*?)<\/div>\s*<\/div>\s*<\/div>/gi;
+        let bm;
         while ((bm = blockRe.exec(html)) !== null) {
-            var attrs = bm[1];
-            var inner = bm[2];
-            // Accept newsid= param OR any numeric-id segment in the href
-            var hrefM = /href="([^"]+newsid=\d+[^"]*)"/.exec(attrs)
-                     || /href="(https?:\/\/[^"]+\/\d{4,}[\/"][^"]*)"/.exec(attrs)
-                     || /href="([^"]+\/[^"]+\?[^"]*newsid[^"]*)"/.exec(attrs);
-            var altM  = /alt="([^"]*)"/.exec(attrs);
-            var imgM  = /<img[^>]+src="([^"]+)"/i.exec(inner);
+            const block = bm[0];
+
+            // URL from short-poster link
+            const hrefM = /href="([^"]+(?:newsid=\d+|\/\d{4,}\/)[^"]*)"/i.exec(block);
             if (!hrefM) continue;
-            var href  = hrefM[1].charAt(0) === "/" ? this.baseUrl + hrefM[1] : hrefM[1];
-            var title = altM ? altM[1].trim() : "";
-            var image = imgM ? imgM[1] : "";
-            if (title) items.push({ name: title, link: href, imageUrl: image });
+            const href = hrefM[1].startsWith("http") ? hrefM[1] : this.baseUrl + hrefM[1];
+            if (seen[href]) continue;
+            seen[href] = true;
+
+            // Title
+            const altM   = /alt="([^"]{2,})"/.exec(block);
+            const titleM = /class="[^"]*short-title[^"]*"[^>]*>\s*<a[^>]*>([^<]{2,})<\/a>/i.exec(block);
+            const title  = (altM && altM[1].trim()) || (titleM && titleM[1].trim()) || "";
+            if (!title) continue;
+
+            // Image
+            const imgM = /<img[^>]+(?:data-src|src)="([^"]+)"/i.exec(block);
+            const image = imgM ? imgM[1] : "";
+
+            // Language badge: VF / VOSTFR / TrueFrench / VO
+            let lang = "";
+            const langM = /class="[^"]*(?:badge|label|flag|version)[^"]*"[^>]*>\s*([^<]{1,20})\s*</i.exec(block)
+                       || /xfname=version-(?:film|serie)[^>]*xf=([^&"]+)/i.exec(block);
+            if (langM) lang = decodeURIComponent(langM[1]).trim().toUpperCase();
+            // Also try to parse from title suffix
+            if (!lang) {
+                const suffixM = /\b(VF|VOSTFR|VOSTA|VO|TrueFrench)\b/i.exec(title);
+                if (suffixM) lang = suffixM[1].toUpperCase();
+            }
+
+            // Rating
+            let rating = "";
+            const ratingM = /(?:data-rating|rating-value|itemprop="ratingValue")[^>]*>([0-9.,]+)</i.exec(block)
+                         || /<span[^>]+class="[^"]*(?:rating|note|score)[^"]*"[^>]*>([0-9][0-9.,]*)</.exec(block);
+            if (ratingM) rating = ratingM[1].trim();
+
+            // Episode count (for series cards)
+            let epInfo = "";
+            const epM = /(?:épisode|episode|ep\.?)\s*(\d+\s*(?:sur|\/|of)\s*\d+|\d+)/i.exec(block);
+            if (epM) epInfo = epM[0].trim();
+
+            // Quality badge
+            let quality = "";
+            const qualM = /\b(HD|4K|HDSCR|CAM|BDRIP|WEB-DL)\b/i.exec(block);
+            if (qualM) quality = qualM[1].toUpperCase();
+
+            items.push({
+                name: title,
+                link: href,
+                imageUrl: image,
+                // Extended metadata (flat fields supported by the engine)
+                description: [lang, quality, epInfo].filter(Boolean).join(" · "),
+                scanlator: lang || "",
+                author: quality,
+            });
         }
 
-        // Strategy 2: generic card/poster links as fallback if nothing found
+        // Fallback: classic short-poster links
         if (items.length === 0) {
-            var re2 = /<a[^>]+href="([^"]+newsid=\d+[^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
-            var m2;
-            while ((m2 = re2.exec(html)) !== null) {
-                var href2 = m2[1].charAt(0) === "/" ? this.baseUrl + m2[1] : m2[1];
-                var inner2 = m2[2];
-                var title2M = /(?:alt|title)="([^"]{2,})"/i.exec(m2[0]);
-                var img2M   = /<img[^>]+src="([^"]+)"/i.exec(inner2);
-                var title2  = title2M ? title2M[1].trim() : "";
-                if (title2) items.push({ name: title2, link: href2, imageUrl: img2M ? img2M[1] : "" });
+            const re = /<a[^>]+class="short-poster[^"]*"([^>]*)>([\s\S]*?)<\/a>/gi;
+            let m;
+            while ((m = re.exec(html)) !== null) {
+                const attrs = m[1];
+                const inner = m[2];
+                const hrefM = /href="([^"]+newsid=\d+[^"]*)"/.exec(attrs)
+                           || /href="(https?:\/\/[^"]+\/\d{4,}[\/"][^"]*)"/.exec(attrs);
+                const altM  = /alt="([^"]*)"/.exec(attrs);
+                const imgM  = /<img[^>]+src="([^"]+)"/i.exec(inner);
+                if (!hrefM) continue;
+                const href2 = hrefM[1].charAt(0) === "/" ? this.baseUrl + hrefM[1] : hrefM[1];
+                const title2 = altM ? altM[1].trim() : "";
+                if (title2 && !seen[href2]) {
+                    seen[href2] = true;
+                    items.push({ name: title2, link: href2, imageUrl: imgM ? imgM[1] : "" });
+                }
             }
         }
 
         return items;
     }
 
-    // Extract newsId from URL params or from page HTML
     _extractNewsId(url, html) {
-        var fromUrl = this._getParam(url, "newsid");
+        const fromUrl = this._getParam(url, "newsid");
         if (fromUrl) return fromUrl;
-        // Try to find newsid in the page source (embedded in JS/data attributes)
-        var m = /(?:newsid|news_id)[='":\s]+(\d{3,})/i.exec(html || "");
+        const m = /(?:newsid|news_id)[='":\s]+(\d{3,})/i.exec(html || "");
         if (m) return m[1];
-        // Try a numeric segment in the URL path (e.g. /12345/ or -12345-)
-        var mPath = /[\/\-](\d{4,})[\/\-\.?]/.exec(url);
+        const mPath = /[\/\-](\d{4,})[\/\-\.?]/.exec(url);
         if (mPath) return mPath[1];
         return null;
     }
 
-    // FIX Bug 1: use /films/page/X/ instead of /films/?page=X
-    // which always returned the same content on every page
+    // ── Popular (films catalogue paginé) ─────────────────────────────────────
     async getPopular(page) {
-        var url = this.baseUrl + "/films/page/" + page + "/";
-        var r   = await new Client().get(url, { headers: this._hdrs() });
-        var items = this._parseItems(r.body);
+        const url = this.baseUrl + "/films/page/" + page + "/";
+        const r   = await new Client().get(url, { headers: this._hdrs() });
+        const items = this._parseItems(r.body);
         return { list: items, hasNextPage: items.length >= 10 };
     }
 
-    // FIX Bug 2a: renamed from getLatest → getLatestUpdates
-    // Engine calls getLatestUpdates(); getLatest() was never called
+    // ── Latest updates (homepage paginée) ────────────────────────────────────
     async getLatestUpdates(page) {
-        var url = page <= 1
-            ? this.baseUrl + "/"
-            : this.baseUrl + "/page/" + page + "/";
-        var r     = await new Client().get(url, { headers: this._hdrs() });
-        var items = this._parseItems(r.body);
+        const url = page <= 1 ? this.baseUrl + "/" : this.baseUrl + "/page/" + page + "/";
+        const r   = await new Client().get(url, { headers: this._hdrs() });
+        const items = this._parseItems(r.body);
         return { list: items, hasNextPage: items.length >= 10 };
     }
 
-    // FIX Bug 2b: renamed from getSearch(query, page) → search(query, page, filters)
-    // Engine calls search(); getSearch() was never called → "search not implemented" error
+    // ── Search avec filtres ───────────────────────────────────────────────────
     async search(query, page, filters) {
-        var from = (page - 1) * 20 + 1;
-        var url  = this.baseUrl
-            + "/?do=search&subaction=search&story="
-            + encodeURIComponent(query)
+        var url;
+
+        // Build filter URL if no text query and filters are set
+        if ((!query || query.trim() === "") && filters && filters.length > 0) {
+            return this._searchByFilters(page, filters);
+        }
+
+        const from = (page - 1) * 20 + 1;
+        url = this.baseUrl
+            + "/?do=search&subaction=search&story=" + encodeURIComponent(query || "")
             + "&search_start=" + (page - 1)
             + "&full_search=0&result_from=" + from;
-        var r     = await new Client().get(url, { headers: this._hdrs() });
-        var items = this._parseItems(r.body);
+
+        // Append filter params to search
+        if (filters && filters.length > 0) {
+            for (var i = 0; i < filters.length; i++) {
+                var f = filters[i];
+                if (f && f.value && f.value !== "" && f.value !== "all") {
+                    url += "&" + encodeURIComponent(f.name || f.id || "") + "=" + encodeURIComponent(f.value);
+                }
+            }
+        }
+
+        const r = await new Client().get(url, { headers: this._hdrs() });
+        const items = this._parseItems(r.body);
         return { list: items, hasNextPage: items.length >= 10 };
     }
 
-    // ─── getForYou ───────────────────────────────────────────────────────────
-    // Appelé par l'onglet « Pour vous » dans Watchtower.
-    // French-Stream n'a pas de fil personnalisé côté serveur, on retourne donc
-    // les films populaires comme contenu de découverte.
-    // Retourne un objet MPages : { list: MManga[], hasNextPage: bool }
-    async getForYou(page) {
-          // ─── Accueil enrichi ──────────────────────────────────────────────────
-          // Page 1 : mélange homepage (contenus vedettes/récents) + catalogue films
-          //          + tentative catalogue séries — dédupliqués par URL.
-          // Pages 2+ : pagination de la racine du site (mêmes résultats que
-          //            getLatestUpdates) pour un défilement infini cohérent.
-          if (page <= 1) {
-              var seen = {};
-              var list = [];
-              var self = this;
-
-              function addItems(html) {
-                  self._parseItems(html).forEach(function(item) {
-                      if (!seen[item.link]) { seen[item.link] = true; list.push(item); }
-                  });
-              }
-
-              try {
-                  var homeR  = await new Client().get(this.baseUrl + "/",              { headers: this._hdrs() });
-                  var filmsR = await new Client().get(this.baseUrl + "/films/page/1/", { headers: this._hdrs() });
-                  addItems(homeR.body);
-                  addItems(filmsR.body);
-              } catch (_) {
-                  return this.getLatestUpdates(1);
-              }
-
-              // Tenter le catalogue séries (URL peut varier selon version du site)
-              try {
-                  var seriesR = await new Client().get(this.baseUrl + "/series/page/1/", { headers: this._hdrs() });
-                  addItems(seriesR.body);
-              } catch (_) { /* silencieux — URL optionnelle */ }
-
-              return { list: list.slice(0, 36), hasNextPage: list.length >= 10 };
-          }
-          // Pages 2+ : dernières sorties paginées
-          return this.getLatestUpdates(page - 1);
-      }
-  
-    // ─── getCustomLists / getCustomList ──────────────────────────────────────
-    // Sections affichées sur l'écran d'accueil Watch de FrenchStream.
-    getCustomLists() {
-        return [
-            { id: "films",         name: "Films Populaires"   },
-            { id: "series",        name: "Séries Populaires"  },
-            { id: "films_recent",  name: "Films Récents"      },
-            { id: "series_recent", name: "Séries Récentes"    },
-            { id: "animation",     name: "Animation"          },
-        ];
-    }
-
-    async getCustomList(listId, page) {
-        var url;
-        switch (listId) {
-            case "films":
-                url = this.baseUrl + "/films/page/" + page + "/";
-                break;
-            case "series":
-                url = this.baseUrl + "/series/page/" + page + "/";
-                break;
-            case "films_recent":
-                url = this.baseUrl + "/films/page/" + page + "/?orderby=date";
-                break;
-            case "series_recent":
-                url = this.baseUrl + "/series/page/" + page + "/?orderby=date";
-                break;
-            case "animation":
-                url = this.baseUrl + "/xfsearch/genre/animation/page/" + page + "/";
-                break;
-            default:
-                return this.getPopular(page);
-        }
-        try {
-            var r = await new Client().get(url, { headers: this._hdrs() });
-            var items = this._parseItems(r.body);
-            if (items.length === 0 && listId.startsWith("series")) {
-                return this.getLatestUpdates(page);
+    async _searchByFilters(page, filters) {
+        // Build xfsearch URL from first active filter
+        var xfname = "", xf = "", contentType = "";
+        for (var i = 0; i < filters.length; i++) {
+            var f = filters[i];
+            if (!f || !f.value || f.value === "all" || f.value === "") continue;
+            if (f.id === "type" || f.name === "type") {
+                contentType = f.value;
+            } else if (!xfname) {
+                xfname = f.id || f.name || "";
+                xf     = f.value;
             }
+        }
+
+        var baseSection = contentType === "serie" ? "/s-tv" : "/films";
+        var url;
+        if (xfname && xf) {
+            url = this.baseUrl + "/xfsearch/" + xfname + "/" + encodeURIComponent(xf) + "/page/" + page + "/";
+        } else {
+            url = this.baseUrl + baseSection + "/page/" + page + "/";
+        }
+
+        try {
+            const r = await new Client().get(url, { headers: this._hdrs() });
+            const items = this._parseItems(r.body);
             return { list: items, hasNextPage: items.length >= 10 };
         } catch (_) {
             return this.getPopular(page);
         }
     }
 
-    // ─── getComments ─────────────────────────────────────────────────────────
-    // Appelé par l'onglet « Commentaires » dans Watchtower.
-    // Tente l'endpoint AJAX EngineScript ; retourne liste vide si indisponible.
-    // Retourne : { list: MComment[], hasNextPage: bool }
+    // ── Filter list — tous les filtres du site ────────────────────────────────
+    getFilterList() {
+        return [
+            {
+                type: "select",
+                id: "type",
+                name: "Type de contenu",
+                values: [
+                    { value: "all",   label: "Tout"    },
+                    { value: "film",  label: "Films"   },
+                    { value: "serie", label: "Séries"  },
+                ]
+            },
+            {
+                type: "select",
+                id: "version-film",
+                name: "Version (Films)",
+                values: [
+                    { value: "all",           label: "Toutes"         },
+                    { value: "VF",            label: "VF"             },
+                    { value: "VOSTFR",        label: "VOSTFR"         },
+                    { value: "VF%2BVOSTFR",   label: "VF + VOSTFR"   },
+                    { value: "TrueFrench",    label: "True French"    },
+                    { value: "French",        label: "French"         },
+                    { value: "VO",            label: "VO"             },
+                ]
+            },
+            {
+                type: "select",
+                id: "version-serie",
+                name: "Version (Séries)",
+                values: [
+                    { value: "all",           label: "Toutes"         },
+                    { value: "VF",            label: "VF"             },
+                    { value: "VOSTFR",        label: "VOSTFR"         },
+                    { value: "VF%2BVOSTFR",   label: "VF + VOSTFR"   },
+                ]
+            },
+            {
+                type: "select",
+                id: "qualit",
+                name: "Qualité",
+                values: [
+                    { value: "all",   label: "Toutes" },
+                    { value: "HD",    label: "HD"     },
+                    { value: "HDSCR", label: "HDSCR"  },
+                    { value: "CAM",   label: "CAM"    },
+                ]
+            },
+            {
+                type: "select",
+                id: "genre-1",
+                name: "Genre",
+                values: [
+                    { value: "all",            label: "Tous"               },
+                    { value: "action",         label: "Action"             },
+                    { value: "animation",      label: "Animation"          },
+                    { value: "aventure",       label: "Aventure"           },
+                    { value: "biopic",         label: "Biopic"             },
+                    { value: "comedie",        label: "Comédie"            },
+                    { value: "comedie-romantique", label: "Comédie romantique" },
+                    { value: "crime",          label: "Crime"              },
+                    { value: "documentaire",   label: "Documentaire"       },
+                    { value: "drame",          label: "Drame"              },
+                    { value: "epouvante-horreur", label: "Horreur"        },
+                    { value: "famille",        label: "Famille"            },
+                    { value: "fantastique",    label: "Fantastique"        },
+                    { value: "guerre",         label: "Guerre"             },
+                    { value: "historique",     label: "Historique"         },
+                    { value: "jeunesse",       label: "Jeunesse"           },
+                    { value: "musical",        label: "Musical"            },
+                    { value: "policier",       label: "Policier"           },
+                    { value: "romantique",     label: "Romantique"         },
+                    { value: "science-fiction","label": "Science-Fiction"  },
+                    { value: "sport",          label: "Sport"              },
+                    { value: "thriller",       label: "Thriller"           },
+                    { value: "western",        label: "Western"            },
+                ]
+            },
+            {
+                type: "select",
+                id: "lang",
+                name: "Pays / Langue",
+                values: [
+                    { value: "all",         label: "Tous"          },
+                    { value: "francais",    label: "Français"      },
+                    { value: "americain",   label: "Américain"     },
+                    { value: "anglais",     label: "Anglais"       },
+                    { value: "allemand",    label: "Allemand"      },
+                    { value: "espagnol",    label: "Espagnol"      },
+                    { value: "coreen",      label: "Coréen"        },
+                    { value: "japonais",    label: "Japonais"      },
+                    { value: "turc",        label: "Turc"          },
+                    { value: "chinois",     label: "Chinois"       },
+                    { value: "indien",      label: "Indien"        },
+                    { value: "italien",     label: "Italien"       },
+                    { value: "arabe",       label: "Arabe"         },
+                ]
+            },
+            {
+                type: "select",
+                id: "date-de-sortie",
+                name: "Année de sortie",
+                values: [
+                    { value: "all",  label: "Toutes"  },
+                    { value: "2026", label: "2026"    },
+                    { value: "2025", label: "2025"    },
+                    { value: "2024", label: "2024"    },
+                    { value: "2023", label: "2023"    },
+                    { value: "2022", label: "2022"    },
+                    { value: "2021", label: "2021"    },
+                    { value: "2020", label: "2020"    },
+                    { value: "2019", label: "2019"    },
+                    { value: "2018", label: "2018"    },
+                    { value: "2015-2017", label: "2015–2017" },
+                    { value: "2010-2014", label: "2010–2014" },
+                    { value: "2000-2009", label: "2000–2009" },
+                    { value: "1990-1999", label: "Années 90" },
+                    { value: "1980-1989", label: "Années 80" },
+                ]
+            },
+            {
+                type: "select",
+                id: "ftagz",
+                name: "Thème / Tag",
+                values: [
+                    { value: "all",            label: "Tous"              },
+                    { value: "super-heros",    label: "Super-héros"       },
+                    { value: "zombie",         label: "Zombie"            },
+                    { value: "espionnage",     label: "Espionnage"        },
+                    { value: "serial-killer",  label: "Serial Killer"     },
+                    { value: "vampire",        label: "Vampire"           },
+                    { value: "voyage-temps",   label: "Voyage dans le temps" },
+                    { value: "post-apocalyptique", label: "Post-Apocalyptique" },
+                    { value: "survie",         label: "Survie"            },
+                ]
+            },
+        ];
+    }
+
+    // ── Sections accueil ─────────────────────────────────────────────────────
+    getCustomLists() {
+        return [
+            { id: "trending",       name: "🔥 À l'affiche"           },
+            { id: "films",          name: "🎬 Films"                  },
+            { id: "series",         name: "📺 Séries"                 },
+            { id: "films_recent",   name: "🆕 Films récents"          },
+            { id: "series_recent",  name: "🆕 Séries récentes"        },
+            { id: "vf",             name: "🇫🇷 Version Française"      },
+            { id: "vostfr",         name: "🌐 VOSTFR"                 },
+            { id: "animation",      name: "🎭 Animation"              },
+            { id: "action",         name: "💥 Action"                 },
+            { id: "comedie",        name: "😂 Comédie"                },
+            { id: "horreur",        name: "👻 Horreur"                },
+            { id: "thriller",       name: "🔪 Thriller"               },
+            { id: "science_fiction",name: "🚀 Science-Fiction"        },
+        ];
+    }
+
+    async getCustomList(listId, page) {
+        var url;
+        switch (listId) {
+            case "trending":
+                // Mix home + films pour la section vedette
+                if (page <= 1) {
+                    try {
+                        const seen = {}; const list = [];
+                        const homeR  = await new Client().get(this.baseUrl + "/",              { headers: this._hdrs() });
+                        const filmsR = await new Client().get(this.baseUrl + "/films/page/1/", { headers: this._hdrs() });
+                        this._parseItems(homeR.body).forEach(i  => { if (!seen[i.link]) { seen[i.link]=true; list.push(i); } });
+                        this._parseItems(filmsR.body).forEach(i => { if (!seen[i.link]) { seen[i.link]=true; list.push(i); } });
+                        return { list: list.slice(0, 30), hasNextPage: false };
+                    } catch (_) { return this.getLatestUpdates(1); }
+                }
+                url = this.baseUrl + "/page/" + page + "/";
+                break;
+            case "films":
+                url = this.baseUrl + "/films/page/" + page + "/";
+                break;
+            case "series":
+                // Correct URL: /s-tv/ (fourni par l'utilisateur)
+                url = this.baseUrl + "/s-tv/page/" + page + "/";
+                break;
+            case "films_recent":
+                url = this.baseUrl + "/films/page/" + page + "/?orderby=date";
+                break;
+            case "series_recent":
+                url = this.baseUrl + "/s-tv/page/" + page + "/?orderby=date";
+                break;
+            case "vf":
+                url = this.baseUrl + "/xfsearch/version-film/VF/page/" + page + "/";
+                break;
+            case "vostfr":
+                url = this.baseUrl + "/xfsearch/version-film/VOSTFR/page/" + page + "/";
+                break;
+            case "animation":
+                url = this.baseUrl + "/xfsearch/genre-1/animation/page/" + page + "/";
+                break;
+            case "action":
+                url = this.baseUrl + "/xfsearch/genre-1/action/page/" + page + "/";
+                break;
+            case "comedie":
+                url = this.baseUrl + "/xfsearch/genre-1/comedie/page/" + page + "/";
+                break;
+            case "horreur":
+                url = this.baseUrl + "/xfsearch/genre-1/epouvante-horreur/page/" + page + "/";
+                break;
+            case "thriller":
+                url = this.baseUrl + "/xfsearch/genre-1/thriller/page/" + page + "/";
+                break;
+            case "science_fiction":
+                url = this.baseUrl + "/xfsearch/genre-1/science-fiction/page/" + page + "/";
+                break;
+            default:
+                return this.getPopular(page);
+        }
+        try {
+            const r = await new Client().get(url, { headers: this._hdrs() });
+            const items = this._parseItems(r.body);
+            return { list: items, hasNextPage: items.length >= 10 };
+        } catch (_) {
+            return this.getPopular(page);
+        }
+    }
+
+    // ── Pour vous ────────────────────────────────────────────────────────────
+    async getForYou(page) {
+        if (page <= 1) {
+            const seen = {}; const list = [];
+            const add = (html) => {
+                this._parseItems(html).forEach(i => { if (!seen[i.link]) { seen[i.link]=true; list.push(i); } });
+            };
+            try {
+                const [homeR, filmsR] = await Promise.all([
+                    new Client().get(this.baseUrl + "/",              { headers: this._hdrs() }),
+                    new Client().get(this.baseUrl + "/films/page/1/", { headers: this._hdrs() }),
+                ]);
+                add(homeR.body);
+                add(filmsR.body);
+            } catch (_) { return this.getLatestUpdates(1); }
+            try {
+                const seriesR = await new Client().get(this.baseUrl + "/s-tv/page/1/", { headers: this._hdrs() });
+                add(seriesR.body);
+            } catch (_) {}
+            return { list: list.slice(0, 40), hasNextPage: list.length >= 10 };
+        }
+        return this.getLatestUpdates(page - 1);
+    }
+
+    // ── Comments ─────────────────────────────────────────────────────────────
     async getComments(url, page) {
         var newsId = this._getParam(url, "newsid");
         if (!newsId) {
             try {
-                var pr = await new Client().get(url, { headers: this._hdrs() });
+                const pr = await new Client().get(url, { headers: this._hdrs() });
                 newsId = this._extractNewsId(url, pr.body);
             } catch (_) {}
         }
         if (!newsId) return { list: [], hasNextPage: false };
 
-        var endpoints = [
+        const endpoints = [
             "/engine/ajax/getcomments.php?news_id=" + newsId + "&page=" + page,
             "/engine/ajax/comments.php?id=" + newsId + "&p=" + page,
-            "/comments/" + newsId + "/?page=" + page
         ];
         for (var ei = 0; ei < endpoints.length; ei++) {
             try {
-                var r = await new Client().get(
-                    this.baseUrl + endpoints[ei],
-                    { headers: this._ajaxHdrs(url) }
-                );
+                const r = await new Client().get(this.baseUrl + endpoints[ei], { headers: this._ajaxHdrs(url) });
                 if (!r.body || r.body.length < 5) continue;
-                var data = JSON.parse(r.body);
-                var cmtList = Array.isArray(data) ? data
-                    : (data.comments || data.list || data.data || []);
+                const data = JSON.parse(r.body);
+                const cmtList = Array.isArray(data) ? data : (data.comments || data.list || data.data || []);
                 if (!Array.isArray(cmtList) || cmtList.length === 0) continue;
-                var items = [];
-                for (var i = 0; i < cmtList.length; i++) {
-                    var c = cmtList[i];
-                    items.push({
-                        id:        String(c.id || c.comment_id || i),
-                        username:  c.name || c.author || c.user || "Anonyme",
-                        avatarUrl: c.avatar || c.avatar_url || "",
-                        content:   c.text || c.message || c.comment || c.body || "",
+                return {
+                    list: cmtList.map((c, idx) => ({
+                        id: String(c.id || c.comment_id || idx),
+                        username: c.name || c.author || c.user || "Anonyme",
+                        avatarUrl: c.avatar || "",
+                        content: c.text || c.message || c.comment || c.body || "",
                         timestamp: c.date || c.created_at || "",
-                        score:     Number(c.likes || c.score || 0)
-                    });
-                }
-                return { list: items, hasNextPage: cmtList.length >= 20 };
+                        score: Number(c.likes || c.score || 0)
+                    })),
+                    hasNextPage: cmtList.length >= 20
+                };
             } catch (_) {}
         }
         return { list: [], hasNextPage: false };
     }
 
-    // ─── _parseJsonOrJs ───────────────────────────────────────────────────────
-    // Parse a string that may be raw JSON or a JS assignment like:
-    //   var epData = {...};   or   window.x = [...];
-    // Returns parsed object/array or null on failure.
     _parseJsonOrJs(str) {
         if (!str || str.length < 3) return null;
         str = str.trim();
-        // Check it doesn't look like an HTML error page
         if (str.charAt(0) === '<') return null;
-        // Try raw JSON first
         try { return JSON.parse(str); } catch (_) {}
-        // Strip JS assignment prefix: var xxx =  /  let xxx =  /  window.xxx =
         try {
-            var s = str
-                .replace(/^(?:var|let|const)\s+\w+\s*=\s*/, '')
-                .replace(/^window\.\w+\s*=\s*/, '')
-                .replace(/;?\s*$/, '');
+            const s = str.replace(/^(?:var|let|const)\s+\w+\s*=\s*/, '').replace(/^window\.\w+\s*=\s*/, '').replace(/;?\s*$/, '');
             return JSON.parse(s);
         } catch (_) {}
         return null;
     }
 
+    // ── Detail ───────────────────────────────────────────────────────────────
     async getDetail(url) {
         await this._ensureLogin();
-        var r    = await new Client().get(url, { headers: this._hdrs() });
-        var html = r.body;
+        const r    = await new Client().get(url, { headers: this._hdrs() });
+        const html = r.body;
 
-        var newsId   = this._extractNewsId(url, html) || "";
-        var isSerie  = html.indexOf('id="serie-data"') !== -1;
+        const newsId  = this._extractNewsId(url, html) || "";
+        const isSerie = html.indexOf('id="serie-data"') !== -1;
 
-        var titleM   = /data-title="([^"]+)"/.exec(html);
-        var title    = titleM ? titleM[1].trim() : "";
+        const titleM  = /data-title="([^"]+)"/.exec(html);
+        const title   = titleM ? titleM[1].trim() : "";
 
-        var imgM     = /data-affiche="([^"]+)"/.exec(html);
-        var image    = imgM ? imgM[1] : "";
+        const imgM    = /data-affiche="([^"]+)"/.exec(html);
+        const image   = imgM ? imgM[1] : "";
 
-        var genresM  = /<span class="genres">([\s\S]*?)<\/span>/i.exec(html);
-        var genres   = genresM
-            ? genresM[1].replace(/<[^>]+>/g, "").split(",").map(function(g) { return g.trim(); }).filter(Boolean)
+        const genresM = /<span class="genres">([\s\S]*?)<\/span>/i.exec(html);
+        const genres  = genresM
+            ? genresM[1].replace(/<[^>]+>/g, "").split(",").map(g => g.trim()).filter(Boolean)
             : [];
 
-        var yearM    = /xfname=date-de-sortie[^>]+>(\d{4})</.exec(html);
-        var year     = yearM ? yearM[1] : "";
+        const yearM   = /xfname=date-de-sortie[^>]+>(\d{4})</.exec(html);
+        const year    = yearM ? yearM[1] : "";
 
-        var rtM      = /<span class="runtime">[^\d]*(\d[^<]*)/i.exec(html);
-        var runtime  = rtM ? rtM[1].trim() : "";
+        const rtM     = /<span class="runtime">[^\d]*(\d[^<]*)/i.exec(html);
+        const runtime = rtM ? rtM[1].trim() : "";
 
-        var descM    = /class="desc-text"[^>]*>([\s\S]*?)<\/p>/i.exec(html)
-                    || /<div[^>]+fdesc[^>]*>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/i.exec(html);
-        var desc     = descM ? descM[1].replace(/<[^>]+>/g, "").trim() : "";
+        const descM   = /class="desc-text"[^>]*>([\s\S]*?)<\/p>/i.exec(html)
+                     || /<div[^>]+fdesc[^>]*>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/i.exec(html);
+        const desc    = descM ? descM[1].replace(/<[^>]+>/g, "").trim() : "";
 
-        var ratingM  = /itemprop="ratingValue"[^>]*>([0-9.,]+)</.exec(html)
-                    || /<span[^>]+class="[^"]*(?:rating|note|score)[^"]*"[^>]*>\s*([0-9][0-9.,]*)\s*</.exec(html)
-                    || /data-rating="([0-9.,]+)"/.exec(html);
-        var rating   = ratingM ? ratingM[1].trim() : "";
+        const ratingM = /itemprop="ratingValue"[^>]*>([0-9.,]+)</.exec(html)
+                     || /<span[^>]+class="[^"]*(?:rating|note|score)[^"]*"[^>]*>\s*([0-9][0-9.,]*)\s*</.exec(html)
+                     || /data-rating="([0-9.,]+)"/.exec(html);
+        const rating  = ratingM ? ratingM[1].trim() : "";
 
-        var castM    = /(?:Acteurs?|Casting|Cast)\s*:[^<]*<[^>]+>([\s\S]*?)<\/(?:p|div|span)>/i.exec(html);
-        var cast     = castM ? castM[1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() : "";
+        const castM   = /(?:Acteurs?|Casting|Cast)\s*:[^<]*<[^>]+>([\s\S]*?)<\/(?:p|div|span)>/i.exec(html);
+        const cast    = castM ? castM[1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() : "";
 
-        // ── Galerie d'images (aperçus / screenshots) ──────────────────────
-        var galleryImgs = [];
-        // Bloc gallery explicite
-        var gBlockM = /<div[^>]+class="[^"]*(?:screens|screenshots|gallery|preview)[^"]*"[^>]*>([\s\S]*?)<\/div>/i.exec(html);
+        // Language from page
+        const langM   = /xfname=version-(?:film|serie)[^>]*>([^<]{1,30})</.exec(html);
+        const lang    = langM ? langM[1].trim() : "";
+
+        const gallery = [];
+        const gBlockM = /<div[^>]+class="[^"]*(?:screens|screenshots|gallery|preview)[^"]*"[^>]*>([\s\S]*?)<\/div>/i.exec(html);
         if (gBlockM) {
-            var gImgRe = /<img[^>]+(?:data-src|src)="([^"]+)"[^>]*/gi;
-            var gim;
-            while ((gim = gImgRe.exec(gBlockM[1])) !== null) {
-                var gu = gim[1].trim();
-                if (gu.startsWith("http") && !/pixel|1x1|transparent|blank|icon|logo/i.test(gu)) {
-                    galleryImgs.push(gu);
-                }
+            const gre = /<img[^>]+(?:data-src|src)="([^"]+)"/gi; let gm;
+            while ((gm = gre.exec(gBlockM[1])) !== null) {
+                if (gm[1].startsWith("http") && !/pixel|1x1|transparent|blank|icon|logo/i.test(gm[1])) gallery.push(gm[1]);
             }
         }
-        // Attribut data-screenshots ou data-images
-        if (galleryImgs.length === 0) {
-            var dsM = /data-screenshots="([^"]+)"/.exec(html) || /data-images="([^"]+)"/.exec(html);
-            if (dsM) {
-                dsM[1].split(/[,|]/).forEach(function(u) {
-                    var t = u.trim(); if (t.startsWith("http")) galleryImgs.push(t);
-                });
-            }
-        }
-        var fullDesc = galleryImgs.length > 0
-            ? desc + "\n__GALLERY__:" + galleryImgs.slice(0, 10).join("||")
-            : desc;
-
-        var metaLine = [runtime, year].filter(Boolean).join(" — ");
-        if (rating) metaLine = metaLine ? metaLine + " · ★ " + rating : "★ " + rating;
+        const fullDesc = gallery.length > 0 ? desc + "\n__GALLERY__:" + gallery.slice(0,10).join("||") : desc;
+        const metaLine = [runtime, year, lang ? "★ " + rating + " · " + lang : rating ? "★ " + rating : ""].filter(Boolean).join(" — ");
 
         if (!isSerie) {
             return {
-                name: title,
-                imageUrl: image,
-                description: fullDesc,
-                genres: genres,
-                status: 4,
-                author: year,
-                artist: cast,
-                rating: rating,
-                chapters: [{
-                    name: title || "Regarder",
-                    url: url,
-                    dateUpload: "",
-                    description: metaLine,
-                    scanlator: "VF / VOSTFR"
-                }]
+                name: title, imageUrl: image, description: fullDesc,
+                genres: genres, status: 4, author: year, artist: cast, rating: rating,
+                chapters: [{ name: title || "Regarder", url: url, dateUpload: "", description: metaLine, scanlator: lang || "VF / VOSTFR" }]
             };
         }
 
-        var tagz   = "";
-        var tagzM  = /data-tagz="([^"]+)"/.exec(html);
+        // ── Série : récupération des saisons/épisodes ──────────────────────
+        var tagz = "";
+        const tagzM = /data-tagz="([^"]+)"/.exec(html);
         if (tagzM) {
             tagz = tagzM[1];
         } else if (newsId) {
             try {
-                var apiR = await new Client().get(
-                    this.baseUrl + "/engine/ajax/film_api.php?id=" + newsId,
-                    { headers: this._ajaxHdrs(url) }
-                );
-                var api = JSON.parse(apiR.body);
+                const apiR = await new Client().get(this.baseUrl + "/engine/ajax/film_api.php?id=" + newsId, { headers: this._ajaxHdrs(url) });
+                const api = JSON.parse(apiR.body);
                 tagz = (api && api.meta && api.meta.tagz) ? api.meta.tagz : "";
             } catch (_) {}
         }
 
-        var chapters = [];
+        const chapters = [];
 
         if (tagz) {
             try {
-                var seasonsR = await new Client().get(
-                    this.baseUrl + "/engine/ajax/get_seasons.php?serie_tag=" + encodeURIComponent(tagz),
-                    { headers: this._ajaxHdrs(url) }
-                );
-                var seasons = JSON.parse(seasonsR.body);
+                const seasonsR = await new Client().get(this.baseUrl + "/engine/ajax/get_seasons.php?serie_tag=" + encodeURIComponent(tagz), { headers: this._ajaxHdrs(url) });
+                const seasons  = JSON.parse(seasonsR.body);
 
                 for (var si = 0; si < seasons.length; si++) {
-                    var season = seasons[si];
-                    var v      = Math.floor(Date.now() / 30000);
+                    const season = seasons[si];
+                    const v = Math.floor(Date.now() / 30000);
                     var epData = null;
 
-                    var paths = [
+                    const paths = [
                         "/static/series/" + season.id + ".js?v=" + v,
                         "/data/eps_" + season.id + ".txt?v=" + v,
                         "/ep-data.php?id=" + season.id + "&format=js&v=" + v
                     ];
                     for (var pi = 0; pi < paths.length; pi++) {
                         try {
-                            var epR = await new Client().get(
-                                this.baseUrl + paths[pi],
-                                { headers: this._hdrs(url) }
-                            );
-                            if (epR.body && epR.body.length > 5) {
-                                epData = JSON.parse(epR.body);
-                                break;
-                            }
+                            const epR = await new Client().get(this.baseUrl + paths[pi], { headers: this._hdrs(url) });
+                            if (epR.body && epR.body.length > 5) { epData = JSON.parse(epR.body); break; }
                         } catch (_) {}
                     }
-
                     if (!epData) continue;
 
-                    var numSet = {};
-                    var langs  = ["vf", "vostfr", "vo"];
+                    const numSet = {};
+                    const langs  = ["vf", "vostfr", "vo"];
                     for (var li = 0; li < langs.length; li++) {
-                        var langData = epData[langs[li]];
+                        const langData = epData[langs[li]];
                         if (!langData) continue;
-                        var keys = Object.keys(langData);
-                        for (var ki = 0; ki < keys.length; ki++) numSet[keys[ki]] = true;
+                        Object.keys(langData).forEach(k => { numSet[k] = true; });
                     }
 
-                    var nums = Object.keys(numSet)
-                        .map(function(k) { return parseInt(k, 10); })
-                        .filter(function(n) { return !isNaN(n); })
-                        .sort(function(a, b) { return a - b; });
-
-                    var sLabel = /\bSaison\s*\d+.*/i.exec(season.title);
-                    var sName  = sLabel ? sLabel[0].trim() : season.title;
+                    const nums = Object.keys(numSet).map(k => parseInt(k,10)).filter(n => !isNaN(n)).sort((a,b) => a-b);
+                    const sLabel = /\bSaison\s*\d+.*/i.exec(season.title);
+                    const sName  = sLabel ? sLabel[0].trim() : season.title;
 
                     for (var ni = 0; ni < nums.length; ni++) {
-                        var n = nums[ni];
-                        var epLangs = [];
-                        for (var li = 0; li < langs.length; li++) {
-                            var ld = epData[langs[li]];
-                            if (ld && (ld[n] || ld[String(n)])) {
-                                epLangs.push(langs[li].toUpperCase());
-                            }
+                        const n = nums[ni];
+                        const epLangs = [];
+                        for (var li2 = 0; li2 < langs.length; li2++) {
+                            const ld = epData[langs[li2]];
+                            if (ld && ld[String(n)]) epLangs.push(langs[li2].toUpperCase());
                         }
                         chapters.push({
-                            name: sName + " — Ep. " + n,
-                            url:  this.baseUrl + "/index.php?newsid=" + season.id + "&_fs_ep=" + n,
+                            name: sName + " — Épisode " + n + (epLangs.length ? " (" + epLangs.join("/") + ")" : ""),
+                            url: url + "?s=" + season.id + "&ep=" + n,
                             dateUpload: "",
-                            description: "Épisode " + n,
-                            scanlator: epLangs.join(" / ") || "VF / VOSTFR"
+                            description: "Épisode " + n + " sur " + nums.length,
+                            scanlator: epLangs.join(" / ") || ""
                         });
                     }
                 }
             } catch (_) {}
         }
 
-        // ── Direct newsId fallback: when tagz/get_seasons fails, use page's own newsId ──
-        // Flash S9, etc. don't have data-tagz → /static/series/{newsId}.js works directly
-        if (chapters.length === 0 && isSerie && newsId) {
-            try {
-                var v2  = Math.floor(Date.now() / 30000);
-                var epR2 = await new Client().get(
-                    this.baseUrl + "/static/series/" + newsId + ".js?v=" + v2,
-                    { headers: this._hdrs(url) }
-                );
-                if (epR2.body && epR2.body.length > 5) {
-                    var epData2 = this._parseJsonOrJs(epR2.body);
-                    if (epData2) {
-                        var titleSeasonM = /Saison\s*(\d+)/i.exec(title);
-                        var sNum2  = titleSeasonM ? titleSeasonM[1] : "1";
-                        var sName2 = "Saison " + sNum2;
-
-                        var numSet2 = {};
-                        var LKEYS   = ["vf", "vostfr", "vo"];
-                        for (var li2 = 0; li2 < LKEYS.length; li2++) {
-                            var ld2 = epData2[LKEYS[li2]];
-                            if (!ld2) continue;
-                            var ks = Object.keys(ld2);
-                            for (var ki2 = 0; ki2 < ks.length; ki2++) numSet2[ks[ki2]] = true;
-                        }
-
-                        var nums2 = Object.keys(numSet2)
-                            .map(function(k) { return parseInt(k, 10); })
-                            .filter(function(n) { return !isNaN(n); })
-                            .sort(function(a, b) { return a - b; });
-
-                        for (var ni2 = 0; ni2 < nums2.length; ni2++) {
-                            var n2 = nums2[ni2];
-                            var epLangs2 = [];
-                            for (var li3 = 0; li3 < LKEYS.length; li3++) {
-                                var ld3 = epData2[LKEYS[li3]];
-                                if (ld3 && (ld3[n2] || ld3[String(n2)])) {
-                                    epLangs2.push(LKEYS[li3].toUpperCase());
-                                }
-                            }
-                            chapters.push({
-                                name: sName2 + " — Ep. " + n2,
-                                url:  this.baseUrl + "/index.php?newsid=" + newsId + "&_fs_ep=" + n2,
-                                dateUpload: "",
-                                description: "Épisode " + n2,
-                                scanlator: epLangs2.join(" / ") || "VF / VOSTFR"
-                            });
-                        }
-                    }
-                }
-            } catch (_) {}
-        }
-
         if (chapters.length === 0) {
-            chapters.push({ name: title || "Regarder", url: url, dateUpload: "" });
+            chapters.push({ name: "Regarder", url: url, dateUpload: "", description: metaLine, scanlator: lang || "" });
         }
 
-        return {
-            name: title,
-            imageUrl: image,
-            description: fullDesc,
-            genres: genres,
-            status: 0,
-            author: year,
-            artist: cast,
-            rating: rating,
-            chapters: chapters
-        };
+        return { name: title, imageUrl: image, description: fullDesc, genres: genres, status: 1, author: year, artist: cast, rating: rating, chapters: chapters };
     }
 
+    // ── Video list ───────────────────────────────────────────────────────────
     async getVideoList(url) {
-        var epNum  = this._getParam(url, "_fs_ep");
+        await this._ensureLogin();
+        const r    = await new Client().get(url, { headers: this._hdrs(url) });
+        const html = r.body;
+        const videos = [];
 
-        // Get newsId from URL param, or from page HTML if not in URL
-        var newsId = this._getParam(url, "newsid");
-        if (!newsId && epNum === null) {
-            // Film: fetch the page to extract newsId
+        // Strategy 1 — Embedded player data JSON
+        const playerM = /(?:var|let|const)\s+(?:playerData|videoData|streamData)\s*=\s*(\{[\s\S]*?\});/.exec(html)
+                     || /data-streams="([^"]+)"/.exec(html);
+        if (playerM) {
             try {
-                var pr = await new Client().get(url, { headers: this._hdrs() });
-                newsId = this._extractNewsId(url, pr.body);
+                const pd = JSON.parse(playerM[1].replace(/&quot;/g, '"'));
+                if (pd.file || pd.src) videos.push({ url: pd.file || pd.src, quality: pd.label || "AUTO", headers: this._hdrs(url) });
+                if (pd.sources) pd.sources.forEach(s => videos.push({ url: s.file || s.src, quality: s.label || "AUTO", headers: this._hdrs(url) }));
             } catch (_) {}
         }
 
-        if (!newsId) return [];
+        // Strategy 2 — m3u8 / mp4 direct links in source
+        const hlsRe = /https?:\/\/[^\s"'<>]+\.(?:m3u8|mp4)(?:\?[^\s"'<>]*)?/gi;
+        let hm;
+        while ((hm = hlsRe.exec(html)) !== null) {
+            const streamUrl = hm[0].replace(/&amp;/g, "&");
+            if (!videos.find(v => v.url === streamUrl)) videos.push({ url: streamUrl, quality: "AUTO", headers: this._hdrs(url) });
+        }
 
-        var videos = [];
-
-        if (epNum !== null) {
-            var v     = Math.floor(Date.now() / 30000);
-            var epData = null;
-            var paths = [
-                "/static/series/" + newsId + ".js?v=" + v,
-                "/data/eps_" + newsId + ".txt?v=" + v,
-                "/ep-data.php?id=" + newsId + "&format=js&v=" + v
-            ];
-            for (var pi = 0; pi < paths.length; pi++) {
-                try {
-                    var r = await new Client().get(
-                        this.baseUrl + paths[pi],
-                        { headers: this._hdrs(url) }
-                    );
-                    if (r.body && r.body.length > 5) {
-                        epData = this._parseJsonOrJs(r.body);
-                        if (epData) break;
-                    }
-                } catch (_) {}
-            }
-            if (epData) await this._extractEpVideos(epData, epNum, videos, url);
-            // Fallback : scrape la page de l'épisode pour les iframes vidéo
-            if (videos.length === 0) {
-                try {
-                    var pageR = await new Client().get(url, { headers: this._hdrs(url) });
-                    var pageBody = pageR.body || "";
-                    var iRe = /(?:data-src|src)\s*=\s*["'](https?:\/\/[^"']{10,400})["']/g;
-                    var im;
-                    while ((im = iRe.exec(pageBody)) !== null) {
-                        var src = im[1];
-                        if (/fsvid|vidzy|uqload|dood|voe\.sx|filmoon|netu|multiup|embed|player|iframe/i.test(src)) {
-                            await this._resolveVideoUrl(src, "AUTO", videos, "Lecteur");
-                        }
-                    }
-                    // Essai via film_api si aucun lecteur trouvé directement
-                    if (videos.length === 0) {
-                        var apiIdM = /film_api\.php\?id=(\d+)/.exec(pageBody)
-                                  || /["']news_id["']\s*:\s*["']?(\d+)/.exec(pageBody);
-                        if (apiIdM) {
-                            try {
-                                var apiR2 = await new Client().get(
-                                    this.baseUrl + "/engine/ajax/film_api.php?id=" + apiIdM[1],
-                                    { headers: this._ajaxHdrs(url) }
-                                );
-                                if (apiR2.body && apiR2.body.length > 5) {
-                                    var api2 = JSON.parse(apiR2.body);
-                                    if (api2 && api2.players) await this._extractFilmVideos(api2.players, videos, url);
-                                }
-                            } catch (_) {}
-                        }
-                    }
-                    // Dernier recours : JSON inline dans la page
-                    if (videos.length === 0) {
-                        var jsonRe2 = /"(?:file|src|url)"\s*:\s*"(https?:\\?\/\\?\/[^"]{10,300})"/g;
-                        var jm2;
-                        while ((jm2 = jsonRe2.exec(pageBody)) !== null) {
-                            var ru = jm2[1].replace(/\\\//g, "/");
-                            if (/\.m3u8|\.mp4/i.test(ru)) {
-                                videos.push({ quality: "AUTO", url: ru, originalUrl: ru,
-                                    isM3U8: ru.indexOf(".m3u8") !== -1,
-                                    headers: { "Referer": url } });
-                            }
-                        }
-                    }
-                } catch (_) {}
-            }
-        } else {
-            // Strategy 1: JSON API
-            try {
-                var fr = await new Client().get(
-                    this.baseUrl + "/engine/ajax/film_api.php?id=" + newsId,
-                    { headers: this._ajaxHdrs(url) }
-                );
-                if (fr.body && fr.body.length > 5) {
-                    var api = JSON.parse(fr.body);
-                    if (api && api.players) await this._extractFilmVideos(api.players, videos, url);
+        // Strategy 3 — iframes (external players)
+        if (videos.length === 0) {
+            const iRe = /<iframe[^>]+src="([^"]+)"/gi;
+            let im;
+            while ((im = iRe.exec(html)) !== null) {
+                const src = im[1];
+                if (src && !src.includes("javascript") && !src.includes("about:")) {
+                    videos.push({ url: src, quality: "AUTO", headers: this._hdrs(url) });
                 }
-            } catch (_) {}
+            }
+        }
 
-            // Strategy 2: scrape the film detail page directly for player iframes
-            if (videos.length === 0) {
+        // Strategy 4 — episode language variants from URL params
+        const epM    = /[?&]ep=(\d+)/.exec(url);
+        const sIdM   = /[?&]s=(\d+)/.exec(url);
+        if (epM && sIdM && videos.length === 0) {
+            const newsId = this._extractNewsId(url, html);
+            if (newsId) {
+                const v = Math.floor(Date.now() / 30000);
                 try {
-                    var pageR = await new Client().get(url, { headers: this._hdrs(url) });
-                    var pageBody = pageR.body || "";
-                    // Extract all iframe/source src URLs that look like video players
-                    var iRe = /(?:data-src|src)\s*=\s*["'](https?:\/\/[^"']{10,400})["']/g;
-                    var im;
-                    while ((im = iRe.exec(pageBody)) !== null) {
-                        var src = im[1];
-                        if (/fsvid|vidzy|uqload|dood|voe\.sx|filmoon|netu|multiup|embed|player/i.test(src)) {
-                            await this._resolveVideoUrl(src, "AUTO", videos, "Player");
-                        }
-                    }
-                    // Also try JSON blobs embedded in the page (some sites inline player data)
-                    if (videos.length === 0) {
-                        var jsonRe = /"(?:file|src|url)"\s*:\s*"(https?:\\?\/\\?\/[^"]{10,300})"/g;
-                        var jm;
-                        while ((jm = jsonRe.exec(pageBody)) !== null) {
-                            var rawUrl = jm[1].replace(/\\\//g, "/");
-                            if (/\.m3u8|\.mp4/i.test(rawUrl)) {
-                                videos.push({ quality: "AUTO", url: rawUrl, originalUrl: rawUrl,
-                                    isM3U8: rawUrl.indexOf(".m3u8") !== -1,
-                                    headers: { "Referer": url } });
-                            }
+                    const epR = await new Client().get(this.baseUrl + "/static/series/" + sIdM[1] + ".js?v=" + v, { headers: this._hdrs(url) });
+                    const epData = JSON.parse(epR.body);
+                    const langs  = ["vf", "vostfr", "vo"];
+                    for (var li = 0; li < langs.length; li++) {
+                        const ld = epData[langs[li]];
+                        if (ld && ld[epM[1]]) {
+                            const streamUrls = Array.isArray(ld[epM[1]]) ? ld[epM[1]] : [ld[epM[1]]];
+                            streamUrls.forEach(su => videos.push({ url: su, quality: langs[li].toUpperCase(), headers: this._hdrs(url) }));
                         }
                     }
                 } catch (_) {}
             }
         }
 
-        return videos;
-    }
-
-    async _resolveVideoUrl(embedUrl, quality, videos, label) {
-        if (!embedUrl) return;
-        var url = embedUrl;
-
-        // Fetch the embed page
-        var body = "";
-        try {
-            var r = await new Client().get(url, { headers: this._hdrs(url) });
-            body = r.body || "";
-        } catch (_) {}
-
-        if (body) {
-            // 1. Direct m3u8/mp4 in raw HTML
-            var m3u8M = /["'`](https?:[^"'`\s]{10,400}\.m3u8[^"'`\s]{0,200})["'`]/.exec(body);
-            if (m3u8M) {
-                videos.push({ quality: label, url: m3u8M[1], originalUrl: url, isM3U8: true, headers: { "Referer": url } });
-                return;
-            }
-            var mp4M = /["'`](https?:[^"'`\s]{10,400}\.mp4[^"'`\s]{0,200})["'`]/.exec(body);
-            if (mp4M) {
-                videos.push({ quality: label, url: mp4M[1], originalUrl: url, isM3U8: false, headers: { "Referer": url } });
-                return;
-            }
-
-            // 2. Unpack eval(function(p,a,c,k,e,d){...}) packed JS and search inside
-            try {
-                var packerRe = /\(function\(p,a,c,k,e(?:,d)?\)\{[\s\S]+?\.split\('\|'\)\)\)/g;
-                var pm;
-                while ((pm = packerRe.exec(body)) !== null) {
-                    try {
-                        var decoded = eval(pm[0]);
-                        if (typeof decoded === "string") {
-                            var dm = /["'`](https?:[^"'`\s]{10,400}\.m3u8[^"'`\s]{0,200})["'`]/.exec(decoded);
-                            if (dm) {
-                                videos.push({ quality: label, url: dm[1], originalUrl: url, isM3U8: true, headers: { "Referer": url } });
-                                return;
-                            }
-                            var dp = /["'`](https?:[^"'`\s]{10,400}\.mp4[^"'`\s]{0,200})["'`]/.exec(decoded);
-                            if (dp) {
-                                videos.push({ quality: label, url: dp[1], originalUrl: url, isM3U8: false, headers: { "Referer": url } });
-                                return;
-                            }
-                        }
-                    } catch (_) {}
-                }
-            } catch (_) {}
-
-            // 3. jwplayer / videojs file/src key
-            var srcM = /(?:"file"|"src"|'file'|'src')\s*:\s*["'`](https?:[^"'`\s]{10,300})["'`]/.exec(body);
-            if (srcM) {
-                var src = srcM[1];
-                videos.push({ quality: label, url: src, originalUrl: url, isM3U8: src.indexOf(".m3u8") !== -1, headers: { "Referer": url } });
-                return;
-            }
-        }
-
-        // 4. Fallback: built-in extractors if available
-        if (url.indexOf("dood") !== -1 || url.indexOf("doood") !== -1) {
-            try {
-                var resolved = await doodExtractor(url, quality);
-                if (resolved && resolved.url) {
-                    videos.push({ quality: label, url: resolved.url, originalUrl: url, isM3U8: resolved.isM3U8 || false, headers: resolved.headers || {} });
-                    return;
-                }
-            } catch (_) {}
-        }
-        if (url.indexOf("voe") !== -1) {
-            try {
-                var resolved = await voeExtractor(url, quality);
-                if (resolved && resolved.url) {
-                    videos.push({ quality: label, url: resolved.url, originalUrl: url, isM3U8: true, headers: resolved.headers || {} });
-                    return;
-                }
-            } catch (_) {}
-        }
-
-        // 5. Last resort: return embed URL for WebView
-        videos.push({ quality: label, url: url, originalUrl: url, isM3U8: false });
-    }
-
-    async _extractFilmVideos(p, videos, refUrl) {
-        var PROVIDERS = [
-            ["vidzy",   "ViDZY"],
-            ["uqload",  "Uqload"],
-            ["dood",    "Dood"],
-            ["voe",     "Voe"],
-            ["filmoon", "Filmoon"],
-            ["sibnet",  "Sibnet"],
-            ["okru",    "Ok.ru"]
-        ];
-        // fsvid / fsvideo / premium skipped — blocked by Cloudflare, causes CF challenge notifs
-        var LANGS = [
-            ["default", "VF"],
-            ["vostfr",  "VOSTFR"],
-            ["vfq",     "VFQ"],
-            ["vff",     "VFF"]
-        ];
-
-        for (var i = 0; i < PROVIDERS.length; i++) {
-            var key   = PROVIDERS[i][0];
-            var label = PROVIDERS[i][1];
-            if (!p[key]) continue;
-            for (var j = 0; j < LANGS.length; j++) {
-                var lk  = LANGS[j][0];
-                var ll  = LANGS[j][1];
-                var src = p[key][lk];
-                if (src) videos.push({
-                    quality: ll,
-                    url: src, originalUrl: src, isM3U8: false,
-                    headers: this._hdrs(refUrl)
-                });
-            }
-        }
-
-        if (p.netu) {
-            for (var j = 0; j < LANGS.length; j++) {
-                var lk  = LANGS[j][0];
-                var ll  = LANGS[j][1];
-                var id  = p.netu[lk];
-                if (id) {
-                    var src = "https://1.multiup.us/player/embed_player.php?vid=" + id + "&autoplay=no";
-                    videos.push({
-                        quality: ll,
-                        url: src, originalUrl: src, isM3U8: false,
-                        headers: this._hdrs(refUrl)
-                    });
-                }
-            }
-        }
-    }
-
-    async _extractEpVideos(epData, epNum, videos, refUrl) {
-        var LANGS    = [["vf","VF"],["vostfr","VOSTFR"],["vo","VO"]];
-        var PNAMES   = {
-            vidzy: "ViDZY", uqload: "Uqload",
-            netu: "Netu", voe: "Voe", dood: "Dood", filmoon: "Filmoon"
-        };
-        // fsvid / premium skipped — Cloudflare blocks + causes CF challenge notifs
-        var CF_SKIP  = { premium: true, fsvid: true, fsvideo: true };
-
-        for (var li = 0; li < LANGS.length; li++) {
-            var lang      = LANGS[li][0];
-            var langLabel = LANGS[li][1];
-            var langData  = epData[lang];
-            if (!langData) continue;
-            var entry = langData[epNum] || langData[String(parseInt(epNum, 10))];
-            if (!entry) continue;
-            var providers = Object.keys(entry);
-            for (var pi = 0; pi < providers.length; pi++) {
-                var provider = providers[pi];
-                if (CF_SKIP[provider]) continue; // skip CF-blocked providers
-                var val      = entry[provider];
-                if (!val) continue;
-                var pLabel = PNAMES[provider] || provider;
-                var src    = val;
-                if (provider === "netu" && val.indexOf("http") !== 0) {
-                    src = "https://1.multiup.us/player/embed_player.php?vid=" + val + "&autoplay=no";
-                }
-                videos.push({
-                    quality: langLabel,
-                    url: src, originalUrl: src, isM3U8: false,
-                    headers: this._hdrs(refUrl)
-                });
-            }
-        }
+        return videos.length > 0 ? videos : [{ url: url, quality: "AUTO", headers: this._hdrs(url) }];
     }
 }
