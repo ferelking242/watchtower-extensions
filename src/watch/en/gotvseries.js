@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// GoTVSeries — extension Watchtower v0.1.2
+// GoTVSeries — extension Watchtower v0.1.3
 //
 // Source  : https://gotvseries.top
 // Content : English TV series — metadata & cast directly from TMDB
@@ -26,7 +26,7 @@ const watchtowerSources = [{
     "iconUrl": "https://gotvseries.top/images/favicon.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.2",
+    "version": "0.1.1",
     "pkgPath": "watch/en/gotvseries.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -38,7 +38,7 @@ const watchtowerSources = [{
     "sourceCodeLanguage": 1
 }];
 
-class DefaultExtension extends MProvider {
+class DefaultExtension extends DefaultExtensionRunner {
     constructor() {
         super();
         this.id = 285745821;
@@ -135,7 +135,7 @@ class DefaultExtension extends MProvider {
 
     async getPopular(page) {
         var p = Math.max(1, page || 1);
-        var r = await this.client.get(
+        var r = await new Client().get(
             this.baseUrl + "/tv?page=" + p,
             { headers: this._hdrs() }
         );
@@ -156,7 +156,7 @@ class DefaultExtension extends MProvider {
     async search(query, page, filters) {
         // 1. Try /search?q=query
         try {
-            var r = await this.client.get(
+            var r = await new Client().get(
                 this.baseUrl + "/search?q=" + encodeURIComponent(query || ""),
                 { headers: this._hdrs(this.baseUrl + "/") }
             );
@@ -165,7 +165,7 @@ class DefaultExtension extends MProvider {
         } catch (_) {}
         // 2. Fallback: fetch TV listing and filter by title
         try {
-            var r2 = await this.client.get(this.baseUrl + "/tv", { headers: this._hdrs() });
+            var r2 = await new Client().get(this.baseUrl + "/tv", { headers: this._hdrs() });
             var all = this._parseCards(r2.body || "");
             var q = (query || "").toLowerCase();
             var filtered = all.filter(function(it) {
@@ -182,7 +182,7 @@ class DefaultExtension extends MProvider {
         var baseSeriesUrl = this._seriesUrl(url);
         var slug = this._slug(url);
 
-        var r = await this.client.get(baseSeriesUrl, {
+        var r = await new Client().get(baseSeriesUrl, {
             headers: this._hdrs(this.baseUrl + "/tv")
         });
         var html = r.body || "";
@@ -268,7 +268,7 @@ class DefaultExtension extends MProvider {
         // Fallback A: if no season cards, scrape the season-1 page for episode links
         if (chapters.length === 0) {
             try {
-                var s1R = await this.client.get(
+                var s1R = await new Client().get(
                     baseSeriesUrl + "/season-1",
                     { headers: this._hdrs(baseSeriesUrl) }
                 );
@@ -368,7 +368,7 @@ class DefaultExtension extends MProvider {
     async _resolveVideoUrl(src, lang, videos, label, depth) {
         if (!src || (depth || 0) > 3) return;
         try {
-            var r = await this.client.get(src, {
+            var r = await new Client().get(src, {
                 headers: {
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36",
                     "Referer": this.baseUrl + "/",
