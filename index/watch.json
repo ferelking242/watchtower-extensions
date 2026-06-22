@@ -4624,7 +4624,7 @@
     "hasCloudflare": false,
     "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/watch/fr/mlpfrance.js",
     "apiUrl": "https://mlp-france.com",
-    "version": "1.3.1",
+    "version": "1.4.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
