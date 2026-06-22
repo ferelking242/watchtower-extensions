@@ -21,20 +21,20 @@ class DefaultExtension extends MProvider {
   async getPopular(page) {
     const from = (page - 1) * 60;
     const url = `https://www.1porn.tv/${from > 0 ? `?from=${from}` : ""}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parseList(res.body, "https://www.1porn.tv");
   }
   get supportsLatest() { return true; }
   async getLatestUpdates(page) {
     const from = (page - 1) * 60;
     const url = `https://www.1porn.tv/new/${from > 0 ? `?from=${from}` : ""}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parseList(res.body, "https://www.1porn.tv");
   }
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
     const url = `https://www.1porn.tv/search/?q=${q}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parseList(res.body, "https://www.1porn.tv");
   }
   _parseList(html, base) {
@@ -60,7 +60,7 @@ class DefaultExtension extends MProvider {
     return { list: items, hasNextPage: hasNext };
   }
   async getDetail(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const doc = new Document(res.body);
     const title = doc.selectFirst("h1")?.text?.trim()
       || doc.selectFirst('meta[property="og:title"]')?.attr("content") || "Unknown";
@@ -70,7 +70,7 @@ class DefaultExtension extends MProvider {
       episodes: [{ name: title, url }] };
   }
   async getVideoList(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const html = res.body;
     const videos = [];
     const rx = /<source\s+src='([^']+\.mp4\/?)'\s+type='video\/mp4'\s+label="([^"]+)"/g;
