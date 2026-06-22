@@ -26,7 +26,7 @@ const watchtowerSources = [{
     "iconUrl": "https://gotvseries.top/images/favicon.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.1",
+    "version": "0.1.3",
     "pkgPath": "watch/en/gotvseries.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
