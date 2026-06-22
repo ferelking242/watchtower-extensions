@@ -4,10 +4,10 @@ const watchtowerSources = [{
     "ids": { "all": 671244578 },
     "baseUrl": "https://www.netflixmirror.com",
     "apiUrl": "https://www.netflixmirror.com",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/all.netflixmirror.png",
+    "iconUrl": "https://www.netflixmirror.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.3",
+    "version": "0.1.4",
     "pkgPath": "anime/src/all/netflixmirror.js"
 }];
 

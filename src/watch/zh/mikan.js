@@ -4,10 +4,10 @@ const watchtowerSources = [{
     "ids": { "zh": 148739201 },
     "baseUrl": "https://mikanani.me",
     "apiUrl": "https://mikanani.me",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/zh.mikan.png",
+    "iconUrl": "https://mikanani.me/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.3",
+    "version": "0.1.4",
     "pkgPath": "anime/src/zh/mikan.js"
 }];
 

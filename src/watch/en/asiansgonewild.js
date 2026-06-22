@@ -3,10 +3,10 @@ const watchtowerSources = [{
   "lang": "en",
   "baseUrl": "https://www.asiansgonewild.com",
   "apiUrl": "",
-  "iconUrl": "https://www.asiansgonewild.com/favicon.ico",
+  "iconUrl": "https://www.google.com/s2/favicons?sz=128&domain=asiansgonewild.com",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "pkgPath": "asiansgonewild/en/en.asiansgonewild.js",
   "notes": "AsiansGoneWild — amateur Asian adult videos",
   "isNsfw": true

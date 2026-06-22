@@ -4,10 +4,10 @@ const watchtowerSources = [{
     "ids": { "en": 319842056 },
     "baseUrl": "https://animeheaven.ru",
     "apiUrl": "https://animeheaven.ru",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/en.animeheaven.png",
+    "iconUrl": "https://animeheaven.ru/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.2",
+    "version": "0.1.3",
     "pkgPath": "anime/src/en/animeheaven.js"
 }];
 

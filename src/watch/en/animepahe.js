@@ -4,10 +4,10 @@ const watchtowerSources = [{
     "ids": { "en": 394179339 },
     "baseUrl": "https://animepahe.ru",
     "apiUrl": "https://animepahe.ru/api",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/en.animepahe.png",
+    "iconUrl": "https://animepahe.ru/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.5",
+    "version": "0.1.6",
     "pkgPath": "anime/src/en/animepahe.js"
 }];
 

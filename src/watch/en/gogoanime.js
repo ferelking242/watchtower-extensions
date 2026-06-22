@@ -4,10 +4,10 @@ const watchtowerSources = [{
     "ids": { "en": 484282699 },
     "baseUrl": "https://gogoanime3.co",
     "apiUrl": "https://gogoanime3.co",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/en.gogoanime.png",
+    "iconUrl": "https://gogoanime3.co/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.4",
+    "version": "0.1.5",
     "pkgPath": "anime/src/en/gogoanime.js"
 }];
 

@@ -4,10 +4,10 @@ const watchtowerSources = [{
     "ids": { "en": 613418059 },
     "baseUrl": "https://aniwatch.to",
     "apiUrl": "https://aniwatch.to",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/en.zoro.png",
+    "iconUrl": "https://aniwatch.to/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.4",
+    "version": "0.1.5",
     "pkgPath": "anime/src/en/zoro.js"
 }];
 

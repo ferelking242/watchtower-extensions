@@ -3,10 +3,10 @@ const watchtowerSources = [{
   "lang": "en",
   "baseUrl": "https://youperv.com",
   "apiUrl": "",
-  "iconUrl": "https://youperv.com/favicon.ico",
+  "iconUrl": "https://www.google.com/s2/favicons?sz=128&domain=youperv.com",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "pkgPath": "watch/nsfw/en/youperv.js",
   "notes": "Adult content (18+) — direct MP4 streaming",
   "isNsfw": true

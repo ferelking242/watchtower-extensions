@@ -4,10 +4,10 @@ const watchtowerSources = [{
     "ids": { "en": 527491836 },
     "baseUrl": "https://9animetv.to",
     "apiUrl": "https://9animetv.to/ajax",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/en.9anime.png",
+    "iconUrl": "https://9animetv.to/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.3",
+    "version": "0.1.4",
     "pkgPath": "anime/src/en/nineanime.js"
 }];
 

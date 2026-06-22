@@ -4,10 +4,10 @@ const watchtowerSources = [{
     "ids": { "en": 782340918 },
     "baseUrl": "https://animesuge.to",
     "apiUrl": "https://animesuge.to/ajax",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/en.animesuge.png",
+    "iconUrl": "https://animesuge.to/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.2",
+    "version": "0.1.3",
     "pkgPath": "anime/src/en/animesuge.js"
 }];
 

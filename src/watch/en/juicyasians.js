@@ -3,10 +3,10 @@ const watchtowerSources = [{
   "lang": "en",
   "baseUrl": "https://www.juicyasians.com",
   "apiUrl": "",
-  "iconUrl": "https://www.juicyasians.com/favicon.ico",
+  "iconUrl": "https://www.google.com/s2/favicons?sz=128&domain=juicyasians.com",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "pkgPath": "juicyasians/en/en.juicyasians.js",
   "notes": "JuicyAsians — Asian amateur and professional porn",
   "isNsfw": true

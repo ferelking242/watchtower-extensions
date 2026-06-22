@@ -4,10 +4,10 @@ const watchtowerSources = [{
     "ids": { "zh": 365809124 },
     "baseUrl": "https://www.yhdmp.cc",
     "apiUrl": "https://www.yhdmp.cc",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/zh.yhdm.png",
+    "iconUrl": "https://www.yhdmp.cc/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.3",
+    "version": "0.1.4",
     "pkgPath": "anime/src/zh/yhdm.js"
 }];
 

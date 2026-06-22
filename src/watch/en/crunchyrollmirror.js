@@ -4,10 +4,10 @@ const watchtowerSources = [{
     "ids": { "en": 204973612 },
     "baseUrl": "https://crunchy.metaoe.live",
     "apiUrl": "https://crunchy.metaoe.live",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/anime/icon/en.crunchyrollmirror.png",
+    "iconUrl": "https://www.crunchyroll.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.3",
+    "version": "0.1.4",
     "pkgPath": "anime/src/en/crunchyrollmirror.js"
 }];
 
