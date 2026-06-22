@@ -4610,5 +4610,48 @@
       "480p",
       "360p"
     ]
+  },
+  {
+    "name": "MLP France",
+    "id": 841627593,
+    "baseUrl": "https://mlp-france.com",
+    "lang": "fr",
+    "typeSource": "single",
+    "iconUrl": "https://mlp-france.com/source/lyra16.png",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/watch/fr/mlpfrance.js",
+    "apiUrl": "https://mlp-france.com",
+    "version": "1.0.0",
+    "isManga": false,
+    "itemType": 1,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Hub FR — My Little Pony (G4/G5/Retro), Star VS, The Owl House, LPS. VF + VOSTFR. MP4 direct.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": true,
+    "videoQualities": [
+      "720p",
+      "480p",
+      "360p"
+    ],
+    "subCategories": [
+      "cartoon",
+      "film",
+      "serie",
+      "animation"
+    ],
+    "langs": [
+      "fr",
+      "en"
+    ]
   }
 ]
