@@ -492,19 +492,63 @@ class DefaultExtension extends MProvider {
 
       getCustomLists() {
             return [
-                { id: "new_titles",     name: "New Titles"     },
-                { id: "recently_added", name: "Recently Added" }
+                { id: "new_titles",      name: "New Titles"             },
+                { id: "recently_added",  name: "Recently Added"          },
+                { id: "recommended",     name: "Recommended"             },
+                { id: "self_published",  name: "Self-Published"          },
+                { id: "seasonal_spring", name: "Seasonal: Spring 2026"   },
             ];
         }
 
         async getCustomList(listId, page) {
-            if (listId === "recently_added") {
-                return this.getLatestUpdates(page);
-            }
-            if (listId === "new_titles") {
-                return this.getNewTitles(page);
-            }
+            if (listId === "recently_added")  return this.getLatestUpdates(page);
+            if (listId === "new_titles")      return this.getNewTitles(page);
+            if (listId === "recommended")     return this.getRecommended(page);
+            if (listId === "self_published")  return this.getSelfPublished(page);
+            if (listId === "seasonal_spring") return this.getSeasonalSpring(page);
             return this.getPopular(page);
+        }
+
+        async getRecommended(page) {
+            const offset = 20 * (page - 1);
+            const url = `${this.source.apiUrl}/manga`
+                + `?limit=20&offset=${offset}`
+                + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
+                + `&includes[]=cover_art`
+                + this.contentRatingParams()
+                + this.originalLanguageParams()
+                + `&order[rating]=desc`
+                + `&hasAvailableChapters=true`;
+            const res = await new Client().get(url, this.getHeaders());
+            return this.mangaRes(res.body);
+        }
+
+        async getSelfPublished(page) {
+            const offset = 20 * (page - 1);
+            const url = `${this.source.apiUrl}/manga`
+                + `?limit=20&offset=${offset}`
+                + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
+                + `&includes[]=cover_art`
+                + this.contentRatingParams()
+                + `&publicationDemographic[]=none`
+                + `&order[followedCount]=desc`;
+            const res = await new Client().get(url, this.getHeaders());
+            return this.mangaRes(res.body);
+        }
+
+        async getSeasonalSpring(page) {
+            const offset = 20 * (page - 1);
+            const url = `${this.source.apiUrl}/manga`
+                + `?limit=20&offset=${offset}`
+                + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
+                + `&includes[]=cover_art`
+                + this.contentRatingParams()
+                + this.originalLanguageParams()
+                + `&year=2026`
+                + `&order[followedCount]=desc`
+                + `&hasAvailableChapters=true`;
+            const res = await new Client().get(url, this.getHeaders());
+            return this.mangaRes(res.body);
         }
 
         async getNewTitles(page) {
