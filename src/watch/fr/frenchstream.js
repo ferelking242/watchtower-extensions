@@ -30,7 +30,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/Watchtower-extensions/main/extensions/watch/icon/fr.frenchstream.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.4.8",
+    "version": "0.4.9",
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -769,7 +769,11 @@ class DefaultExtension extends MProvider {
                 var lk  = LANGS[j][0];
                 var ll  = LANGS[j][1];
                 var src = p[key][lk];
-                if (src) await this._resolveVideoUrl(src, ll, videos, label + " " + ll);
+                if (src) videos.push({
+                    quality: ll,
+                    url: src, originalUrl: src, isM3U8: false,
+                    headers: this._hdrs(refUrl)
+                });
             }
         }
 
@@ -780,7 +784,11 @@ class DefaultExtension extends MProvider {
                 var id  = p.netu[lk];
                 if (id) {
                     var src = "https://1.multiup.us/player/embed_player.php?vid=" + id + "&autoplay=no";
-                    await this._resolveVideoUrl(src, ll, videos, "Netu " + ll);
+                    videos.push({
+                        quality: ll,
+                        url: src, originalUrl: src, isM3U8: false,
+                        headers: this._hdrs(refUrl)
+                    });
                 }
             }
         }
@@ -813,7 +821,11 @@ class DefaultExtension extends MProvider {
                 if (provider === "netu" && val.indexOf("http") !== 0) {
                     src = "https://1.multiup.us/player/embed_player.php?vid=" + val + "&autoplay=no";
                 }
-                await this._resolveVideoUrl(src, langLabel, videos, pLabel + " " + langLabel);
+                videos.push({
+                    quality: langLabel,
+                    url: src, originalUrl: src, isM3U8: false,
+                    headers: this._hdrs(refUrl)
+                });
             }
         }
     }
