@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "iconUrl": "https://9animetv.to/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.4",
+      "version": "0.1.5",
       "pkgPath": "watch/en/nineanimetv.js",
       "notes": "9AnimeTv — Anime streaming (restored)",
       "isNsfw": false

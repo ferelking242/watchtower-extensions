@@ -9,7 +9,7 @@ const watchtowerSources = [
     "iconUrl":
       "https://www.google.com/s2/favicons?sz=128&domain=https://sudatchi.com",
     "typeSource": "single",
-    "version": "1.1.3",
+    "version": "1.1.4",
     "dateFormat": "",
     "dateFormatLocale": "",
     "itemType": 1,

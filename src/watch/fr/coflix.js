@@ -11,7 +11,7 @@ const watchtowerSources = [{
     "iconUrl": "https://coflix.band/wp-content/uploads/2022/10/cropped-coflix-180x180-1-150x150.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "pkgPath": "watch/fr/coflix.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,

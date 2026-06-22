@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.1porn.tv/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "pkgPath": "watch/nsfw/en/1porntv.js",
   "notes": "Adult content (18+) — multi-quality MP4",
   "isNsfw": true

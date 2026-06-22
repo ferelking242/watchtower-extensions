@@ -9,7 +9,7 @@ const watchtowerSources = [
       "https://www.google.com/s2/favicons?sz=256&domain=https://animeyy.com",
     "typeSource": "multi",
     "itemType": 1,
-    "version": "1.1.3",
+    "version": "1.1.4",
     "pkgPath": "anime/src/en/animez.js",
   },
 ];

@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.pornhub.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "pornhub/en/en.pornhub.js",
     "notes": "Adult content (18+) — ZeusDL powered streaming",
     "isNsfw": true
