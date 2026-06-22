@@ -37,10 +37,8 @@ class DefaultExtension extends MProvider {
 
   async requestApi(slug) {
     var url = BASE_URL + "/api" + slug;
-
     var res = await new Client().get(url, this.getHeaders());
-
-    return JSON.parse(res.body);
+    try { return JSON.parse(res.body); } catch(e) { return {}; }
   }
 
   async formListForAnilist(animes) {
@@ -105,46 +103,32 @@ class DefaultExtension extends MProvider {
   }
 
   async getPopular(page) {
-    var pageProps = await this.requestApi("/fetchHomeData");
-    //  var  = extract
-    var latestEpisodes = await this.formList(pageProps.latestEpisodes);
-    var latestAnimes = await this.formListForAnilist(pageProps.ongoingAnimes);
-    var animeSpotlight = await this.formList(pageProps.AnimeSpotlight);
-    var list = [...animeSpotlight, ...latestAnimes, ...latestEpisodes];
-    return {
-      list,
-      hasNextPage: false,
-    };
+    try {
+      var pageProps = await this.requestApi("/fetchHomeData");
+      var latestEpisodes = await this.formList(pageProps.latestEpisodes || []);
+      var latestAnimes = await this.formListForAnilist(pageProps.ongoingAnimes || []);
+      var animeSpotlight = await this.formList(pageProps.AnimeSpotlight || []);
+      var list = [...animeSpotlight, ...latestAnimes, ...latestEpisodes];
+      return { list, hasNextPage: false };
+    } catch(e) { return { list: [], hasNextPage: false }; }
   }
-  get supportsLatest() {
-    throw new Error("supportsLatest not implemented");
-  }
+  get supportsLatest() { return true; }
   async getLatestUpdates(page) {
-    var pageProps = await this.requestApi("/fetchHomeData");
-    var list = await this.formList(pageProps.latestEpisodes);
-
-    return {
-      list,
-      hasNextPage: false,
-    };
+    try {
+      var pageProps = await this.requestApi("/fetchHomeData");
+      var list = await this.formList(pageProps.latestEpisodes || []);
+      return { list, hasNextPage: false };
+    } catch(e) { return { list: [], hasNextPage: false }; }
   }
   async search(query, page, filters) {
-    var body = await this.requestApi("/fetchAnime");
-
-    var url = BASE_URL + "/api/fetchAnime";
-
-    var res = await new Client().post(url, this.getHeaders(), {
-      "query": query,
-    });
-    var body = JSON.parse(res.body);
-
-    var list = await this.formListForAnilist(body.results);
-    var hasNextPage = body.pages > page ? true : false;
-
-    return {
-      list,
-      hasNextPage,
-    };
+    try {
+      var url = BASE_URL + "/api/fetchAnime";
+      var res = await new Client().post(url, this.getHeaders(), { "query": query });
+      var body = JSON.parse(res.body);
+      var list = await this.formListForAnilist(body.results || []);
+      var hasNextPage = body.pages > page;
+      return { list, hasNextPage };
+    } catch(e) { return { list: [], hasNextPage: false }; }
   }
 
   statusCode(status) {
@@ -206,13 +190,8 @@ class DefaultExtension extends MProvider {
     return { name, description, status, imageUrl, genre, chapters, link };
   }
   // For novel html content
-  async getHtmlContent(url) {
-    throw new Error("getHtmlContent not implemented");
-  }
-  // Clean html up for reader
-  async cleanHtmlContent(html) {
-    throw new Error("cleanHtmlContent not implemented");
-  }
+  async getHtmlContent(url) { return ""; }
+  async cleanHtmlContent(html) { return html || ""; }
 
   async extractStreams(url) {
     const response = await new Client().get(url);
@@ -280,13 +259,8 @@ class DefaultExtension extends MProvider {
 
     return streams;
   }
-  // For manga chapter pages
-  async getPageList() {
-    throw new Error("getPageList not implemented");
-  }
-  getFilterList() {
-    throw new Error("getFilterList not implemented");
-  }
+  async getPageList() { return []; }
+  getFilterList() { return []; }
 
   getSourcePreferences() {
     return [

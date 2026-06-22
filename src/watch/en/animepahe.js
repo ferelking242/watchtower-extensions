@@ -35,33 +35,39 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        const res = await new Client().get(
-            `${this.source.apiUrl}?m=airing&page=${page}&sort=anime_score`,
-            this.getHeaders()
-        );
-        const data = JSON.parse(res.body);
-        const list = (data.data || []).map(e => this._toAnime(e));
-        return { list, hasNextPage: !!data.next_page_url };
+        try {
+            const res = await new Client().get(
+                `${this.source.apiUrl}?m=airing&page=${page}&sort=anime_score`,
+                this.getHeaders()
+            );
+            const data = JSON.parse(res.body);
+            const list = (data.data || []).map(e => this._toAnime(e));
+            return { list, hasNextPage: !!data.next_page_url };
+        } catch(e) { return { list: [], hasNextPage: false }; }
     }
 
     async getLatestUpdates(page) {
-        const res = await new Client().get(
-            `${this.source.apiUrl}?m=airing&page=${page}`,
-            this.getHeaders()
-        );
-        const data = JSON.parse(res.body);
-        const list = (data.data || []).map(e => this._toAnime(e));
-        return { list, hasNextPage: !!data.next_page_url };
+        try {
+            const res = await new Client().get(
+                `${this.source.apiUrl}?m=airing&page=${page}`,
+                this.getHeaders()
+            );
+            const data = JSON.parse(res.body);
+            const list = (data.data || []).map(e => this._toAnime(e));
+            return { list, hasNextPage: !!data.next_page_url };
+        } catch(e) { return { list: [], hasNextPage: false }; }
     }
 
     async search(query, page, filterList) {
-        const res = await new Client().get(
-            `${this.source.apiUrl}?m=search&q=${encodeURIComponent(query)}&page=${page}`,
-            this.getHeaders()
-        );
-        const data = JSON.parse(res.body);
-        const list = (data.data || []).map(e => this._toAnime(e));
-        return { list, hasNextPage: !!data.next_page_url };
+        try {
+            const res = await new Client().get(
+                `${this.source.apiUrl}?m=search&q=${encodeURIComponent(query)}&page=${page}`,
+                this.getHeaders()
+            );
+            const data = JSON.parse(res.body);
+            const list = (data.data || []).map(e => this._toAnime(e));
+            return { list, hasNextPage: !!data.next_page_url };
+        } catch(e) { return { list: [], hasNextPage: false }; }
     }
 
     async getDetail(url) {
@@ -82,7 +88,7 @@ class DefaultExtension extends MProvider {
             `${this.source.apiUrl}?m=release&id=${session}&sort=episode_asc&page=1`,
             this.getHeaders()
         );
-        const epData = JSON.parse(epRes.body);
+        let epData; try { epData = JSON.parse(epRes.body); } catch(e) { epData = { last_page: 1, data: [] }; }
         const totalPages = epData.last_page || 1;
 
         const episodes = [];
@@ -102,7 +108,7 @@ class DefaultExtension extends MProvider {
                 `${this.source.apiUrl}?m=release&id=${session}&sort=episode_asc&page=${p}`,
                 this.getHeaders()
             );
-            processEpPage(JSON.parse(pRes.body));
+            try { processEpPage(JSON.parse(pRes.body)); } catch(e) {}
         }
 
         return { name, description, imageUrl, genres: [], status: 0, chapters: episodes };

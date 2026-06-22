@@ -53,7 +53,7 @@ class DefaultExtension extends MProvider {
     var url = baseUrl + "/api/show" + slug;
     var hdr = this.getHeaders(url);
     var res = await new Client().get(url, hdr);
-    return JSON.parse(res.body);
+    try { return JSON.parse(res.body); } catch(e) { return {}; }
   }
 
   getPoster(baseUrl, type, posterSlug) {

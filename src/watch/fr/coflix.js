@@ -80,27 +80,27 @@ class DefaultExtension extends MProvider {
 
     async getPopular(page) {
         const url = `${this.baseUrl}/film/page/${page}/`;
-        const res = await new Client().get(url, { headers: this._hdrs() });
+        const res = await new Client().get(url, this._hdrs());
         const items = this._parseCards(res.body);
         return { list: items, hasNextPage: items.length >= 10 };
     }
 
     async getLatestUpdates(page) {
         const url = page <= 1 ? this.baseUrl + "/" : `${this.baseUrl}/page/${page}/`;
-        const res = await new Client().get(url, { headers: this._hdrs() });
+        const res = await new Client().get(url, this._hdrs());
         const items = this._parseCards(res.body);
         return { list: items, hasNextPage: items.length >= 10 };
     }
 
     async search(query, page, filterList) {
         const url = `${this.baseUrl}/?s=${encodeURIComponent(query)}&paged=${page}`;
-        const res = await new Client().get(url, { headers: this._hdrs() });
+        const res = await new Client().get(url, this._hdrs());
         const items = this._parseCards(res.body);
         return { list: items, hasNextPage: items.length >= 10 };
     }
 
     async getDetail(url) {
-        const res = await new Client().get(url, { headers: this._hdrs(url) });
+        const res = await new Client().get(url, this._hdrs(url));
         const html = res.body;
 
         const nameM = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
@@ -141,7 +141,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getVideoList(url) {
-        const res = await new Client().get(url, { headers: this._hdrs(url) });
+        const res = await new Client().get(url, this._hdrs(url));
         const html = res.body;
         const videos = [];
 

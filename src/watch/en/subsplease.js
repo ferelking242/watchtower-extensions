@@ -36,7 +36,7 @@ class DefaultExtension extends MProvider {
   }
 
   getHeaders(url) {
-    throw new Error("getHeaders not implemented");
+    return { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36" };
   }
   getBaseUrl() {
     return BASE_URL;
@@ -46,7 +46,7 @@ class DefaultExtension extends MProvider {
     var apiUrl = this.source.apiUrl;
     var api = `${apiUrl}/?${slug}`;
     var res = await new Client().get(api);
-    return JSON.parse(res.body) || {};
+    try { return JSON.parse(res.body) || {}; } catch(e) { return {}; }
   }
 
   async animeList(slug) {
@@ -140,9 +140,7 @@ class DefaultExtension extends MProvider {
     return streams;
   }
 
-  getFilterList() {
-    throw new Error("getFilterList not implemented");
-  }
+  getFilterList() { return []; }
 
   getSourcePreferences() {
     return [

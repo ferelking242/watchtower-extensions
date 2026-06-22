@@ -16,6 +16,8 @@ const watchtowerSources = [
 
   // Authors: - Swakshan (updated episode detection)
 
+  const BASE_URL = "https://www.animegg.org";
+
   class DefaultExtension extends MProvider {
     constructor() {
       super();

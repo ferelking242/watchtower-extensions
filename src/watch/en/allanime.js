@@ -23,7 +23,10 @@ class DefaultExtension extends MProvider {
     }
     async getPopular(page) {
         const encodedGql = `?variables=%0A%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%22type%22:%20%22anime%22,%0A%20%20%20%20%20%20%20%20%20%20%22size%22:%2026,%0A%20%20%20%20%20%20%20%20%20%20%22dateRange%22:%201,%0A%20%20%20%20%20%20%20%20%20%20%22page%22:%20${page}%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20&query=%0A%20%20%20%20%20%20%20%20query($type:%20VaildPopularTypeEnumType!,%20$size:%20Int!,%20$dateRange:%20Int,%20$page:%20Int)%20%7B%0A%20%20%20%20%20%20%20%20%20%20queryPopular(type:%20$type,%20size:%20$size,%20dateRange:%20$dateRange,%20page:%20$page)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20recommendations%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20anyCard%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20_id%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20name%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20englishName%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20nativeName%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20thumbnail%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20slugTime%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20`
-        const resList = JSON.parse(await this.request(encodedGql)).data.queryPopular.recommendations.filter(e => e.anyCard !== null);
+        let resList;
+        try {
+            resList = JSON.parse(await this.request(encodedGql)).data.queryPopular.recommendations.filter(e => e.anyCard !== null);
+        } catch(e) { return { list: [], hasNextPage: false }; }
         const preferences = new SharedPreferences();
         const titleStyle = preferences.get("preferred_title_style");
         const list = [];
@@ -56,7 +59,10 @@ class DefaultExtension extends MProvider {
     async search(query, page, filters) {
         query = query.replace(" ", "%20");
         const encodedGql = `?variables=%0A%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%22search%22:%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%22query%22:%20%22${query}%22,%0A%20%20%20%20%20%20%20%20%20%20%20%20%22allowAdult%22:%20false,%0A%20%20%20%20%20%20%20%20%20%20%20%20%22allowUnknown%22:%20false%0A%20%20%20%20%20%20%20%20%20%20%7D,%0A%20%20%20%20%20%20%20%20%20%20%22countryOrigin%22:%20%22ALL%22,%0A%20%20%20%20%20%20%20%20%20%20%22limit%22:%2026,%0A%20%20%20%20%20%20%20%20%20%20%22page%22:%20${page}%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20&query=%0A%20%20%20%20%20%20%20%20query($search:%20SearchInput,%20$limit:%20Int,%20$countryOrigin:%20VaildCountryOriginEnumType,%20$page:%20Int)%20%7B%0A%20%20%20%20%20%20%20%20%20%20shows(search:%20$search,%20limit:%20$limit,%20countryOrigin:%20$countryOrigin,%20page:%20$page)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20edges%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20_id%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20name%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20nativeName%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20englishName%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20thumbnail%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20slugTime%0A%20%20%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20`;
-        const resList = JSON.parse(await this.request(encodedGql)).data.shows.edges;
+        let resList;
+        try {
+            resList = JSON.parse(await this.request(encodedGql)).data.shows.edges;
+        } catch(e) { return { list: [], hasNextPage: false }; }
         const preferences = new SharedPreferences();
         const titleStyle = preferences.get("preferred_title_style");
         const list = [];
@@ -85,7 +91,11 @@ class DefaultExtension extends MProvider {
     async getDetail(url) {
         const id = url.substringAfter('bangumi/').substringBefore('/');
         const encodedGql = `?variables=%0A%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%22id%22:%20%22${id}%22%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20&query=%0A%20%20%20%20%20%20%20%20query($id:%20String!)%20%7B%0A%20%20%20%20%20%20%20%20%20%20show(_id:%20$id)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20thumbnail%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20description%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20type%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20season%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20score%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20genres%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20status%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20studios%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20availableEpisodesDetail%0A%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20`;
-        const show = JSON.parse(await this.request(encodedGql)).data.show;
+        let show;
+        try {
+            show = JSON.parse(await this.request(encodedGql)).data.show;
+            if (!show) return { description: "", author: "", status: 5, genre: [], episodes: [] };
+        } catch(e) { return { description: "", author: "", status: 5, genre: [], episodes: [] }; }
         const genre = show.genres || [];
         const status = this.parseStatus(show.status);
         const author = show.studios.length > 0 ? show.studios[0] : "";
@@ -166,10 +176,14 @@ class DefaultExtension extends MProvider {
             return [];
         }
         const encodedGql = `?variables=%0A%20%20%20%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20%20%20%20%22showId%22:%20%22${ep.showId}%22,%0A%20%20%20%20%20%20%20%20%20%20%22episodeString%22:%20%22${ep.episodeString}%22,%0A%20%20%20%20%20%20%20%20%20%20%22translationType%22:%20%22${translationType[0]}%22%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20&query=%0A%20%20%20%20%20%20%20%20query(%0A%20%20%20%20%20%20%20%20%20%20$showId:%20String!%0A%20%20%20%20%20%20%20%20%20%20$episodeString:%20String!%0A%20%20%20%20%20%20%20%20%20%20$translationType:%20VaildTranslationTypeEnumType!%0A%20%20%20%20%20%20%20%20)%20%7B%0A%20%20%20%20%20%20%20%20%20%20episode(%0A%20%20%20%20%20%20%20%20%20%20%20%20showId:%20$showId%0A%20%20%20%20%20%20%20%20%20%20%20%20episodeString:%20$episodeString%0A%20%20%20%20%20%20%20%20%20%20%20%20translationType:%20$translationType%0A%20%20%20%20%20%20%20%20%20%20)%20%7B%0A%20%20%20%20%20%20%20%20%20%20%20%20sourceUrls%0A%20%20%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20%7D%0A%20%20%20%20%20%20%20%20`;
-        const videoJson = JSON.parse(await this.request(encodedGql));
+        let videoJson;
+        try {
+            videoJson = JSON.parse(await this.request(encodedGql));
+        } catch(e) { return []; }
+        if (!videoJson || !videoJson.data || !videoJson.data.episode) return [];
         const videos = [];
         const altHosterSelection = preferences.get('alt_hoster_selection1');
-        for (const video of videoJson.data.episode.sourceUrls) {
+        for (const video of (videoJson.data.episode.sourceUrls || [])) {
             const videoUrl = this.decryptSource(video.sourceUrl).trim();
             if (!this.isValidUrl(videoUrl))
                 continue;

@@ -49,11 +49,12 @@ class DefaultExtension extends MProvider {
         });
       });
     } else {
-      jsonData.data.forEach((item) => {
+      (jsonData.data || []).forEach((item) => {
+        if (!item) return;
         list.push({
-          "name": item.title,
-          "link": item.link,
-          "imageUrl": item.posterImage.original,
+          "name": item.title || "",
+          "link": item.link || "",
+          "imageUrl": (item.posterImage && item.posterImage.original) ? item.posterImage.original : "",
         });
       });
     }
@@ -110,7 +111,7 @@ class DefaultExtension extends MProvider {
     details.status = this.statusCode(jsonData.status);
     var id = jsonData._id;
     var epAPI = await this.requestAPI(`anime/${id}/episode`);
-    epAPI.data.forEach((ep) => {
+    (epAPI.data || []).forEach((ep) => {
       var epName = `E${ep.number}: ${ep.title}`;
       var epUrl = `${ep.uid}?origin=${ep.origin}`;
       chapters.push({ name: epName, url: epUrl });

@@ -40,7 +40,7 @@ class DefaultExtension extends MProvider {
             `${this.source.apiUrl}/content/v2/discover/browse?n=32&start=${(page - 1) * 32}&sort_by=popularity&content_type=series&locale=en-US`,
             this.getHeaders()
         );
-        const data = JSON.parse(res.body);
+        let data; try { data = JSON.parse(res.body); } catch(e) { data = {}; }
         const items = data.data || data.items || [];
         return {
             list: items.map(m => this._toAnime(m.series_metadata || m)),
@@ -53,7 +53,7 @@ class DefaultExtension extends MProvider {
             `${this.source.apiUrl}/content/v2/discover/browse?n=32&start=${(page - 1) * 32}&sort_by=newly_added&content_type=series&locale=en-US`,
             this.getHeaders()
         );
-        const data = JSON.parse(res.body);
+        let data; try { data = JSON.parse(res.body); } catch(e) { data = {}; }
         const items = data.data || data.items || [];
         return {
             list: items.map(m => this._toAnime(m.series_metadata || m)),
@@ -66,7 +66,7 @@ class DefaultExtension extends MProvider {
             `${this.source.apiUrl}/content/v2/discover/search?q=${encodeURIComponent(query)}&n=32&type=series&locale=en-US`,
             this.getHeaders()
         );
-        const data = JSON.parse(res.body);
+        let data; try { data = JSON.parse(res.body); } catch(e) { data = {}; }
         const items = (data.data || []).flatMap(d => d.items || []);
         return {
             list: items.map(m => this._toAnime(m.series_metadata || m)),
@@ -81,8 +81,10 @@ class DefaultExtension extends MProvider {
             new Client().get(`${this.source.apiUrl}/content/v2/cms/series/${seriesId}/seasons?locale=en-US`, this.getHeaders())
         ]);
 
-        const meta = JSON.parse(metaRes.body).data?.[0] || {};
-        const seasons = JSON.parse(epRes.body).data || [];
+        let metaBody; try { metaBody = JSON.parse(metaRes.body); } catch(e) { metaBody = {}; }
+        let epBody; try { epBody = JSON.parse(epRes.body); } catch(e) { epBody = {}; }
+        const meta = metaBody.data?.[0] || {};
+        const seasons = epBody.data || [];
 
         const episodes = [];
         for (const season of seasons) {
@@ -90,7 +92,8 @@ class DefaultExtension extends MProvider {
                 `${this.source.apiUrl}/content/v2/cms/seasons/${season.id}/episodes?locale=en-US`,
                 this.getHeaders()
             );
-            const sEps = JSON.parse(sEpRes.body).data || [];
+            let sEpBody; try { sEpBody = JSON.parse(sEpRes.body); } catch(e) { sEpBody = {}; }
+            const sEps = sEpBody.data || [];
             sEps.forEach(ep => {
                 episodes.push({
                     name: `S${season.season_number || ""}E${ep.episode_number || "?"} - ${ep.title || ""}`,
@@ -116,7 +119,7 @@ class DefaultExtension extends MProvider {
             `${this.source.apiUrl}/content/v2/cms/videos/${epId}/streams?locale=en-US`,
             this.getHeaders()
         );
-        const data = JSON.parse(res.body);
+        let data; try { data = JSON.parse(res.body); } catch(e) { data = {}; }
         const videos = [];
 
         const streams = data.streams?.adaptive_hls || data.streams?.adaptive_dash || {};

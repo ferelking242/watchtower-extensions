@@ -45,16 +45,20 @@ class DefaultExtension extends MProvider {
 
     var animes = body.select("li.TPostMv");
     animes.forEach((anime) => {
-      var link = anime.selectFirst("a").getHref;
-      var name = anime.selectFirst("h2.Title").text;
-      var imageUrl = this.getBaseUrl() + "/" + anime.selectFirst("img").getSrc;
-
-      list.push({ name, link, imageUrl });
+      try {
+        var aEl = anime.selectFirst("a");
+        if (!aEl) return;
+        var link = aEl.getHref;
+        var nameEl = anime.selectFirst("h2.Title");
+        var name = nameEl ? nameEl.text : (aEl.text || "");
+        var imgEl = anime.selectFirst("img");
+        var imageUrl = imgEl ? (this.getBaseUrl() + "/" + imgEl.getSrc) : "";
+        if (name && link) list.push({ name, link, imageUrl });
+      } catch(e) {}
     });
 
     var paginations = body.select(".pagination > li");
-    hasNextPage =
-      paginations[paginations.length - 1].text == "Last" ? true : false;
+    hasNextPage = paginations.length > 0 && paginations[paginations.length - 1].text === "Last";
 
     return { list, hasNextPage };
   }
@@ -112,9 +116,7 @@ class DefaultExtension extends MProvider {
     var slug = `/?act=search&f[status]=all&f[sortby]=${sortBy}&&pageNum=${page}`;
     return await this.page(slug);
   }
-  get supportsLatest() {
-    throw new Error("supportsLatest not implemented");
-  }
+  get supportsLatest() { return true; }
   async getLatestUpdates(page) {
     var sortBy = this.sortByPref("animez_pref_latest_section");
     var slug = `/?act=search&f[status]=all&f[sortby]=${sortBy}&&pageNum=${page}`;
@@ -127,15 +129,15 @@ class DefaultExtension extends MProvider {
   async getDetail(url) {
     var baseUrl = this.getBaseUrl();
     if (url.includes(baseUrl)) url = url.replace(baseUrl, "");
-    var link = +url;
+    var link = url;
     var body = await this.request(url);
     var name = body.selectFirst("#title-detail-manga").text;
     var animeId = body.selectFirst("#title-detail-manga").attr("data-manga");
     var genre = [];
-    body
-      .select("li.AAIco-adjust")[3]
-      .select("a")
-      .forEach((g) => genre.push(g.text));
+    var genreList = body.select("li.AAIco-adjust");
+    if (genreList && genreList.length > 3) {
+      genreList[3].select("a").forEach((g) => genre.push(g.text));
+    }
     var description = body.selectFirst("#summary_shortened").text;
 
     var chapters = [];
@@ -231,7 +233,9 @@ class DefaultExtension extends MProvider {
     var hdr = this.getHeaders();
     for (var slug of linkSlugs) {
       var body = await this.request(slug);
-      var iframeSrc = body.selectFirst("iframe").getSrc;
+      var iframeEl = body.selectFirst("iframe");
+      if (!iframeEl) continue;
+      var iframeSrc = iframeEl.getSrc;
       var streamLink = iframeSrc
         .replace("/embed/", "/anime/")
         .replace("\n", "");

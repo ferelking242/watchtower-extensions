@@ -61,7 +61,7 @@ const watchtowerSources = [{
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
       const html = res.body;
       const videos = [];
-      const m3u8Rx = /(['"](https?://[^'"]+.m3u8[^'"]*)['"]s*(?:,s*'([^']+)')?)/g;
+      const m3u8Rx = /(["'](https?:\/\/[^"']+\.m3u8[^"'"]*)["']\s*(?:,\s*'([^']+)')?)/g;
       let m;
       while ((m = m3u8Rx.exec(html)) !== null) {
         videos.push({ url: m[2], quality: (m[3] || "HLS") + " · ZeusDL", originalUrl: m[2], headers: this.getHeaders(url) });

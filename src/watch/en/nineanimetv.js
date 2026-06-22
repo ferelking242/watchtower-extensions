@@ -24,7 +24,7 @@ const watchtowerSources = [{
 
       get supportsLatest() { return true; }
 
-      async getPopularList(page) {
+      async getPopular(page) {
           const url = "https://9animetv.to/home";
           const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
@@ -41,7 +41,7 @@ const watchtowerSources = [{
           return { list: items, hasNextPage: false };
       }
 
-      async getLatestList(page) {
+      async getLatestUpdates(page) {
           const url = `https://9animetv.to/recently-updated?page=${page}`;
           const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
@@ -59,7 +59,7 @@ const watchtowerSources = [{
           return { list: items, hasNextPage: hasNext };
       }
 
-      async getSearchList(query, page, filters) {
+      async search(query, page, filters) {
           const url = `https://9animetv.to/search?keyword=${encodeURIComponent(query)}&page=${page}`;
           const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
