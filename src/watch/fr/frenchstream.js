@@ -213,12 +213,43 @@ class DefaultExtension extends MProvider {
     // les films populaires comme contenu de découverte.
     // Retourne un objet MPages : { list: MManga[], hasNextPage: bool }
     async getForYou(page) {
-        // Déléguer à getPopular — même endpoint, même parsing.
-        // Une future version pourrait utiliser les préférences utilisateur
-        // (genre, langue VF/VOSTFR) pour filtrer le résultat.
-        return this.getPopular(page);
-    }
+          // ─── Accueil enrichi ──────────────────────────────────────────────────
+          // Page 1 : mélange homepage (contenus vedettes/récents) + catalogue films
+          //          + tentative catalogue séries — dédupliqués par URL.
+          // Pages 2+ : pagination de la racine du site (mêmes résultats que
+          //            getLatestUpdates) pour un défilement infini cohérent.
+          if (page <= 1) {
+              var seen = {};
+              var list = [];
+              var self = this;
 
+              function addItems(html) {
+                  self._parseItems(html).forEach(function(item) {
+                      if (!seen[item.link]) { seen[item.link] = true; list.push(item); }
+                  });
+              }
+
+              try {
+                  var homeR  = await new Client().get(this.baseUrl + "/",              { headers: this._hdrs() });
+                  var filmsR = await new Client().get(this.baseUrl + "/films/page/1/", { headers: this._hdrs() });
+                  addItems(homeR.body);
+                  addItems(filmsR.body);
+              } catch (_) {
+                  return this.getLatestUpdates(1);
+              }
+
+              // Tenter le catalogue séries (URL peut varier selon version du site)
+              try {
+                  var seriesR = await new Client().get(this.baseUrl + "/series/page/1/", { headers: this._hdrs() });
+                  addItems(seriesR.body);
+              } catch (_) { /* silencieux — URL optionnelle */ }
+
+              return { list: list.slice(0, 36), hasNextPage: list.length >= 10 };
+          }
+          // Pages 2+ : dernières sorties paginées
+          return this.getLatestUpdates(page - 1);
+      }
+  
     // ─── getComments ─────────────────────────────────────────────────────────
     // Appelé par l'onglet « Commentaires » dans Watchtower.
     // Tente l'endpoint AJAX EngineScript ; retourne liste vide si indisponible.
