@@ -250,6 +250,51 @@ class DefaultExtension extends MProvider {
           return this.getLatestUpdates(page - 1);
       }
   
+    // ─── getCustomLists / getCustomList ──────────────────────────────────────
+    // Sections affichées sur l'écran d'accueil Watch de FrenchStream.
+    getCustomLists() {
+        return [
+            { id: "films",         name: "Films Populaires"   },
+            { id: "series",        name: "Séries Populaires"  },
+            { id: "films_recent",  name: "Films Récents"      },
+            { id: "series_recent", name: "Séries Récentes"    },
+            { id: "animation",     name: "Animation"          },
+        ];
+    }
+
+    async getCustomList(listId, page) {
+        var url;
+        switch (listId) {
+            case "films":
+                url = this.baseUrl + "/films/page/" + page + "/";
+                break;
+            case "series":
+                url = this.baseUrl + "/series/page/" + page + "/";
+                break;
+            case "films_recent":
+                url = this.baseUrl + "/films/page/" + page + "/?orderby=date";
+                break;
+            case "series_recent":
+                url = this.baseUrl + "/series/page/" + page + "/?orderby=date";
+                break;
+            case "animation":
+                url = this.baseUrl + "/xfsearch/genre/animation/page/" + page + "/";
+                break;
+            default:
+                return this.getPopular(page);
+        }
+        try {
+            var r = await new Client().get(url, { headers: this._hdrs() });
+            var items = this._parseItems(r.body);
+            if (items.length === 0 && listId.startsWith("series")) {
+                return this.getLatestUpdates(page);
+            }
+            return { list: items, hasNextPage: items.length >= 10 };
+        } catch (_) {
+            return this.getPopular(page);
+        }
+    }
+
     // ─── getComments ─────────────────────────────────────────────────────────
     // Appelé par l'onglet « Commentaires » dans Watchtower.
     // Tente l'endpoint AJAX EngineScript ; retourne liste vide si indisponible.
