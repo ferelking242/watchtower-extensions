@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://mlp-france.com/source/lyra16.png",
       "typeSource": "single",
       "itemType": 1,
-      "version": "1.3.0",
+      "version": "1.3.1",
       "pkgPath": "watch/fr/mlpfrance.js",
       "editableBaseUrl": false,
       "hasCloudflare": false,
@@ -160,8 +160,8 @@ const watchtowerSources = [{
         var seen = new Set();
         var _this = this;
 
-        // ── Items liste : list1, list2, list3, list4 ──────────────────────────────
-        var liRe = /<li class="list[1-4]">([\s\S]{1,2500}?)<\/li>/gi;
+        // ── Items liste : list1–list8+ (films utilisent list6/list8 pour langues supplémentaires) ──
+        var liRe = /<li class="list\d+">([\s\S]{1,2500}?)<\/li>/gi;
         var m;
         while ((m = liRe.exec(html)) !== null) {
           var item = m[1];
