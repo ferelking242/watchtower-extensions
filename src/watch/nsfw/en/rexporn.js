@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.rexporn.st/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "1.0.5",
+      "version": "1.0.6",
       "pkgPath": "watch/nsfw/en/rexporn.js",
       "notes": "Adult content (18+) — multi-quality MP4 streaming",
       "isNsfw": true
@@ -23,10 +23,10 @@ const watchtowerSources = [{
       }
 
       // Minimal headers for direct video CDN — NO Origin (causes CDN CORS rejection)
-      getVideoHeaders() {
+      getVideoHeaders(pageUrl) {
         return {
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-          "Referer": "https://www.rexporn.st/"
+          "Referer": pageUrl || "https://www.rexporn.st/"
         };
       }
 
@@ -155,7 +155,7 @@ const watchtowerSources = [{
             quality: label || res,
             originalUrl: videoUrl,
             // Only Referer — no Origin: CDN (vstor.top) rejects requests with Origin header
-            headers: this.getVideoHeaders()
+            headers: this.getVideoHeaders(url)
           });
         }
 
