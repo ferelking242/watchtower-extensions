@@ -1,33 +1,32 @@
 name: Purge jsDelivr CDN
 
-  on:
-    push:
-      branches: [main]
-      paths:
-        - 'src/**/*.js'
-        - 'src/**/*.json'
-        - 'index/**/*.json'
-        - 'repo.json'
-    workflow_dispatch:
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**/*.js'
+      - 'src/**/*.json'
+      - 'index/**/*.json'
+      - 'repo.json'
+  workflow_dispatch:
 
-  jobs:
-    purge:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Purge jsDelivr cache for extension files
-          run: |
-            BASE="https://purge.jsdelivr.net/gh/${{ github.repository }}@main"
-            for FILE in \
-              "index/watch.json" \
-              "index/manga.json" \
-              "index/plugins.json" \
-              "src/watch/nsfw/en/rexporn.js" \
-              "src/watch/fr/frenchstream.js" \
-              "src/watch/en/gotvseries.js" \
-              "repo.json"; do
-              echo "Purging: $FILE"
-              curl -sf "${BASE}/${FILE}" -o /dev/null \
-                && echo "  ok: ${FILE}" \
-                || echo "  failed: ${FILE}"
-            done
-  
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Purge jsDelivr cache for extension files
+        run: |
+          BASE="https://purge.jsdelivr.net/gh/${{ github.repository }}@main"
+          for FILE in \
+            "index/watch.json" \
+            "index/manga.json" \
+            "index/plugins.json" \
+            "src/watch/nsfw/en/rexporn.js" \
+            "src/watch/fr/frenchstream.js" \
+            "src/watch/en/gotvseries.js" \
+            "repo.json"; do
+            echo "Purging: $FILE"
+            curl -sf "${BASE}/${FILE}" -o /dev/null \
+              && echo "  ok: ${FILE}" \
+              || echo "  failed: ${FILE}"
+          done
