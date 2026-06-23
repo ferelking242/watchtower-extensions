@@ -6,25 +6,28 @@ const watchtowerSources = [{
     "iconUrl": "https://www.rexporn.st/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.3",
+    "version": "1.0.4",
     "pkgPath": "watch/nsfw/en/rexporn.js",
     "notes": "Adult content (18+) — multi-quality MP4 streaming",
     "isNsfw": true
   }];
 
   class DefaultExtension extends MProvider {
-    getHeaders(url) {
+    getHeaders(url, pageUrl) {
+      const ref = pageUrl || url || "https://www.rexporn.st/";
       return {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Referer": "https://www.rexporn.st/"
-      };
+        "Referer": ref,
+        "Origin": "https://www.rexporn.st"
+      }
+    }
     }
 
     async getPopular(page) {
       const url = page > 1
         ? `https://www.rexporn.st/page-${page}.html`
         : `https://www.rexporn.st/`;
-      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      const res = await new Client().get(url, { headers: this.getHeaders(url, url) });
       return this._parseList(res.body, url);
     }
 
