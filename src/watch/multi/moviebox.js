@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "2.0.1",
+    "version": "3.0.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,379 +19,206 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox unifié v2 — Films, Séries, Anime, Animation, Courts-métrages, Clips musicaux, Live. API aoneroom.com. Sous-titres multi-langues."
+    "notes": "MovieBox — Films & Séries via API aoneroom. Sous-titres multi-langues."
 }];
 
-// ═══════════════════════════════════════════════════════════════
-//  MovieBox — Extension unifiée v2.0.1
-//  Source : themoviebox.xyz / aoneroom.com
+// ══════════════════════════════════════════════════════════════
+//  MovieBox — Extension v3.0.0
 //
-//  Types (subjectType) :
-//    1=Films  2=Séries TV  3=Courts-métrages
-//    4=Séries animées  5=Anime  6=Clips musicaux
+//  API publique (sans token) :
+//    GET /wefeed-h5api-bff/home            → contenu home
+//    GET /wefeed-h5api-bff/detail?detailPath=X → détail
+//    GET /wefeed-h5api-bff/subject/play?…  → flux vidéo
 //
-//  APIs :
-//    h5-api.aoneroom.com  — recherche, détail, download
-//    api6/5/4.aoneroom.com + api.inmoviebox.com — saisons (mobile)
-//
-//  CDN vidéo  : valiw / bcdn .hakunaymatata.com
-//  CDN subs   : cacdn.hakunaymatata.com
-//  CDN live   : lacdn.aoneroom.com
-// ═══════════════════════════════════════════════════════════════
+//  En-têtes obligatoires : Origin + Referer = lok-lok.cc
+// ══════════════════════════════════════════════════════════════
 
 class DefaultExtension extends MProvider {
-    constructor() { super(); }
 
     // ── Constantes ────────────────────────────────────────────
 
-    static get API()     { return "https://h5-api.aoneroom.com"; }
-    static get REFERER() { return "https://videodownloader.site/"; }
-    static get V3() {
-        return [
-            "https://api6.aoneroom.com",
-            "https://api5.aoneroom.com",
-            "https://api4.aoneroom.com",
-            "https://api.inmoviebox.com"
-        ];
-    }
-    // Types sérialisés (ont des saisons/épisodes)
-    static get SERIES_TYPES() { return new Set([2, 4, 5]); }
-
-    // ── Préférences ───────────────────────────────────────────
-
-    pref(key)  { return new SharedPreferences().get(key); }
-    getLang()  { return this.pref("mb_lang") || "en"; }
-    getType()  { return this.pref("mb_type") || "0"; }
-    getSort()  { return this.pref("mb_sort") || "VIEWS"; }
+    static get API()  { return "https://h5-api.aoneroom.com"; }
+    static get BASE() { return "https://lok-lok.cc"; }
 
     // ── En-têtes ──────────────────────────────────────────────
 
-    apiHeaders() {
-        return {
-            "Content-Type":  "application/json",
-            "Accept":        "application/json, text/plain, */*",
-            "X-Client-Info": JSON.stringify({ timezone: "America/New_York" }),
-            "x-request-lang": this.getLang(),
-            "Referer":       DefaultExtension.REFERER,
-            "User-Agent":    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
-        };
-    }
-
-    mobileHeaders() {
+    _hdrs() {
         return {
             "Accept":        "application/json",
-            "Content-Type":  "application/json",
-            "x-client-info": '{"package_name":"com.community.oneroom","version_name":"3.0.03","os":"android","region":"US","timezone":"America/New_York"}',
-            "x-request-lang": this.getLang(),
-            "User-Agent":    "com.community.oneroom/50020044 (Linux; U; Android 13; en_US; Redmi; Build/TQ2A.230405.003; Cronet/135.0.7012.3)",
-            "Referer":       DefaultExtension.REFERER
+            "Origin":        DefaultExtension.BASE,
+            "Referer":       DefaultExtension.BASE + "/",
+            "User-Agent":    "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
+            "X-Client-Info": JSON.stringify({ timezone: "UTC" })
         };
     }
 
-    // ── Parser réponse API ────────────────────────────────────
-    // L'API peut retourner les items dans plusieurs chemins selon l'endpoint.
-    // Priorité : data.data > data.list > data.results[].subjects[]
+    // ── HTTP ──────────────────────────────────────────────────
 
-    parseItems(body) {
-        let json;
-        try { json = JSON.parse(body || "{}"); } catch (_) { return []; }
+    async _get(path) {
+        const res = await new Client().get(DefaultExtension.API + path, this._hdrs());
+        try { return JSON.parse(res.body); } catch (_) { return null; }
+    }
 
-        const root = json.data !== undefined ? json.data : json;
+    // ── Extraction des sujets depuis /home ────────────────────
+    // Retourne un tableau plat de tous les sujets des sections SUBJECTS_MOVIE
 
-        // Chemin 1 : liste plate dans root.data ou root.list
-        const flat = root.data || root.list || [];
-        if (Array.isArray(flat) && flat.length > 0) return flat;
-
-        // Chemin 2 : groups root.results[].subjects[]
-        const groups = root.results || [];
-        const items = [];
-        for (const g of groups) {
-            for (const s of (g.subjects || [])) items.push(s);
+    async _homeSubjects() {
+        const j = await this._get("/wefeed-h5api-bff/home");
+        if (!j || j.code !== 0 || !j.data) return [];
+        const ops = j.data.operatingList || [];
+        const all = [];
+        for (const op of ops) {
+            if (!op.subjects || !op.subjects.length) continue;
+            for (const s of op.subjects) {
+                s._sectionTitle = op.title || "";
+                all.push(s);
+            }
         }
-        return items;
+        return all;
     }
 
-    parsePager(body) {
-        try {
-            const json  = JSON.parse(body || "{}");
-            const root  = json.data !== undefined ? json.data : json;
-            const pager = root.pager || {};
-            if (typeof pager.hasMore === "boolean") return pager.hasMore;
-            const total = root.total || root.totalCount || 0;
-            if (total) return false; // pas de pagination fiable
-        } catch (_) {}
-        return false;
-    }
-
-    // Normalise un objet item renvoyé par l'API
-    // (l'API peut utiliser des noms de champs différents selon l'endpoint)
-    toItem(s, subjectType) {
-        const name     = s.subjectName || s.title || s.name || "Unknown";
-        const imageUrl = s.horizontalCover || s.verticalCover
-                      || s.poster || s.coverImage || s.cover?.url || "";
-        const link     = JSON.stringify({
-            detailPath:  s.detailPath  || String(s.subjectId || ""),
-            subjectId:   s.subjectId,
-            subjectType: s.subjectType || subjectType || 1
+    // Déduplique par subjectId
+    _dedup(items) {
+        const seen = new Set();
+        return items.filter(s => {
+            if (seen.has(s.subjectId)) return false;
+            seen.add(s.subjectId);
+            return true;
         });
-        return { name, imageUrl, link, description: s.desc || s.description || "" };
     }
 
-    // ── Recherche principale ───────────────────────────────────
+    // Convertit un sujet en item Watchtower
+    _toItem(s) {
+        const link = JSON.stringify({
+            subjectId:   s.subjectId,
+            detailPath:  s.detailPath || "",
+            subjectType: s.subjectType || 1
+        });
+        return {
+            name:        s.title || "Unknown",
+            imageUrl:    (s.cover && s.cover.url) || s.horizontalCover || s.verticalCover || "",
+            link,
+            description: s.description || ""
+        };
+    }
 
-    async _search(keyword, page, subjectType, sortBy) {
-        const body = { keyword: keyword || "", page, perPage: 30 };
-        if (subjectType && subjectType !== "0" && subjectType !== 0) {
-            body.subjectType = parseInt(subjectType);
-        }
-        if (sortBy && sortBy !== "0") body.sortBy = sortBy;
-
-        const res = await new Client().post(
-            `${DefaultExtension.API}/wefeed-h5api-bff/subject/search`,
-            this.apiHeaders(),
-            JSON.stringify(body)
-        );
-
-        const items = this.parseItems(res.body);
-        const list  = items.map(s => this.toItem(s, subjectType)).filter(i => i.link !== '{"detailPath":"","subjectId":undefined,"subjectType":1}');
-        return { list, hasNextPage: list.length >= 28 };
+    // Pagine un tableau côté client (30 items/page)
+    _paginate(items, page) {
+        const PER = 30;
+        const p   = Math.max(1, page || 1);
+        const slice = items.slice((p - 1) * PER, p * PER);
+        return { list: slice.map(s => this._toItem(s)), hasNextPage: p * PER < items.length };
     }
 
     // ── Browse ────────────────────────────────────────────────
 
     async getPopular(page) {
-        const type = this.getType();
-        const sort = this.getSort();
-        return this._search("", page, type === "0" ? null : type, sort);
+        const all = this._dedup(await this._homeSubjects());
+        return this._paginate(all, page);
     }
 
     async getLatestUpdates(page) {
-        const type = this.getType();
-        return this._search("", page, type === "0" ? null : type, "NEW");
+        const all = this._dedup(await this._homeSubjects()).sort((a, b) => {
+            const da = a.releaseDate || "";
+            const db = b.releaseDate || "";
+            return db.localeCompare(da);
+        });
+        return this._paginate(all, page);
     }
 
-    async search(query, page, filterList) {
-        const typeVal = this._filterVal(filterList, "Type") || this.getType() || null;
-        const sortVal = this._filterVal(filterList, "Tri")  || this.getSort() || "VIEWS";
-        return this._search(query, page, typeVal === "0" ? null : typeVal, sortVal);
-    }
-
-    _filterVal(filterList, name) {
-        if (!filterList) return null;
-        for (const f of filterList) {
-            if (f.name === name && f.values) return f.values[f.state]?.value;
-        }
-        return null;
+    async search(query, page) {
+        if (!query || !query.trim()) return this.getPopular(page);
+        const q   = query.trim().toLowerCase();
+        const all = this._dedup(await this._homeSubjects()).filter(
+            s => (s.title || "").toLowerCase().includes(q) ||
+                 (s.description || "").toLowerCase().includes(q) ||
+                 (s.genre || "").toLowerCase().includes(q)
+        );
+        return this._paginate(all, page);
     }
 
     // ── Sections home ─────────────────────────────────────────
+    // IDs statiques — getCustomList filtre les sujets par type
 
     getCustomLists() {
         return [
-            { id: "trending-movies",  name: "🔥 Films tendance"     },
-            { id: "trending-series",  name: "📺 Séries tendance"     },
-            { id: "trending-anime",   name: "⛩️ Anime tendance"      },
-            { id: "trending-anim",    name: "🎨 Animation tendance"  },
-            { id: "latest-movies",    name: "🆕 Films récents"       },
-            { id: "latest-series",    name: "🆕 Séries récentes"     },
-            { id: "latest-anime",     name: "🆕 Anime récent"        },
-            { id: "music",            name: "🎵 Clips musicaux"      },
-            { id: "shorts",           name: "🎞️ Courts-métrages"     },
-            { id: "live",             name: "🔴 Live"                },
+            { id: "all",     name: "🏠 Tout le catalogue"    },
+            { id: "movies",  name: "🎬 Films populaires"      },
+            { id: "series",  name: "📺 Séries populaires"     },
+            { id: "latest",  name: "🆕 Dernières sorties"     },
+            { id: "anime",   name: "⛩️ Anime & Animation"    },
         ];
     }
 
     async getCustomList(listId, page) {
-        const typeMap = {
-            "trending-movies": { type: 1, sort: "VIEWS" },
-            "trending-series": { type: 2, sort: "VIEWS" },
-            "trending-anime":  { type: 5, sort: "VIEWS" },
-            "trending-anim":   { type: 4, sort: "VIEWS" },
-            "latest-movies":   { type: 1, sort: "NEW"   },
-            "latest-series":   { type: 2, sort: "NEW"   },
-            "latest-anime":    { type: 5, sort: "NEW"   },
-            "music":           { type: 6, sort: "VIEWS" },
-            "shorts":          { type: 3, sort: "VIEWS" },
-        };
-
-        if (listId === "live") return this._getLive(page);
-
-        const cfg = typeMap[listId];
-        if (!cfg) return { list: [], hasNextPage: false };
-        return this._search("", page, cfg.type, cfg.sort);
-    }
-
-    // ── Live ──────────────────────────────────────────────────
-
-    async _getLive(page) {
-        const endpoints = [
-            `${DefaultExtension.API}/wefeed-h5api-bff/live/list?page=${page}&perPage=20`,
-            `${DefaultExtension.API}/wefeed-h5api-bff/live?page=${page}&perPage=20`,
-        ];
-        for (const ep of endpoints) {
-            try {
-                const res = await new Client().get(ep, this.apiHeaders());
-                if (res.statusCode === 200) {
-                    let json;
-                    try { json = JSON.parse(res.body); } catch (_) { continue; }
-                    const root     = json.data !== undefined ? json.data : json;
-                    const channels = root.list || root.liveList || root.channels || [];
-                    if (channels.length > 0) {
-                        const list = channels.map(ch => {
-                            const url = ch.streamUrl || ch.playUrl || ch.m3u8Url || ch.liveUrl || "";
-                            return {
-                                name:        ch.title || ch.name || ch.channelName || "Live",
-                                imageUrl:    ch.cover?.url || ch.coverUrl || ch.icon || "",
-                                link:        JSON.stringify({ isLive: true, url }),
-                                description: ch.description || ch.category || "🔴 Live"
-                            };
-                        }).filter(i => JSON.parse(i.link).url);
-                        return { list, hasNextPage: root.pager?.hasMore || false };
-                    }
-                }
-            } catch (_) {}
+        let all = this._dedup(await this._homeSubjects());
+        switch (listId) {
+            case "movies":  all = all.filter(s => s.subjectType === 1); break;
+            case "series":  all = all.filter(s => s.subjectType === 2); break;
+            case "anime":   all = all.filter(s => s.subjectType === 4 || s.subjectType === 5); break;
+            case "latest":  all = all.sort((a, b) => (b.releaseDate || "").localeCompare(a.releaseDate || "")); break;
+            default:        break;  // "all" — pas de filtre
         }
-        return { list: [], hasNextPage: false };
-    }
-
-    // ── Infos saisons ─────────────────────────────────────────
-
-    async _getSeasonInfo(subjectId) {
-        for (const base of DefaultExtension.V3) {
-            try {
-                const res = await new Client().get(
-                    `${base}/wefeed-mobile-bff/subject-api/season-info?subjectId=${subjectId}`,
-                    this.mobileHeaders()
-                );
-                if (res.statusCode === 200) {
-                    let json;
-                    try { json = JSON.parse(res.body); } catch (_) { continue; }
-                    const data = json.data !== undefined ? json.data : json;
-                    if (data && (data.seasons || data.totalSeasonNum)) return data;
-                }
-            } catch (_) {}
-        }
-        return null;
-    }
-
-    // ── Construction épisodes ─────────────────────────────────
-
-    _buildEpisodes(subjectId, detailPath, subjectType, seasonInfo) {
-        const episodes = [];
-        const defaultEps = subjectType === 5 ? 24 : 13;
-
-        if (seasonInfo?.seasons?.length > 0) {
-            for (const season of seasonInfo.seasons) {
-                const seNum  = season.seasonNum || season.se || 1;
-                const epList = season.episodes || season.episodeList || [];
-
-                if (epList.length > 0) {
-                    for (const ep of epList) {
-                        const epNum   = ep.episodeNum || ep.ep || ep.num || 1;
-                        const epTitle = ep.title || ep.name || `Épisode ${epNum}`;
-                        episodes.push({
-                            name:       `S${seNum}E${String(epNum).padStart(2,"0")} — ${epTitle}`,
-                            url:        JSON.stringify({ subjectId, detailPath, se: seNum, ep: epNum }),
-                            dateUpload: ep.releaseDate || ep.airDate || ""
-                        });
-                    }
-                } else {
-                    const epCount = season.episodeCount || season.totalEpisode || defaultEps;
-                    for (let ep = 1; ep <= epCount; ep++) {
-                        episodes.push({
-                            name:       `Saison ${seNum} Épisode ${ep}`,
-                            url:        JSON.stringify({ subjectId, detailPath, se: seNum, ep }),
-                            dateUpload: ""
-                        });
-                    }
-                }
-            }
-        } else if (seasonInfo?.totalSeasonNum || seasonInfo?.seasonCount) {
-            const total = seasonInfo.totalSeasonNum || seasonInfo.seasonCount || 1;
-            for (let se = 1; se <= total; se++) {
-                for (let ep = 1; ep <= defaultEps; ep++) {
-                    episodes.push({
-                        name:       `Saison ${se} Épisode ${ep}`,
-                        url:        JSON.stringify({ subjectId, detailPath, se, ep }),
-                        dateUpload: ""
-                    });
-                }
-            }
-        } else {
-            for (let ep = 1; ep <= defaultEps; ep++) {
-                episodes.push({
-                    name:       `Épisode ${ep}`,
-                    url:        JSON.stringify({ subjectId, detailPath, se: 1, ep }),
-                    dateUpload: ""
-                });
-            }
-        }
-        return episodes;
+        return this._paginate(all, page);
     }
 
     // ── Détail ────────────────────────────────────────────────
 
     async getDetail(url) {
-        const info = JSON.parse(url);
+        let payload;
+        try { payload = JSON.parse(url); } catch (_) { payload = {}; }
+        const { detailPath, subjectId } = payload;
+        const subjectType = payload.subjectType || 1;
 
-        if (info.isLive) {
-            return {
-                name: "Live", description: "🔴 Flux en direct — MovieBox.",
-                imageUrl: "", genre: ["Live"], status: 0,
-                chapters: [{ name: "▶ Regarder en direct", url, dateUpload: "" }]
-            };
+        const param = detailPath ? `detailPath=${detailPath}` : `subjectId=${subjectId}`;
+        const j     = await this._get(`/wefeed-h5api-bff/detail?${param}`);
+
+        if (!j || j.code !== 0 || !j.data || !j.data.subject) {
+            return { name: "Unknown", imageUrl: "", description: "", genre: [], status: 0, chapters: [] };
         }
 
-        const { detailPath, subjectId, subjectType } = info;
-        const isSeriesLike = DefaultExtension.SERIES_TYPES.has(parseInt(subjectType));
+        const s       = j.data.subject;
+        const res     = j.data.resource || {};
+        const genres  = (s.genre || "").split(",").map(x => x.trim()).filter(Boolean);
+        if (s.countryName) genres.push(s.countryName);
 
-        const [detailRes, seasonInfo] = await Promise.all([
-            new Client().get(
-                `${DefaultExtension.API}/wefeed-h5api-bff/detail?detailPath=${detailPath}`,
-                this.apiHeaders()
-            ).then(r => {
-                try { const j = JSON.parse(r.body); return j.data !== undefined ? j.data : j; }
-                catch (_) { return {}; }
-            }).catch(() => ({})),
-            isSeriesLike ? this._getSeasonInfo(subjectId).catch(() => null) : Promise.resolve(null)
-        ]);
+        let desc = s.description || "";
+        if (s.imdbRatingValue && parseFloat(s.imdbRatingValue) > 0) desc += `\n\n⭐ IMDb ${s.imdbRatingValue}`;
+        if (s.duration) desc += `  ⏱ ${s.duration}`;
 
-        const s       = detailRes;
-        const realType = s.subjectType || parseInt(subjectType) || 1;
+        // Épisodes
+        const chapters = [];
+        const realType = s.subjectType || subjectType;
+        const realDp   = s.detailPath  || detailPath || "";
         const realId   = s.subjectId   || subjectId;
+        const isMovie  = realType === 1 || !res.seasons || !res.seasons.length;
 
-        const genres = (s.genre || "").split(/[,，]/).map(g => g.trim()).filter(Boolean);
-        const cast   = (s.staffList || []).slice(0, 8).map(st => st.name).join(", ");
-        let desc     = s.description || s.desc || "";
-
-        const extras = [];
-        if (s.imdbRatingValue && parseFloat(s.imdbRatingValue) > 0) extras.push(`⭐ IMDb ${s.imdbRatingValue}`);
-        if (s.duration)    extras.push(`⏱ ${s.duration}`);
-        if (s.countryName) extras.push(`🌍 ${s.countryName}`);
-        if (s.language)    extras.push(`🗣 ${s.language}`);
-        if (extras.length) desc += "\n\n" + extras.join("  |  ");
-        if (cast)          desc += `\n👥 ${cast}`;
-
-        let chapters;
-        if (DefaultExtension.SERIES_TYPES.has(realType)) {
-            chapters = this._buildEpisodes(realId, detailPath, realType, seasonInfo);
-        } else {
-            const label = realType === 6 ? "▶ Regarder le clip"
-                        : realType === 3 ? "▶ Regarder le court-métrage"
-                        :                  "▶ Regarder le film";
-            chapters = [{
-                name:       label,
-                url:        JSON.stringify({ subjectId: realId, detailPath, se: 0, ep: 0 }),
+        if (isMovie) {
+            chapters.push({
+                name:       "▶ Regarder",
+                url:        JSON.stringify({ subjectId: realId, detailPath: realDp, se: 0, ep: 0 }),
                 dateUpload: s.releaseDate || ""
-            }];
+            });
+        } else {
+            for (const season of res.seasons) {
+                const seNum  = season.se || 1;
+                const maxEp  = season.maxEp || 0;
+                for (let ep = maxEp; ep >= 1; ep--) {
+                    chapters.push({
+                        name:       maxEp > 1 ? `S${seNum} E${ep}` : (s.title || "Épisode"),
+                        url:        JSON.stringify({ subjectId: realId, detailPath: realDp, se: seNum, ep }),
+                        dateUpload: ""
+                    });
+                }
+            }
         }
 
         return {
-            name:        s.title || s.subjectName || "",
+            name:        s.title || "Unknown",
+            imageUrl:    (s.cover && s.cover.url) || "",
             description: desc,
-            imageUrl:    s.cover?.url || s.horizontalCover || s.verticalCover || "",
             genre:       genres,
-            status:      DefaultExtension.SERIES_TYPES.has(realType) ? 0 : 1,
+            status:      isMovie ? 1 : 0,
             chapters
         };
     }
@@ -399,109 +226,86 @@ class DefaultExtension extends MProvider {
     // ── Vidéos ────────────────────────────────────────────────
 
     async getVideoList(url) {
-        const info = JSON.parse(url);
+        let payload;
+        try { payload = JSON.parse(url); } catch (_) { throw new Error("URL invalide"); }
+        const { subjectId, detailPath, se, ep } = payload;
+        if (!subjectId) throw new Error("subjectId manquant");
 
-        if (info.isLive) {
-            if (!info.url) return [];
-            const hd = { "Referer": "https://themoviebox.xyz/", "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:137.0) Gecko/20100101 Firefox/137.0" };
-            const q  = info.url.includes(".m3u8") ? "HLS Live" : info.url.includes(".mpd") ? "DASH Live" : "Live";
-            return [{ url: info.url, quality: q, originalUrl: info.url, headers: hd }];
+        const j = await this._get(
+            `/wefeed-h5api-bff/subject/play?subjectId=${subjectId}&se=${se || 0}&ep=${ep || 0}&detailPath=${encodeURIComponent(detailPath || "")}`
+        );
+
+        if (!j || j.code !== 0 || !j.data) {
+            if (j && j.code === 403) throw new Error("Région bloquée — utilise un VPN.");
+            throw new Error("Pas de flux disponible.");
         }
 
-        const { subjectId, detailPath, se, ep } = info;
-        const apiUrl = `${DefaultExtension.API}/wefeed-h5api-bff/subject/download`
-                     + `?subjectId=${subjectId}&se=${se}&ep=${ep}&detailPath=${detailPath}`;
-
-        const res  = await new Client().get(apiUrl, this.apiHeaders());
-        let json;
-        try { json = JSON.parse(res.body || "{}"); } catch (_) { return []; }
-        const data = json.data !== undefined ? json.data : json;
-
-        const dlHdrs    = { "Referer": DefaultExtension.REFERER, "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:137.0) Gecko/20100101 Firefox/137.0" };
+        const data      = j.data;
+        const refHdrs   = { "Referer": DefaultExtension.BASE + "/" };
         const subtitles = [];
-        const videos    = [];
 
-        for (const item of (data.list || [])) {
-            if (!item.resourceLink) continue;
-            for (const cap of (item.extCaptions || [])) {
-                if (cap.url && !subtitles.find(s => s.label === cap.lanName)) {
-                    subtitles.push({ file: cap.url, label: cap.lanName || cap.lan || "Sub" });
+        // Sous-titres
+        try {
+            const streams = (data.hls && data.hls[0]) || (data.streams && data.streams[0]);
+            if (streams && streams.id) {
+                const fmt = data.hls ? "HLS" : "MP4";
+                const cj  = await this._get(
+                    `/wefeed-h5api-bff/subject/caption?format=${fmt}&id=${streams.id}&subjectId=${subjectId}&detailPath=${encodeURIComponent(detailPath || "")}`
+                );
+                if (cj && cj.code === 0 && cj.data && cj.data.captions) {
+                    for (const c of cj.data.captions) {
+                        if (c && c.url) subtitles.push({ file: c.url, label: c.lanName || c.lan || "Sub" });
+                    }
                 }
             }
-            const codec = item.codecName ? item.codecName.toUpperCase() : "MP4";
-            videos.push({
-                url:         item.resourceLink,
-                quality:     `${item.resolution || "?"}p [${codec}]`,
-                originalUrl: item.resourceLink,
-                headers:     dlHdrs
-            });
+        } catch (_) {}
+
+        const out = [];
+        const push = (s, label) => {
+            if (s && s.url) out.push({ url: s.url, originalUrl: s.url, quality: label, headers: refHdrs, subtitles });
+        };
+
+        if (data.hls && data.hls.length) {
+            const sorted = data.hls.slice().sort((a, b) => (+b.resolutions || 0) - (+a.resolutions || 0));
+            for (const s of sorted) push(s, s.resolutions ? `HLS ${s.resolutions}p` : "HLS Auto");
+        }
+        if (data.streams && data.streams.length) {
+            const sorted = data.streams.slice().sort((a, b) => (+b.resolutions || 0) - (+a.resolutions || 0));
+            for (const s of sorted) push(s, `MP4 ${s.resolutions || ""}p`);
         }
 
-        videos.sort((a, b) => (parseInt(b.quality) || 0) - (parseInt(a.quality) || 0));
-        return videos.map(v => ({ ...v, subtitles }));
+        if (!out.length) throw new Error("Aucun flux disponible.");
+        return out;
     }
 
     // ── Filtres ───────────────────────────────────────────────
 
     getFilterList() {
         const opt = (n, v) => ({ type_name: "SelectOption", name: n, value: v });
-        return [
-            {
-                type_name: "SelectFilter", name: "Type", state: 0,
-                values: [
-                    opt("🎭 Tout",            "0"),
-                    opt("🎬 Films",           "1"),
-                    opt("📺 Séries TV",       "2"),
-                    opt("🎞️ Courts-métrages", "3"),
-                    opt("🎨 Séries animées",  "4"),
-                    opt("⛩️ Anime",           "5"),
-                    opt("🎵 Clips musicaux",  "6"),
-                ]
-            },
-            {
-                type_name: "SelectFilter", name: "Tri", state: 0,
-                values: [
-                    opt("🔥 Populaire", "VIEWS"),
-                    opt("🆕 Récent",    "NEW"),
-                ]
-            }
-        ];
+        return [{
+            type_name: "SelectFilter", name: "Type", state: 0,
+            values: [
+                opt("🎭 Tout",          ""),
+                opt("🎬 Films",         "1"),
+                opt("📺 Séries",        "2"),
+                opt("⛩️ Anime",         "5"),
+                opt("🎨 Animation",     "4"),
+            ]
+        }];
     }
 
-    // ── Préférences source ────────────────────────────────────
+    // ── Préférences ───────────────────────────────────────────
 
     getSourcePreferences() {
-        return [
-            {
-                key: "mb_lang",
-                listPreference: {
-                    title:      "Langue du contenu",
-                    summary:    "Langue pour les sous-titres et l'interface",
-                    valueIndex: 0,
-                    entries:    ["English","Français","العربية","Português","Indonesian","中文","Русский","Filipino","日本語","한국어","Kiswahili","বাংলা","اُردُو"],
-                    entryValues:["en","fr","ar","pt","id","zh","ru","tl","ja","ko","sw","bn","ur"]
-                }
-            },
-            {
-                key: "mb_type",
-                listPreference: {
-                    title:      "Type par défaut",
-                    summary:    "Type de contenu affiché par défaut",
-                    valueIndex: 0,
-                    entries:    ["Tout","Films","Séries TV","Courts-métrages","Séries animées","Anime","Clips musicaux"],
-                    entryValues:["0","1","2","3","4","5","6"]
-                }
-            },
-            {
-                key: "mb_sort",
-                listPreference: {
-                    title:      "Tri par défaut",
-                    summary:    "Tri utilisé lors de la navigation",
-                    valueIndex: 0,
-                    entries:    ["Populaire","Récent"],
-                    entryValues:["VIEWS","NEW"]
-                }
+        return [{
+            key: "mb_sub",
+            listPreference: {
+                title:      "Langue des sous-titres préférée",
+                summary:    "Déplacée en tête si disponible",
+                valueIndex: 0,
+                entries:    ["English","Français","العربية","Português","Indonesian","中文","Русский","日本語","한국어"],
+                entryValues:["en","fr","ar","pt","id","zh","ru","ja","ko"]
             }
-        ];
+        }];
     }
 }
