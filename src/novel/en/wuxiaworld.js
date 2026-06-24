@@ -1,226 +1,108 @@
 const watchtowerSources = [{
-    "name": "WuxiaWorld",
+    "name": "Wuxia World",
     "lang": "en",
-    "baseUrl": "https://www.wuxiaworld.site",
+    "baseUrl": "https://www.wuxiaworld.com",
     "apiUrl": "",
-    "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=wuxiaworld.site",
+    "iconUrl": "https://raw.githubusercontent.com/lnreader/lnreader-plugins/plugins/v3.0.0/public/static/src/en/wuxiaworld/icon.png",
     "typeSource": "single",
     "isManga": false,
     "itemType": 2,
-    "version": "1.0.2",
+    "version": "1.0.0",
     "isNsfw": false,
     "hasCloudflare": false,
     "pkgPath": "novel/src/en/wuxiaworld.js",
-    "notes": "Chinese Wuxia, Xianxia, Xuanhuan, Korean, Japanese light novels — free"
+    "notes": "",
+    "sourceCodeLanguage": 1,
+    "appMinVerReq": "0.5.0"
 }];
 
-// ═══════════════════════════════════════════════════════════
-//  WuxiaWorld — wuxiaworld.site
-//  Premier destination for Chinese, Korean and Japanese
-//  translated novels: Wuxia, Xianxia, Xuanhuan, LitRPG.
-// ═══════════════════════════════════════════════════════════
+const BASE_URL = "https://www.wuxiaworld.com";
 
 class DefaultExtension extends MProvider {
-    constructor() {
-        super();
-    }
-
-    get BASE() { return "https://www.wuxiaworld.site"; }
-
-    headers() {
+    getHeaders(url) {
         return {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-            "Referer": "https://www.wuxiaworld.site/"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Referer": BASE_URL,
         };
     }
 
-    async fetch(path) {
-        const url = path.startsWith("http") ? path : `${this.BASE}${path}`;
-        const res = await new Client().get(url, this.headers());
+    async fetchDoc(url) {
+        const res = await new Client().get(url, this.getHeaders(url));
         return new Document(res.body);
     }
 
-    // ── List Parser ─────────────────────────────────────
-
     parseList(doc) {
         const list = [];
-        const items = doc.select("div.page-item-detail, div.manga, div.novel-item, li.novel-item");
-        for (const item of items) {
-            const a = item.selectFirst("a[href*='novel'], a[href*='manga']");
+        for (const el of doc.select("div.novel-card, div.book-item")) {
+            const a = el.selectFirst("a");
             if (!a) continue;
-            const href = a.getHref || a.attr("href");
-            const img = item.selectFirst("img");
-            const name = (img?.attr("alt") || a.attr("title") || a.text || "").trim();
-            const imageUrl = img ? (img.attr("src") || img.attr("data-src") || img.attr("data-lazy-src") || "") : "";
-            if (name && href) {
-                list.push({
-                    name,
-                    link: href.startsWith("http") ? href : `${this.BASE}${href}`,
-                    imageUrl: imageUrl.startsWith("http") ? imageUrl : `${this.BASE}${imageUrl}`
-                });
-            }
+            const name     = (el.selectFirst(".title, h4, h3")?.text || a.text).trim();
+            const link     = (a.attr("href") || a.getHref || "");
+            const img      = el.selectFirst("img");
+            const imageUrl = img ? (img.attr("src") || img.attr("data-src") || "") : "";
+            const fullLink = link.startsWith("http") ? link : BASE_URL + link;
+            if (name && link) list.push({ name, link: fullLink, imageUrl });
         }
-        const nextEl = doc.selectFirst("a.next, a[rel='next']");
-        return { list, hasNextPage: !!(nextEl) };
+        const hasNextPage = !!doc.selectFirst("a.next, .pagination .next");
+        return { list, hasNextPage };
     }
 
-    // ── Browse ──────────────────────────────────────────
-
     async getPopular(page) {
-        const doc = await this.fetch(`/novel-list/?m_orderby=views&page=${page}`);
+        const doc = await this.fetchDoc(BASE_URL + "/novels?page=" + page + "&orderby=rank");
         return this.parseList(doc);
     }
 
     async getLatestUpdates(page) {
-        const doc = await this.fetch(`/novel-list/?m_orderby=latest&page=${page}`);
+        const doc = await this.fetchDoc(BASE_URL + "/novels?page=" + page + "&orderby=update");
         return this.parseList(doc);
     }
 
     async search(query, page, filterList) {
-        const genre = this._filterVal(filterList, "Genre") || "";
-        const status = this._filterVal(filterList, "Status") || "";
-        const sort = this._filterVal(filterList, "Sort") || "views";
-
-        let url;
-        if (query.trim().length > 0) {
-            url = `/?s=${encodeURIComponent(query)}&post_type=wp-manga&page=${page}`;
-        } else {
-            url = `/novel-list/?m_orderby=${sort}&page=${page}`;
-            if (genre) url += `&genre[]=${genre}`;
-            if (status) url += `&status[]=${status}`;
-        }
-        const doc = await this.fetch(url);
+        const doc = await this.fetchDoc(BASE_URL + "/novels?page=" + page + "&q=" + encodeURIComponent(query));
         return this.parseList(doc);
     }
 
-    _filterVal(filterList, name) {
-        if (!filterList) return null;
-        for (const f of filterList) {
-            if (f.name === name && f.values) return f.values[f.state]?.value;
-        }
-        return null;
+    toStatus(s) {
+        s = (s || "").toLowerCase();
+        if (s.includes("ongoing"))   return 0;
+        if (s.includes("completed")) return 1;
+        if (s.includes("hiatus"))    return 2;
+        return 5;
     }
-
-    // ── Detail ──────────────────────────────────────────
 
     async getDetail(url) {
-        const doc = await this.fetch(url);
+        const doc = await this.fetchDoc(url);
 
-        const name = doc.selectFirst("div.post-title h1, h1.novel-title")?.text?.trim() || "";
-        const img = doc.selectFirst("div.summary_image img, img.novel-cover");
-        const imageUrl = img ? (img.attr("src") || img.attr("data-src") || img.attr("data-lazy-src") || "") : "";
+        const name = doc.selectFirst("div.novel-title, h1.novel-name")?.text.trim() || "";
+        const imgEl = doc.selectFirst("div.novel-cover img, img.cover-image");
+        const imageUrl = imgEl ? (imgEl.attr("src") || imgEl.attr("data-src") || "") : "";
 
-        const descEl = doc.selectFirst("div.summary__content, div.description-summary");
-        const description = descEl ? descEl.text.trim() : "";
+        const description = doc.selectFirst("div.synopsis, .description")?.text.trim() || "";
+        const author = doc.selectFirst("a.author-name, .author a")?.text.trim() || "";
+        const statusEl = doc.selectFirst(".status, .novel-status");
+        const status = this.toStatus(statusEl?.text || "");
+        const genre = doc.select(".genre-tags a, .tags a").map(a => a.text.trim()).filter(Boolean);
 
-        const genreEls = doc.select("div.genres-content a, div.summary-content a[href*='genre']");
-        const genre = genreEls.map(a => a.text.trim()).filter(Boolean);
-
-        const statusEl = doc.selectFirst("div.summary-content div.post-status div.summary-content");
-        let status = 0;
-        if (statusEl) {
-            const s = statusEl.text.toLowerCase();
-            if (s.includes("completed") || s.includes("end")) status = 1;
-            else if (s.includes("hiatus")) status = 2;
-        }
-
-        // Chapters via AJAX
         const chapters = [];
-        const mangaIdEl = doc.selectFirst("input#manga-chapters-holder, div.listing-chapters_wrap");
-        let chapHtml = "";
-
-        // Try fetching chapter list via WordPress AJAX endpoint
-        const idMatch = doc.outerHtml?.match(/manga_id\s*[:=]\s*['"]?(\d+)['"]?/) || 
-                        doc.html?.match(/data-id="(\d+)"/);
-        
-        if (idMatch) {
-            try {
-                const mangaId = idMatch[1];
-                const chapRes = await new Client().post(
-                    `${this.BASE}/wp-admin/admin-ajax.php`,
-                    this.headers(),
-                    `action=manga_get_chapters&manga=${mangaId}`
-                );
-                chapHtml = chapRes.body;
-            } catch (e) { /* fallback */ }
-        }
-
-        // Fallback: parse inline chapter list
-        if (!chapHtml) {
-            const chapDiv = doc.selectFirst("div.listing-chapters_wrap, ul.main, div.chapter-list");
-            chapHtml = chapDiv ? chapDiv.outerHtml : "";
-        }
-
-        const chapDoc = new Document(chapHtml);
-        const chapEls = chapDoc.select("li a, ul li a[href*='chapter']");
-        for (const a of chapEls) {
-            const chapUrl = a.getHref || a.attr("href");
+        for (const a of doc.select("ul.chapter-list li a, .chapter-list a")) {
             const chapName = a.text.trim();
-            if (chapUrl && chapName) {
-                chapters.push({
-                    name: chapName,
-                    url: chapUrl.startsWith("http") ? chapUrl : `${this.BASE}${chapUrl}`,
-                    dateUpload: ""
-                });
-            }
+            const chapUrl  = (a.attr("href") || a.getHref || "");
+            const dateEl   = a.selectFirst("time, .date");
+            const dateUpload = dateEl ? String(new Date(dateEl.text.trim()).valueOf()) : "";
+            const fullUrl = chapUrl.startsWith("http") ? chapUrl : BASE_URL + chapUrl;
+            if (chapName && chapUrl) chapters.push({ name: chapName, url: fullUrl, dateUpload });
         }
 
-        return { name, imageUrl, description, genre, status, chapters };
+        return { name, imageUrl, author, genre, status, description, chapters };
     }
-
-    // ── Chapter Content ──────────────────────────────────
 
     async getHtmlContent(name, url) {
-        const doc = await this.fetch(url);
-        const content = doc.selectFirst("div.reading-content, div.chapter-content, div.entry-content");
-        return content ? content.outerHtml : "<p>Content unavailable.</p>";
+        const doc = await this.fetchDoc(url);
+        const content = doc.selectFirst("#chapter-content, .chapter-content");
+        return content ? content.outerHtml : "";
     }
 
-    async cleanHtmlContent(html) {
-        const doc = new Document(html);
-        const content = doc.selectFirst("div.reading-content, div.chapter-content, div.entry-content");
-        if (!content) return html;
-        const junk = content.select("script, ins, .adsense, div[class*='ad'], #textads");
-        for (const j of junk) j.remove();
-        return content.outerHtml;
-    }
-
-    // ── Filters ──────────────────────────────────────────
-
-    getFilterList() {
-        function opt(n, v) { return { type_name: "SelectOption", name: n, value: v }; }
-        return [
-            {
-                type_name: "SelectFilter", name: "Sort", state: 0,
-                values: [
-                    opt("Most Views", "views"), opt("Latest Update", "latest"),
-                    opt("New", "new-manga"), opt("Rating", "rating"),
-                    opt("Trending", "trending"),
-                ]
-            },
-            {
-                type_name: "SelectFilter", name: "Status", state: 0,
-                values: [
-                    opt("All", ""), opt("Ongoing", "on-going"),
-                    opt("Completed", "end"), opt("Canceled", "canceled"), opt("On Hold", "on-hold"),
-                ]
-            },
-            {
-                type_name: "SelectFilter", name: "Genre", state: 0,
-                values: [
-                    opt("All", ""), opt("Action", "action"), opt("Adventure", "adventure"),
-                    opt("Comedy", "comedy"), opt("Drama", "drama"), opt("Fantasy", "fantasy"),
-                    opt("Harem", "harem"), opt("Historical", "historical"),
-                    opt("Horror", "horror"), opt("Isekai", "isekai"),
-                    opt("Martial Arts", "martial-arts"), opt("Mystery", "mystery"),
-                    opt("Romance", "romance"), opt("School Life", "school-life"),
-                    opt("Sci-fi", "sci-fi"), opt("Slice of Life", "slice-of-life"),
-                    opt("Supernatural", "supernatural"), opt("Wuxia", "wuxia"),
-                    opt("Xianxia", "xianxia"), opt("Xuanhuan", "xuanhuan"),
-                ]
-            }
-        ];
-    }
-
+    async cleanHtmlContent(html) { return html; }
+    getFilterList() { return []; }
     getSourcePreferences() { return []; }
 }

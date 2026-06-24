@@ -1,7 +1,7 @@
 const watchtowerSources = [{
-    "name": "NovelCool",
-    "lang": "en",
-    "baseUrl": "https://www.novelcool.com",
+    "name": "NovelCool (RU)",
+    "lang": "ru",
+    "baseUrl": "https://ru.novelcool.com",
     "apiUrl": "",
     "iconUrl": "https://raw.githubusercontent.com/lnreader/lnreader-plugins/plugins/v3.0.0/public/static/multisrc/novelcool/novelcool/icon.png",
     "typeSource": "single",
@@ -10,13 +10,13 @@ const watchtowerSources = [{
     "version": "1.0.0",
     "isNsfw": false,
     "hasCloudflare": false,
-    "pkgPath": "novel/src/en/novelcool.js",
+    "pkgPath": "novel/src/ru/novelcool-ru.js",
     "notes": "",
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0"
 }];
 
-const BASE_URL = "https://www.novelcool.com";
+const BASE_URL = "https://ru.novelcool.com";
 
 class DefaultExtension extends MProvider {
     getHeaders(url) {
