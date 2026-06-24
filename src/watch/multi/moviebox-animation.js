@@ -1,26 +1,35 @@
 const watchtowerSources = [{
-    "name": "MovieBox Anime",
-    "langs": ["en"],
-    "ids": { "en": 881000003 },
-    "baseUrl": "https://h5-api.aoneroom.com",
-    "apiUrl": "https://api6.aoneroom.com",
-    "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=moviebox.ng",
-    "typeSource": "multi",
+    "name": "MovieBox \u2014 Animation",
+    "lang": "multi",
+    "baseUrl": "https://themoviebox.xyz",
+    "apiUrl": "https://h5-api.aoneroom.com",
+    "iconUrl": "https://h5-static.aoneroom.com/oneroomProject/icon/moviebox-official.jpg",
+    "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.2",
+    "version": "1.0.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": false,
-    "pkgPath": "watch/en/moviebox-anime.js"
+    "pkgPath": "watch/multi/moviebox-animation.js",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": true,
+    "hasDub": true,
+    "notes": "Animated series from MovieBox (aoneroom.com). subjectType=4. Seasons + episodes with multi-language subtitles."
 }];
 
-// ═══════════════════════════════════════════════════════
-//  MovieBox Anime / Education — aoneroom.com API v2 + v3
-//  subjectType=5 (Anime & Education content)
-//  Multi-language subtitles included
-// ═══════════════════════════════════════════════════════
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+//  MovieBox Animation \u2014 aoneroom.com API v2 + v3
+//  subjectType=4 (Animated Series)
+//  Season info: api6.aoneroom.com /wefeed-mobile-bff/subject-api/season-info
+//  Download:    h5-api.aoneroom.com /wefeed-h5api-bff/subject/download
+//  Multi-language subtitles via cacdn.hakunaymatata.com
+//  Languages: en, fr, ar, pt, id, zh, ru, tl, sw, bn, ur, ja, ko
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 
 class DefaultExtension extends MProvider {
     constructor() {
@@ -36,7 +45,7 @@ class DefaultExtension extends MProvider {
             "https://api.inmoviebox.com"
         ];
     }
-    static get SUBJECT_TYPE() { return 5; }
+    static get SUBJECT_TYPE() { return 4; }
     static get REFERER() { return "https://videodownloader.site/"; }
 
     getPreference(key) { return new SharedPreferences().get(key); }
@@ -104,6 +113,8 @@ class DefaultExtension extends MProvider {
     async getLatestUpdates(page) { return this.postSearch("", page, "NEW"); }
     async search(query, page, filterList) { return this.postSearch(query, page, null); }
 
+    // ── Season info via v3 API ─────────────────────────────
+
     async getSeasonInfo(subjectId) {
         for (const base of DefaultExtension.API_V3_BASES) {
             try {
@@ -120,35 +131,52 @@ class DefaultExtension extends MProvider {
         return null;
     }
 
+    // ── Build episode list ─────────────────────────────────
+
     buildEpisodes(subjectId, detailPath, seasonInfo) {
         const episodes = [];
+
         if (seasonInfo?.seasons && Array.isArray(seasonInfo.seasons)) {
             for (const season of seasonInfo.seasons) {
                 const seNum = season.seasonNum || season.se || 1;
                 const epList = season.episodes || season.episodeList || [];
+
                 if (epList.length > 0) {
                     for (const ep of epList) {
                         const epNum = ep.episodeNum || ep.ep || ep.num || 1;
                         const epTitle = ep.title || ep.name || `Episode ${epNum}`;
                         episodes.push({
-                            name: `S${seNum}E${String(epNum).padStart(2, "0")} - ${epTitle}`,
+                            name: `S${seNum}E${String(epNum).padStart(2, "0")} \u2014 ${epTitle}`,
                             url: JSON.stringify({ subjectId, detailPath, se: seNum, ep: epNum }),
-                            dateUpload: ep.releaseDate || ""
+                            dateUpload: ep.releaseDate || ep.airDate || ""
                         });
                     }
                 } else {
-                    const epCount = season.episodeCount || season.totalEpisode || 12;
+                    const epCount = season.episodeCount || season.totalEpisode || season.episodeNum || 13;
                     for (let ep = 1; ep <= epCount; ep++) {
                         episodes.push({
-                            name: `Season ${seNum} Ep ${ep}`,
+                            name: `Season ${seNum} Episode ${ep}`,
                             url: JSON.stringify({ subjectId, detailPath, se: seNum, ep }),
                             dateUpload: ""
                         });
                     }
                 }
             }
+        } else if (seasonInfo && (seasonInfo.totalSeasonNum || seasonInfo.seasonCount)) {
+            const totalSeasons = seasonInfo.totalSeasonNum || seasonInfo.seasonCount || 1;
+            for (let se = 1; se <= totalSeasons; se++) {
+                const epCount = 13;
+                for (let ep = 1; ep <= epCount; ep++) {
+                    episodes.push({
+                        name: `Season ${se} Episode ${ep}`,
+                        url: JSON.stringify({ subjectId, detailPath, se, ep }),
+                        dateUpload: ""
+                    });
+                }
+            }
         } else {
-            for (let ep = 1; ep <= 24; ep++) {
+            // Fallback: probe first season (animation typically 13 or 26 eps per season)
+            for (let ep = 1; ep <= 26; ep++) {
                 episodes.push({
                     name: `Episode ${ep}`,
                     url: JSON.stringify({ subjectId, detailPath, se: 1, ep }),
@@ -156,8 +184,11 @@ class DefaultExtension extends MProvider {
                 });
             }
         }
+
         return episodes;
     }
+
+    // ── Detail ─────────────────────────────────────────────
 
     async getDetail(url) {
         const { detailPath, subjectId } = JSON.parse(url);
@@ -170,20 +201,32 @@ class DefaultExtension extends MProvider {
             this.getSeasonInfo(subjectId).catch(() => null)
         ]);
 
-        const genres = (s.genre || "").split(/[,，]/).map(g => g.trim()).filter(Boolean);
+        const genres = (s.genre || "").split(/[,\uff0c]/).map(g => g.trim()).filter(Boolean);
         const castStr = (s.staffList || []).slice(0, 8).map(st => st.name).join(", ");
+
         let description = s.description || "";
         const extras = [];
-        if (s.imdbRatingValue && parseFloat(s.imdbRatingValue) > 0) extras.push(`⭐ IMDb ${s.imdbRatingValue}`);
-        if (s.countryName) extras.push(`🌍 ${s.countryName}`);
+        if (s.imdbRatingValue && parseFloat(s.imdbRatingValue) > 0)
+            extras.push(`\u2b50 IMDb ${s.imdbRatingValue}`);
+        if (s.countryName) extras.push(`\ud83c\udf0d ${s.countryName}`);
+        if (s.language) extras.push(`\ud83d\udde3 ${s.language}`);
         if (extras.length) description += "\n\n" + extras.join("  |  ");
-        if (castStr) description += `\n👥 ${castStr}`;
+        if (castStr) description += `\n\ud83d\udc65 ${castStr}`;
 
         const realSubjectId = s.subjectId || subjectId;
         const episodes = this.buildEpisodes(realSubjectId, detailPath, seasonInfo);
 
-        return { name: s.title || "", description, imageUrl: s.cover?.url || "", genre: genres, status: 0, chapters: episodes };
+        return {
+            name: s.title || "",
+            description,
+            imageUrl: s.cover?.url || "",
+            genre: genres,
+            status: 0,
+            chapters: episodes
+        };
     }
+
+    // ── Video list ─────────────────────────────────────────
 
     async getVideoList(url) {
         const { subjectId, detailPath, se, ep } = JSON.parse(url);
@@ -197,17 +240,22 @@ class DefaultExtension extends MProvider {
 
         for (const item of (data.list || [])) {
             if (!item.resourceLink) continue;
+
             for (const cap of (item.extCaptions || [])) {
-                if (cap.url && !subtitles.find(s => s.label === cap.lanName)) {
+                if (cap.url && !subtitles.find(sub => sub.label === cap.lanName)) {
                     subtitles.push({ file: cap.url, label: cap.lanName || cap.lan || "Sub" });
                 }
             }
+
             const codec = item.codecName ? item.codecName.toUpperCase() : "MP4";
             videos.push({
                 url: item.resourceLink,
                 quality: `${item.resolution || "?"}p [${codec}]`,
                 originalUrl: item.resourceLink,
-                headers: { "Referer": DefaultExtension.REFERER, "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:137.0) Gecko/20100101 Firefox/137.0" }
+                headers: {
+                    "Referer": DefaultExtension.REFERER,
+                    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:137.0) Gecko/20100101 Firefox/137.0"
+                }
             });
         }
 
@@ -215,18 +263,30 @@ class DefaultExtension extends MProvider {
         return videos.map(v => ({ ...v, subtitles }));
     }
 
+    // ── Filters / Prefs ────────────────────────────────────
+
     getFilterList() { return []; }
 
     getSourcePreferences() {
-        return [{
-            "key": "mb_lang",
-            "listPreference": {
-                "title": "Content Language",
-                "summary": "Language for subtitles and UI",
-                "valueIndex": 0,
-                "entries": ["English", "中文", "Français", "العربية", "Português", "Indonesian", "Русский"],
-                "entryValues": ["en", "zh", "fr", "ar", "pt", "id", "ru"]
+        return [
+            {
+                "key": "mb_lang",
+                "listPreference": {
+                    "title": "Content Language",
+                    "summary": "Language for subtitles and UI",
+                    "valueIndex": 0,
+                    "entries": [
+                        "English", "Fran\u00e7ais", "\u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+                        "Portugu\u00eas", "Indonesian", "\u4e2d\u6587", "\u0420\u0443\u0441\u0441\u043a\u0438\u0439",
+                        "Filipino", "\u65e5\u672c\u0301\u8a9e", "\ud55c\uad6d\uc5b4",
+                        "Kiswahili", "\u09ac\u09be\u0982\u09b2\u09be", "\u0627\u064f\u0631\u062f\u064f\u0648"
+                    ],
+                    "entryValues": [
+                        "en", "fr", "ar", "pt", "id", "zh", "ru",
+                        "tl", "ja", "ko", "sw", "bn", "ur"
+                    ]
+                }
             }
-        }];
+        ];
     }
 }
