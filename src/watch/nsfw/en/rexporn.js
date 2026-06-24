@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.rexporn.st/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "1.0.7",
+      "version": "1.0.8",
       "pkgPath": "watch/nsfw/en/rexporn.js",
       "notes": "Adult content (18+) — multi-quality MP4 streaming",
       "isNsfw": true
@@ -149,7 +149,7 @@ const watchtowerSources = [{
           let prefix = res === "720p" ? "" : ("_" + res);
           if (prefix === "_2160p") prefix = "_4k";
 
-          const videoUrl = "https://" + dataN + ".vstor.top/whp/vid/" + ts + "/" + token + "/" + vPut + "/" + vid + prefix + ".mp4";
+          const videoUrl = "https://" + dataN + ".vstor.top/whpvid/" + ts + "/" + token + "/" + vPut + "/" + vid + prefix + ".mp4";
           videos.push({
             url: videoUrl,
             quality: label || res,
