@@ -216,6 +216,20 @@ class DefaultExtension extends MProvider {
             + `&includes[]=cover_art`
             + this.contentRatingParams()
             + this.originalLanguageParams()
+            + `&order[rating]=desc`
+            + `&hasAvailableChapters=true`;
+        const res = await new Client().get(url, this.getHeaders());
+        return this.mangaRes(res.body);
+    }
+
+    async getFollowedPopular(page) {
+        const offset = 20 * (page - 1);
+        const url = `${this.source.apiUrl}/manga`
+            + `?limit=20&offset=${offset}`
+            + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
+            + `&includes[]=cover_art`
+            + this.contentRatingParams()
+            + this.originalLanguageParams()
             + `&order[followedCount]=desc`;
         const res = await new Client().get(url, this.getHeaders());
         return this.mangaRes(res.body);
@@ -492,7 +506,8 @@ class DefaultExtension extends MProvider {
 
       getCustomLists() {
             return [
-                { id: "new_titles",      name: "New Titles"             },
+                { id: "popular",         name: "Popular"                 },
+                { id: "new_titles",      name: "New Titles"              },
                 { id: "recently_added",  name: "Recently Added"          },
                 { id: "recommended",     name: "Recommended"             },
                 { id: "self_published",  name: "Self-Published"          },
@@ -501,6 +516,7 @@ class DefaultExtension extends MProvider {
         }
 
         async getCustomList(listId, page) {
+            if (listId === "popular")         return this.getFollowedPopular(page);
             if (listId === "recently_added")  return this.getLatestUpdates(page);
             if (listId === "new_titles")      return this.getNewTitles(page);
             if (listId === "recommended")     return this.getRecommended(page);
