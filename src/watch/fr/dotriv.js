@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.dotriv.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.8",
+    "version": "0.1.9",
     "pkgPath": "watch/fr/dotriv.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -25,7 +25,6 @@ class DefaultExtension extends MProvider {
         return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL.replace(/\/$/, "");
     }
 
-    // /fed960f is the CMS prefix for dospiv.com
     get cmsBase() { return `${this.baseUrl}/fed960f`; }
 
     get logEnabled() { const p = this.source.prefs?.find(x => x.key === "log_enabled"); return p && p.value === "true"; }
@@ -46,33 +45,45 @@ class DefaultExtension extends MProvider {
         try { await new Client().post(`https://ntfy.sh/${this.logTopic}`, `[Dospiv] ${msg}`, { "Title": "Dospiv", "Content-Type": "text/plain" }); } catch(e) {}
     }
 
-    // Parse trend-card items from an HTML snippet
+    // ── Parser ─────────────────────────────────────────────────────────────
+    // Requires <a class="trend-card"|"film-card"> to avoid matching nav/logo images.
+    // Falls back to a looser pattern if the primary returns nothing.
     _parse(html) {
-        const list = []; const seen = {};
-        const re = /href="(\/fed960f\/b\/dospiv\/\d+)"[\s\S]{0,600}?<img[^>]*class="(?:trend|film)-card-img"[^>]*src="([^"]+)"[^>]*alt="([^"]+)"/gi;
-        let m;
-        while ((m = re.exec(html)) !== null) {
-            const url = `${this.baseUrl}${m[1]}`;
-            if (url in seen) continue;
+        const seen = {};
+        const list = [];
+
+        const srcName = (this.source && this.source.name) ? this.source.name.toLowerCase() : "dospiv";
+
+        const add = (url, imgUrl, name) => {
+            if (!url || !name) return;
+            if (url in seen) return;
+            // Skip entries whose name is the source/site name itself (logo images, etc.)
+            if (name.toLowerCase() === srcName || name.toLowerCase() === "dospiv" || name.toLowerCase() === "dotriv") return;
             seen[url] = 1;
-            list.push({ link: url, imageUrl: m[2], name: m[3].trim() });
+            list.push({ link: url, imageUrl: imgUrl, name });
+        };
+
+        // PRIMARY: <a class="…trend-card…|…film-card…"> contains href + img inside
+        // This avoids nav links and banner images that share class names
+        const cardRe = /<a[^>]*class="[^"]*(?:trend|film)-card(?!-arrow)[^"]*"[^>]*href="(\/fed960f\/b\/dospiv\/\d+)"[^>]*>[\s\S]{0,500}?<img[^>]*src="([^"]+)"[^>]*alt="([^"]+)"/gi;
+        let m;
+        while ((m = cardRe.exec(html)) !== null) {
+            add(`${this.baseUrl}${m[1]}`, m[2], m[3].trim());
         }
+
+        // FALLBACK: href="/fed960f/b/dospiv/ID" then img with alt within 300 chars
+        // Only runs if primary got < 3 results (category pages with different structure)
+        if (list.length < 3) {
+            const fallRe = /href="(\/fed960f\/b\/dospiv\/\d+)"[\s\S]{0,300}?<img[^>]+src="([^"]+)"[^>]+alt="([^"]+)"/gi;
+            while ((m = fallRe.exec(html)) !== null) {
+                add(`${this.baseUrl}${m[1]}`, m[2], m[3].trim());
+            }
+        }
+
         return list;
     }
 
-    // Extract a named section from the full home HTML
-    _extractSection(homeHtml, startMarker, endMarker) {
-        const start = homeHtml.indexOf(startMarker);
-        if (start < 0) return "";
-        const end = endMarker
-            ? homeHtml.indexOf(endMarker, start + startMarker.length)
-            : -1;
-        return end > start
-            ? homeHtml.substring(start, end)
-            : homeHtml.substring(start, start + 12000);
-    }
-
-    // Fetch + cache the home page (5-min TTL)
+    // ── Home page cache (5-min TTL) ────────────────────────────────────────
     async _getHome() {
         const now = Date.now();
         if (this._homeCache && (now - (this._homeCacheAt || 0)) < 300000) {
@@ -84,27 +95,44 @@ class DefaultExtension extends MProvider {
         return this._homeCache;
     }
 
-    // ── API methods ──────────────────────────────────────────────────────────
+    // Extract a slice of HTML starting at the first occurrence of textMarker
+    // Uses the visible text (e.g. "Derniers ajouts") so it can't match CSS definitions
+    _slice(html, textMarker, charsMax) {
+        const idx = html.indexOf(textMarker);
+        if (idx < 0) return "";
+        return html.substring(idx, idx + (charsMax || 10000));
+    }
+
+    // ── API ────────────────────────────────────────────────────────────────
 
     // Popular = À l'affiche (category 29)
     async getPopular(page) {
         const res = await new Client().get(`${this.cmsBase}/c/dospiv/29/${page - 1}`, this._hdrs());
         await this._log(`popular p${page}: ${res.body.length}b`);
         const list = this._parse(res.body);
+        await this._log(`popular: ${list.length} items`);
         return { list, hasNextPage: list.length >= 10 };
     }
 
-    // Latest = Derniers ajouts (from home page, page 1 only)
+    // Latest: Derniers ajouts from home (page 1) or category 29 fallback
     async getLatestUpdates(page) {
         if (page === 1) {
-            const home = await this._getHome();
-            const section = this._extractSection(home, "newfilms-header", "trend-vignette-title");
-            const list = this._parse(section).slice(0, 24);
-            await this._log(`latest: ${list.length} items`);
-            return { list, hasNextPage: false };
+            try {
+                const home = await this._getHome();
+                // "Derniers ajouts" appears only inside <h2>, never in the <style> block
+                const section = this._slice(home, "Derniers ajouts", 9000);
+                const list = this._parse(section).slice(0, 24);
+                if (list.length > 0) {
+                    await this._log(`latest home: ${list.length}`);
+                    return { list, hasNextPage: false };
+                }
+            } catch(e) {}
         }
-        // No pagination for latest on this site
-        return { list: [], hasNextPage: false };
+        // Fallback: paginate category 29
+        const res = await new Client().get(`${this.cmsBase}/c/dospiv/29/${page - 1}`, this._hdrs());
+        const list = this._parse(res.body);
+        await this._log(`latest/pop p${page}: ${list.length}`);
+        return { list, hasNextPage: list.length >= 10 };
     }
 
     async search(query, page, filterList) {
@@ -114,14 +142,14 @@ class DefaultExtension extends MProvider {
         return { list, hasNextPage: list.length >= 10 };
     }
 
-    // ── Custom home sections ─────────────────────────────────────────────────
+    // ── Custom home sections ───────────────────────────────────────────────
 
     getCustomLists() {
         return [
-            { id: "derniers-ajouts",  name: "Derniers ajouts"    },
-            { id: "top15",            name: "Top 15 Tendances"   },
-            { id: "animations",       name: "Animations"         },
-            { id: "docs-spectacles",  name: "Docs & Spectacles"  },
+            { id: "derniers-ajouts",  name: "Derniers ajouts"   },
+            { id: "top15",            name: "Top 15 Tendances"  },
+            { id: "animations",       name: "Animations"        },
+            { id: "docs-spectacles",  name: "Docs & Spectacles" },
         ];
     }
 
@@ -129,40 +157,57 @@ class DefaultExtension extends MProvider {
         await this._log(`customList ${listId} p${page}`);
 
         if (listId === "derniers-ajouts") {
-            // Derniers ajouts section on the home page (the newfilms row)
             const home = await this._getHome();
-            const section = this._extractSection(home, "newfilms-header", "trend-vignette-title");
+            // "Derniers ajouts" is in a <h2> tag in the HTML body, not in any CSS rule
+            const section = this._slice(home, "Derniers ajouts", 9000);
             const list = this._parse(section).slice(0, 24);
+            await this._log(`derniers: ${list.length}`);
             return { list, hasNextPage: false };
         }
 
         if (listId === "top15") {
-            // Top 15 Tendances — the ranked section on the home page
             const home = await this._getHome();
-            const section = this._extractSection(home, "trend-vignette-title", "anim-section-title");
+            // Look for the HTML attribute class="trend-vignette-title" (not the CSS .trend-vignette-title{})
+            // Using the text content "Top 15" which only appears inside the span tag
+            const idx = home.indexOf('class="trend-vignette-title"');
+            if (idx >= 0) {
+                const section = home.substring(idx, idx + 14000);
+                const list = this._parse(section).slice(0, 15);
+                await this._log(`top15 (attr): ${list.length}`);
+                return { list, hasNextPage: false };
+            }
+            // Fallback: use the text "Top 15"
+            const section = this._slice(home, "Top 15", 14000);
             const list = this._parse(section).slice(0, 15);
+            await this._log(`top15 (text): ${list.length}`);
             return { list, hasNextPage: false };
         }
 
         if (listId === "animations") {
-            // Animations category page — supports pagination
+            // Category page, supports pagination
             const res = await new Client().get(`${this.cmsBase}/c/dospiv/2/${page - 1}`, this._hdrs());
             const list = this._parse(res.body);
+            await this._log(`animations p${page}: ${list.length}`);
             return { list, hasNextPage: list.length >= 10 };
         }
 
         if (listId === "docs-spectacles") {
-            // Docs & Spectacles section on the home page
             const home = await this._getHome();
-            const section = this._extractSection(home, "Docs &amp;", "film-grid");
+            // "Docs & Spectacles" is in a <h2> tag in the body
+            // The HTML source has it as "Docs & Spectacles" (& not encoded in text nodes on this site)
+            let section = this._slice(home, "Docs & Spectacles", 9000);
+            // Try HTML-encoded variant too
+            if (!section) section = this._slice(home, "Docs &amp; Spectacles", 9000);
+            if (!section) section = this._slice(home, "Docs", 9000); // last resort
             const list = this._parse(section).slice(0, 20);
+            await this._log(`docs: ${list.length}`);
             return { list, hasNextPage: false };
         }
 
         return { list: [], hasNextPage: false };
     }
 
-    // ── Detail & video ───────────────────────────────────────────────────────
+    // ── Detail & video ─────────────────────────────────────────────────────
 
     async getDetail(url) {
         await this._log(`detail: ${url}`);
@@ -179,10 +224,10 @@ class DefaultExtension extends MProvider {
         const descM = html.match(/<meta[^>]+property="og:description"[^>]+content="([^"]+)"/i) ||
                       html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i);
         const description = descM ? descM[1].replace(/&[#\w]+;/g, " ").trim()
-                                  : "Détails non disponibles — site SPA, ouvrir dans le navigateur.";
+                                  : "Détails non disponibles.";
 
         const episodes = [{ name: name || "Regarder", url, dateUpload: "" }];
-        await this._log(`detail ok: "${name}"`);
+        await this._log(`detail: "${name}"`);
         return { name, description, imageUrl, genres: [], status: 0, chapters: episodes };
     }
 
@@ -190,7 +235,6 @@ class DefaultExtension extends MProvider {
         const tries = [
             this._hdrs(`${this.baseUrl}/`),
             { ...this._hdrs(`${this.baseUrl}/`), "Accept": "application/json", "X-Requested-With": "XMLHttpRequest" },
-            { ...this._hdrs(`${this.baseUrl}/`), "Accept": "text/html,application/xhtml+xml" }
         ];
         for (const h of tries) {
             try {
@@ -232,12 +276,12 @@ class DefaultExtension extends MProvider {
                 const hlsM = ebody.match(/["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/);
                 if (hlsM) { videos.push({ url: hlsM[1], quality: q !== "AUTO" ? q : "Stream", originalUrl: hlsM[1] }); resolved = true; }
                 const mp4M = ebody.match(/["'`](https?:\/\/[^"'`]+\.mp4[^"'`]{0,150})["'`]/);
-                if (mp4M && !resolved) { videos.push({ url: mp4M[1], quality: q !== "AUTO" ? q : "Direct", originalUrl: mp4M[1] }); resolved = true; }
+                if (mp4M && !resolved) { videos.push({ url: mp4M[1], quality: q !== "AUTO" ? q : "Direct", originalUrl: mp4M[1] }); }
             } catch(e) {}
             if (!resolved) videos.push({ url: embedUrl, quality: q !== "AUTO" ? q : "Stream", originalUrl: embedUrl });
         }
 
-        await this._log(`video: ${videos.length} found`);
+        await this._log(`video: ${videos.length}`);
         return videos;
     }
 
