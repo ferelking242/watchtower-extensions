@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.2.0",
+    "version": "3.3.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,27 +19,71 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox — Films & Séries. API aoneroom (h5-api). Sous-titres multi-langues."
+    "notes": "MovieBox — Films & Séries. API aoneroom. Sous-titres multi-langues."
 }];
 
 // ══════════════════════════════════════════════════════════════
-//  MovieBox  v3.2.0
-//  Endpoint: GET /wefeed-h5api-bff/home  (public, no token)
-//  Detail:   GET /wefeed-h5api-bff/detail?subjectId=X
-//  Play:     GET /wefeed-h5api-bff/subject/play?subjectId=X&se=X&ep=X
+//  MovieBox  v3.3.0
+//  Fixes: X-Client-Token auth header, episodes ascending order
 // ══════════════════════════════════════════════════════════════
 
 var MB_API  = "https://h5-api.aoneroom.com";
-var MB_ORIG = "https://lok-lok.cc";
+var MB_ORIG = "https://themoviebox.xyz";
 var MB_PER  = 30;
+
+// ── Compact MD5 (for X-Client-Token generation) ───────────────
+function mbMD5(str) {
+    function sl(n,c){return(n<<c)|(n>>>(32-c));}
+    function add(a,b){var m=(a&0xffff)+(b&0xffff),h=(a>>16)+(b>>16)+(m>>16);return(h<<16)|(m&0xffff);}
+    function cmn(q,a,b,x,s,t){return add(sl(add(add(a,q),add(x,t)),s),b);}
+    function ff(a,b,c,d,x,s,t){return cmn((b&c)|((~b)&d),a,b,x,s,t);}
+    function gg(a,b,c,d,x,s,t){return cmn((b&d)|(c&(~d)),a,b,x,s,t);}
+    function hh(a,b,c,d,x,s,t){return cmn(b^c^d,a,b,x,s,t);}
+    function ii(a,b,c,d,x,s,t){return cmn(c^(b|(~d)),a,b,x,s,t);}
+    var m=[], i, s=str;
+    for(i=0;i<s.length*8;i+=8)m[i>>5]|=(s.charCodeAt(i/8)&0xff)<<(i%32);
+    m[s.length*8>>5]|=0x80<<((s.length*8)%32);
+    m[(((s.length*8+64)>>>9)<<4)+14]=s.length*8;
+    var a=1732584193,b=-271733879,c=-1732584194,d=271733878;
+    for(i=0;i<m.length;i+=16){
+        var oa=a,ob=b,oc=c,od=d;
+        a=ff(a,b,c,d,m[i],7,-680876936);d=ff(d,a,b,c,m[i+1],12,-389564586);c=ff(c,d,a,b,m[i+2],17,606105819);b=ff(b,c,d,a,m[i+3],22,-1044525330);
+        a=ff(a,b,c,d,m[i+4],7,-176418897);d=ff(d,a,b,c,m[i+5],12,1200080426);c=ff(c,d,a,b,m[i+6],17,-1473231341);b=ff(b,c,d,a,m[i+7],22,-45705983);
+        a=ff(a,b,c,d,m[i+8],7,1770035416);d=ff(d,a,b,c,m[i+9],12,-1958414417);c=ff(c,d,a,b,m[i+10],17,-42063);b=ff(b,c,d,a,m[i+11],22,-1990404162);
+        a=ff(a,b,c,d,m[i+12],7,1804603682);d=ff(d,a,b,c,m[i+13],12,-40341101);c=ff(c,d,a,b,m[i+14],17,-1502002290);b=ff(b,c,d,a,m[i+15],22,1236535329);
+        a=gg(a,b,c,d,m[i+1],5,-165796510);d=gg(d,a,b,c,m[i+6],9,-1069501632);c=gg(c,d,a,b,m[i+11],14,643717713);b=gg(b,c,d,a,m[i],20,-373897302);
+        a=gg(a,b,c,d,m[i+5],5,-701558691);d=gg(d,a,b,c,m[i+10],9,38016083);c=gg(c,d,a,b,m[i+15],14,-660478335);b=gg(b,c,d,a,m[i+4],20,-405537848);
+        a=gg(a,b,c,d,m[i+9],5,568446438);d=gg(d,a,b,c,m[i+14],9,-1019803690);c=gg(c,d,a,b,m[i+3],14,-187363961);b=gg(b,c,d,a,m[i+8],20,1163531501);
+        a=gg(a,b,c,d,m[i+13],5,-1444681467);d=gg(d,a,b,c,m[i+2],9,-51403784);c=gg(c,d,a,b,m[i+7],14,1735328473);b=gg(b,c,d,a,m[i+12],20,-1926607734);
+        a=hh(a,b,c,d,m[i+5],4,-378558);d=hh(d,a,b,c,m[i+8],11,-2022574463);c=hh(c,d,a,b,m[i+11],16,1839030562);b=hh(b,c,d,a,m[i+14],23,-35309556);
+        a=hh(a,b,c,d,m[i+1],4,-1530992060);d=hh(d,a,b,c,m[i+4],11,1272893353);c=hh(c,d,a,b,m[i+7],16,-155497632);b=hh(b,c,d,a,m[i+10],23,-1094730640);
+        a=hh(a,b,c,d,m[i+13],4,681279174);d=hh(d,a,b,c,m[i],11,-358537222);c=hh(c,d,a,b,m[i+3],16,-722521979);b=hh(b,c,d,a,m[i+6],23,76029189);
+        a=hh(a,b,c,d,m[i+9],4,-640364487);d=hh(d,a,b,c,m[i+12],11,-421815835);c=hh(c,d,a,b,m[i+15],16,530742520);b=hh(b,c,d,a,m[i+2],23,-995338651);
+        a=ii(a,b,c,d,m[i],6,-198630844);d=ii(d,a,b,c,m[i+7],10,1126891415);c=ii(c,d,a,b,m[i+14],15,-1416354905);b=ii(b,c,d,a,m[i+5],21,-57434055);
+        a=ii(a,b,c,d,m[i+12],6,1700485571);d=ii(d,a,b,c,m[i+3],10,-1894986606);c=ii(c,d,a,b,m[i+10],15,-1051523);b=ii(b,c,d,a,m[i+1],21,-2054922799);
+        a=ii(a,b,c,d,m[i+8],6,1873313359);d=ii(d,a,b,c,m[i+15],10,-30611744);c=ii(c,d,a,b,m[i+6],15,-1560198380);b=ii(b,c,d,a,m[i+13],21,1309151649);
+        a=ii(a,b,c,d,m[i+4],6,-145523070);d=ii(d,a,b,c,m[i+11],10,-1120210379);c=ii(c,d,a,b,m[i+2],15,718787259);b=ii(b,c,d,a,m[i+9],21,-343485551);
+        a=add(a,oa);b=add(b,ob);c=add(c,oc);d=add(d,od);
+    }
+    function hex(n){var r="",H="0123456789abcdef",j;for(j=0;j<4;j++){var v=(n>>>(j*8))&0xff;r+=H[(v>>4)&0xf]+H[v&0xf];}return r;}
+    return hex(a)+hex(b)+hex(c)+hex(d);
+}
+
+function mbClientToken() {
+    var e = Math.floor(Date.now() / 1000);
+    var rev = String(e).split("").reverse().join("");
+    return e + "," + mbMD5(rev);
+}
 
 function mbHeaders() {
     return {
-        "Accept":        "application/json",
-        "Origin":        MB_ORIG,
-        "Referer":       MB_ORIG + "/",
-        "User-Agent":    "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
-        "X-Client-Info": "{\"timezone\":\"UTC\"}"
+        "Accept":          "application/json",
+        "Origin":          MB_ORIG,
+        "Referer":         MB_ORIG + "/",
+        "User-Agent":      "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
+        "X-Client-Info":   "{\"timezone\":\"UTC\"}",
+        "X-Client-Token":  mbClientToken(),
+        "X-Request-Lang":  "fr"
     };
 }
 
@@ -73,7 +117,7 @@ async function mbFetchHome() {
 function mbCover(s) {
     if (s.cover && s.cover.url) return s.cover.url;
     if (s.horizontalCover) return s.horizontalCover;
-    if (s.verticalCover) return s.verticalCover;
+    if (s.verticalCover)   return s.verticalCover;
     return "";
 }
 
@@ -111,15 +155,13 @@ function mbFilter(all, typeStr) {
 
 class DefaultExtension extends MProvider {
 
-    // ── Home sections ─────────────────────────────────────────
-
     getCustomLists() {
         return [
-            { id: "all",       name: "🎭 Tout"       },
-            { id: "movies",    name: "🎬 Films"       },
-            { id: "series",    name: "📺 Séries"      },
-            { id: "anime",     name: "⛩️ Anime"       },
-            { id: "latest",    name: "🆕 Récents"     }
+            { id: "all",       name: "🎭 Tout"    },
+            { id: "movies",    name: "🎬 Films"    },
+            { id: "series",    name: "📺 Séries"   },
+            { id: "anime",     name: "⛩️ Anime"    },
+            { id: "latest",    name: "🆕 Récents"  }
         ];
     }
 
@@ -140,11 +182,8 @@ class DefaultExtension extends MProvider {
         return mbPage(all, page);
     }
 
-    // ── Browse ────────────────────────────────────────────────
-
     async getPopular(page) {
-        var all = await mbFetchHome();
-        return mbPage(all, page);
+        return mbPage(await mbFetchHome(), page);
     }
 
     async getLatestUpdates(page) {
@@ -162,9 +201,9 @@ class DefaultExtension extends MProvider {
         var typeVal = "";
         try {
             if (filterList && filterList[0] && filterList[0].state !== undefined) {
-                var opts = [{ value: "" }, { value: "1" }, { value: "2" }, { value: "5" }, { value: "4" }];
+                var opts = [{ v: "" }, { v: "1" }, { v: "2" }, { v: "5" }, { v: "4" }];
                 var idx = filterList[0].state;
-                if (idx > 0 && idx < opts.length) typeVal = opts[idx].value;
+                if (idx > 0 && idx < opts.length) typeVal = opts[idx].v;
             }
         } catch (_) {}
 
@@ -181,11 +220,8 @@ class DefaultExtension extends MProvider {
             }
             filtered = result;
         }
-
         return mbPage(filtered, page);
     }
-
-    // ── Detail ────────────────────────────────────────────────
 
     async getDetail(url) {
         var payload;
@@ -237,11 +273,12 @@ class DefaultExtension extends MProvider {
                 dateUpload: s.releaseDate || ""
             });
         } else {
+            // ✅ Ascending order — S1 E1 first, last episode at the end
             for (var si = 0; si < seasons.length; si++) {
                 var season = seasons[si];
-                var seNum  = season.se   || 1;
+                var seNum  = season.se   || (si + 1);
                 var maxEp  = season.maxEp || 0;
-                for (var ep = maxEp; ep >= 1; ep--) {
+                for (var ep = 1; ep <= maxEp; ep++) {
                     chapters.push({
                         name:       (maxEp > 1) ? ("S" + seNum + " E" + ep) : (s.title || "Episode"),
                         url:        JSON.stringify({ subjectId: String(realId), detailPath: realDp, se: seNum, ep: ep }),
@@ -249,6 +286,7 @@ class DefaultExtension extends MProvider {
                     });
                 }
             }
+            // Ascending order: E1 first → player starts at E1, list reads naturally
         }
 
         return {
@@ -260,8 +298,6 @@ class DefaultExtension extends MProvider {
             chapters:    chapters
         };
     }
-
-    // ── Video ─────────────────────────────────────────────────
 
     async getVideoList(url) {
         var payload;
@@ -287,10 +323,16 @@ class DefaultExtension extends MProvider {
 
         if (!j || j.code !== 0 || !j.data) {
             if (j && j.code === 403) throw new Error("Région bloquée — utilise un VPN.");
-            throw new Error("Pas de flux disponible.");
+            if (j && j.code === 401) throw new Error("Connexion requise.");
+            throw new Error("Pas de flux disponible. (code=" + (j ? j.code : "?") + ")");
         }
 
         var data    = j.data;
+
+        if (!data.hasResource) {
+            throw new Error("Épisode non disponible pour le moment. Réessaie plus tard.");
+        }
+
         var refHdrs = { "Referer": MB_ORIG + "/" };
 
         // Préférence sous-titres
@@ -299,7 +341,7 @@ class DefaultExtension extends MProvider {
             if (this.source && this.source.prefs) {
                 for (var pi = 0; pi < this.source.prefs.length; pi++) {
                     if (this.source.prefs[pi].key === "mb_sub") {
-                        prefSub = this.source.prefs[pi].value || "";
+                        prefSub = String(this.source.prefs[pi].value || "");
                         break;
                     }
                 }
@@ -312,7 +354,7 @@ class DefaultExtension extends MProvider {
             if (data.hls && data.hls[0]) stream = data.hls[0];
             else if (data.streams && data.streams[0]) stream = data.streams[0];
             if (stream && stream.id) {
-                var fmt = data.hls ? "HLS" : "MP4";
+                var fmt = data.hls && data.hls.length ? "HLS" : "MP4";
                 var capUrl = MB_API + "/wefeed-h5api-bff/subject/caption"
                     + "?format=" + fmt
                     + "&id=" + stream.id
@@ -325,16 +367,13 @@ class DefaultExtension extends MProvider {
                     var caps = cj.data.captions;
                     for (var ci = 0; ci < caps.length; ci++) {
                         var c = caps[ci];
-                        if (c && c.url) {
-                            subtitles.push({ file: c.url, label: c.lanName || c.lan || "Sub" });
-                        }
+                        if (c && c.url) subtitles.push({ file: c.url, label: c.lanName || c.lan || "Sub" });
                     }
-                    // Mettre la langue préférée en premier
                     if (prefSub) {
                         for (var si2 = 0; si2 < subtitles.length; si2++) {
                             if ((subtitles[si2].label || "").toLowerCase().indexOf(prefSub) >= 0) {
-                                var preferred = subtitles.splice(si2, 1)[0];
-                                subtitles.unshift(preferred);
+                                var pref = subtitles.splice(si2, 1)[0];
+                                subtitles.unshift(pref);
                                 break;
                             }
                         }
@@ -368,12 +407,15 @@ class DefaultExtension extends MProvider {
                 pushStream(m, "MP4 " + (m.resolutions || "") + "p");
             }
         }
+        if (data.dash && data.dash.length) {
+            for (var di = 0; di < data.dash.length; di++) {
+                pushStream(data.dash[di], "DASH " + (data.dash[di].resolutions || "") + "p");
+            }
+        }
 
-        if (!out.length) throw new Error("Aucun flux disponible.");
+        if (!out.length) throw new Error("Aucun flux disponible pour cet épisode.");
         return out;
     }
-
-    // ── Filters & Preferences ─────────────────────────────────
 
     getFilterList() {
         return [{
@@ -381,11 +423,11 @@ class DefaultExtension extends MProvider {
             name:      "Type",
             state:     0,
             values: [
-                { type_name: "SelectOption", name: "🎭 Tout",       value: "" },
-                { type_name: "SelectOption", name: "🎬 Films",      value: "1" },
-                { type_name: "SelectOption", name: "📺 Séries",     value: "2" },
-                { type_name: "SelectOption", name: "⛩️ Anime",      value: "5" },
-                { type_name: "SelectOption", name: "🎨 Animation",  value: "4" }
+                { type_name: "SelectOption", name: "🎭 Tout",      value: "" },
+                { type_name: "SelectOption", name: "🎬 Films",     value: "1" },
+                { type_name: "SelectOption", name: "📺 Séries",    value: "2" },
+                { type_name: "SelectOption", name: "⛩️ Anime",     value: "5" },
+                { type_name: "SelectOption", name: "🎨 Animation", value: "4" }
             ]
         }];
     }
