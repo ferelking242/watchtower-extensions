@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.rexporn.st/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "1.0.6",
+      "version": "1.0.7",
       "pkgPath": "watch/nsfw/en/rexporn.js",
       "notes": "Adult content (18+) — multi-quality MP4 streaming",
       "isNsfw": true
@@ -17,7 +17,7 @@ const watchtowerSources = [{
       getPageHeaders(url) {
         return {
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-          "Referer": pageUrl || "https://www.rexporn.st/",
+          "Referer": url || "https://www.rexporn.st/",
           "Origin": "https://www.rexporn.st"
         };
       }
