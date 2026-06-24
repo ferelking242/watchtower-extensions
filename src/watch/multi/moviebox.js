@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.1.0",
+    "version": "3.2.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,18 +19,19 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox — Films & Séries via API aoneroom (h5-api). Sous-titres multi-langues."
+    "notes": "MovieBox — Films & Séries. API aoneroom (h5-api). Sous-titres multi-langues."
 }];
 
 // ══════════════════════════════════════════════════════════════
-//  MovieBox  v3.1.0
-//  API GET  /wefeed-h5api-bff/home  (public, sans token)
-//  Detail   /wefeed-h5api-bff/detail?detailPath=X
-//  Play     /wefeed-h5api-bff/subject/play?subjectId=X&se=X&ep=X
+//  MovieBox  v3.2.0
+//  Endpoint: GET /wefeed-h5api-bff/home  (public, no token)
+//  Detail:   GET /wefeed-h5api-bff/detail?subjectId=X
+//  Play:     GET /wefeed-h5api-bff/subject/play?subjectId=X&se=X&ep=X
 // ══════════════════════════════════════════════════════════════
 
 var MB_API  = "https://h5-api.aoneroom.com";
 var MB_ORIG = "https://lok-lok.cc";
+var MB_PER  = 30;
 
 function mbHeaders() {
     return {
@@ -42,21 +43,21 @@ function mbHeaders() {
     };
 }
 
-async function mbGetHome() {
+async function mbFetchHome() {
     try {
         var res = await new Client().get(MB_API + "/wefeed-h5api-bff/home", mbHeaders());
         var j;
         try { j = JSON.parse(res.body); } catch (_) { return []; }
-        if (!j || j.code !== 0 || !j.data) return [];
-        var ops = j.data.operatingList || [];
+        if (!j || j.code !== 0 || !j.data || !j.data.operatingList) return [];
+        var ops = j.data.operatingList;
         var all = [];
         var seen = {};
         for (var i = 0; i < ops.length; i++) {
-            var op = ops[i];
-            var subs = op.subjects || [];
+            var subs = ops[i].subjects;
+            if (!subs || !subs.length) continue;
             for (var k = 0; k < subs.length; k++) {
                 var s = subs[k];
-                var sid = String(s.subjectId || "");
+                var sid = s.subjectId ? String(s.subjectId) : "";
                 if (sid && !seen[sid]) {
                     seen[sid] = 1;
                     all.push(s);
@@ -69,74 +70,134 @@ async function mbGetHome() {
     }
 }
 
+function mbCover(s) {
+    if (s.cover && s.cover.url) return s.cover.url;
+    if (s.horizontalCover) return s.horizontalCover;
+    if (s.verticalCover) return s.verticalCover;
+    return "";
+}
+
 function mbToItem(s) {
-    var coverUrl = "";
-    if (s.cover && s.cover.url) coverUrl = s.cover.url;
-    var link = JSON.stringify({
-        subjectId:   s.subjectId || "",
-        detailPath:  s.detailPath || "",
-        subjectType: s.subjectType || 1
-    });
     return {
-        name:        s.title || "Unknown",
-        imageUrl:    coverUrl,
-        link:        link,
+        name:        s.title || s.subjectName || "Unknown",
+        imageUrl:    mbCover(s),
+        link:        JSON.stringify({
+            subjectId:   String(s.subjectId || ""),
+            detailPath:  s.detailPath || "",
+            subjectType: s.subjectType || 1
+        }),
         description: s.description || ""
     };
 }
 
-function mbPaginate(items, page) {
-    var PER = 30;
-    var p   = (page && page > 0) ? page : 1;
-    var start = (p - 1) * PER;
-    var end   = p * PER;
-    var slice = items.slice(start, end);
-    var list  = [];
-    for (var i = 0; i < slice.length; i++) list.push(mbToItem(slice[i]));
-    return { list: list, hasNextPage: end < items.length };
+function mbPage(items, page) {
+    var p     = (page && page > 0) ? page : 1;
+    var start = (p - 1) * MB_PER;
+    var end   = p * MB_PER;
+    var slice = [];
+    for (var i = start; i < end && i < items.length; i++) slice.push(mbToItem(items[i]));
+    return { list: slice, hasNextPage: end < items.length };
+}
+
+function mbFilter(all, typeStr) {
+    if (!typeStr) return all;
+    var t = parseInt(typeStr, 10);
+    var out = [];
+    for (var i = 0; i < all.length; i++) {
+        if (all[i].subjectType === t) out.push(all[i]);
+    }
+    return out;
 }
 
 class DefaultExtension extends MProvider {
 
+    // ── Home sections ─────────────────────────────────────────
+
+    getCustomLists() {
+        return [
+            { id: "all",       name: "🎭 Tout"       },
+            { id: "movies",    name: "🎬 Films"       },
+            { id: "series",    name: "📺 Séries"      },
+            { id: "anime",     name: "⛩️ Anime"       },
+            { id: "latest",    name: "🆕 Récents"     }
+        ];
+    }
+
+    async getCustomList(listId, page) {
+        var all = await mbFetchHome();
+        if (listId === "movies")    return mbPage(mbFilter(all, "1"), page);
+        if (listId === "series")    return mbPage(mbFilter(all, "2"), page);
+        if (listId === "anime")     return mbPage(mbFilter(all, "5"), page);
+        if (listId === "animation") return mbPage(mbFilter(all, "4"), page);
+        if (listId === "latest") {
+            var sorted = all.slice().sort(function(a, b) {
+                var da = a.releaseDate || "";
+                var db = b.releaseDate || "";
+                return db > da ? 1 : db < da ? -1 : 0;
+            });
+            return mbPage(sorted, page);
+        }
+        return mbPage(all, page);
+    }
+
+    // ── Browse ────────────────────────────────────────────────
+
     async getPopular(page) {
-        var all = await mbGetHome();
-        return mbPaginate(all, page);
+        var all = await mbFetchHome();
+        return mbPage(all, page);
     }
 
     async getLatestUpdates(page) {
-        var all = await mbGetHome();
-        all.sort(function(a, b) {
+        var all = await mbFetchHome();
+        var sorted = all.slice().sort(function(a, b) {
             var da = a.releaseDate || "";
             var db = b.releaseDate || "";
-            if (db > da) return 1;
-            if (db < da) return -1;
-            return 0;
+            return db > da ? 1 : db < da ? -1 : 0;
         });
-        return mbPaginate(all, page);
+        return mbPage(sorted, page);
     }
 
     async search(query, page, filterList) {
-        if (!query || !query.trim()) return this.getPopular(page);
-        var q   = query.trim().toLowerCase();
-        var all = await mbGetHome();
-        var filtered = [];
-        for (var i = 0; i < all.length; i++) {
-            var s = all[i];
-            var t = (s.title || "").toLowerCase();
-            var g = (s.genre || "").toLowerCase();
-            if (t.indexOf(q) >= 0 || g.indexOf(q) >= 0) filtered.push(s);
+        var all = await mbFetchHome();
+        var typeVal = "";
+        try {
+            if (filterList && filterList[0] && filterList[0].state !== undefined) {
+                var opts = [{ value: "" }, { value: "1" }, { value: "2" }, { value: "5" }, { value: "4" }];
+                var idx = filterList[0].state;
+                if (idx > 0 && idx < opts.length) typeVal = opts[idx].value;
+            }
+        } catch (_) {}
+
+        var filtered = mbFilter(all, typeVal);
+
+        if (query && query.trim()) {
+            var q = query.trim().toLowerCase();
+            var result = [];
+            for (var i = 0; i < filtered.length; i++) {
+                var s = filtered[i];
+                var t = (s.title || s.subjectName || "").toLowerCase();
+                var g = (s.genre || "").toLowerCase();
+                if (t.indexOf(q) >= 0 || g.indexOf(q) >= 0) result.push(s);
+            }
+            filtered = result;
         }
-        return mbPaginate(filtered, page);
+
+        return mbPage(filtered, page);
     }
+
+    // ── Detail ────────────────────────────────────────────────
 
     async getDetail(url) {
         var payload;
         try { payload = JSON.parse(url); } catch (_) { payload = {}; }
-        var detailPath  = payload.detailPath  || "";
         var subjectId   = payload.subjectId   || "";
+        var detailPath  = payload.detailPath  || "";
         var subjectType = payload.subjectType || 1;
 
-        var param = detailPath ? ("detailPath=" + detailPath) : ("subjectId=" + subjectId);
+        var param = detailPath
+            ? ("detailPath=" + encodeURIComponent(detailPath))
+            : ("subjectId=" + encodeURIComponent(subjectId));
+
         var j = null;
         try {
             var res = await new Client().get(MB_API + "/wefeed-h5api-bff/detail?" + param, mbHeaders());
@@ -150,29 +211,29 @@ class DefaultExtension extends MProvider {
         var s      = j.data.subject;
         var res2   = j.data.resource || {};
         var genres = [];
-        var genreStr = s.genre || "";
-        var genreParts = genreStr.split(",");
-        for (var i = 0; i < genreParts.length; i++) {
-            var g = genreParts[i].trim();
+        var gparts = (s.genre || "").split(",");
+        for (var i = 0; i < gparts.length; i++) {
+            var g = gparts[i].trim();
             if (g) genres.push(g);
         }
         if (s.countryName) genres.push(s.countryName);
 
         var desc = s.description || "";
-        if (s.imdbRatingValue && parseFloat(s.imdbRatingValue) > 0) desc += "\n\n⭐ IMDb " + s.imdbRatingValue;
-        if (s.duration) desc += "  ⏱ " + s.duration;
+        if (s.imdbRatingValue && parseFloat(s.imdbRatingValue) > 0) {
+            desc += "\n\n⭐ IMDb " + s.imdbRatingValue;
+        }
 
-        var realId = s.subjectId || subjectId;
-        var realDp = s.detailPath || detailPath || "";
+        var realId   = s.subjectId   || subjectId;
+        var realDp   = s.detailPath  || detailPath || "";
         var realType = s.subjectType || subjectType;
-        var seasons = res2.seasons || [];
+        var seasons  = (res2 && res2.seasons) ? res2.seasons : [];
         var chapters = [];
         var isMovie  = (realType === 1) || (seasons.length === 0);
 
         if (isMovie) {
             chapters.push({
                 name:       "▶ Regarder",
-                url:        JSON.stringify({ subjectId: realId, detailPath: realDp, se: 0, ep: 0 }),
+                url:        JSON.stringify({ subjectId: String(realId), detailPath: realDp, se: 0, ep: 0 }),
                 dateUpload: s.releaseDate || ""
             });
         } else {
@@ -182,20 +243,17 @@ class DefaultExtension extends MProvider {
                 var maxEp  = season.maxEp || 0;
                 for (var ep = maxEp; ep >= 1; ep--) {
                     chapters.push({
-                        name:       (maxEp > 1) ? ("S" + seNum + " E" + ep) : (s.title || "Épisode"),
-                        url:        JSON.stringify({ subjectId: realId, detailPath: realDp, se: seNum, ep: ep }),
+                        name:       (maxEp > 1) ? ("S" + seNum + " E" + ep) : (s.title || "Episode"),
+                        url:        JSON.stringify({ subjectId: String(realId), detailPath: realDp, se: seNum, ep: ep }),
                         dateUpload: ""
                     });
                 }
             }
         }
 
-        var imgUrl = "";
-        if (s.cover && s.cover.url) imgUrl = s.cover.url;
-
         return {
             name:        s.title || "Unknown",
-            imageUrl:    imgUrl,
+            imageUrl:    mbCover(s),
             description: desc,
             genre:       genres,
             status:      isMovie ? 1 : 0,
@@ -203,9 +261,12 @@ class DefaultExtension extends MProvider {
         };
     }
 
+    // ── Video ─────────────────────────────────────────────────
+
     async getVideoList(url) {
         var payload;
         try { payload = JSON.parse(url); } catch (_) { throw new Error("URL invalide"); }
+
         var subjectId  = payload.subjectId  || "";
         var detailPath = payload.detailPath || "";
         var se = (payload.se !== undefined) ? payload.se : 0;
@@ -213,7 +274,7 @@ class DefaultExtension extends MProvider {
         if (!subjectId) throw new Error("subjectId manquant");
 
         var playUrl = MB_API + "/wefeed-h5api-bff/subject/play"
-            + "?subjectId=" + subjectId
+            + "?subjectId=" + encodeURIComponent(subjectId)
             + "&se=" + se
             + "&ep=" + ep
             + "&detailPath=" + encodeURIComponent(detailPath);
@@ -229,28 +290,54 @@ class DefaultExtension extends MProvider {
             throw new Error("Pas de flux disponible.");
         }
 
-        var data      = j.data;
-        var refHdrs   = { "Referer": MB_ORIG + "/" };
-        var subtitles = [];
+        var data    = j.data;
+        var refHdrs = { "Referer": MB_ORIG + "/" };
 
-        // Sous-titres
+        // Préférence sous-titres
+        var prefSub = "";
         try {
-            var streams  = (data.hls && data.hls[0]) || (data.streams && data.streams[0]) || null;
-            if (streams && streams.id) {
-                var fmt  = data.hls ? "HLS" : "MP4";
+            if (this.source && this.source.prefs) {
+                for (var pi = 0; pi < this.source.prefs.length; pi++) {
+                    if (this.source.prefs[pi].key === "mb_sub") {
+                        prefSub = this.source.prefs[pi].value || "";
+                        break;
+                    }
+                }
+            }
+        } catch (_) {}
+
+        var subtitles = [];
+        try {
+            var stream = null;
+            if (data.hls && data.hls[0]) stream = data.hls[0];
+            else if (data.streams && data.streams[0]) stream = data.streams[0];
+            if (stream && stream.id) {
+                var fmt = data.hls ? "HLS" : "MP4";
                 var capUrl = MB_API + "/wefeed-h5api-bff/subject/caption"
                     + "?format=" + fmt
-                    + "&id=" + streams.id
-                    + "&subjectId=" + subjectId
+                    + "&id=" + stream.id
+                    + "&subjectId=" + encodeURIComponent(subjectId)
                     + "&detailPath=" + encodeURIComponent(detailPath);
                 var cRes = await new Client().get(capUrl, mbHeaders());
-                var cj   = null;
+                var cj = null;
                 try { cj = JSON.parse(cRes.body); } catch (_) {}
                 if (cj && cj.code === 0 && cj.data && cj.data.captions) {
                     var caps = cj.data.captions;
                     for (var ci = 0; ci < caps.length; ci++) {
                         var c = caps[ci];
-                        if (c && c.url) subtitles.push({ file: c.url, label: c.lanName || c.lan || "Sub" });
+                        if (c && c.url) {
+                            subtitles.push({ file: c.url, label: c.lanName || c.lan || "Sub" });
+                        }
+                    }
+                    // Mettre la langue préférée en premier
+                    if (prefSub) {
+                        for (var si2 = 0; si2 < subtitles.length; si2++) {
+                            if ((subtitles[si2].label || "").toLowerCase().indexOf(prefSub) >= 0) {
+                                var preferred = subtitles.splice(si2, 1)[0];
+                                subtitles.unshift(preferred);
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -258,20 +345,26 @@ class DefaultExtension extends MProvider {
 
         var out = [];
         function pushStream(s, label) {
-            if (s && s.url) out.push({ url: s.url, originalUrl: s.url, quality: label, headers: refHdrs, subtitles: subtitles });
+            if (s && s.url) {
+                out.push({ url: s.url, originalUrl: s.url, quality: label, headers: refHdrs, subtitles: subtitles });
+            }
         }
 
         if (data.hls && data.hls.length) {
-            var hlsSorted = data.hls.slice().sort(function(a,b) { return (+b.resolutions||0) - (+a.resolutions||0); });
-            for (var hi = 0; hi < hlsSorted.length; hi++) {
-                var h = hlsSorted[hi];
+            var hlsList = data.hls.slice().sort(function(a, b) {
+                return (+b.resolutions || 0) - (+a.resolutions || 0);
+            });
+            for (var hi = 0; hi < hlsList.length; hi++) {
+                var h = hlsList[hi];
                 pushStream(h, h.resolutions ? "HLS " + h.resolutions + "p" : "HLS Auto");
             }
         }
         if (data.streams && data.streams.length) {
-            var mpSorted = data.streams.slice().sort(function(a,b) { return (+b.resolutions||0) - (+a.resolutions||0); });
-            for (var mi = 0; mi < mpSorted.length; mi++) {
-                var m = mpSorted[mi];
+            var mp4List = data.streams.slice().sort(function(a, b) {
+                return (+b.resolutions || 0) - (+a.resolutions || 0);
+            });
+            for (var mi = 0; mi < mp4List.length; mi++) {
+                var m = mp4List[mi];
                 pushStream(m, "MP4 " + (m.resolutions || "") + "p");
             }
         }
@@ -280,15 +373,19 @@ class DefaultExtension extends MProvider {
         return out;
     }
 
+    // ── Filters & Preferences ─────────────────────────────────
+
     getFilterList() {
         return [{
-            type_name: "SelectFilter", name: "Type", state: 0,
+            type_name: "SelectFilter",
+            name:      "Type",
+            state:     0,
             values: [
-                { type_name: "SelectOption", name: "🎭 Tout",          value: "" },
-                { type_name: "SelectOption", name: "🎬 Films",         value: "1" },
-                { type_name: "SelectOption", name: "📺 Séries",        value: "2" },
-                { type_name: "SelectOption", name: "⛩️ Anime",         value: "5" },
-                { type_name: "SelectOption", name: "🎨 Animation",     value: "4" }
+                { type_name: "SelectOption", name: "🎭 Tout",       value: "" },
+                { type_name: "SelectOption", name: "🎬 Films",      value: "1" },
+                { type_name: "SelectOption", name: "📺 Séries",     value: "2" },
+                { type_name: "SelectOption", name: "⛩️ Anime",      value: "5" },
+                { type_name: "SelectOption", name: "🎨 Animation",  value: "4" }
             ]
         }];
     }
@@ -298,10 +395,10 @@ class DefaultExtension extends MProvider {
             key: "mb_sub",
             listPreference: {
                 title:      "Langue des sous-titres",
-                summary:    "Déplacée en tête si disponible",
+                summary:    "Déplacée en tête de liste si disponible",
                 valueIndex: 0,
-                entries:    ["English","Français","العربية","Português","Indonesian","中文","Русский","日本語","한국어"],
-                entryValues:["en","fr","ar","pt","id","zh","ru","ja","ko"]
+                entries:    ["English", "Français", "العربية", "Português", "Indonesian", "中文", "Русский", "日本語", "한국어", "Español"],
+                entryValues:["en",      "fr",       "ar",      "pt",        "id",         "zh",   "ru",      "ja",      "ko",      "es"]
             }
         }];
     }
