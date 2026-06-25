@@ -1,19 +1,32 @@
 const watchtowerSources = [{
   "name": "Google",
   "lang": "all",
+  "id": 1923847560,
   "baseUrl": "https://www.google.com",
   "apiUrl": "",
   "iconUrl": "https://www.google.com/favicon.ico",
   "typeSource": "single",
-  "isManga": false,
-  "version": "1.0.0"
+  "itemType": 1,
+  "version": "1.0.1"
 }];
 
-class DefaultExtension extends WatchtowerExtension {
-  constructor(source) { super(source); }
+const BASE_URL = "https://www.google.com";
+const ICON = "https://www.google.com/favicon.ico";
+
+class DefaultExtension extends MProvider {
+  constructor() { super(); }
+
+  get supportsLatest() { return false; }
 
   async getPopular(page) {
-    return { list: [], hasNextPage: false };
+    return {
+      list: [{
+        name: "Ouvrir Google",
+        imageUrl: ICON,
+        link: BASE_URL
+      }],
+      hasNextPage: false
+    };
   }
 
   async getLatestUpdates(page) {
@@ -21,12 +34,14 @@ class DefaultExtension extends WatchtowerExtension {
   }
 
   async search(query, page, filters) {
+    const url = query
+      ? `${BASE_URL}/search?q=${encodeURIComponent(query)}`
+      : BASE_URL;
     return {
       list: [{
-        name: query || "Recherche Google",
-        imageUrl: "https://www.google.com/favicon.ico",
-        url: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
-        genre: ""
+        name: query ? `Rechercher "${query}"` : "Ouvrir Google",
+        imageUrl: ICON,
+        link: url
       }],
       hasNextPage: false
     };
@@ -35,11 +50,11 @@ class DefaultExtension extends WatchtowerExtension {
   async getDetail(url) {
     return {
       name: "Google",
-      imageUrl: "https://www.google.com/favicon.ico",
-      url,
+      imageUrl: ICON,
+      url: url,
       episodes: [{
-        name: "Ouvrir",
-        url,
+        name: "Ouvrir dans le WebView",
+        url: url,
         dateUpload: ""
       }]
     };
