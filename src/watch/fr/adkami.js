@@ -25,22 +25,21 @@ const watchtowerSources = [{
       _decode(s){return String(s||"").replace(/&amp;/g,"&").replace(/&quot;/g,'"').replace(/&#039;/g,"'");}
       _parse(html){
           const list=[],seen={};
-          const re=/<div[^>]+class="[^"]*video-item[^"]*"[^>]*>[\s\S]{0,100}?<a[^>]+href="([^"]+)"[^>]*>[\s\S]{0,300}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,100})"/gi;
+          // adkami.com: <div class="video-item-list">...<a href="/anime/N">
+          //   <img class="image lazy" name="miniature TITLE" data-original="URL">
+          // name attr comes BEFORE data-original: <img ... name="miniature TITLE" data-original="URL">
+          const re=/<div[^>]+class="[^"]*video-item[^"]*"[^>]*>[\s\S]{0,600}?<a[^>]+href="([^"]+)"[^>]*>[\s\S]{0,400}?<img[^>]+name="miniature ([^"]{2,100})"[^>]+data-original="([^"]+)"/gi;
           let m;
           while((m=re.exec(html))!==null){
               const url=m[1].startsWith("http")?m[1]:this.baseUrl+(m[1].startsWith("/")?m[1]:"/"+m[1]);
-              if(url in seen)continue;seen[url]=1;list.push({link:url,imageUrl:m[2],name:this._decode(m[3].trim())});
-          }
-          if(list.length===0){
-              const re2=new RegExp('<a[^>]+href="([^"]+/video/[^"]+)"[^>]*>[\\s\\S]{0,300}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,100})"','gi');
-              while((m=re2.exec(html))!==null){
-                  const url=m[1].startsWith("http")?m[1]:this.baseUrl+m[1];
-                  if(url in seen)continue;seen[url]=1;list.push({link:url,imageUrl:m[2],name:this._decode(m[3].trim())});
-              }
+              if(url in seen)continue;seen[url]=1;
+              // m[2]=name (after "miniature "), m[3]=data-original URL
+              const imgUrl=m[3].startsWith("http")?m[3]:"https://image.adkami.com"+m[3];
+              list.push({link:url,imageUrl:imgUrl,name:this._decode(m[2].trim())});
           }
           return list;
       }
-      async getPopular(page){const r=await new Client().get(this.baseUrl+"/liste-animes-vf/?page="+page,this._hdrs());return{list:this._parse(r.body),hasNextPage:page<20};}
+      async getPopular(page){const r=await new Client().get(this.baseUrl+"/anime?page="+page,this._hdrs());return{list:this._parse(r.body),hasNextPage:page<20};}
       async getLatestUpdates(page){const r=await new Client().get(this.baseUrl+"/",this._hdrs());return{list:this._parse(r.body),hasNextPage:false};}
       async search(query,page,f){const r=await new Client().get(this.baseUrl+"/recherche/?q="+encodeURIComponent(query),this._hdrs());return{list:this._parse(r.body),hasNextPage:false};}
       async getDetail(url){
