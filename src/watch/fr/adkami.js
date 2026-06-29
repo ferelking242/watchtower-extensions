@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.adkami.com/favicon.ico",
       "typeSource": "single",
       "itemType": 2,
-      "version": "0.1.1",
+      "version": "0.1.2",
       "pkgPath": "watch/fr/adkami.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,
@@ -32,7 +32,7 @@ const watchtowerSources = [{
               if(url in seen)continue;seen[url]=1;list.push({link:url,imageUrl:m[2],name:this._decode(m[3].trim())});
           }
           if(list.length===0){
-              const re2=/<a[^>]+href="([^"]+/video/[^"]+)"[^>]*>[\s\S]{0,300}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,100})"/gi;
+              const re2=new RegExp('<a[^>]+href="([^"]+/video/[^"]+)"[^>]*>[\\s\\S]{0,300}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,100})"','gi');
               while((m=re2.exec(html))!==null){
                   const url=m[1].startsWith("http")?m[1]:this.baseUrl+m[1];
                   if(url in seen)continue;seen[url]=1;list.push({link:url,imageUrl:m[2],name:this._decode(m[3].trim())});
@@ -49,7 +49,7 @@ const watchtowerSources = [{
           const imgM=html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i);
           const descM=html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i);
           const eps=[],eSeen={};
-          const eRe=/<a[^>]+href="([^"]+/video/[^"]+)"[^>]*>([\s\S]{1,80}?)<\/a>/gi;let em;
+          const eRe=new RegExp('<a[^>]+href="([^"]+/video/[^"]+)"[^>]*>([\\s\\S]{1,80}?)<\\/a>','gi');let em;
           while((em=eRe.exec(html))!==null){const eu=em[1].startsWith("http")?em[1]:this.baseUrl+em[1];if(eu in eSeen)continue;eSeen[eu]=1;eps.push({name:em[2].replace(/<[^>]+>/g,"").trim(),url:eu});}
           if(eps.length===0)eps.push({name,url});
           return{name,imageUrl:imgM?imgM[1]:"",description:descM?descM[1]:"",episodes:eps};

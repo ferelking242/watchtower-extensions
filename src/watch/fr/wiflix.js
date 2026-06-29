@@ -2,12 +2,12 @@ const watchtowerSources = [{
       "name": "Wiflix",
       "langs": ["fr"],
       "ids": { "fr": 562309147 },
-      "baseUrl": "https://wiflix.space",
-      "apiUrl": "https://wiflix.space",
-      "iconUrl": "https://wiflix.space/favicon.ico",
+      "baseUrl": "https://www.wiflix.bond",
+      "apiUrl": "https://www.wiflix.bond",
+      "iconUrl": "https://www.wiflix.bond/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.1",
+      "version": "0.1.2",
       "pkgPath": "watch/fr/wiflix.js",
       "editableBaseUrl": true,
       "hasCloudflare": true,
@@ -18,7 +18,7 @@ const watchtowerSources = [{
       "paywall": "free",
       "notes": "Films et séries VF/VOSTFR"
   }];
-  const BASE_URL = "https://wiflix.space";
+  const BASE_URL = "https://www.wiflix.bond";
   class DefaultExtension extends MProvider {
       constructor() { super(); }
       get baseUrl() { const p = this.source.prefs?.find(x=>x.key==="base_url"); return (p&&p.value)?p.value.replace(/\/$/,""):BASE_URL; }
@@ -26,24 +26,18 @@ const watchtowerSources = [{
       _decode(s) { return String(s||"").replace(/&amp;/g,"&").replace(/&quot;/g,'"').replace(/&#039;/g,"'").replace(/&lt;/g,"<").replace(/&gt;/g,">"); }
       _parse(html) {
           const list=[]; const seen={};
-          const re=/<div[^>]+class="[^"]*thumb[^"]*"[^>]*>[\s\S]{0,200}?<a[^>]+href="([^"]+)"[^>]*>[\s\S]{0,200}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+(?:alt|title)="([^"]{2,120})"/gi;
+          // wiflix.bond uses: <a class="mi2-in-link" href="URL"> ... <img class="lazyload" data-src="IMG" alt="TITLE">
+          const re=/<a[^>]+class="mi2-in-link"[^>]+href="([^"]+)"[^>]*>[\s\S]{0,400}?<img[^>]+data-src="([^"]+)"[^>]+alt="([^"]{2,120})"/gi;
           let m;
           while((m=re.exec(html))!==null){
               const url=m[1].startsWith("http")?m[1]:this.baseUrl+m[1];
               if(url in seen)continue;seen[url]=1;
-              list.push({link:url,imageUrl:m[2],name:this._decode(m[3].trim())});
-          }
-          if(list.length===0){
-              const re2=/<a[^>]+href="([^"]+)"[^>]*>[\s\S]{0,400}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,100})"/gi;
-              while((m=re2.exec(html))!==null){
-                  const url=m[1].startsWith("http")?m[1]:this.baseUrl+(m[1].startsWith("/")?m[1]:"/"+m[1]);
-                  if(url in seen||!url.includes(this.baseUrl.replace("https://","").replace("http://","")))continue;
-                  seen[url]=1;list.push({link:url,imageUrl:m[2],name:this._decode(m[3].trim())});
-              }
+              const imgUrl=m[2].startsWith("http")?m[2]:this.baseUrl+m[2];
+              list.push({link:url,imageUrl:imgUrl,name:this._decode(m[3].trim())});
           }
           return list;
       }
-      async getPopular(page) { const r=await new Client().get(this.baseUrl+"/film/page/"+page+"/",this._hdrs()); return {list:this._parse(r.body),hasNextPage:page<20}; }
+      async getPopular(page) { const r=await new Client().get(this.baseUrl+"/films-streaming/page/"+page+"/",this._hdrs()); return {list:this._parse(r.body),hasNextPage:page<20}; }
       async getLatestUpdates(page) { const r=await new Client().get(this.baseUrl+"/",this._hdrs()); return {list:this._parse(r.body),hasNextPage:false}; }
       async search(query,page,f) { const r=await new Client().get(this.baseUrl+"/?s="+encodeURIComponent(query),this._hdrs()); return {list:this._parse(r.body),hasNextPage:false}; }
       async getDetail(url) {
