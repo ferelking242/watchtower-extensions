@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.neko-sama.fr/favicon.ico",
       "typeSource": "single",
       "itemType": 2,
-      "version": "0.1.1",
+      "version": "0.1.2",
       "pkgPath": "watch/fr/nekosama.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,
@@ -60,7 +60,7 @@ const watchtowerSources = [{
 
       _parseHtml(html) {
           const list = []; const seen = {};
-          const re = /<a[^>]+href="(https?://[^"]*neko-sama[^"]*/anime/[^"]+)"[^>]*>[sS]{0,500}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,100})"/gi;
+          const re = new RegExp('<a[^>]+href="([^"]*neko-sama[^"]*/anime/[^"]+)"[^>]*>[\\s\\S]{0,500}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,100})"', 'gi');
           let m;
           while ((m = re.exec(html)) !== null) {
               if (m[1] in seen) continue; seen[m[1]]=1;
