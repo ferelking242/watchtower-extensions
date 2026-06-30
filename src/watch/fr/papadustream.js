@@ -1,10 +1,10 @@
 const watchtowerSources = [{
-    "name": "PapaDuStream",
+    "name": "VF24",
     "langs": ["fr"],
     "ids": { "fr": 223948576 },
-    "baseUrl": "https://papadustream.fashion",
-    "apiUrl": "https://papadustream.fashion",
-    "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.papadustream.png",
+    "baseUrl": "https://vf24.fr",
+    "apiUrl": "https://vf24.fr",
+    "iconUrl": "https://vf24.fr/favicon.svg",
     "typeSource": "single",
     "itemType": 1,
     "version": "0.1.7",
@@ -15,7 +15,7 @@ const watchtowerSources = [{
     "contentSubtype": ["film", "serie"]
 }];
 
-const BASE_URL = "https://papadustream.fashion";
+const BASE_URL = "https://vf24.fr";
 
 class DefaultExtension extends MProvider {
     constructor() { super();}
@@ -37,7 +37,7 @@ class DefaultExtension extends MProvider {
         // papadustream.fashion card format:
         // <a href="/category-films/SLUG.html"> ... <img src="IMG" alt="TITLE"> ...
         // <a href="/category-series/SLUG.html"> ... <img src="IMG" alt="TITLE"> ...
-        const re = /<a[^>]+href="((?:https?:\/\/papadustream\.fashion)?\/category-(?:films|series)\/[^"]+\.html)"[^>]*>[\s\S]{0,400}?<img[^>]+src="([^"]+)"[^>]+alt="([^"]{2,120})"/gi;
+        const re = /<a[^>]+href="((?:https?:\/\/[^\/]+)?\/category-(?:films|series)\/[^"]+\.html)"[^>]*>[\s\S]{0,400}?<img[^>]+src="([^"]+)"[^>]+alt="([^"]{2,120})"/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
             const url = m[1].startsWith("http") ? m[1] : `${this.baseUrl}${m[1]}`;

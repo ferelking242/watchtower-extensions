@@ -2,9 +2,9 @@ const watchtowerSources = [{
     "name": "Vostfree",
     "langs": ["fr"],
     "ids": { "fr": 445160798 },
-    "baseUrl": "https://vostfree.ws",
-    "apiUrl": "https://vostfree.ws",
-    "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.vostfree.png",
+    "baseUrl": "https://ipv4.vostfree.ws",
+    "apiUrl": "https://ipv4.vostfree.ws",
+    "iconUrl": "https://ipv4.vostfree.ws/templates/Animix/images/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
     "version": "0.1.11",
@@ -15,7 +15,7 @@ const watchtowerSources = [{
     "contentSubtype": ["anime", "film"]
 }];
 
-const BASE_URL = "https://vostfree.ws";
+const BASE_URL = "https://ipv4.vostfree.ws";
 
 class DefaultExtension extends MProvider {
     constructor() { super();}
@@ -59,13 +59,13 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        const res = await new Client().get(`${this.baseUrl}/animes-vostfr/?page=${page}`, this._hdrs());
+        const res = await new Client().get(`${this.baseUrl}/animes-vostfr/page/${page}/`, this._hdrs());
         const list = this._parseList(res.body);
         return { list, hasNextPage: list.length >= 8 };
     }
 
     async getLatestUpdates(page) {
-        const res = await new Client().get(`${this.baseUrl}/?page=${page}`, this._hdrs());
+        const res = await new Client().get(`${this.baseUrl}/page/${page}/`, this._hdrs());
         const list = this._parseList(res.body);
         return { list, hasNextPage: list.length >= 8 };
     }

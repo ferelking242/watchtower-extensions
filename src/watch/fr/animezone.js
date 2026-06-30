@@ -2,9 +2,9 @@ const watchtowerSources = [{
     "name": "AnimeZone",
     "langs": ["fr"],
     "ids": { "fr": 742916341 },
-    "baseUrl": "https://www.animezone.fr",
-    "apiUrl": "https://www.animezone.fr",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/fr/icons/animezone.png",
+    "baseUrl": "https://www.animezone.ch",
+    "apiUrl": "https://www.animezone.ch",
+    "iconUrl": "https://www.animezone.ch/favicon-32x32.png",
     "typeSource": "single",
     "itemType": 1,
     "version": "0.1.4",
@@ -15,7 +15,7 @@ const watchtowerSources = [{
     "contentSubtype": ["anime"]
 }];
 
-const BASE_URL = "https://www.animezone.fr";
+const BASE_URL = "https://www.animezone.ch";
 
 class DefaultExtension extends MProvider {
     constructor() {
@@ -38,18 +38,26 @@ class DefaultExtension extends MProvider {
     _parseList(html) {
         const list = [];
         const seen = {};
-        // animezone.fr uses data attributes on favourite buttons inside each card.
-        // Extract all three attributes in order — they always appear in the same sequence
-        // on the same element so positional matching is reliable.
-        const slugs  = [...html.matchAll(/data-anime-slug="([^"]+)"/gi)].map(m => m[1]);
-        const titles = [...html.matchAll(/data-anime-title="([^"]+)"/gi)].map(m => m[1]);
-        const images = [...html.matchAll(/data-anime-image="([^"]+)"/gi)].map(m => m[1]);
-        for (let i = 0; i < slugs.length; i++) {
-            const url = `${this.baseUrl}/anime/${slugs[i]}/`;
-            if ((url in seen)) continue;
-            (seen[url] = 1);
-            if (titles[i] && images[i]) {
-                list.push({ link: url, imageUrl: images[i], name: titles[i].trim() });
+        // animezone.ch — grid card structure:
+        // <a href="/voir-anime/SLUG"><img data-src="IMG_URL" alt="TITLE Image" title="TITLE">
+        const re = /<a[^>]+href="(\/voir-anime\/[^"]+)"[^>]*>[\s\S]{0,400}?<img[^>]+data-src="([^"]+)"[^>]+(?:alt|title)="([^"]+?)(?:\s+(?:Image|VOSTFR|VF))?"[^>]*>/gi;
+        let m;
+        while ((m = re.exec(html)) !== null) {
+            const url = this.baseUrl + m[1];
+            if (url in seen) continue;
+            seen[url] = 1;
+            // prefer title attr for clean name; strip " VOSTFR"/" Image" suffixes
+            const name = m[3].replace(/\s*(Image|VOSTFR|VF|VO)$/i, '').trim();
+            if (name && m[2]) list.push({ link: url, imageUrl: m[2], name });
+        }
+        // Fallback: use h3 inside bandeau div
+        if (list.length === 0) {
+            const re2 = /<a[^>]+href="(\/voir-anime\/[^"]+)"[^>]*>[\s\S]{0,500}?<h3[^>]*>([^<]+)<\/h3>/gi;
+            while ((m = re2.exec(html)) !== null) {
+                const url = this.baseUrl + m[1];
+                if (url in seen) continue;
+                seen[url] = 1;
+                list.push({ link: url, imageUrl: '', name: m[2].trim() });
             }
         }
         return list;
@@ -79,7 +87,7 @@ class DefaultExtension extends MProvider {
 
     async search(query, page, filterList) {
         const res = await new Client().get(
-            `${this.baseUrl}/animes/?s=${encodeURIComponent(query)}&page=${page}`,
+            `${this.baseUrl}/search?s=${encodeURIComponent(query)}`,
             this._hdrs()
         );
         if (res.statusCode !== 200) throw new Error(`HTTP ${res.statusCode}`);

@@ -2,9 +2,9 @@ const watchtowerSources = [{
     "name": "HDSS",
     "langs": ["fr"],
     "ids": { "fr": 889504132 },
-    "baseUrl": "https://www.hdss.art",
-    "apiUrl": "https://www.hdss.art",
-    "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.hdss.png",
+    "baseUrl": "https://www.hdss.to",
+    "apiUrl": "https://www.hdss.to",
+    "iconUrl": "https://www.hdss.to/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
     "version": "0.1.7",
@@ -15,7 +15,7 @@ const watchtowerSources = [{
     "contentSubtype": ["film", "serie"]
 }];
 
-const BASE_URL = "https://www.hdss.art";
+const BASE_URL = "https://www.hdss.to";
 
 class DefaultExtension extends MProvider {
     constructor() {

@@ -4,7 +4,7 @@ const watchtowerSources = [{
     "ids": { "fr": 334859201 },
     "baseUrl": "https://dospiv.com",
     "apiUrl": "https://dospiv.com",
-    "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.dotriv.png",
+    "iconUrl": "https://dospiv.com/favicon.png",
     "typeSource": "single",
     "itemType": 1,
     "version": "0.1.9",

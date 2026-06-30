@@ -20,7 +20,7 @@ const watchtowerSources = [{
     "ids": { "fr": 534921847 },
     "baseUrl": "https://w16.french-manga.net",
     "apiUrl": "https://w16.french-manga.net",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/Watchtower-extensions/main/extensions/watch/icon/fr.frenchmanga.png",
+    "iconUrl": "https://w16.french-manga.net/favicon.ico",
     "typeSource": "single",
     "itemType": 2,
     "version": "1.0.0",

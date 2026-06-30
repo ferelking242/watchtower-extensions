@@ -20,7 +20,7 @@ const watchtowerSources = [{
     "ids": { "fr": 112837465 },
     "baseUrl": "https://french-stream.one",
     "apiUrl": "https://french-stream.one",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/Watchtower-extensions/main/extensions/watch/icon/fr.frenchstream.png",
+    "iconUrl": "https://french-stream.one/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
     "version": "0.6.0",

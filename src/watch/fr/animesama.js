@@ -4,7 +4,7 @@ const watchtowerSources = [{
     "ids": { "fr": 223948123 },
     "baseUrl": "https://anime-sama.to",
     "apiUrl": "https://anime-sama.to",
-    "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.animesama.png",
+    "iconUrl": "https://anime-sama.to/favicon.ico",
     "typeSource": "single",
     "itemType": 2,
     "version": "0.1.7",
@@ -35,7 +35,7 @@ class DefaultExtension extends MProvider {
     _parse(html) {
         const list = []; const seen = {};
         // Match /catalogue/... links — domain-agnostic (works with any baseUrl)
-        const re = /<a[^>]+href="((?:https?:\/\/[^"]+)?\/catalogue\/[^"]+\/)"[^>]*>[\s\S]{0,400}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,})"/gi;
+        const re = /<a[^>]+href="((?:https?:\/\/[^\/]+)?\/catalogue\/[^"]+\/)"[^>]*>[\s\S]{0,400}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,})"/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
             const url = m[1].startsWith("http") ? m[1] : `${this.baseUrl}${m[1]}`;

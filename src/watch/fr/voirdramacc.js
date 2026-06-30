@@ -2,9 +2,9 @@ const watchtowerSources = [{
     "name": "VoirDrama.cc",
     "langs": ["fr"],
     "ids": { "fr": 647483920 },
-    "baseUrl": "https://voirdrama.cc",
-    "apiUrl": "https://voirdrama.cc",
-    "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.voirdramacc.png",
+    "baseUrl": "https://voirdrama.site",
+    "apiUrl": "https://voirdrama.site",
+    "iconUrl": "https://voirdrama.site/favicon.ico",
     "typeSource": "single",
     "itemType": 2,
     "version": "0.1.7",
@@ -15,7 +15,7 @@ const watchtowerSources = [{
     "contentSubtype": ["drama", "serie"]
 }];
 
-const BASE_URL = "https://voirdrama.cc";
+const BASE_URL = "https://voirdrama.site";
 
 class DefaultExtension extends MProvider {
     constructor() { super();}
@@ -44,7 +44,7 @@ class DefaultExtension extends MProvider {
         }
         // Fallback: any series link with title
         if (list.length === 0) {
-            const re2 = /href="(https?:\/\/voirdrama\.cc\/series\/[^/"#]+\/)"[^>]*title="([^"]+)"/gi;
+            const re2 = /href="(https?:\/\/[^\/]+\/series\/[^/"#]+\/)"[^>]*title="([^"]+)"/gi;
             while ((m = re2.exec(html)) !== null) {
                 if ((m[1] in seen)) continue; (seen[m[1]] = 1);
                 list.push({ link: m[1], imageUrl: "", name: m[2].trim() });

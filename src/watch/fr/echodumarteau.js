@@ -4,7 +4,7 @@ const watchtowerSources = [{
     "ids": { "fr": 778594031 },
     "baseUrl": "https://echodumarteau.fr",
     "apiUrl": "https://echodumarteau.fr",
-    "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.echodumarteau.png",
+    "iconUrl": "https://echodumarteau.fr/favicon.ico",
     "typeSource": "single",
     "itemType": 2,
     "version": "0.1.6",
@@ -34,7 +34,7 @@ class DefaultExtension extends MProvider {
 
     _parse(html) {
         const list = []; const seen = {};
-        const re = /<a[^>]+href="(https?:\/\/echodumarteau\.fr\/[^"]+)"[^>]*title="([^"]+)"[\s\S]{0,300}<img[^>]+src="([^"]+)"/gi;
+        const re = /<a[^>]+href="(https?:\/\/[^\/]+\/[^"]+)"[^>]*title="([^"]+)"[\s\S]{0,300}<img[^>]+src="([^"]+)"/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
             if ((m[1] in seen) || m[1].includes("category") || m[1].includes("tag")) continue;

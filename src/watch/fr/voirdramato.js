@@ -4,7 +4,7 @@ const watchtowerSources = [{
     "ids": { "fr": 546372819 },
     "baseUrl": "https://voirdrama.to",
     "apiUrl": "https://voirdrama.to",
-    "iconUrl": "https://raw.githubusercontent.com/kodjodevf/watchtower/main/extensions/watch/icon/fr.voirdramato.png",
+    "iconUrl": "https://voirdrama.to/favicon.ico",
     "typeSource": "single",
     "itemType": 2,
     "version": "0.1.6",
@@ -43,7 +43,7 @@ class DefaultExtension extends MProvider {
         }
         // Fallback: any drama link with title
         if (list.length === 0) {
-            const re2 = /href="(https?:\/\/voirdrama\.to\/drama\/[^/"#]+\/)"[^>]*title="([^"]+)"/gi;
+            const re2 = /href="(https?:\/\/[^\/]+\/drama\/[^/"#]+\/)"[^>]*title="([^"]+)"/gi;
             while ((m = re2.exec(html)) !== null) {
                 if ((m[1] in seen) || m[1].includes("feed") || m[1].includes("genre")) continue;
                 (seen[m[1]] = 1);

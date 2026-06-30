@@ -21,7 +21,7 @@ const watchtowerSources = [{
     "ids": { "fr": 789345612 },
     "baseUrl": "https://fstv.rest",
     "apiUrl": "https://fstv.rest",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/Watchtower-extensions/main/extensions/watch/icon/fr.fstv.png",
+    "iconUrl": "https://fstv.rest/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
     "version": "1.0.0",
