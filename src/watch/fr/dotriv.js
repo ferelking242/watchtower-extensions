@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://dospiv.com/favicon.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.9",
+    "version": "0.1.10",
     "pkgPath": "watch/fr/dotriv.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -245,6 +245,15 @@ class DefaultExtension extends MProvider {
         return { body: "", statusCode: 0 };
     }
 
+    _videoHeaders(referer) {
+        return {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Referer": referer,
+            "Origin": referer.replace(/\/[^/]*$/, "").replace(/^(https?:\/\/[^/]+).*$/, "$1"),
+            "Accept-Language": "fr-FR,fr;q=0.9",
+        };
+    }
+
     async getVideoList(url) {
         await this._log(`video: ${url}`);
         const res = await new Client().get(url, this._hdrs(url));
@@ -252,12 +261,13 @@ class DefaultExtension extends MProvider {
         const videos = [];
         const q = this.pref_quality;
 
+        // Direct streams embedded in the page HTML
         const directRe = /(?:file|source|src|url)\s*[=:]\s*["']([^"']+\.(?:m3u8|mp4)[^"']{0,150})["']/gi;
         let m;
         while ((m = directRe.exec(html)) !== null) {
             const vUrl = m[1].startsWith("//") ? `https:${m[1]}` : m[1];
             if (!videos.some(v => v.url === vUrl))
-                videos.push({ url: vUrl, quality: q !== "AUTO" ? q : "Direct", originalUrl: vUrl });
+                videos.push({ url: vUrl, quality: q !== "AUTO" ? q : "Direct", originalUrl: vUrl, headers: this._videoHeaders(url) });
         }
 
         const iframeUrls = [];
@@ -273,12 +283,14 @@ class DefaultExtension extends MProvider {
             try {
                 const eRes = await new Client().get(embedUrl, { ...this._hdrs(url), "Referer": url });
                 const ebody = eRes.body || "";
+                // Headers the player must send when fetching the stream and its segments
+                const streamHdrs = this._videoHeaders(embedUrl);
                 const hlsM = ebody.match(/["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/);
-                if (hlsM) { videos.push({ url: hlsM[1], quality: q !== "AUTO" ? q : "Stream", originalUrl: hlsM[1] }); resolved = true; }
+                if (hlsM) { videos.push({ url: hlsM[1], quality: q !== "AUTO" ? q : "Stream", originalUrl: hlsM[1], headers: streamHdrs }); resolved = true; }
                 const mp4M = ebody.match(/["'`](https?:\/\/[^"'`]+\.mp4[^"'`]{0,150})["'`]/);
-                if (mp4M && !resolved) { videos.push({ url: mp4M[1], quality: q !== "AUTO" ? q : "Direct", originalUrl: mp4M[1] }); }
+                if (mp4M && !resolved) { videos.push({ url: mp4M[1], quality: q !== "AUTO" ? q : "Direct", originalUrl: mp4M[1], headers: streamHdrs }); resolved = true; }
             } catch(e) {}
-            if (!resolved) videos.push({ url: embedUrl, quality: q !== "AUTO" ? q : "Stream", originalUrl: embedUrl });
+            // Do NOT push the raw iframe URL as a fallback — it is a web page, not a playable stream
         }
 
         await this._log(`video: ${videos.length}`);
