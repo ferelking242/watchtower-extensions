@@ -549,7 +549,7 @@
     "hasCloudflare": false,
     "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/watch/fr/dotriv.js",
     "apiUrl": "https://dotriv.com",
-    "version": "0.1.7",
+    "version": "0.1.10",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
