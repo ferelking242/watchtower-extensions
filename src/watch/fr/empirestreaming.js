@@ -1,5 +1,5 @@
 // Empire-Streaming — extension Watchtower v1.0.0
-// Films & Séries VF — empire-streaming.cam
+// Films // Films & Séries VF — empire-streaming.cam Séries VF — empire-streaming.fr (empire-streaming.cam obsolète)
 
 const watchtowerSources = [{
     "name": "Empire-Streaming",
