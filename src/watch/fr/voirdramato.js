@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://voirdrama.to/favicon.ico",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.1.6",
+    "version": "0.1.7",
     "pkgPath": "watch/fr/voirdramato.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -99,7 +99,7 @@ class DefaultExtension extends MProvider {
         // Episodes: Madara theme <li class="wp-manga-chapter"><a href="URL">NAME</a>
         // The chapter list IS in the static HTML
         const episodes = [];
-        const epRe = /<li[^>]*class="wp-manga-chapter[^"]*"[\s\S]*?<a[^>]+href="(https?:\/\/voirdrama\.to\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
+        const epRe = /<li[^>]*class="wp-manga-chapter[^"]*"[\s\S]*?<a[^>]+href="(https?:\/\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/gi;
         const seen = {};
         let m;
         while ((m = epRe.exec(html)) !== null) {
@@ -162,9 +162,6 @@ class DefaultExtension extends MProvider {
                     resolved = true;
                 }
             } catch (e) {}
-            if (!resolved) {
-                videos.push({ url: embedUrl, quality: q !== "AUTO" ? q : "Stream", originalUrl: embedUrl });
-            }
         }
 
         await this._log(`video: ${videos.length} found`);

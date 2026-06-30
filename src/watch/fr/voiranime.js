@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.voiranime.io/favicon.ico",
       "typeSource": "single",
       "itemType": 2,
-      "version": "0.1.1",
+      "version": "0.1.2",
       "pkgPath": "watch/fr/voiranime.js",
       "editableBaseUrl": true,
       "hasCloudflare": true,
@@ -82,7 +82,7 @@ const watchtowerSources = [{
           }
           if (eps.length === 0) eps.push({ name, url });
           
-          return { name, imageUrl: image, description: desc, episodes: eps };
+          return { name, imageUrl: image, description: desc,chapters: eps };
       }
   
       async getVideoList(url) {

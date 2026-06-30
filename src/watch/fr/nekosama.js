@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.neko-sama.fr/favicon.ico",
       "typeSource": "single",
       "itemType": 2,
-      "version": "0.1.2",
+      "version": "0.1.3",
       "pkgPath": "watch/fr/nekosama.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,
@@ -96,7 +96,7 @@ const watchtowerSources = [{
               eps.push({ name: em[2].replace(/<[^>]+>/g,"").trim(), url: epUrl });
           }
           if (eps.length === 0) eps.push({ name, url });
-          return { name, imageUrl: imgM ? imgM[1] : "", description: descM ? descM[1] : "", episodes: eps };
+          return { name, imageUrl: imgM ? imgM[1] : "", description: descM ? descM[1] : "",chapters: eps };
       }
 
       async getVideoList(url) {

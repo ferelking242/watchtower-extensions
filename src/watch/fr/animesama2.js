@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://animes-sama.fr/img/autres/logo_icon.png",
     "typeSource": "single",
     "itemType": 2,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "pkgPath": "watch/fr/animesama2.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -82,23 +82,23 @@ class DefaultExtension extends MProvider {
 
     async getPopular(page) {
         const url = `${this.baseUrl}/catalogue/`;
-        const res = await new Client().get(url, { headers: this._hdrs() });
+        const res = await new Client().get(url, this._hdrs());
         return { list: this._parseCards(res.body), hasNextPage: false };
     }
 
     async getLatestUpdates(page) {
-        const res = await new Client().get(this.baseUrl + "/", { headers: this._hdrs() });
+        const res = await new Client().get(this.baseUrl + "/", this._hdrs());
         return { list: this._parseCards(res.body), hasNextPage: false };
     }
 
     async search(query, page, filterList) {
         const url = `${this.baseUrl}/catalogue/?search=${encodeURIComponent(query)}`;
-        const res = await new Client().get(url, { headers: this._hdrs() });
+        const res = await new Client().get(url, this._hdrs());
         return { list: this._parseCards(res.body), hasNextPage: false };
     }
 
     async getDetail(url) {
-        const res = await new Client().get(url, { headers: this._hdrs(url) });
+        const res = await new Client().get(url, this._hdrs(url));
         const html = res.body;
         const nameM = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
         const name = nameM ? this._decode(nameM[1]) : "";
@@ -124,7 +124,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getVideoList(url) {
-        const res = await new Client().get(url, { headers: this._hdrs(url) });
+        const res = await new Client().get(url, this._hdrs(url));
         const html = res.body;
         const videos = [];
         // anime-sama uses JS variable: var eps = [...] with player URLs

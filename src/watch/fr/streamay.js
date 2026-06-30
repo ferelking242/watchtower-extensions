@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://streamay.net/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.1",
+      "version": "0.1.2",
       "pkgPath": "watch/fr/streamay.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,
@@ -47,7 +47,7 @@ const watchtowerSources = [{
           const eRe=/<a[^>]+href="([^"]+(?:episode|saison|ep-|s[0-9]e[0-9])[^"]*)"[^>]*>([\s\S]{1,80}?)<\/a>/gi;let em;
           while((em=eRe.exec(html))!==null){const eu=em[1].startsWith("http")?em[1]:this.baseUrl+em[1];if(eu in eSeen)continue;eSeen[eu]=1;eps.push({name:em[2].replace(/<[^>]+>/g,"").trim(),url:eu});}
           if(eps.length===0)eps.push({name,url});
-          return{name,imageUrl:imgM?imgM[1]:"",description:descM?descM[1]:"",episodes:eps};
+          return{name,imageUrl:imgM?imgM[1]:"",description:descM?descM[1]:"",chapters:eps};
       }
       async getVideoList(url){
           const r=await new Client().get(url,this._hdrs(url));const html=r.body;const videos=[];

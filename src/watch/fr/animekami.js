@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://anime-kami.com/favicon.ico",
     "typeSource": "single",
     "itemType": 2,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "pkgPath": "watch/fr/animekami.js",
     "editableBaseUrl": true,
     "hasCloudflare": true,
@@ -64,23 +64,23 @@ class DefaultExtension extends MProvider {
 
     async getPopular(page) {
         const url = `${this.baseUrl}/catalogue/`;
-        const res = await new Client().get(url, { headers: this._hdrs() });
+        const res = await new Client().get(url, this._hdrs());
         return { list: this._parseCards(res.body), hasNextPage: false };
     }
 
     async getLatestUpdates(page) {
-        const res = await new Client().get(this.baseUrl + "/", { headers: this._hdrs() });
+        const res = await new Client().get(this.baseUrl + "/", this._hdrs());
         return { list: this._parseCards(res.body), hasNextPage: false };
     }
 
     async search(query, page, filterList) {
         const url = `${this.baseUrl}/?s=${encodeURIComponent(query)}`;
-        const res = await new Client().get(url, { headers: this._hdrs() });
+        const res = await new Client().get(url, this._hdrs());
         return { list: this._parseCards(res.body), hasNextPage: false };
     }
 
     async getDetail(url) {
-        const res = await new Client().get(url, { headers: this._hdrs(url) });
+        const res = await new Client().get(url, this._hdrs(url));
         const html = res.body;
         const nameM = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
         const name = nameM ? this._decode(nameM[1]) : "";
@@ -103,7 +103,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getVideoList(url) {
-        const res = await new Client().get(url, { headers: this._hdrs(url) });
+        const res = await new Client().get(url, this._hdrs(url));
         const html = res.body;
         const videos = [];
         const iframeRe = /iframe[^>]+src="(https?:\/\/[^"]{10,200})"/gi;

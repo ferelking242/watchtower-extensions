@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://echodumarteau.fr/favicon.ico",
     "typeSource": "single",
     "itemType": 2,
-    "version": "0.1.6",
+    "version": "0.1.7",
     "pkgPath": "watch/fr/echodumarteau.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -136,9 +136,6 @@ class DefaultExtension extends MProvider {
                     resolved = true;
                 }
             } catch (e) {}
-            if (!resolved) {
-                videos.push({ url: embedUrl, quality: q !== "AUTO" ? q : "Stream", originalUrl: embedUrl });
-            }
         }
 
         await this._log(`video: ${videos.length} found`);
