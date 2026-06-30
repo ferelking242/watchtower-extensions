@@ -246,10 +246,13 @@ class DefaultExtension extends MProvider {
     }
 
     _videoHeaders(referer) {
+        // Extract scheme://host[:port] robustly from any URL
+        const originM = referer.match(/^(https?:\/\/[^/?#]+)/);
+        const origin = originM ? originM[1] : referer;
         return {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
             "Referer": referer,
-            "Origin": referer.replace(/\/[^/]*$/, "").replace(/^(https?:\/\/[^/]+).*$/, "$1"),
+            "Origin": origin,
             "Accept-Language": "fr-FR,fr;q=0.9",
         };
     }
