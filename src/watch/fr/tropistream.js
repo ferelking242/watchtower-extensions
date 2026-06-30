@@ -35,7 +35,7 @@ const watchtowerSources = [{
     "iconUrl": "https://tropistream.fr/tropi.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "3.0.1",
+    "version": "3.0.2",
     "pkgPath": "watch/fr/tropistream.js",
     "editableBaseUrl": true,
     "videoQualities": ["AUTO", "VF", "VOSTFR", "VO"],
@@ -94,7 +94,7 @@ class DefaultExtension extends MProvider {
     }
 
     async _get(url, ref) {
-        return new Client().get(url, { headers: this._hdrs(ref) });
+        return new Client().get(url, this._hdrs(ref));
     }
 
     _json(t) {
@@ -122,7 +122,7 @@ class DefaultExtension extends MProvider {
         var sep = path.indexOf("?") !== -1 ? "&" : "?";
         var url = TMDB_BASE + path + sep + "api_key=" + TMDB_KEY + "&language=fr-FR";
         try {
-            var r = await new Client().get(url, { headers: { "User-Agent": "Mozilla/5.0", "Accept": "application/json" } });
+            var r = await new Client().get(url, { "User-Agent": "Mozilla/5.0", "Accept": "application/json" });
             return this._json(r.body) || {};
         } catch (_) { return {}; }
     }
@@ -210,7 +210,7 @@ class DefaultExtension extends MProvider {
         }
 
         try {
-            var r = await new Client().get(url, { headers: this._hdrs(this.bUrl + "/") });
+            var r = await new Client().get(url, this._hdrs(this.bUrl + "/"));
             if (r.statusCode === 401 || r.statusCode === 403) return null; // not logged in
             var d = this._json(r.body);
             if (!d) return null;
@@ -273,7 +273,7 @@ class DefaultExtension extends MProvider {
         try {
             var r = await new Client().get(
                 this.bUrl + "/srv/user/quick",
-                { headers: this._hdrs() }
+                this._hdrs()
             );
             if (r.statusCode === 200) {
                 var d = this._json(r.body);

@@ -81,7 +81,7 @@ class DefaultExtension extends MProvider {
         const imageUrl = imgM ? imgM[1] : "";
 
         const episodes = [];
-        const epRe = /href="(https?:\/\/echodumarteau\.fr\/[^"]+(?:episode|ep-|saison)[^"]*)"[^>]*title="([^"]+)"/gi;
+        const epRe = /href="(https?:\/\/[^/"]+\/[^"]+(?:episode|ep-|saison)[^"]*)"[^>]*title="([^"]+)"/gi;
         let m;
         while ((m = epRe.exec(html)) !== null) {
             episodes.push({ name: m[2].trim(), url: m[1], dateUpload: "" });

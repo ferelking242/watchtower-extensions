@@ -49,7 +49,7 @@ const watchtowerSources = [{
           const eRe=/<a[^>]+href="([^"]+(?:episode|saison|film|film-)[^"]*)"[^>]*>([\s\S]{1,80}?)<\/a>/gi; let em;
           while((em=eRe.exec(html))!==null){const eu=em[1].startsWith("http")?em[1]:this.baseUrl+em[1];if(eu in eSeen)continue;eSeen[eu]=1;eps.push({name:em[2].replace(/<[^>]+>/g,"").trim(),url:eu});}
           if(eps.length===0)eps.push({name,url});
-          return {name,imageUrl:imgM?imgM[1]:"",description:descM?descM[1]:"",episodes:eps};
+          return {name,imageUrl:imgM?imgM[1]:"",description:descM?descM[1]:"",chapters:eps};
       }
       async getVideoList(url) {
           const r=await new Client().get(url,this._hdrs(url)); const html=r.body; const videos=[];

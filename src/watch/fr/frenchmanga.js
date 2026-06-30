@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "iconUrl": "https://w16.french-manga.net/favicon.ico",
     "typeSource": "single",
     "itemType": 2,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "pkgPath": "watch/fr/frenchmanga.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -147,12 +147,12 @@ class DefaultExtension extends MProvider {
     async getPopular(page) {
         const url = this.baseUrl + "/animes/page/" + page + "/";
         try {
-            const r = await new Client().get(url, { headers: this._hdrs() });
+            const r = await new Client().get(url, this._hdrs());
             const items = this._parseItems(r.body);
             if (items.length > 0) return { list: items, hasNextPage: items.length >= 10 };
         } catch (_) {}
         // Fallback: homepage
-        const r2 = await new Client().get(this.baseUrl + "/", { headers: this._hdrs() });
+        const r2 = await new Client().get(this.baseUrl + "/", this._hdrs());
         const items2 = this._parseItems(r2.body);
         return { list: items2, hasNextPage: false };
     }
@@ -160,7 +160,7 @@ class DefaultExtension extends MProvider {
     // ── Latest updates ───────────────────────────────────────────────────────
     async getLatestUpdates(page) {
         const url = page <= 1 ? this.baseUrl + "/" : this.baseUrl + "/page/" + page + "/";
-        const r   = await new Client().get(url, { headers: this._hdrs() });
+        const r   = await new Client().get(url, this._hdrs());
         const items = this._parseItems(r.body);
         return { list: items, hasNextPage: items.length >= 10 };
     }
@@ -175,7 +175,7 @@ class DefaultExtension extends MProvider {
         const url = this.baseUrl + "/?do=search&subaction=search&story=" + encodeURIComponent(query || "")
             + "&search_start=" + (page - 1) + "&result_from=" + ((page - 1) * 20 + 1);
         try {
-            const r = await new Client().get(url, { headers: this._hdrs() });
+            const r = await new Client().get(url, this._hdrs());
             const items = this._parseItems(r.body);
             return { list: items, hasNextPage: items.length >= 10 };
         } catch (_) {
@@ -194,7 +194,7 @@ class DefaultExtension extends MProvider {
             ? this.baseUrl + "/xfsearch/" + xfname + "/" + encodeURIComponent(xf) + "/page/" + page + "/"
             : this.baseUrl + "/animes/page/" + page + "/";
         try {
-            const r = await new Client().get(url, { headers: this._hdrs() });
+            const r = await new Client().get(url, this._hdrs());
             const items = this._parseItems(r.body);
             return { list: items, hasNextPage: items.length >= 10 };
         } catch (_) {
@@ -326,7 +326,7 @@ class DefaultExtension extends MProvider {
                 return this.getPopular(page);
         }
         try {
-            const r = await new Client().get(url, { headers: this._hdrs() });
+            const r = await new Client().get(url, this._hdrs());
             const items = this._parseItems(r.body);
             if (items.length === 0) return this.getPopular(page);
             return { list: items, hasNextPage: items.length >= 10 };
@@ -342,14 +342,14 @@ class DefaultExtension extends MProvider {
             const add = (html) => this._parseItems(html).forEach(i => { if (!seen[i.link]) { seen[i.link]=true; list.push(i); } });
             try {
                 const [homeR, vfR] = await Promise.all([
-                    new Client().get(this.baseUrl + "/",                               { headers: this._hdrs() }),
-                    new Client().get(this.baseUrl + "/xfsearch/version-serie/VF/",     { headers: this._hdrs() }),
+                    new Client().get(this.baseUrl + "/", this._hdrs()),
+                    new Client().get(this.baseUrl + "/xfsearch/version-serie/VF/", this._hdrs()),
                 ]);
                 add(homeR.body);
                 add(vfR.body);
             } catch (_) { return this.getLatestUpdates(1); }
             try {
-                const r2 = await new Client().get(this.baseUrl + "/xfsearch/version-serie/VOSTFR/", { headers: this._hdrs() });
+                const r2 = await new Client().get(this.baseUrl + "/xfsearch/version-serie/VOSTFR/", this._hdrs());
                 add(r2.body);
             } catch (_) {}
             return { list: list.slice(0, 40), hasNextPage: list.length >= 10 };
@@ -359,7 +359,7 @@ class DefaultExtension extends MProvider {
 
     // ── Detail ───────────────────────────────────────────────────────────────
     async getDetail(url) {
-        const r    = await new Client().get(url, { headers: this._hdrs() });
+        const r    = await new Client().get(url, this._hdrs());
         const html = r.body;
 
         const newsId  = this._extractNewsId(url, html) || "";
@@ -405,7 +405,7 @@ class DefaultExtension extends MProvider {
 
         if (tagz) {
             try {
-                const seasonsR = await new Client().get(this.baseUrl + "/engine/ajax/get_seasons.php?serie_tag=" + encodeURIComponent(tagz), { headers: this._ajaxHdrs(url) });
+                const seasonsR = await new Client().get(this.baseUrl + "/engine/ajax/get_seasons.php?serie_tag=" + encodeURIComponent(tagz), this._ajaxHdrs(url));
                 const seasons  = JSON.parse(seasonsR.body);
 
                 for (var si = 0; si < seasons.length; si++) {
@@ -413,7 +413,7 @@ class DefaultExtension extends MProvider {
                     const v = Math.floor(Date.now() / 30000);
                     var epData = null;
                     try {
-                        const epR = await new Client().get(this.baseUrl + "/static/series/" + season.id + ".js?v=" + v, { headers: this._hdrs(url) });
+                        const epR = await new Client().get(this.baseUrl + "/static/series/" + season.id + ".js?v=" + v, this._hdrs(url));
                         if (epR.body && epR.body.length > 5) epData = JSON.parse(epR.body);
                     } catch (_) {}
                     if (!epData) continue;
@@ -466,7 +466,7 @@ class DefaultExtension extends MProvider {
 
     // ── Video list ───────────────────────────────────────────────────────────
     async getVideoList(url) {
-        const r    = await new Client().get(url, { headers: this._hdrs(url) });
+        const r    = await new Client().get(url, this._hdrs(url));
         const html = r.body;
         const videos = [];
 
@@ -486,7 +486,7 @@ class DefaultExtension extends MProvider {
             if (newsId) {
                 const v = Math.floor(Date.now() / 30000);
                 try {
-                    const epR = await new Client().get(this.baseUrl + "/static/series/" + sIdM[1] + ".js?v=" + v, { headers: this._hdrs(url) });
+                    const epR = await new Client().get(this.baseUrl + "/static/series/" + sIdM[1] + ".js?v=" + v, this._hdrs(url));
                     const epData = JSON.parse(epR.body);
                     ["vf","vostfr","vo"].forEach(l => {
                         const ld = epData[l];
