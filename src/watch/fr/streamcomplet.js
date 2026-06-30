@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.streamcomplet.blue/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.2",
+      "version": "0.1.3",
       "pkgPath": "watch/fr/streamcomplet.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,

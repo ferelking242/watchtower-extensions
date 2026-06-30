@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://streamflix.fr/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/streamflix.js",
     "editableBaseUrl": true,
     "hasCloudflare": true,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "StreamFlix.fr — Films & Séries VF."
+    "notes": "StreamFlix — domaine streamflix.fr hors ligne."
 }];
 
 const BASE_URL = "https://streamflix.fr";

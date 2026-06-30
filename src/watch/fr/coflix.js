@@ -1,17 +1,17 @@
-// Coflix — extension Watchtower v1.0.0
+// Coflix — extension Watchtower v1.0.2
 // Site WordPress (thème imovie) — Films & Séries VF/VOSTFR
-// Base redirected: coflix.cymru → coflix.band
+// Base: coflix.band → coflix.trade (2026-06)
 
 const watchtowerSources = [{
     "name": "Coflix",
     "langs": ["fr"],
     "ids": { "fr": 501827364 },
-    "baseUrl": "https://coflix.band",
-    "apiUrl": "https://coflix.band",
-    "iconUrl": "https://coflix.band/wp-content/uploads/2022/10/cropped-coflix-180x180-1-150x150.png",
+    "baseUrl": "https://coflix.trade",
+    "apiUrl": "https://coflix.trade",
+    "iconUrl": "https://coflix.trade/wp-content/uploads/2022/10/cropped-coflix-180x180-1-150x150.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/coflix.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -24,10 +24,10 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "Coflix — Films & Séries VF. URL miroir modifiable."
+    "notes": "Coflix — Films & Séries VF. Domaine actuel: coflix.trade"
 }];
 
-const BASE_URL = "https://coflix.band";
+const BASE_URL = "https://coflix.trade";
 
 class DefaultExtension extends MProvider {
     constructor() { super(); }
@@ -46,33 +46,33 @@ class DefaultExtension extends MProvider {
     }
 
     _decode(s) {
-        return String(s || "")
-            .replace(/&#0?39;/g, "'").replace(/&quot;/g, '"')
+        return String(s || "").replace(/&#0?39;/g, "'").replace(/&quot;/g, '"')
             .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
             .replace(/<[^>]+>/g, "").trim();
     }
 
     _parseCards(html) {
         const items = []; const seen = {};
-        // imovie theme: <a href="URL"><img src="POSTER" alt="TITLE">
-        const re = /<a[^>]+href="(https?:\/\/[^"]*\/(?:film|serie)\/[^"]+\/)"[^>]*>[\s\S]{0,600}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,100})"/gi;
+        // coflix.trade: <a aria-label="TITLE" href="URL">...<img src="IMG">
+        const re = /<a[^>]+aria-label="([^"]{2,120})"[^>]+href="(https?:\/\/[^"]*\/(?:film|serie|drames|animes)\/[^"]+\/)"[^>]*>[\s\S]{0,400}?<img[^>]+src="([^"]+)"/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
-            const url = m[1]; if (url in seen) continue; seen[url] = 1;
-            const img = m[2].startsWith("//") ? "https:" + m[2] : m[2];
-            items.push({ link: url, imageUrl: img, name: this._decode(m[3]) });
+            const url = m[2]; if (url in seen) continue; seen[url] = 1;
+            const img = m[3].startsWith("//") ? "https:" + m[3] : m[3];
+            items.push({ link: url, imageUrl: img, name: this._decode(m[1]) });
         }
-        // Fallback: any film/serie link with image
+        // Fallback: any film/serie link with img
         if (items.length === 0) {
-            const re2 = /<a[^>]+href="([^"]*\/(?:film|serie)\/[^"]+\/)"[^>]*>([\s\S]{0,400}?)<\/a>/gi;
+            const re2 = /<a[^>]+href="(https?:\/\/[^"]*\/(?:film|serie)\/[^"]+\/)"[^>]*>([\s\S]{0,400}?)<\/a>/gi;
             let m2;
             while ((m2 = re2.exec(html)) !== null) {
-                const url = m2[1].startsWith("http") ? m2[1] : this.baseUrl + m2[1];
-                if (url in seen) continue; seen[url] = 1;
-                const imgM = /<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,})"/i.exec(m2[2]);
-                if (!imgM) continue;
-                const img = imgM[1].startsWith("//") ? "https:" + imgM[1] : imgM[1];
-                items.push({ link: url, imageUrl: img, name: this._decode(imgM[2]) });
+                const url = m2[1]; if (url in seen) continue; seen[url] = 1;
+                const lblM = /aria-label="([^"]{2,120})"/.exec(m2[0]);
+                const imgM = /<img[^>]+src="([^"]+)"/i.exec(m2[2]);
+                if (!lblM && !imgM) continue;
+                const name = lblM ? this._decode(lblM[1]) : "";
+                const img = imgM ? (imgM[1].startsWith("//") ? "https:" + imgM[1] : imgM[1]) : "";
+                if (name || img) items.push({ link: url, imageUrl: img, name });
             }
         }
         return items;
@@ -114,10 +114,6 @@ class DefaultExtension extends MProvider {
                       html.match(/content="([^"]+)"[^>]*(?:og:description|name="description")/i);
         const description = descM ? this._decode(descM[1]) : "";
 
-        // Extract player iframe
-        const playerM = html.match(/iframe[^>]+src="(https?:\/\/[^"]*(?:lecteur|embed|player)[^"]{0,120})"/i);
-
-        // Series: look for season/episode links
         const chapters = [];
         const epRe = /<a[^>]+href="([^"]*(?:saison|season|episode|ep)[^"]*)"[^>]*>([\s\S]{0,80}?)<\/a>/gi;
         let em; const eSeen = {};
@@ -129,14 +125,7 @@ class DefaultExtension extends MProvider {
             chapters.push({ name: epName, url: epUrl });
         }
 
-        // Film: single chapter from player
-        if (chapters.length === 0 && playerM) {
-            chapters.push({ name: name || "Regarder", url: url });
-        }
-        if (chapters.length === 0) {
-            chapters.push({ name: name || "Regarder", url: url });
-        }
-
+        if (chapters.length === 0) chapters.push({ name: name || "Regarder", url });
         return { name, imageUrl, description, chapters };
     }
 
@@ -145,18 +134,23 @@ class DefaultExtension extends MProvider {
         const html = res.body;
         const videos = [];
 
-        // lecteurvideo embed
-        const iframeRe = /iframe[^>]+src="(https?:\/\/[^"]*(?:lecteur|embed|player|dood|streamtape|sibnet|uqload|vudeo)[^"]{0,200})"/gi;
+        const iframeRe = /iframe[^>]+src="(https?:\/\/[^"]*(?:lecteur|embed|player|dood|streamtape|sibnet|uqload|vudeo|voe)[^"]{0,200})"/gi;
         let im;
         while ((im = iframeRe.exec(html)) !== null) {
             videos.push({ url: im[1], quality: "AUTO", headers: this._hdrs(url) });
         }
 
-        // data-player attribute
         const dataPRe = /data-player="(https?:\/\/[^"]+)"/gi;
         let dm;
         while ((dm = dataPRe.exec(html)) !== null) {
             videos.push({ url: dm[1], quality: "AUTO", headers: this._hdrs(url) });
+        }
+
+        const hlsRe = /["'](https?:\/\/[^"']+\.(?:m3u8|mp4)[^"']*)/gi;
+        let hm;
+        while ((hm = hlsRe.exec(html)) !== null) {
+            if (!videos.find(v => v.url === hm[1]))
+                videos.push({ url: hm[1], quality: "AUTO", headers: this._hdrs(url) });
         }
 
         return videos;

@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://streamvf.fr/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.2",
+      "version": "0.1.3",
       "pkgPath": "watch/fr/streamvf.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,
@@ -16,7 +16,7 @@ const watchtowerSources = [{
       "requiresAccount": false,
       "hasDRM": false,
       "paywall": "free",
-      "notes": ""
+      "notes": "StreamVF — domaine streamvf.fr hors ligne."
   }];
   const BASE_URL = "https://streamvf.fr";
   class DefaultExtension extends MProvider {

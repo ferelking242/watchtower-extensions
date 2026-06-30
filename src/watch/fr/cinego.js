@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://cinego.xyz/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/cinego.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "Cinego — cinego.xyz — Films & Séries VF."
+    "notes": "Cinego — domaine cinego.xyz hors ligne. Mettre à jour baseUrl si nouveau domaine trouvé."
 }];
 
 const BASE_URL = "https://cinego.xyz";

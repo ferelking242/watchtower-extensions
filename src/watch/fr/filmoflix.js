@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://filmoflix.co/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/filmoflix.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "Filmoflix — filmoflix.co — Films & Séries VF."
+    "notes": "Filmoflix — site protégé (anti-bot), aucun contenu retourné."
 }];
 
 const BASE_URL = "https://filmoflix.co";

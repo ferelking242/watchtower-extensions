@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://voirfilm.cz/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/voirfilm2.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "VoirFilm HD — voirfilm.cz — Films VF."
+    "notes": "VoirFilm HD — domaine voirfilm.cz hors ligne."
 }];
 
 const BASE_URL = "https://voirfilm.cz";

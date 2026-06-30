@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://libertyland.tv/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.2",
+      "version": "0.1.3",
       "pkgPath": "watch/fr/libertyland.js",
       "editableBaseUrl": true,
       "hasCloudflare": true,

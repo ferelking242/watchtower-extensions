@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://seko-stream.fr/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/sekostream.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "Seko-Stream — seko-stream.fr — Films & Séries VF."
+    "notes": "Seko-Stream — domaine seko-stream.fr hors ligne."
 }];
 
 const BASE_URL = "https://seko-stream.fr";

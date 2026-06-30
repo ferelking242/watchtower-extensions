@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://cinepulse.top/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/cinepulse.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "CinePulse — cinepulse.top — Films & Séries VF."
+    "notes": "CinePulse — site protégé (anti-bot), aucun contenu retourné."
 }];
 
 const BASE_URL = "https://cinepulse.top";

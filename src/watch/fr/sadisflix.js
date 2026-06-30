@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://sadisflixs.pro/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/sadisflix.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "SadisFlixs — sadisflixs.pro — Films & Séries VF."
+    "notes": "SadisFlixs — domaine sadisflixs.pro hors ligne."
 }];
 
 const BASE_URL = "https://sadisflixs.pro";

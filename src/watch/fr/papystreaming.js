@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://papystreaming.sh/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.2",
+      "version": "0.1.3",
       "pkgPath": "watch/fr/papystreaming.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,
@@ -16,7 +16,7 @@ const watchtowerSources = [{
       "requiresAccount": false,
       "hasDRM": false,
       "paywall": "free",
-      "notes": ""
+      "notes": "Papystreaming — domaine papystreaming.sh hors ligne."
   }];
   const BASE_URL = "https://papystreaming.sh";
   class DefaultExtension extends MProvider {

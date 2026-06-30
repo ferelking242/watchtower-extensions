@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://papadustream.college/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/papadustream2.js",
     "editableBaseUrl": true,
     "hasCloudflare": true,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "PapaduStream — Films & Séries VF. URL miroir modifiable."
+    "notes": "PapaduStream — domaine papadustream.college hors ligne."
 }];
 
 const BASE_URL = "https://papadustream.college";

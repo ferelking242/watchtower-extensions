@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://frflix.mov/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/frflix.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "FrFlix — Films & Séries VF. URL miroir modifiable."
+    "notes": "FrFlix — domaine frflix.mov hors ligne."
 }];
 
 const BASE_URL = "https://frflix.mov";

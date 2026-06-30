@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://cinefuse.fr/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/cinefuse.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "Cinefuse — cinefuse.fr — Films & Séries VF."
+    "notes": "Cinefuse — site protégé (anti-bot), aucun contenu retourné."
 }];
 
 const BASE_URL = "https://cinefuse.fr";

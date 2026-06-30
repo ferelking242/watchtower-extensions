@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.fyndfilms.com/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.2",
+      "version": "0.1.3",
       "pkgPath": "watch/fr/fyndfilms.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,
@@ -16,7 +16,7 @@ const watchtowerSources = [{
       "requiresAccount": false,
       "hasDRM": false,
       "paywall": "free",
-      "notes": ""
+      "notes": "Fynd Films — domaine fyndfilms.com hors ligne."
   }];
   const BASE_URL = "https://www.fyndfilms.com";
   class DefaultExtension extends MProvider {

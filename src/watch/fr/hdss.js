@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.hdss.to/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.7",
+    "version": "0.1.8",
     "pkgPath": "watch/fr/hdss.js",
     "editableBaseUrl": true,
     "customUserAgent": "",

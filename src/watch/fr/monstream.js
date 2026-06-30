@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://monstream.org/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/monstream.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "MonStream — monstream.org — Films & Séries VF."
+    "notes": "MonStream — domaine monstream.org hors ligne (redirige spam)."
 }];
 
 const BASE_URL = "https://monstream.org";

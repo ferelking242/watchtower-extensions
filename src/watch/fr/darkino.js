@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://darkino.one/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.2",
+      "version": "0.1.3",
       "pkgPath": "watch/fr/darkino.js",
       "editableBaseUrl": true,
       "hasCloudflare": true,
@@ -16,7 +16,7 @@ const watchtowerSources = [{
       "requiresAccount": false,
       "hasDRM": false,
       "paywall": "free",
-      "notes": "Films et séries — Cloudflare"
+      "notes": "Darkino — domaine darkino.one hors ligne. Essayer darkino.info"
   }];
   const BASE_URL = "https://darkino.one";
   class DefaultExtension extends MProvider {

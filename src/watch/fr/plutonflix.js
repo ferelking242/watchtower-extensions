@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://plutonflix.org/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/plutonflix.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "Plutonflix — plutonflix.org — Films & Séries VF."
+    "notes": "Plutonflix — domaine plutonflix.org hors ligne."
 }];
 
 const BASE_URL = "https://plutonflix.org";

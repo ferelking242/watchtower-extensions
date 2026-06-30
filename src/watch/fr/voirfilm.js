@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://voirfilm.pe/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.2",
+      "version": "0.1.3",
       "pkgPath": "watch/fr/voirfilm.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,
@@ -16,7 +16,7 @@ const watchtowerSources = [{
       "requiresAccount": false,
       "hasDRM": false,
       "paywall": "free",
-      "notes": ""
+      "notes": "VoirFilm — domaine voirfilm.pe hors ligne."
   }];
   const BASE_URL = "https://voirfilm.pe";
   class DefaultExtension extends MProvider {

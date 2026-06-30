@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://wooflix.io/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/wooflix.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "Wooflix — Films & Séries VF."
+    "notes": "Wooflix — parsing non compatible avec la nouvelle structure du site (/movie/ID)."
 }];
 
 const BASE_URL = "https://wooflix.io";

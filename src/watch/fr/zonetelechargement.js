@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.zone-telechargement.com/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.2",
+      "version": "0.1.3",
       "pkgPath": "watch/fr/zonetelechargement.js",
       "editableBaseUrl": true,
       "hasCloudflare": true,
@@ -16,7 +16,7 @@ const watchtowerSources = [{
       "requiresAccount": false,
       "hasDRM": false,
       "paywall": "free",
-      "notes": "Catalogue films/series VF"
+      "notes": "Zone-Telechargement — domaine redirige vers spam."
   }];
   const BASE_URL = "https://www.zone-telechargement.com";
   class DefaultExtension extends MProvider {

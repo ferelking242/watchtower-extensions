@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://streamay.net/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.2",
+      "version": "0.1.3",
       "pkgPath": "watch/fr/streamay.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,
@@ -16,7 +16,7 @@ const watchtowerSources = [{
       "requiresAccount": false,
       "hasDRM": false,
       "paywall": "free",
-      "notes": ""
+      "notes": "Streamay — domaine streamay.net hors ligne."
   }];
   const BASE_URL = "https://streamay.net";
   class DefaultExtension extends MProvider {

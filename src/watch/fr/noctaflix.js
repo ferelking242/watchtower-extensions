@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://noctaflix.lol/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/noctaflix.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "Noctaflix — Films & Séries VF."
+    "notes": "Noctaflix — domaine noctaflix.lol hors ligne."
 }];
 
 const BASE_URL = "https://noctaflix.lol";

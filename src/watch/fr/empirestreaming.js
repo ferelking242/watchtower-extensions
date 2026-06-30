@@ -5,12 +5,12 @@ const watchtowerSources = [{
     "name": "Empire-Streaming",
     "langs": ["fr"],
     "ids": { "fr": 728204918 },
-    "baseUrl": "https://empire-streaming.cam",
-    "apiUrl": "https://empire-streaming.cam",
-    "iconUrl": "https://empire-streaming.cam/favicon.ico",
+    "baseUrl": "https://empire-streaming.fr",
+    "apiUrl": "https://empire-streaming.fr",
+    "iconUrl": "https://empire-streaming.fr/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/empirestreaming.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,10 +23,10 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "Empire-Streaming — empire-streaming.cam — Films & Séries VF."
+    "notes": "Empire-Streaming — Domaine actuel: empire-streaming.fr"
 }];
 
-const BASE_URL = "https://empire-streaming.cam";
+const BASE_URL = "https://empire-streaming.fr";
 
 class DefaultExtension extends MProvider {
     constructor() { super(); }

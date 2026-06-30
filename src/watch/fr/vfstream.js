@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://films.vfstream.eu/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/vfstream.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "VFStream — Films en VF."
+    "notes": "VFStream — domaine films.vfstream.eu hors ligne."
 }];
 
 const BASE_URL = "https://films.vfstream.eu";

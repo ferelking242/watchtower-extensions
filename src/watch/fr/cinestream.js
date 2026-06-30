@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://cinestream.io/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.2",
+      "version": "0.1.3",
       "pkgPath": "watch/fr/cinestream.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,
@@ -16,7 +16,7 @@ const watchtowerSources = [{
       "requiresAccount": false,
       "hasDRM": false,
       "paywall": "free",
-      "notes": ""
+      "notes": "Cinestream — domaine cinestream.io hors ligne. Essayer cinestream.cc"
   }];
   const BASE_URL = "https://cinestream.io";
   class DefaultExtension extends MProvider {

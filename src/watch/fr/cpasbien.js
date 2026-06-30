@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://cpasbien.gl/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.2",
+      "version": "0.1.3",
       "pkgPath": "watch/fr/cpasbien.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,
@@ -16,7 +16,7 @@ const watchtowerSources = [{
       "requiresAccount": false,
       "hasDRM": false,
       "paywall": "free",
-      "notes": "Index torrents VF"
+      "notes": "Cpasbien — domaine cpasbien.gl hors ligne."
   }];
   const BASE_URL = "https://cpasbien.gl";
   class DefaultExtension extends MProvider {

@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://yassflix.cc/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/yassflix.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "YassFlix — yassflix.cc — Films & Séries VF."
+    "notes": "YassFlix — domaine yassflix.cc hors ligne (blog)."
 }];
 
 const BASE_URL = "https://yassflix.cc";

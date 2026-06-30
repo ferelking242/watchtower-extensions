@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://nunflix.fr/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "pkgPath": "watch/fr/nunflix.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "Nunflix — nunflix.fr — Films & Séries VF."
+    "notes": "Nunflix — parsing non compatible avec la nouvelle structure du site (www.nunflix.fr)."
 }];
 
 const BASE_URL = "https://nunflix.fr";
