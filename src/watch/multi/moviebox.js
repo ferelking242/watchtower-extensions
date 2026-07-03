@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.5.0",
+    "version": "3.5.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -23,8 +23,8 @@ const watchtowerSources = [{
 }];
 
 // ══════════════════════════════════════════════════════════════
-//  MovieBox  v3.5.0
-//  Fixes v3.5.0:
+//  MovieBox  v3.5.1
+//  Fixes v3.5.1:
 //   - SEARCH : utilise le vrai endpoint /search de l'API
 //     au lieu de filtrer le cache de la home (→ plus de 0 résultats)
 //   - BROWSE sans mot-clé : utilise /catalog avec pagination réelle
@@ -337,21 +337,64 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        // Utilise l'API catalog pour une vraie pagination (pas limité à la home)
         var lang = this._prefLang();
         var res  = await this._apiCatalog(page, "", "0", "", "", lang);
-        if (res && res.list && res.list.length > 0) return res;
-        // Fallback : home cache
+        if (res !== null) return res;
+        if (lang !== "en") {
+            res = await this._apiCatalog(page, "", "0", "", "", "en");
+            if (res !== null) return res;
+        }
         return this._page(await this._fetchHome(), page);
     }
 
     async getLatestUpdates(page) {
         var lang = this._prefLang();
         var res  = await this._apiCatalog(page, "", "1", "", "", lang);
-        if (res && res.list && res.list.length > 0) return res;
-        // Fallback : home cache trié
+        if (res !== null) return res;
+        if (lang !== "en") {
+            res = await this._apiCatalog(page, "", "1", "", "", "en");
+            if (res !== null) return res;
+        }
         var all = await this._fetchHome();
         return this._page(this._sortLatest(all), page);
+    }
+
+    // ── Filtrage local best-effort (fallback quand l'API est indisponible) ──
+    // Applique type, genre et pays sur le cache home.
+    _filterLocal(all, typeVal, genreVal, countryVal) {
+        var COUNTRY_MAP = {
+            us: ["us","usa","united states","american","états-unis"],
+            kr: ["korea","korean","kr","south korea","corée"],
+            jp: ["japan","japanese","jp","japon"],
+            cn: ["china","chinese","cn","chine"],
+            fr: ["france","french","fr","français"],
+            gb: ["uk","britain","british","gb","england","royaume-uni"],
+            "in": ["india","indian","inde"],
+            it: ["italy","italian","it","italie"],
+            de: ["germany","german","de","allemagne"],
+            es: ["spain","spanish","es","espagne"],
+            mx: ["mexico","mexican","mx","mexique"],
+            th: ["thailand","thai","th","thaïlande"]
+        };
+        var typeNum = typeVal ? parseInt(typeVal, 10) : 0;
+        var genreLc = genreVal ? genreVal.toLowerCase() : "";
+        var cPatterns = countryVal ? (COUNTRY_MAP[countryVal.toLowerCase()] || [countryVal.toLowerCase()]) : null;
+        var out = [];
+        for (var i = 0; i < all.length; i++) {
+            var s = all[i];
+            if (typeVal && s.subjectType !== typeNum) continue;
+            if (genreLc && (s.genre || "").toLowerCase().indexOf(genreLc) < 0) continue;
+            if (cPatterns) {
+                var c = (s.countryName || s.country || "").toLowerCase();
+                var ok = false;
+                for (var p = 0; p < cPatterns.length; p++) {
+                    if (c.indexOf(cPatterns[p]) >= 0) { ok = true; break; }
+                }
+                if (!ok) continue;
+            }
+            out.push(s);
+        }
+        return out;
     }
 
     // ── Lecture des filtres depuis filterList ──
@@ -400,17 +443,17 @@ class DefaultExtension extends MProvider {
         if (q) {
             // ── Recherche réelle via API ──
             var res = await this._apiSearch(q, page, filters.typeVal, filters.sortVal, filters.genreVal, filters.countryVal, lang);
-            if (res && res.list && res.list.length > 0) return res;
+            if (res !== null) return res;
 
-            // Retry avec "en" si pas de résultat dans la langue courante
+            // Retry avec "en" si la langue courante a échoué (erreur réseau / API)
             if (lang !== "en") {
                 res = await this._apiSearch(q, page, filters.typeVal, filters.sortVal, filters.genreVal, filters.countryVal, "en");
-                if (res && res.list && res.list.length > 0) return res;
+                if (res !== null) return res;
             }
 
-            // Dernier recours : recherche locale dans le cache home
+            // Dernier recours : recherche locale dans le cache home (type + genre + pays + titre)
             var all     = await this._fetchHome();
-            var typed   = this._filterByType(all, filters.typeVal);
+            var typed   = this._filterLocal(all, filters.typeVal, filters.genreVal, filters.countryVal);
             var ql      = q.toLowerCase();
             var matched = [];
             for (var i = 0; i < typed.length; i++) {
@@ -426,11 +469,17 @@ class DefaultExtension extends MProvider {
         } else {
             // ── Browse sans mot-clé : catalogue paginé ──
             var catRes = await this._apiCatalog(page, filters.typeVal, filters.sortVal, filters.genreVal, filters.countryVal, lang);
-            if (catRes && catRes.list && catRes.list.length > 0) return catRes;
+            if (catRes !== null) return catRes;
 
-            // Fallback : home cache avec filtres locaux
-            var home    = await this._fetchHome();
-            var filtered = this._filterByType(home, filters.typeVal);
+            // Retry avec "en"
+            if (lang !== "en") {
+                catRes = await this._apiCatalog(page, filters.typeVal, filters.sortVal, filters.genreVal, filters.countryVal, "en");
+                if (catRes !== null) return catRes;
+            }
+
+            // Fallback home cache avec tous les filtres locaux (type + genre + pays + tri)
+            var home     = await this._fetchHome();
+            var filtered = this._filterLocal(home, filters.typeVal, filters.genreVal, filters.countryVal);
             if (filters.sortVal === "1") filtered = this._sortLatest(filtered);
             else if (filters.sortVal === "2") filtered = this._sortRating(filtered);
             return this._page(filtered, page);
