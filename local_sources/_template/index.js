@@ -10,6 +10,83 @@
  *   3. Implement getPopular, search, getDetail, getVideoSources.
  *   4. (Optional) Declare home sections via getCustomLists().
  *   5. (Optional) Expose user settings via getSourcePreferences().
+ *
+ * ═══════════════════════════════════════════════════════════════════════════
+ * CONVENTION — Remote JS Extensions (class DefaultExtension extends MProvider)
+ * ═══════════════════════════════════════════════════════════════════════════
+ *
+ * getFilterList() — exact type_name values the app recognises:
+ *
+ *   SelectFilter  + SelectOption  →  dropdown (single value)
+ *   GroupFilter   + CheckBox      →  collapsible list of checkboxes
+ *   SortFilter    + SortOption    →  sortable list with asc/desc
+ *   TextFilter                    →  free-text input
+ *   CheckBoxFilter                →  single standalone checkbox
+ *   TriStateFilter                →  tristate: off / include / exclude
+ *   HeaderFilter                  →  label only (no user input)
+ *   SeparatorFilter               →  visual divider
+ *
+ *   Example skeleton:
+ *
+ *   getFilterList() {
+ *     return [
+ *       {
+ *         type_name: "SelectFilter", name: "Sort By", state: 0,
+ *         values: [
+ *           { type_name: "SelectOption", name: "Popular", value: "views" },
+ *           { type_name: "SelectOption", name: "Latest",  value: "latest" },
+ *         ],
+ *       },
+ *       {
+ *         type_name: "SelectFilter", name: "Status", state: 0,
+ *         values: [
+ *           { type_name: "SelectOption", name: "All",       value: "" },
+ *           { type_name: "SelectOption", name: "Ongoing",   value: "ongoing" },
+ *           { type_name: "SelectOption", name: "Completed", value: "end" },
+ *         ],
+ *       },
+ *       {
+ *         type_name: "GroupFilter", name: "Genre",
+ *         state: [
+ *           { type_name: "CheckBox", name: "Action",  value: "action",  state: false },
+ *           { type_name: "CheckBox", name: "Romance", value: "romance", state: false },
+ *         ],
+ *       },
+ *     ];
+ *   }
+ *
+ *   Reading filters in search(query, page, filters):
+ *
+ *   for (const f of (filters || [])) {
+ *     if (f.type_name === "SelectFilter" && f.name === "Sort By") {
+ *       const val = Array.from(f.values)[f.state]?.value || "latest";
+ *     }
+ *     if (f.type_name === "GroupFilter" && f.name === "Genre") {
+ *       const genres = Array.from(f.state).filter(x => x.state === true).map(x => x.value);
+ *     }
+ *   }
+ *
+ * getCustomLists() — home section layout contract:
+ *
+ *   { id, name, layout?, color?, icon?, seeAll? }
+ *
+ *   layout  → "spotlight" | "ranked" | "compact" | "carousel" | "grid"
+ *   color   → "#RRGGBB" hex string
+ *   icon    → one of: fiber_new, trending_up, animation, theaters, star, bolt,
+ *             movie, live_tv, history, category, new_releases, local_movies,
+ *             tv, sports, music_note, home, fire, filter, update
+ *   seeAll  → false | "latest" | "popular" | true (paginated via getCustomList)
+ *
+ * getCustomList(listId, page) — always return { list, hasNextPage }
+ *   • never throw — return { list: [], hasNextPage: false } on error
+ *   • if extension has no filter for a section, skip gracefully (no crash)
+ *
+ * Robustness rules:
+ *   • Never throw from getFilterList() — return [] if unsupported
+ *   • search() must always return { list, hasNextPage } even with empty filters
+ *   • Handle null/undefined filterList: wrap reads in (filters || [])
+ *   • Use Array.from() when iterating f.values / f.state (QuickJS compat)
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 class MyLocalSource {
   constructor(api) {
