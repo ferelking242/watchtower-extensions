@@ -137,9 +137,28 @@ class DefaultExtension extends MProvider {
 
     async search(query, page, filterList) {
         await this._log(`search: "${query}" p${page}`);
-        const res = await new Client().get(`${this.cmsBase}/c/dospiv/29/${page - 1}`, this._hdrs());
-        const list = this._parse(res.body);
-        return { list, hasNextPage: list.length >= 10 };
+        // Dospiv has no server-side search endpoint: fall back to scanning the
+        // popular pages client-side and filtering by title so search still
+        // works instead of silently returning the unfiltered popular list.
+        const q = (query || "").trim().toLowerCase();
+        if (!q) {
+            const res = await new Client().get(`${this.cmsBase}/c/dospiv/29/${page - 1}`, this._hdrs());
+            const list = this._parse(res.body);
+            return { list, hasNextPage: list.length >= 10 };
+        }
+
+        const normalize = (s) => (s || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+        const nq = normalize(q);
+
+        const perFetchPage = page; // 1 popular page -> 1 search "page" of results
+        const res = await new Client().get(`${this.cmsBase}/c/dospiv/29/${perFetchPage - 1}`, this._hdrs());
+        const all = this._parse(res.body);
+        const list = all.filter((item) => normalize(item.name).includes(nq));
+
+        return { list, hasNextPage: all.length >= 10 };
     }
 
     // ── Custom home sections ───────────────────────────────────────────────
