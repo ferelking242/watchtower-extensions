@@ -1,3 +1,9 @@
+// ⚠️ DÉPRÉCIÉ — retiré de index/watch.json (v3.4.0, 2026-07-03).
+// Ce fichier tapait la même API aoneroom que src/watch/multi/moviebox.js,
+// en version anglais-only et sans les fonctionnalités récentes (doublage,
+// sous-titres bilingues, catégories d'accueil). C'était la cause des
+// "2 extensions MovieBox" dans le marketplace. Conservé ici pour
+// référence uniquement — n'ajoutez pas ceci dans un index actif.
 const watchtowerSources = [{
     "name": "LokLok / MovieBox",
     "lang": "en",
@@ -8,7 +14,7 @@ const watchtowerSources = [{
     "itemType": 1,
     "version": "2.0.0",
     "pkgPath": "watch/en/loklok.js",
-    "notes": "Free movies + TV series streaming, captions in 12 languages. Backed by aoneroom (LokLok / MovieBox / themoviebox.xyz).",
+    "notes": "DÉPRÉCIÉ — utilisez MovieBox (multi) à la place. Free movies + TV series streaming, captions in 12 languages. Backed by aoneroom (LokLok / MovieBox / themoviebox.xyz).",
     "isNsfw": false,
     "hasSubtitles": true,
     "hasDub": true

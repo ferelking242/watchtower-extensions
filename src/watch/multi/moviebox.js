@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.3.0",
+    "version": "3.4.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,17 +19,33 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox — Films & Séries. API aoneroom. Sous-titres multi-langues."
+    "notes": "MovieBox — Films, Séries, Anime & Animation. API aoneroom. Sous-titres multi-langues + doublage + mode bilingue. Remplace LokLok (fusionné ici)."
 }];
 
 // ══════════════════════════════════════════════════════════════
-//  MovieBox  v3.3.0
-//  Fixes: X-Client-Token auth header, episodes ascending order
+//  MovieBox  v3.4.0
+//  Fixes:
+//   - Cache de l'accueil (5 min) → fini les listes qui changent
+//     d'un appel à l'autre (source du bug "doublons Popular/Récents")
+//   - "Animation" ajouté à getCustomLists() (existait dans le code
+//     mais n'apparaissait jamais dans l'app : catégorie invisible)
+//   - "Récents" ne se confond plus avec "Popular" : les titres sans
+//     date connue passent maintenant en dernier (et dans un ordre
+//     différent) au lieu de garder leur position d'origine
+//   - Nouvelles catégories d'accueil basées sur le genre réel
+//     (Action, Horreur, Comédie, Romance, Drame, K-Drama, Top noté)
+//     avec mise en page déclarative (grid/ranked/compact/spotlight)
+//     pour ne plus tout afficher comme un "Top"
+//   - Filtre "Tri" ajouté en plus du filtre "Type"
+//   - Réglages séparés : sous-titres / doublage / sous-titres bilingues
+//   - Retry automatique (langue de secours) si un épisode remonte
+//     "non disponible"
 // ══════════════════════════════════════════════════════════════
 
 var MB_API  = "https://h5-api.aoneroom.com";
 var MB_ORIG = "https://themoviebox.xyz";
 var MB_PER  = 30;
+var MB_HOME_TTL = 5 * 60 * 1000; // 5 minutes
 
 // ── Compact MD5 (for X-Client-Token generation) ───────────────
 function mbMD5(str) {
@@ -75,7 +91,7 @@ function mbClientToken() {
     return e + "," + mbMD5(rev);
 }
 
-function mbHeaders() {
+function mbHeaders(langOverride) {
     return {
         "Accept":          "application/json",
         "Origin":          MB_ORIG,
@@ -83,131 +99,223 @@ function mbHeaders() {
         "User-Agent":      "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
         "X-Client-Info":   "{\"timezone\":\"UTC\"}",
         "X-Client-Token":  mbClientToken(),
-        "X-Request-Lang":  "fr"
+        "X-Request-Lang":  langOverride || "fr"
     };
 }
 
-async function mbFetchHome() {
-    try {
-        var res = await new Client().get(MB_API + "/wefeed-h5api-bff/home", mbHeaders());
-        var j;
-        try { j = JSON.parse(res.body); } catch (_) { return []; }
-        if (!j || j.code !== 0 || !j.data || !j.data.operatingList) return [];
-        var ops = j.data.operatingList;
-        var all = [];
-        var seen = {};
-        for (var i = 0; i < ops.length; i++) {
-            var subs = ops[i].subjects;
-            if (!subs || !subs.length) continue;
-            for (var k = 0; k < subs.length; k++) {
-                var s = subs[k];
-                var sid = s.subjectId ? String(s.subjectId) : "";
-                if (sid && !seen[sid]) {
-                    seen[sid] = 1;
-                    all.push(s);
-                }
-            }
-        }
-        return all;
-    } catch (_) {
-        return [];
+// ── Genre / catégorie helpers (basés sur des champs stables de l'API) ──
+function mbGenreHas(s, keywords) {
+    var g = ((s.genre || "") + " " + (s.title || "")).toLowerCase();
+    for (var i = 0; i < keywords.length; i++) {
+        if (g.indexOf(keywords[i]) >= 0) return true;
     }
+    return false;
+}
+function mbIsKorean(s) {
+    var c = (s.countryName || "").toLowerCase();
+    return c.indexOf("cor") >= 0 || c.indexOf("korea") >= 0;
 }
 
-function mbCover(s) {
-    if (s.cover && s.cover.url) return s.cover.url;
-    if (s.horizontalCover) return s.horizontalCover;
-    if (s.verticalCover)   return s.verticalCover;
-    return "";
-}
-
-function mbToItem(s) {
-    return {
-        name:        s.title || s.subjectName || "Unknown",
-        imageUrl:    mbCover(s),
-        link:        JSON.stringify({
-            subjectId:   String(s.subjectId || ""),
-            detailPath:  s.detailPath || "",
-            subjectType: s.subjectType || 1
-        }),
-        description: s.description || ""
-    };
-}
-
-function mbPage(items, page) {
-    var p     = (page && page > 0) ? page : 1;
-    var start = (p - 1) * MB_PER;
-    var end   = p * MB_PER;
-    var slice = [];
-    for (var i = start; i < end && i < items.length; i++) slice.push(mbToItem(items[i]));
-    return { list: slice, hasNextPage: end < items.length };
-}
-
-function mbFilter(all, typeStr) {
-    if (!typeStr) return all;
-    var t = parseInt(typeStr, 10);
-    var out = [];
-    for (var i = 0; i < all.length; i++) {
-        if (all[i].subjectType === t) out.push(all[i]);
-    }
-    return out;
-}
+var MB_CATS = {
+    action:  { keywords: ["action"] },
+    horror:  { keywords: ["horror", "horreur", "terreur", "épouvante"] },
+    comedy:  { keywords: ["comedy", "comédie", "comedie"] },
+    romance: { keywords: ["romance", "romantique"] },
+    drama:   { keywords: ["drama", "drame"] }
+};
 
 class DefaultExtension extends MProvider {
 
+    // ── Accueil : cache 5 min pour éviter des résultats instables ──
+    async _fetchHome() {
+        var now = Date.now();
+        if (this._homeCache && (now - (this._homeCacheAt || 0)) < MB_HOME_TTL) {
+            return this._homeCache;
+        }
+        try {
+            var res = await new Client().get(MB_API + "/wefeed-h5api-bff/home", mbHeaders(this._prefLang()));
+            var j;
+            try { j = JSON.parse(res.body); } catch (_) { return this._homeCache || []; }
+            if (!j || j.code !== 0 || !j.data || !j.data.operatingList) return this._homeCache || [];
+            var ops = j.data.operatingList;
+            var all = [];
+            var seen = {};
+            for (var i = 0; i < ops.length; i++) {
+                var subs = ops[i].subjects;
+                if (!subs || !subs.length) continue;
+                for (var k = 0; k < subs.length; k++) {
+                    var s = subs[k];
+                    var sid = s.subjectId ? String(s.subjectId) : "";
+                    if (sid && !seen[sid]) {
+                        seen[sid] = 1;
+                        all.push(s);
+                    }
+                }
+            }
+            this._homeCache = all;
+            this._homeCacheAt = now;
+            return all;
+        } catch (_) {
+            return this._homeCache || [];
+        }
+    }
+
+    _pref(key, fallback) {
+        try {
+            if (this.source && this.source.prefs) {
+                for (var i = 0; i < this.source.prefs.length; i++) {
+                    if (this.source.prefs[i].key === key) {
+                        var v = this.source.prefs[i].value;
+                        return (v !== undefined && v !== null && v !== "") ? String(v) : fallback;
+                    }
+                }
+            }
+        } catch (_) {}
+        return fallback;
+    }
+    _prefLang()      { return this._pref("mb_content_lang", "fr"); }
+    _prefSub()        { return this._pref("mb_sub", "en"); }
+    _prefDub()        { return this._pref("mb_dub", ""); }
+    _prefBilingual()  { return this._pref("mb_bilingual", "false") === "true"; }
+    _prefBilingual2() { return this._pref("mb_bilingual_second", "en"); }
+
+    // ── Rendu des items ──
+    _cover(s) {
+        if (s.cover && s.cover.url) return s.cover.url;
+        if (s.horizontalCover) return s.horizontalCover;
+        if (s.verticalCover)   return s.verticalCover;
+        return "";
+    }
+    _toItem(s) {
+        return {
+            name:        s.title || s.subjectName || "Unknown",
+            imageUrl:    this._cover(s),
+            link:        JSON.stringify({
+                subjectId:   String(s.subjectId || ""),
+                detailPath:  s.detailPath || "",
+                subjectType: s.subjectType || 1
+            }),
+            description: s.description || ""
+        };
+    }
+    _page(items, page) {
+        var p     = (page && page > 0) ? page : 1;
+        var start = (p - 1) * MB_PER;
+        var end   = p * MB_PER;
+        var slice = [];
+        for (var i = start; i < end && i < items.length; i++) slice.push(this._toItem(items[i]));
+        return { list: slice, hasNextPage: end < items.length };
+    }
+    _filterByType(all, typeStr) {
+        if (!typeStr) return all;
+        var t = parseInt(typeStr, 10);
+        var out = [];
+        for (var i = 0; i < all.length; i++) {
+            if (all[i].subjectType === t) out.push(all[i]);
+        }
+        return out;
+    }
+    // Récents : les titres datés d'abord (plus récent → plus ancien),
+    // puis les titres sans date, mais dans un ordre RENVERSÉ par
+    // rapport à Popular (au lieu de garder le même ordre = doublon visuel)
+    _sortLatest(all) {
+        var dated = [];
+        var undated = [];
+        for (var i = 0; i < all.length; i++) {
+            if (all[i].releaseDate) dated.push(all[i]); else undated.push(all[i]);
+        }
+        dated.sort(function(a, b) {
+            return (b.releaseDate > a.releaseDate) ? 1 : (b.releaseDate < a.releaseDate ? -1 : 0);
+        });
+        undated.reverse();
+        return dated.concat(undated);
+    }
+    _sortRating(all) {
+        var withScore = all.filter(function(s) { return s.imdbRatingValue && parseFloat(s.imdbRatingValue) > 0; });
+        withScore.sort(function(a, b) { return parseFloat(b.imdbRatingValue) - parseFloat(a.imdbRatingValue); });
+        return withScore;
+    }
+    _byCategory(all, catKey) {
+        var def = MB_CATS[catKey];
+        if (!def) return [];
+        var out = [];
+        for (var i = 0; i < all.length; i++) {
+            if (mbGenreHas(all[i], def.keywords)) out.push(all[i]);
+        }
+        return out;
+    }
+
+    // ── Sections déclaratives de l'accueil ──────────────────────────
+    // layout : "spotlight" | "ranked" | "compact" | "carousel" | "grid"
     getCustomLists() {
         return [
-            { id: "all",       name: "🎭 Tout"    },
-            { id: "movies",    name: "🎬 Films"    },
-            { id: "series",    name: "📺 Séries"   },
-            { id: "anime",     name: "⛩️ Anime"    },
-            { id: "latest",    name: "🆕 Récents"  }
+            { id: "all",      name: "🎭 Tout",         layout: "spotlight", color: "#7C4DFF", icon: "apps",         seeAll: "popular" },
+            { id: "latest",   name: "🆕 Récents",       layout: "spotlight", color: "#00BCD4", icon: "fiber_new",    seeAll: "latest" },
+            { id: "topRated", name: "🏆 Mieux notés",   layout: "ranked",    color: "#FFB300", icon: "trending_up",  seeAll: false },
+            { id: "movies",   name: "🎬 Films",         layout: "grid",      color: "#E53935", icon: "movie",        seeAll: true },
+            { id: "series",   name: "📺 Séries",        layout: "grid",      color: "#3949AB", icon: "tv",           seeAll: true },
+            { id: "anime",    name: "⛩️ Anime",         layout: "grid",      color: "#8E24AA", icon: "animation",    seeAll: true },
+            { id: "animation",name: "🎨 Animation",     layout: "compact",   color: "#9C27B0", icon: "animation",    seeAll: true },
+            { id: "action",   name: "💥 Action",        layout: "compact",   color: "#F4511E", icon: "local_fire_department", seeAll: false },
+            { id: "horror",   name: "👻 Horreur",       layout: "compact",   color: "#455A64", icon: "dark_mode",    seeAll: false },
+            { id: "comedy",   name: "😂 Comédie",       layout: "compact",   color: "#FDD835", icon: "sentiment_very_satisfied", seeAll: false },
+            { id: "romance",  name: "💞 Romance",       layout: "compact",   color: "#EC407A", icon: "favorite",     seeAll: false },
+            { id: "drama",    name: "🎭 Drame",         layout: "compact",   color: "#6D4C41", icon: "theaters",     seeAll: false },
+            { id: "kdrama",   name: "🇰🇷 K-Drama",       layout: "compact",   color: "#00897B", icon: "language",     seeAll: false }
         ];
     }
 
     async getCustomList(listId, page) {
-        var all = await mbFetchHome();
-        if (listId === "movies")    return mbPage(mbFilter(all, "1"), page);
-        if (listId === "series")    return mbPage(mbFilter(all, "2"), page);
-        if (listId === "anime")     return mbPage(mbFilter(all, "5"), page);
-        if (listId === "animation") return mbPage(mbFilter(all, "4"), page);
-        if (listId === "latest") {
-            var sorted = all.slice().sort(function(a, b) {
-                var da = a.releaseDate || "";
-                var db = b.releaseDate || "";
-                return db > da ? 1 : db < da ? -1 : 0;
-            });
-            return mbPage(sorted, page);
+        var all = await this._fetchHome();
+
+        if (listId === "movies")    return this._page(this._filterByType(all, "1"), page);
+        if (listId === "series")    return this._page(this._filterByType(all, "2"), page);
+        if (listId === "anime")     return this._page(this._filterByType(all, "5"), page);
+        if (listId === "animation") return this._page(this._filterByType(all, "4"), page);
+        if (listId === "latest")    return this._page(this._sortLatest(all), page);
+        if (listId === "topRated")  return this._page(this._sortRating(all).slice(0, 20), 1);
+        if (listId === "kdrama") {
+            var kd = [];
+            for (var i = 0; i < all.length; i++) {
+                if (all[i].subjectType === 2 && mbIsKorean(all[i])) kd.push(all[i]);
+            }
+            return this._page(kd, 1);
         }
-        return mbPage(all, page);
+        if (MB_CATS[listId]) return this._page(this._byCategory(all, listId), 1);
+
+        return this._page(all, page);
     }
 
     async getPopular(page) {
-        return mbPage(await mbFetchHome(), page);
+        return this._page(await this._fetchHome(), page);
     }
 
     async getLatestUpdates(page) {
-        var all = await mbFetchHome();
-        var sorted = all.slice().sort(function(a, b) {
-            var da = a.releaseDate || "";
-            var db = b.releaseDate || "";
-            return db > da ? 1 : db < da ? -1 : 0;
-        });
-        return mbPage(sorted, page);
+        var all = await this._fetchHome();
+        return this._page(this._sortLatest(all), page);
     }
 
     async search(query, page, filterList) {
-        var all = await mbFetchHome();
+        var all = await this._fetchHome();
         var typeVal = "";
+        var sortVal = "";
         try {
-            if (filterList && filterList[0] && filterList[0].state !== undefined) {
-                var opts = [{ v: "" }, { v: "1" }, { v: "2" }, { v: "5" }, { v: "4" }];
-                var idx = filterList[0].state;
-                if (idx > 0 && idx < opts.length) typeVal = opts[idx].v;
+            if (filterList && filterList.length) {
+                for (var f = 0; f < filterList.length; f++) {
+                    var flt = filterList[f];
+                    if (!flt || flt.state === undefined) continue;
+                    if (flt.name === "Type") {
+                        var typeOpts = ["", "1", "2", "5", "4"];
+                        if (flt.state > 0 && flt.state < typeOpts.length) typeVal = typeOpts[flt.state];
+                    } else if (flt.name === "Tri") {
+                        var sortOpts = ["", "latest", "rating"];
+                        if (flt.state > 0 && flt.state < sortOpts.length) sortVal = sortOpts[flt.state];
+                    }
+                }
             }
         } catch (_) {}
 
-        var filtered = mbFilter(all, typeVal);
+        var filtered = this._filterByType(all, typeVal);
 
         if (query && query.trim()) {
             var q = query.trim().toLowerCase();
@@ -220,7 +328,11 @@ class DefaultExtension extends MProvider {
             }
             filtered = result;
         }
-        return mbPage(filtered, page);
+
+        if (sortVal === "latest") filtered = this._sortLatest(filtered);
+        else if (sortVal === "rating") filtered = this._sortRating(filtered);
+
+        return this._page(filtered, page);
     }
 
     async getDetail(url) {
@@ -236,7 +348,7 @@ class DefaultExtension extends MProvider {
 
         var j = null;
         try {
-            var res = await new Client().get(MB_API + "/wefeed-h5api-bff/detail?" + param, mbHeaders());
+            var res = await new Client().get(MB_API + "/wefeed-h5api-bff/detail?" + param, mbHeaders(this._prefLang()));
             try { j = JSON.parse(res.body); } catch (_) {}
         } catch (_) {}
 
@@ -273,7 +385,7 @@ class DefaultExtension extends MProvider {
                 dateUpload: s.releaseDate || ""
             });
         } else {
-            // ✅ Ascending order — S1 E1 first, last episode at the end
+            // ✅ Ordre croissant — S1 E1 en premier, dernier épisode à la fin
             for (var si = 0; si < seasons.length; si++) {
                 var season = seasons[si];
                 var seNum  = season.se   || (si + 1);
@@ -286,17 +398,64 @@ class DefaultExtension extends MProvider {
                     });
                 }
             }
-            // Ascending order: E1 first → player starts at E1, list reads naturally
         }
 
         return {
             name:        s.title || "Unknown",
-            imageUrl:    mbCover(s),
+            imageUrl:    this._cover(s),
             description: desc,
             genre:       genres,
             status:      isMovie ? 1 : 0,
             chapters:    chapters
         };
+    }
+
+    async _fetchPlay(subjectId, detailPath, se, ep, lang) {
+        var playUrl = MB_API + "/wefeed-h5api-bff/subject/play"
+            + "?subjectId=" + encodeURIComponent(subjectId)
+            + "&se=" + se
+            + "&ep=" + ep
+            + "&detailPath=" + encodeURIComponent(detailPath);
+        try {
+            var res = await new Client().get(playUrl, mbHeaders(lang));
+            return JSON.parse(res.body);
+        } catch (_) {
+            return null;
+        }
+    }
+
+    // ── Sous-titres bilingues : fusion de deux pistes SRT/VTT ──
+    _parseSubCues(text) {
+        var norm = String(text || "").replace(/\r/g, "");
+        var cues = [];
+        var re = /(\d{2}:\d{2}:\d{2}[,.]\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2}[,.]\d{3})[^\n]*\n([\s\S]*?)(?=\n\s*\n|\n?\d+\s*\n\d{2}:\d{2}:\d{2}[,.]\d{3}|$)/g;
+        var m;
+        while ((m = re.exec(norm)) !== null) {
+            var body = m[3].replace(/\n+$/, "").trim();
+            if (body) cues.push({ start: m[1].replace(".", ","), end: m[2].replace(".", ","), text: body });
+        }
+        return cues;
+    }
+    _cueMs(t) {
+        var p = t.split(/[:,]/);
+        return (+p[0]) * 3600000 + (+p[1]) * 60000 + (+p[2]) * 1000 + (+p[3]);
+    }
+    _mergeBilingual(primaryText, secondaryText) {
+        var a = this._parseSubCues(primaryText);
+        var b = this._parseSubCues(secondaryText);
+        if (!a.length) return null;
+        var out = [];
+        for (var i = 0; i < a.length; i++) {
+            var startMs = this._cueMs(a[i].start);
+            var best = null, bestDiff = 1500;
+            for (var k = 0; k < b.length; k++) {
+                var diff = Math.abs(this._cueMs(b[k].start) - startMs);
+                if (diff < bestDiff) { bestDiff = diff; best = b[k]; }
+            }
+            var text = a[i].text + (best ? ("\n" + best.text) : "");
+            out.push((i + 1) + "\n" + a[i].start + " --> " + a[i].end + "\n" + text + "\n");
+        }
+        return out.join("\n");
     }
 
     async getVideoList(url) {
@@ -309,17 +468,15 @@ class DefaultExtension extends MProvider {
         var ep = (payload.ep !== undefined) ? payload.ep : 0;
         if (!subjectId) throw new Error("subjectId manquant");
 
-        var playUrl = MB_API + "/wefeed-h5api-bff/subject/play"
-            + "?subjectId=" + encodeURIComponent(subjectId)
-            + "&se=" + se
-            + "&ep=" + ep
-            + "&detailPath=" + encodeURIComponent(detailPath);
+        var lang = this._prefLang();
+        var j = await this._fetchPlay(subjectId, detailPath, se, ep, lang);
 
-        var j = null;
-        try {
-            var res = await new Client().get(playUrl, mbHeaders());
-            try { j = JSON.parse(res.body); } catch (_) {}
-        } catch (_) {}
+        // Retry défensif : certains titres n'ont de ressource que sous
+        // un autre code langue (ex. dispo en "en" mais pas en "fr").
+        if ((!j || j.code !== 0 || !j.data || !j.data.hasResource) && lang !== "en") {
+            var retry = await this._fetchPlay(subjectId, detailPath, se, ep, "en");
+            if (retry && retry.code === 0 && retry.data && retry.data.hasResource) j = retry;
+        }
 
         if (!j || j.code !== 0 || !j.data) {
             if (j && j.code === 403) throw new Error("Région bloquée — utilise un VPN.");
@@ -327,26 +484,17 @@ class DefaultExtension extends MProvider {
             throw new Error("Pas de flux disponible. (code=" + (j ? j.code : "?") + ")");
         }
 
-        var data    = j.data;
-
+        var data = j.data;
         if (!data.hasResource) {
             throw new Error("Épisode non disponible pour le moment. Réessaie plus tard.");
         }
 
         var refHdrs = { "Referer": MB_ORIG + "/" };
 
-        // Préférence sous-titres
-        var prefSub = "";
-        try {
-            if (this.source && this.source.prefs) {
-                for (var pi = 0; pi < this.source.prefs.length; pi++) {
-                    if (this.source.prefs[pi].key === "mb_sub") {
-                        prefSub = String(this.source.prefs[pi].value || "");
-                        break;
-                    }
-                }
-            }
-        } catch (_) {}
+        var prefSub  = this._prefSub();
+        var prefDub  = this._prefDub();
+        var bilingual = this._prefBilingual();
+        var prefSub2  = this._prefBilingual2();
 
         var subtitles = [];
         try {
@@ -360,22 +508,46 @@ class DefaultExtension extends MProvider {
                     + "&id=" + stream.id
                     + "&subjectId=" + encodeURIComponent(subjectId)
                     + "&detailPath=" + encodeURIComponent(detailPath);
-                var cRes = await new Client().get(capUrl, mbHeaders());
+                var cRes = await new Client().get(capUrl, mbHeaders(lang));
                 var cj = null;
                 try { cj = JSON.parse(cRes.body); } catch (_) {}
                 if (cj && cj.code === 0 && cj.data && cj.data.captions) {
                     var caps = cj.data.captions;
                     for (var ci = 0; ci < caps.length; ci++) {
                         var c = caps[ci];
-                        if (c && c.url) subtitles.push({ file: c.url, label: c.lanName || c.lan || "Sub" });
+                        if (c && c.url) subtitles.push({ file: c.url, label: c.lanName || c.lan || "Sub", lan: (c.lan || "").toLowerCase() });
                     }
                     if (prefSub) {
                         for (var si2 = 0; si2 < subtitles.length; si2++) {
-                            if ((subtitles[si2].label || "").toLowerCase().indexOf(prefSub) >= 0) {
+                            if ((subtitles[si2].lan || subtitles[si2].label || "").toLowerCase().indexOf(prefSub) >= 0) {
                                 var pref = subtitles.splice(si2, 1)[0];
                                 subtitles.unshift(pref);
                                 break;
                             }
+                        }
+                    }
+
+                    // ── Mode bilingue : fusionne 2 pistes en une seule ──
+                    if (bilingual && subtitles.length >= 2) {
+                        var findLan = function(lan) {
+                            for (var x = 0; x < subtitles.length; x++) {
+                                if ((subtitles[x].lan || subtitles[x].label || "").toLowerCase().indexOf(lan) >= 0) return subtitles[x];
+                            }
+                            return null;
+                        };
+                        var trackA = findLan(prefSub) || subtitles[0];
+                        var trackB = findLan(prefSub2) || (subtitles[1] !== trackA ? subtitles[1] : null);
+                        if (trackA && trackB && trackA !== trackB) {
+                            try {
+                                var ta = await new Client().get(trackA.file, refHdrs);
+                                var tb = await new Client().get(trackB.file, refHdrs);
+                                var merged = this._mergeBilingual(ta.body, tb.body);
+                                if (merged) {
+                                    var dataUri = "data:text/plain;charset=utf-8;base64," +
+                                        (typeof btoa === "function" ? btoa(unescape(encodeURIComponent(merged))) : Buffer.from(merged, "utf-8").toString("base64"));
+                                    subtitles.unshift({ file: dataUri, label: "🈴 Bilingue (" + (trackA.label || "") + " + " + (trackB.label || "") + ")" });
+                                }
+                            } catch (_) {}
                         }
                     }
                 }
@@ -389,8 +561,25 @@ class DefaultExtension extends MProvider {
             }
         }
 
+        // Préférence de doublage : si l'API expose plusieurs pistes audio
+        // (champ lan/lanName/audioLan selon le flux), on remonte celle
+        // qui correspond à la langue choisie par l'utilisateur.
+        function reorderByDub(list) {
+            if (!prefDub || !list || list.length < 2) return list;
+            var idx = -1;
+            for (var i = 0; i < list.length; i++) {
+                var lanField = (list[i].lan || list[i].lanName || list[i].audioLan || "").toLowerCase();
+                if (lanField && lanField.indexOf(prefDub) >= 0) { idx = i; break; }
+            }
+            if (idx > 0) {
+                var picked = list.splice(idx, 1)[0];
+                list.unshift(picked);
+            }
+            return list;
+        }
+
         if (data.hls && data.hls.length) {
-            var hlsList = data.hls.slice().sort(function(a, b) {
+            var hlsList = reorderByDub(data.hls.slice()).sort(function(a, b) {
                 return (+b.resolutions || 0) - (+a.resolutions || 0);
             });
             for (var hi = 0; hi < hlsList.length; hi++) {
@@ -399,7 +588,7 @@ class DefaultExtension extends MProvider {
             }
         }
         if (data.streams && data.streams.length) {
-            var mp4List = data.streams.slice().sort(function(a, b) {
+            var mp4List = reorderByDub(data.streams.slice()).sort(function(a, b) {
                 return (+b.resolutions || 0) - (+a.resolutions || 0);
             });
             for (var mi = 0; mi < mp4List.length; mi++) {
@@ -418,30 +607,82 @@ class DefaultExtension extends MProvider {
     }
 
     getFilterList() {
-        return [{
-            type_name: "SelectFilter",
-            name:      "Type",
-            state:     0,
-            values: [
-                { type_name: "SelectOption", name: "🎭 Tout",      value: "" },
-                { type_name: "SelectOption", name: "🎬 Films",     value: "1" },
-                { type_name: "SelectOption", name: "📺 Séries",    value: "2" },
-                { type_name: "SelectOption", name: "⛩️ Anime",     value: "5" },
-                { type_name: "SelectOption", name: "🎨 Animation", value: "4" }
-            ]
-        }];
+        return [
+            {
+                type_name: "SelectFilter",
+                name:      "Type",
+                state:     0,
+                values: [
+                    { type_name: "SelectOption", name: "🎭 Tout",      value: "" },
+                    { type_name: "SelectOption", name: "🎬 Films",     value: "1" },
+                    { type_name: "SelectOption", name: "📺 Séries",    value: "2" },
+                    { type_name: "SelectOption", name: "⛩️ Anime",     value: "5" },
+                    { type_name: "SelectOption", name: "🎨 Animation", value: "4" }
+                ]
+            },
+            {
+                type_name: "SelectFilter",
+                name:      "Tri",
+                state:     0,
+                values: [
+                    { type_name: "SelectOption", name: "Popularité",   value: "" },
+                    { type_name: "SelectOption", name: "Nouveautés",   value: "latest" },
+                    { type_name: "SelectOption", name: "Mieux notés",  value: "rating" }
+                ]
+            }
+        ];
     }
 
     getSourcePreferences() {
-        return [{
-            key: "mb_sub",
-            listPreference: {
-                title:      "Langue des sous-titres",
-                summary:    "Déplacée en tête de liste si disponible",
-                valueIndex: 0,
-                entries:    ["English", "Français", "العربية", "Português", "Indonesian", "中文", "Русский", "日本語", "한국어", "Español"],
-                entryValues:["en",      "fr",       "ar",      "pt",        "id",         "zh",   "ru",      "ja",      "ko",      "es"]
+        return [
+            {
+                key: "mb_content_lang",
+                listPreference: {
+                    title:      "Langue de l'interface / métadonnées",
+                    summary:    "Langue utilisée pour les titres, résumés et disponibilité des flux",
+                    valueIndex: 1,
+                    entries:    ["English", "Français", "Español", "Português", "العربية", "中文", "日本語", "한국어"],
+                    entryValues:["en",      "fr",       "es",      "pt",        "ar",      "zh",   "ja",      "ko"]
+                }
+            },
+            {
+                key: "mb_sub",
+                listPreference: {
+                    title:      "Langue des sous-titres",
+                    summary:    "Déplacée en tête de liste si disponible",
+                    valueIndex: 0,
+                    entries:    ["English", "Français", "العربية", "Português", "Indonesian", "中文", "Русский", "日本語", "한국어", "Español"],
+                    entryValues:["en",      "fr",       "ar",      "pt",        "id",         "zh",   "ru",      "ja",      "ko",      "es"]
+                }
+            },
+            {
+                key: "mb_dub",
+                listPreference: {
+                    title:      "Langue du doublage (audio)",
+                    summary:    "Utilisée quand plusieurs pistes audio existent pour un titre",
+                    valueIndex: 0,
+                    entries:    ["Automatique", "English", "Français", "العربية", "Português", "中文", "日本語", "한국어", "Español"],
+                    entryValues:["",            "en",      "fr",       "ar",       "pt",        "zh",   "ja",      "ko",      "es"]
+                }
+            },
+            {
+                key: "mb_bilingual",
+                switchPreference: {
+                    title:   "Sous-titres bilingues",
+                    summary: "Affiche 2 langues de sous-titres en même temps sur une seule piste",
+                    value:   false
+                }
+            },
+            {
+                key: "mb_bilingual_second",
+                listPreference: {
+                    title:      "Deuxième langue (mode bilingue)",
+                    summary:    "Combinée avec la langue de sous-titres principale",
+                    valueIndex: 0,
+                    entries:    ["English", "Français", "العربية", "Português", "Indonesian", "中文", "Русский", "日本語", "한국어", "Español"],
+                    entryValues:["en",      "fr",       "ar",      "pt",        "id",         "zh",   "ru",      "ja",      "ko",      "es"]
+                }
             }
-        }];
+        ];
     }
 }
