@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.4.0",
+    "version": "3.4.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
 }];
 
 // ══════════════════════════════════════════════════════════════
-//  MovieBox  v3.4.0
+//  MovieBox  v3.4.1
 //  Fixes:
 //   - Cache de l'accueil (5 min) → fini les listes qui changent
 //     d'un appel à l'autre (source du bug "doublons Popular/Récents")
@@ -91,11 +91,12 @@ function mbClientToken() {
     return e + "," + mbMD5(rev);
 }
 
-function mbHeaders(langOverride) {
+function mbHeaders(langOverride, detailPath) {
+    var referer = (detailPath) ? (MB_ORIG + "/movies/" + detailPath) : (MB_ORIG + "/");
     return {
         "Accept":          "application/json",
         "Origin":          MB_ORIG,
-        "Referer":         MB_ORIG + "/",
+        "Referer":         referer,
         "User-Agent":      "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
         "X-Client-Info":   "{\"timezone\":\"UTC\"}",
         "X-Client-Token":  mbClientToken(),
@@ -348,7 +349,7 @@ class DefaultExtension extends MProvider {
 
         var j = null;
         try {
-            var res = await new Client().get(MB_API + "/wefeed-h5api-bff/detail?" + param, mbHeaders(this._prefLang()));
+            var res = await new Client().get(MB_API + "/wefeed-h5api-bff/detail?" + param, mbHeaders(this._prefLang(), detailPath));
             try { j = JSON.parse(res.body); } catch (_) {}
         } catch (_) {}
 
@@ -417,7 +418,7 @@ class DefaultExtension extends MProvider {
             + "&ep=" + ep
             + "&detailPath=" + encodeURIComponent(detailPath);
         try {
-            var res = await new Client().get(playUrl, mbHeaders(lang));
+            var res = await new Client().get(playUrl, mbHeaders(lang, detailPath));
             return JSON.parse(res.body);
         } catch (_) {
             return null;
@@ -489,7 +490,7 @@ class DefaultExtension extends MProvider {
             throw new Error("Épisode non disponible pour le moment. Réessaie plus tard.");
         }
 
-        var refHdrs = { "Referer": MB_ORIG + "/" };
+        var refHdrs = { "Referer": detailPath ? (MB_ORIG + "/movies/" + detailPath) : (MB_ORIG + "/") };
 
         var prefSub  = this._prefSub();
         var prefDub  = this._prefDub();
@@ -508,7 +509,7 @@ class DefaultExtension extends MProvider {
                     + "&id=" + stream.id
                     + "&subjectId=" + encodeURIComponent(subjectId)
                     + "&detailPath=" + encodeURIComponent(detailPath);
-                var cRes = await new Client().get(capUrl, mbHeaders(lang));
+                var cRes = await new Client().get(capUrl, mbHeaders(lang, detailPath));
                 var cj = null;
                 try { cj = JSON.parse(cRes.body); } catch (_) {}
                 if (cj && cj.code === 0 && cj.data && cj.data.captions) {
