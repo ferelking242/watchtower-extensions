@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/mangayomi-extensions/main/dart/manga/multisrc/madara/src/en/harimanga/icon.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.2.6",
+    "version": "0.3.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -130,29 +130,58 @@ class DefaultExtension extends MProvider {
     return { list, hasNextPage: list.length > 0 };
   }
 
+  // Build a filter-aware search/browse URL for the Madara (WP-Manga) theme.
+  _buildSearchUrl(baseUrl, query, page, filters) {
+    let sortBy = "latest";
+    let status = "";
+    const genres = [];
+
+    if (filters && filters.length > 0) {
+      for (let i = 0; i < filters.length; i++) {
+        const f = filters[i];
+        if (!f) continue;
+        if (f.type_name === "SelectFilter" && f.name === "Sort By") {
+          const vals = Array.from(f.values || []);
+          sortBy = (vals[f.state] || {}).value || "latest";
+        } else if (f.type_name === "SelectFilter" && f.name === "Status") {
+          const vals = Array.from(f.values || []);
+          status = (vals[f.state] || {}).value || "";
+        } else if (f.type_name === "GroupFilter" && f.name === "Genre") {
+          const items = Array.from(f.state || []);
+          for (let j = 0; j < items.length; j++) {
+            if (items[j] && items[j].state === true) genres.push(items[j].value);
+          }
+        }
+      }
+    }
+
+    let url = `${baseUrl}/?post_type=wp-manga&paged=${page}`;
+    if (query && query.trim()) url += `&s=${encodeURIComponent(query.trim())}`;
+    if (sortBy) url += `&m_orderby=${sortBy}`;
+    if (status) url += `&status[]=${status}`;
+    for (let k = 0; k < genres.length; k++) url += `&genre[]=${encodeURIComponent(genres[k])}`;
+    return url;
+  }
+
   async search(query, page, filters) {
     const baseUrl = this.getBaseUrl();
-    const res = await new Client().get(
-      `${baseUrl}/?s=${encodeURIComponent(query)}&post_type=wp-manga&paged=${page}`,
-      this.getHeaders()
-    );
+    const url = this._buildSearchUrl(baseUrl, query, page, filters);
+    const res = await new Client().get(url, this.getHeaders());
     const doc = new Document(res.body);
-    const items = doc.select("div.manga-item");
-    const list = items.map((el) => {
-      const anchor = el.selectFirst("a");
-      const link = anchor ? this.resolveUrl(anchor.getHref || anchor.attr("href") || "") : "";
-      const imgEl = el.selectFirst("img");
-      const rawAlt = imgEl ? (imgEl.attr("alt") || "") : "";
-      const name = rawAlt.replace(/ on HariManga$/i, "").trim();
-      let imageUrl = "";
-      if (imgEl) {
-        const src     = imgEl.attr("src")      || "";
-        const dataSrc = imgEl.attr("data-src") || "";
-        imageUrl = this.resolveUrl(src.startsWith("http") ? src : (dataSrc || src));
-      }
-      return { name, imageUrl, link };
-    });
-    return { list, hasNextPage: false };
+
+    // Madara search results use two possible containers
+    let items = doc.select("div.page-item-detail");
+    if (!items || items.length === 0) items = doc.select("div.manga-item");
+
+    const list = [];
+    for (let i = 0; i < items.length; i++) {
+      const parsed = this.parseMangaFromPageItem(items[i]);
+      if (parsed.name && parsed.link) list.push(parsed);
+    }
+
+    // Detect next page by presence of .next.page-numbers
+    const hasNextPage = !!doc.selectFirst("a.next.page-numbers");
+    return { list, hasNextPage };
   }
 
   toStatus(text) {
@@ -305,7 +334,69 @@ class DefaultExtension extends MProvider {
     return pages;
   }
 
-  getFilterList() { return []; }
+  getFilterList() {
+    return [
+      {
+        type_name: "SelectFilter",
+        name: "Sort By",
+        state: 0,
+        values: [
+          ["Most Popular", "views"],
+          ["Trending",      "trending"],
+          ["Latest",        "latest"],
+          ["A–Z",           "alphabet"],
+          ["Rating",        "rating"],
+          ["New",           "new-manga"],
+        ].map((x) => ({ type_name: "SelectOption", name: x[0], value: x[1] })),
+      },
+      {
+        type_name: "SelectFilter",
+        name: "Status",
+        state: 0,
+        values: [
+          ["All",       ""],
+          ["Ongoing",   "ongoing"],
+          ["Completed", "end"],
+          ["Hiatus",    "hiatus"],
+          ["Canceled",  "canceled"],
+        ].map((x) => ({ type_name: "SelectOption", name: x[0], value: x[1] })),
+      },
+      {
+        type_name: "GroupFilter",
+        name: "Genre",
+        state: [
+          ["Action",        "action"],
+          ["Adventure",     "adventure"],
+          ["Comedy",        "comedy"],
+          ["Drama",         "drama"],
+          ["Fantasy",       "fantasy"],
+          ["Historical",    "historical"],
+          ["Horror",        "horror"],
+          ["Isekai",        "isekai"],
+          ["Josei",         "josei"],
+          ["Manhua",        "manhua"],
+          ["Manhwa",        "manhwa"],
+          ["Martial Arts",  "martial-arts"],
+          ["Mature",        "mature"],
+          ["Mecha",         "mecha"],
+          ["Mystery",       "mystery"],
+          ["Psychological", "psychological"],
+          ["Romance",       "romance"],
+          ["School Life",   "school-life"],
+          ["Sci-Fi",        "sci-fi"],
+          ["Seinen",        "seinen"],
+          ["Shoujo",        "shoujo"],
+          ["Shounen",       "shounen"],
+          ["Slice of Life", "slice-of-life"],
+          ["Sports",        "sports"],
+          ["Supernatural",  "supernatural"],
+          ["Thriller",      "thriller"],
+          ["Tragedy",       "tragedy"],
+          ["Webtoon",       "webtoon"],
+        ].map((x) => ({ type_name: "CheckBox", name: x[0], value: x[1], state: false })),
+      },
+    ];
+  }
 
   getSourcePreferences() {
     return [{
@@ -319,30 +410,36 @@ class DefaultExtension extends MProvider {
       },
     }];
   }
-      getCustomLists() {
-          return [
-          { id: "popular", name: "Popular" },
-        { id: "latest", name: "Latest Updates" },
-          ];
-      }
+  getCustomLists() {
+    return [
+      { id: "popular",   name: "Popular",         icon: "fire"         },
+      { id: "latest",    name: "Latest Updates",  icon: "update"       },
+      { id: "new",       name: "New Manga",        icon: "new_releases" },
+      { id: "completed", name: "Completed",        icon: "star"         },
+    ];
+  }
 
-      async getCustomList(listId, page) {
-          if (listId === "popular") {
-              const baseUrl = this.getBaseUrl();
-              const res = await new Client().get(`${baseUrl}/manga/page/${page}/?m_orderby=trending`, this.getHeaders());
-              const doc = new Document(res.body);
-              const list = [];
-              for (const el of doc.select(".page-item-detail")) {
-                  const a = el.selectFirst("h3.h5 a") ?? el.selectFirst("a[href]");
-                  const nameEl = el.selectFirst("a[title]");
-                  const name = nameEl?.attr("title") ?? a?.text ?? "";
-                  const link = a?.getHref ?? "";
-                  const img = el.selectFirst("img")?.getSrc ?? "";
-                  if (name && link) list.push({ name, imageUrl: img, link });
-              }
-              return { list, hasNextPage: true };
-          }
-          return this.getLatestUpdates(page);
-      }
-  
+  async getCustomList(listId, page) {
+    const baseUrl = this.getBaseUrl();
+    // Map each section to Madara query params
+    const orderMap    = { popular: "views", latest: "latest", new: "new-manga", completed: "latest" };
+    const statusMap   = { completed: "end" };
+    const order  = orderMap[listId]  || "latest";
+    const status = statusMap[listId] || "";
+
+    let url = `${baseUrl}/manga/page/${page}/?m_orderby=${order}`;
+    if (status) url += `&status[]=${status}`;
+
+    const res = await new Client().get(url, this.getHeaders());
+    const doc = new Document(res.body);
+    const items = doc.select("div.page-item-detail");
+    const list = [];
+    for (let i = 0; i < items.length; i++) {
+      const parsed = this.parseMangaFromPageItem(items[i]);
+      if (parsed.name && parsed.link) list.push(parsed);
+    }
+    const hasNextPage = !!doc.selectFirst("a.next.page-numbers") || list.length >= 12;
+    return { list, hasNextPage };
+  }
+
 }
