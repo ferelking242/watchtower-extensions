@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://dospiv.com/favicon.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.10",
+    "version": "0.1.11",
     "pkgPath": "watch/fr/dotriv.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -137,28 +137,62 @@ class DefaultExtension extends MProvider {
 
     async search(query, page, filterList) {
         await this._log(`search: "${query}" p${page}`);
-        // Dospiv has no server-side search endpoint: fall back to scanning the
-        // popular pages client-side and filtering by title so search still
-        // works instead of silently returning the unfiltered popular list.
-        const q = (query || "").trim().toLowerCase();
+        const q = (query || "").trim();
+
+        // Empty query → return popular page as-is
         if (!q) {
             const res = await new Client().get(`${this.cmsBase}/c/dospiv/29/${page - 1}`, this._hdrs());
             const list = this._parse(res.body);
             return { list, hasNextPage: list.length >= 10 };
         }
 
+        // ── Fuzzy engine ───────────────────────────────────────────────────
         const normalize = (s) => (s || "")
             .toLowerCase()
             .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
-        const nq = normalize(q);
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[''`]/g, "");
+        const nq  = normalize(q);
+        const words = nq.split(/\s+/).filter(w => w.length > 1);
 
-        const perFetchPage = page; // 1 popular page -> 1 search "page" of results
-        const res = await new Client().get(`${this.cmsBase}/c/dospiv/29/${perFetchPage - 1}`, this._hdrs());
-        const all = this._parse(res.body);
-        const list = all.filter((item) => normalize(item.name).includes(nq));
+        const score = (name) => {
+            const n = normalize(name);
+            if (n === nq)              return 100; // exact
+            if (n.includes(nq))        return  80; // substring
+            const matched = words.filter(w => n.includes(w)).length;
+            if (matched === words.length) return 60; // all words
+            if (matched > 0)           return matched * 15; // partial
+            return 0;
+        };
 
-        return { list, hasNextPage: all.length >= 10 };
+        // Scan 4 category-29 pages in parallel per search "page"
+        const SCAN = 4;
+        const base0 = (page - 1) * SCAN; // 0-indexed page offsets
+        const fetches = [];
+        for (let i = 0; i < SCAN; i++) {
+            fetches.push(
+                new Client().get(`${this.cmsBase}/c/dospiv/29/${base0 + i}`, this._hdrs())
+                    .then(r => this._parse(r.body))
+                    .catch(() => [])
+            );
+        }
+        const pages = await Promise.all(fetches);
+        const flat  = [].concat(...pages);
+
+        // Score, filter (score > 0), sort best-first, dedupe by link
+        const seen = {};
+        const list = flat
+            .map(item => ({ item, s: score(item.name) }))
+            .filter(x => x.s > 0)
+            .sort((a, b) => b.s - a.s)
+            .reduce((acc, x) => {
+                if (!seen[x.item.link]) { seen[x.item.link] = 1; acc.push(x.item); }
+                return acc;
+            }, []);
+
+        const hasNextPage = pages[SCAN - 1].length >= 10;
+        await this._log(`search result: ${list.length} for "${q}" p${page}`);
+        return { list, hasNextPage };
     }
 
     // ── Custom home sections ───────────────────────────────────────────────
