@@ -7,11 +7,13 @@ const watchtowerSources = [
     "apiUrl": "",
     "iconUrl": "https://comics-all.com/templates/creamy-melons7/images/favicon.png",
     "typeSource": "single",
-    "itemType": 1,
-    "version": "0.1.3",
-    "pkgPath": "manga/src/en/comics_all.js",
+    "itemType": 0,
+    "isManga": true,
+    "version": "0.1.4",
+    "pkgPath": "manga/en/comics_all.js",
     "isNsfw": false,
-    "appMinVerReq": "0.5.0"
+    "appMinVerReq": "0.5.0",
+    "notes": "Download-only — .cbz/.cbr files via external hosts (florenfile, etc.)"
   }
 ];
 
@@ -35,7 +37,6 @@ class DefaultExtension extends MProvider {
     return (url || "").replace(/&#58;/g, ":").replace(/&#47;/g, "/");
   }
 
-  // Ensure a URL is absolute — prepend BASE_URL for relative paths
   fixUrl(url) {
     if (!url) return "";
     if (url.startsWith("http")) return url;
@@ -44,7 +45,6 @@ class DefaultExtension extends MProvider {
     return BASE_URL + "/" + url;
   }
 
-  // Parse a list page HTML into { list, hasNextPage }
   parseList(html) {
     const list = [];
     const pattern = /class="preview-img img-box"\s+href="([^"]+)"[\s\S]*?<img\s+src="([^"]+)"[^>]*alt="([^"]+)"/g;
@@ -64,7 +64,6 @@ class DefaultExtension extends MProvider {
     return { list, hasNextPage: hasNextPage || list.length >= 10 };
   }
 
-  // Build URL for a page
   publisherUrl(slug, page) {
     if (!slug) {
       return page <= 1 ? BASE_URL + "/" : `${BASE_URL}/page/${page}/`;
@@ -141,7 +140,7 @@ class DefaultExtension extends MProvider {
     const language  = (html.match(/<b>Language:<\/b>\s*([^<\n]+?)\s*<br>/) || [])[1]?.trim() || "";
     const size      = (html.match(/<b>Size:<\/b>\s*([^<\n]+?)\s*<br>/) || [])[1]?.trim() || "";
 
-    // Tags
+    // Tags — collect from the Tags: section
     const genre = [];
     const tagsSection = html.match(/Tags:([\s\S]*?)<br>/)?.[1] || "";
     const tagPat = /<a[^>]+>([^<]+)<\/a>/g;
@@ -150,71 +149,86 @@ class DefaultExtension extends MProvider {
       genre.push(tm[1].trim());
     }
 
-    // Description block
-    const descBlock = html.match(/<div class="mc-right"[^>]*>([\s\S]*?)<\/div>/)?.[1] || "";
-    const descClean = descBlock
-      .replace(/<br\s*\/?>/gi, "\n")
-      .replace(/<[^>]+>/g, "")
-      .replace(/&nbsp;/g, " ")
-      .replace(/\n{3,}/g, "\n\n")
-      .trim();
+    // Description — rich multiline block with all metadata + tags
+    const descLines = [
+      publisher ? `📦  Publisher: ${publisher}` : "",
+      year      ? `📅  Year: ${year}` : "",
+      pages     ? `📄  Issues / Pages: ${pages}` : "",
+      language  ? `🌐  Language: ${language}` : "",
+      size      ? `💾  Size: ${size}` : "",
+      genre.length > 0 ? `🏷️  Tags: ${genre.join(" · ")}` : "",
+      "",
+      "⬇️  Download-only source — tap a chapter link to download the .cbz/.cbr file.",
+    ].filter(l => l !== undefined);
 
-    const descParts = [
-      publisher ? `Publisher: ${publisher}` : "",
-      year      ? `Year: ${year}` : "",
-      pages     ? `Pages: ${pages}` : "",
-      language  ? `Language: ${language}` : "",
-      size      ? `File size: ${size}` : "",
-    ].filter(Boolean);
-    const description = descParts.join("  •  ");
+    // Remove leading empty lines, collapse multiple blanks
+    const description = descLines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
 
-    // Download links
+    // Download links — treat each external button as a "chapter" (download entry)
     const chapters = [];
     const dlPat = /href="(https?:\/\/[^"]+)"[^>]*(?:class="button"[^>]*|[^>]*class="button")[^>]*>([^<]*(?:DOWNLOAD|download|Download)[^<]*)</g;
     let dlm;
     let idx = 0;
     while ((dlm = dlPat.exec(html)) !== null) {
       const dlUrl  = dlm[1];
-      const dlHost = (() => { try { return new URL(dlUrl).hostname.replace("www.", ""); } catch { return "Download"; } })();
+      const dlHost = (() => {
+        try { return new URL(dlUrl).hostname.replace("www.", ""); }
+        catch { return "Download"; }
+      })();
+      const label = idx === 0
+        ? `⬇️  Download — ${dlHost}${pages ? "  (" + pages + " issues)" : size ? "  (" + size + ")" : ""}`
+        : `⬇️  Mirror ${idx + 1} — ${dlHost}`;
       chapters.push({
-        name:        idx === 0 ? `Download via ${dlHost} (${pages ? pages + " pages" : size || "?"})` : `Mirror ${idx + 1} — ${dlHost}`,
-        url:         dlUrl,
-        dateUpload:  year ? `${year}-01-01` : "",
-        scanlator:   language || "English",
+        name:          label,
+        url:           dlUrl,
+        dateUpload:    year ? `${year}-01-01` : "",
+        scanlator:     language || "English",
         chapterNumber: idx + 1
       });
       idx++;
     }
 
+    // Fallback: any button link
     if (chapters.length === 0) {
-      const fallback = (html.match(/href="(https?:\/\/[^"]+)"[^>]*class="button"/) ||
-                        html.match(/class="button"[^>]*href="(https?:\/\/[^"]+)"/))?.[1];
+      const fallback = (
+        html.match(/href="(https?:\/\/[^"]+)"[^>]*class="button"/) ||
+        html.match(/class="button"[^>]*href="(https?:\/\/[^"]+)"/)
+      )?.[1];
       if (fallback) {
-        const host = (() => { try { return new URL(fallback).hostname.replace("www.", ""); } catch { return "Download"; } })();
+        const host = (() => {
+          try { return new URL(fallback).hostname.replace("www.", ""); }
+          catch { return "Download"; }
+        })();
         chapters.push({
-          name: `Download via ${host} (${pages || "?"} pages)`,
-          url: fallback,
-          dateUpload: year ? `${year}-01-01` : "",
-          scanlator: language || "English",
+          name:          `⬇️  Download — ${host}${pages ? "  (" + pages + " issues)" : size ? "  (" + size + ")" : ""}`,
+          url:           fallback,
+          dateUpload:    year ? `${year}-01-01` : "",
+          scanlator:     language || "English",
           chapterNumber: 1
         });
       }
     }
 
     return {
-      name: title,
+      name:        title,
       imageUrl,
       description,
       genre,
-      status: 1,
-      author: publisher,
-      artist: "",
+      status:      1,
+      author:      publisher,
+      artist:      "",
       chapters
     };
   }
 
+  // ─── Page List — Download-only toast ─────────────────────────────────────
+  // ComicsAll provides .cbz/.cbr download links, not readable image pages.
+  // Throwing here causes the app to surface a toast instead of opening
+  // a broken reader with a non-image URL.
   async getPageList(url) {
-    return [{ url, index: 0 }];
+    throw new Error(
+      "⬇️  Download only\n\nThis extension does not support in-app reading.\nTap the chapter link to open the download page."
+    );
   }
 
   // ─── Filters ─────────────────────────────────────────────────────────────
@@ -284,17 +298,9 @@ class DefaultExtension extends MProvider {
         values: years
       },
       {
-        type_name: "HeaderFilter",
-        name: "Browse by tag — enter tag name exactly as on the site"
-      },
-      {
         type_name: "TextFilter",
         name: "Tag",
         state: ""
-      },
-      {
-        type_name: "HeaderFilter",
-        name: "Common Tags (enter one name above, or use quick picks below)"
       },
       {
         type_name: "GroupFilter",
@@ -302,17 +308,14 @@ class DefaultExtension extends MProvider {
         state: [
           ["Action",            "Action"],
           ["Adventure",         "Adventure"],
-          ["Aliens",            "Aliens"],
           ["Anthology",         "Anthology"],
+          ["Biographical",      "Biographical"],
           ["Comedy",            "Comedy"],
           ["Crime",             "Crime"],
-          ["Dark",              "Dark"],
           ["Drama",             "Drama"],
           ["Fantasy",           "Fantasy"],
-          ["Historical Fiction","Historical Fiction"],
+          ["Historical",        "Historical"],
           ["Horror",            "Horror"],
-          ["Humor",             "Humor"],
-          ["Military",          "Military"],
           ["Mystery",           "Mystery"],
           ["Romance",           "Romance"],
           ["Sci-Fi",            "Sci-Fi"],
@@ -398,18 +401,18 @@ class DefaultExtension extends MProvider {
     }
     return "";
   }
-      getCustomLists() {
-          return [
-          { id: "popular", name: "Popular" },
-        { id: "latest", name: "Latest Updates" },
-          ];
-      }
 
-      async getCustomList(listId, page) {
-          if (listId === "popular") {
-              return this.getPopular(page);
-          }
-          return this.getLatestUpdates(page);
-      }
-  
+  getCustomLists() {
+    return [
+      { id: "popular", name: "Popular" },
+      { id: "latest",  name: "Latest Updates" },
+    ];
+  }
+
+  async getCustomList(listId, page) {
+    if (listId === "popular") {
+      return this.getPopular(page);
+    }
+    return this.getLatestUpdates(page);
+  }
 }
