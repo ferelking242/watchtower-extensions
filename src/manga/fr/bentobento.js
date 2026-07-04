@@ -6,13 +6,12 @@ const watchtowerSources = [{
       "apiUrl": "https://bentobento.fr",
       "iconUrl": "https://bentobento.fr/favicon.ico",
       "typeSource": "single",
-      "itemType": 2,
-      "version": "0.1.1",
-      "pkgPath": "watch/fr/bentobento.js",
+      "itemType": 0,
+    "isManga": true,
+      "version": "0.1.2",
+      "pkgPath": "manga/fr/bentobento.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,
-      "videoQualities": ["AUTO","VF","VOSTFR"],
-      "subCategories": ["manga"],
       "requiresAccount": false,
       "hasDRM": false,
       "paywall": "free",
@@ -35,9 +34,9 @@ const watchtowerSources = [{
           }
           return list;
       }
-      async getPopular(page){const r=await new Client().get(this.baseUrl+"/manga/".replace("{page}",page),this._hdrs());return{list:this._parse(r.body),hasNextPage:page<20};}
-      async getLatestUpdates(page){const r=await new Client().get(this.baseUrl+"/",this._hdrs());return{list:this._parse(r.body),hasNextPage:false};}
-      async search(query,page,f){const r=await new Client().get(this.baseUrl+"/?s="+encodeURIComponent(query),this._hdrs());return{list:this._parse(r.body),hasNextPage:false};}
+      async getPopular(page){const url=`${this.baseUrl}/manga/?m_orderby=views&page=${page}`;const r=await new Client().get(url,this._hdrs());return{list:this._parse(r.body),hasNextPage:page<20};}",page),this._hdrs());return{list:this._parse(r.body),hasNextPage:page<20};}
+      async getLatestUpdates(page){const url=`${this.baseUrl}/manga/?m_orderby=latest&page=${page}`;const r=await new Client().get(url,this._hdrs());return{list:this._parse(r.body),hasNextPage:page<20};};}
+      async search(query,page,f){const url=`${this.baseUrl}/?s=${encodeURIComponent(query)}`;const r=await new Client().get(url,this._hdrs());return{list:this._parse(r.body),hasNextPage:false};};}
       async getDetail(url){
           const r=await new Client().get(url,this._hdrs(url));const html=r.body;
           const nameM=html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);const name=nameM?nameM[1].replace(/<[^>]+>/g,"").trim():"";
