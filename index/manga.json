@@ -10087,5 +10087,32 @@
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free"
+  },
+  {
+    "name": "Scan-Manga",
+    "id": 819446273,
+    "baseUrl": "https://m.scan-manga.com",
+    "lang": "fr",
+    "typeSource": "single",
+    "iconUrl": "https://m.scan-manga.com/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/manga/fr/scanmanga.js",
+    "apiUrl": "https://m.scan-manga.com",
+    "version": "0.1.0",
+    "isManga": true,
+    "itemType": 2,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Scans manga FR (bespoke) — Scan-Manga",
+    "editableBaseUrl": true,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
   }
 ]
