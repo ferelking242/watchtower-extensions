@@ -23,7 +23,11 @@
     "requiresAccount": false,
     "hasDRM": false,
     "isAggregator": false,
-    "paywall": "free"
+    "paywall": "free",
+    "subCategories": [
+      "Streaming",
+      "User tracks"
+    ]
   },
   {
     "name": "Deezer",
@@ -49,7 +53,11 @@
     "requiresAccount": false,
     "hasDRM": false,
     "isAggregator": false,
-    "paywall": "free"
+    "paywall": "free",
+    "subCategories": [
+      "Streaming",
+      "Preview 30s"
+    ]
   },
   {
     "name": "YouTube Music",
@@ -75,7 +83,11 @@
     "requiresAccount": false,
     "hasDRM": false,
     "isAggregator": false,
-    "paywall": "free"
+    "paywall": "free",
+    "subCategories": [
+      "Streaming",
+      "YouTube"
+    ]
   },
   {
     "name": "Bandcamp",
@@ -101,7 +113,11 @@
     "requiresAccount": false,
     "hasDRM": false,
     "isAggregator": false,
-    "paywall": "free"
+    "paywall": "free",
+    "subCategories": [
+      "Streaming",
+      "Indie"
+    ]
   },
   {
     "name": "MLP France — Chansons",
@@ -127,6 +143,10 @@
     "requiresAccount": false,
     "hasDRM": false,
     "isAggregator": false,
-    "paywall": "free"
+    "paywall": "free",
+    "subCategories": [
+      "MP3",
+      "VF+EN"
+    ]
   }
 ]
