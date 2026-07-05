@@ -506,12 +506,13 @@ class DefaultExtension extends MProvider {
 
       getCustomLists() {
             return [
-                { id: "popular",         name: "Popular"                 },
-                { id: "new_titles",      name: "New Titles"              },
-                { id: "recently_added",  name: "Recently Added"          },
-                { id: "recommended",     name: "Recommended"             },
-                { id: "self_published",  name: "Self-Published"          },
-                { id: "seasonal_spring", name: "Seasonal: Spring 2026"   },
+                { id: "home",            name: "Accueil",                icon: "home"         },
+                { id: "popular",         name: "Popular",                icon: "fire"         },
+                { id: "recently_added",  name: "Recently Added",         icon: "update"       },
+                { id: "new_titles",      name: "New Titles",             icon: "fiber_new"    },
+                { id: "recommended",     name: "Recommended",            icon: "star"         },
+                { id: "self_published",  name: "Self-Published",         icon: "trending_up"  },
+                { id: "seasonal_spring", name: "Seasonal: Spring 2026",  icon: "animation"    },
             ];
         }
 

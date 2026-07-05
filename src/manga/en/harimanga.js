@@ -399,23 +399,36 @@ class DefaultExtension extends MProvider {
   }
 
   getSourcePreferences() {
-    return [{
-      "key": "harimanga_base_url",
-      "editTextPreference": {
-        "title": "Override BaseUrl",
-        "summary": BASE_URL,
-        "value": BASE_URL,
-        "dialogTitle": "Override BaseUrl",
-        "dialogMessage": `Default: ${BASE_URL}`,
+    return [
+      {
+        "key": "harimanga_base_url",
+        "editTextPreference": {
+          "title": "Override BaseUrl",
+          "summary": BASE_URL,
+          "value": BASE_URL,
+          "dialogTitle": "Override BaseUrl",
+          "dialogMessage": `Default: ${BASE_URL}`,
+        },
       },
-    }];
+      {
+        "key": "harimanga_reader_mode",
+        "listPreference": {
+          "title": "Default reader mode",
+          "summary": "Choose the default reading direction for this source",
+          "valueIndex": 0,
+          "entries": ["Left to Right", "Right to Left", "Vertical", "Webtoon"],
+          "entryValues": ["ltr", "rtl", "vertical", "webtoon"],
+        },
+      },
+    ];
   }
   getCustomLists() {
     return [
-      { id: "popular",   name: "Popular",         icon: "fire"         },
-      { id: "latest",    name: "Latest Updates",  icon: "update"       },
-      { id: "new",       name: "New Manga",        icon: "new_releases" },
-      { id: "completed", name: "Completed",        icon: "star"         },
+      { id: "home",      name: "Accueil",          icon: "home"         },
+      { id: "popular",   name: "Popular",           icon: "fire"         },
+      { id: "latest",    name: "Latest Updates",   icon: "update"       },
+      { id: "new",       name: "New Manga",         icon: "new_releases" },
+      { id: "completed", name: "Completed",         icon: "star"         },
     ];
   }
 
