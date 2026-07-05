@@ -424,11 +424,9 @@ class DefaultExtension extends MProvider {
   }
   getCustomLists() {
     return [
-      { id: "home",      name: "Accueil",          icon: "home"         },
-      { id: "popular",   name: "Popular",           icon: "fire"         },
-      { id: "latest",    name: "Latest Updates",   icon: "update"       },
-      { id: "new",       name: "New Manga",         icon: "new_releases" },
-      { id: "completed", name: "Completed",         icon: "star"         },
+      { id: "home",      name: "Accueil",   icon: "home"         },
+      { id: "new",       name: "New Manga", icon: "new_releases" },
+      { id: "completed", name: "Completed", icon: "star"         },
     ];
   }
 
