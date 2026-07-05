@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://raw.githubusercontent.com/kodjodevf/mangayomi-extensions/main/dart/manga/multisrc/madara/src/en/harimanga/icon.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.3.0",
+    "version": "0.3.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -108,26 +108,34 @@ class DefaultExtension extends MProvider {
 
   async getPopular(page) {
     const baseUrl = this.getBaseUrl();
-    const res = await new Client().get(
-      `${baseUrl}/manga/page/${page}/?m_orderby=views`,
-      this.getHeaders()
-    );
+    const url = `${baseUrl}/?post_type=wp-manga&m_orderby=views&paged=${page}`;
+    const res = await new Client().get(url, this.getHeaders());
     const doc = new Document(res.body);
-    const items = doc.select("div.page-item-detail");
-    const list = items.map((el) => this.parseMangaFromPageItem(el));
-    return { list, hasNextPage: list.length > 0 };
+    let items = doc.select("div.page-item-detail");
+    if (!items || items.length === 0) items = doc.select("div.manga-item");
+    const list = [];
+    for (let i = 0; i < items.length; i++) {
+      const parsed = this.parseMangaFromPageItem(items[i]);
+      if (parsed.name && parsed.link) list.push(parsed);
+    }
+    const hasNextPage = !!doc.selectFirst("a.next.page-numbers") || list.length >= 12;
+    return { list, hasNextPage };
   }
 
   async getLatestUpdates(page) {
     const baseUrl = this.getBaseUrl();
-    const res = await new Client().get(
-      `${baseUrl}/manga/page/${page}/?m_orderby=latest`,
-      this.getHeaders()
-    );
+    const url = `${baseUrl}/?post_type=wp-manga&m_orderby=latest&paged=${page}`;
+    const res = await new Client().get(url, this.getHeaders());
     const doc = new Document(res.body);
-    const items = doc.select("div.page-item-detail");
-    const list = items.map((el) => this.parseMangaFromPageItem(el));
-    return { list, hasNextPage: list.length > 0 };
+    let items = doc.select("div.page-item-detail");
+    if (!items || items.length === 0) items = doc.select("div.manga-item");
+    const list = [];
+    for (let i = 0; i < items.length; i++) {
+      const parsed = this.parseMangaFromPageItem(items[i]);
+      if (parsed.name && parsed.link) list.push(parsed);
+    }
+    const hasNextPage = !!doc.selectFirst("a.next.page-numbers") || list.length >= 12;
+    return { list, hasNextPage };
   }
 
   // Build a filter-aware search/browse URL for the Madara (WP-Manga) theme.

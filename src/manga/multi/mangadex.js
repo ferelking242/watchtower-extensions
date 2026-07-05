@@ -53,7 +53,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.mangadex.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.2.1",
+    "version": "0.2.2",
     "pkgPath": "manga/src/all/mangadex.js"
 }];
 
@@ -209,9 +209,9 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        const offset = 20 * (page - 1);
+        const offset = 100 * (page - 1);
         const url = `${this.source.apiUrl}/manga`
-            + `?limit=20&offset=${offset}`
+            + `?limit=100&offset=${offset}`
             + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
             + `&includes[]=cover_art`
             + this.contentRatingParams()
@@ -223,9 +223,9 @@ class DefaultExtension extends MProvider {
     }
 
     async getFollowedPopular(page) {
-        const offset = 20 * (page - 1);
+        const offset = 100 * (page - 1);
         const url = `${this.source.apiUrl}/manga`
-            + `?limit=20&offset=${offset}`
+            + `?limit=100&offset=${offset}`
             + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
             + `&includes[]=cover_art`
             + this.contentRatingParams()
