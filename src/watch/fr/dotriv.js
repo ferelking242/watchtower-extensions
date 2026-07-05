@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://dospiv.com/favicon.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.11",
+    "version": "0.1.12",
     "pkgPath": "watch/fr/dotriv.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -146,53 +146,23 @@ class DefaultExtension extends MProvider {
             return { list, hasNextPage: list.length >= 10 };
         }
 
-        // ── Fuzzy engine ───────────────────────────────────────────────────
-        const normalize = (s) => (s || "")
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[''`]/g, "");
-        const nq  = normalize(q);
-        const words = nq.split(/\s+/).filter(w => w.length > 1);
+        // ── Real site search via POST /home/dospiv (searchword param) ──
+        // The site returns all matching results in a single response (no pagination).
+        if (page > 1) return { list: [], hasNextPage: false };
 
-        const score = (name) => {
-            const n = normalize(name);
-            if (n === nq)              return 100; // exact
-            if (n.includes(nq))        return  80; // substring
-            const matched = words.filter(w => n.includes(w)).length;
-            if (matched === words.length) return 60; // all words
-            if (matched > 0)           return matched * 15; // partial
-            return 0;
-        };
-
-        // Scan 4 category-29 pages in parallel per search "page"
-        const SCAN = 4;
-        const base0 = (page - 1) * SCAN; // 0-indexed page offsets
-        const fetches = [];
-        for (let i = 0; i < SCAN; i++) {
-            fetches.push(
-                new Client().get(`${this.cmsBase}/c/dospiv/29/${base0 + i}`, this._hdrs())
-                    .then(r => this._parse(r.body))
-                    .catch(() => [])
-            );
+        try {
+            const hdrs = Object.assign({}, this._hdrs(`${this.cmsBase}/home/dospiv`), {
+                "Content-Type": "application/x-www-form-urlencoded"
+            });
+            const postBody = "searchword=" + encodeURIComponent(q);
+            const res = await new Client().post(`${this.cmsBase}/home/dospiv`, postBody, hdrs);
+            const list = this._parse(res.body);
+            await this._log(`search result: ${list.length} for "${q}" via POST`);
+            return { list, hasNextPage: false };
+        } catch (e) {
+            await this._log(`search error: ${e}`);
+            return { list: [], hasNextPage: false };
         }
-        const pages = await Promise.all(fetches);
-        const flat  = [].concat(...pages);
-
-        // Score, filter (score > 0), sort best-first, dedupe by link
-        const seen = {};
-        const list = flat
-            .map(item => ({ item, s: score(item.name) }))
-            .filter(x => x.s > 0)
-            .sort((a, b) => b.s - a.s)
-            .reduce((acc, x) => {
-                if (!seen[x.item.link]) { seen[x.item.link] = 1; acc.push(x.item); }
-                return acc;
-            }, []);
-
-        const hasNextPage = pages[SCAN - 1].length >= 10;
-        await this._log(`search result: ${list.length} for "${q}" p${page}`);
-        return { list, hasNextPage };
     }
 
     // ── Custom home sections ───────────────────────────────────────────────
