@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.5.2",
+    "version": "3.6.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
 }];
 
 // ══════════════════════════════════════════════════════════════
-//  MovieBox  v3.5.1
+//  MovieBox  v3.6.0
 //  Fixes v3.5.1:
 //   - SEARCH : utilise le vrai endpoint /search de l'API
 //     au lieu de filtrer le cache de la home (→ plus de 0 résultats)
@@ -185,7 +185,7 @@ class DefaultExtension extends MProvider {
             if (!j.data) { await this._ntfy("MB-search-err", "no data field. keys=" + Object.keys(j).join(",")); return null; }
             var d    = j.data;
             // Try all known field names for the items array
-            var items = d.subjects || d.list || d.data || d.items || d.result || d.results || d.content || [];
+            var items = d.subjects || d.subjectList || d.list || d.data || d.items || d.result || d.results || d.content || d.records || [];
             var total = d.total || d.totalCount || d.count || 0;
             await this._ntfy("MB-search-ok", "items=" + items.length + " total=" + total + " dataKeys=" + Object.keys(d).join(","));
             var list  = [];
@@ -251,8 +251,14 @@ class DefaultExtension extends MProvider {
     // ── Rendu des items ──
     _cover(s) {
         if (s.cover && s.cover.url) return s.cover.url;
+        if (s.cover && typeof s.cover === "string") return s.cover;
+        if (s.coverUrl)       return s.coverUrl;
+        if (s.posterUrl)      return s.posterUrl;
+        if (s.poster)         return s.poster;
+        if (s.verticalCover)  return s.verticalCover;
         if (s.horizontalCover) return s.horizontalCover;
-        if (s.verticalCover)   return s.verticalCover;
+        if (s.thumbnail)      return s.thumbnail;
+        if (s.imageUrl)       return s.imageUrl;
         return "";
     }
     _toItem(s) {
@@ -373,6 +379,32 @@ class DefaultExtension extends MProvider {
         var all = await this._fetchHome();
         return this._page(this._sortLatest(all), page);
     }
+
+    async getSuggestions(query) {
+        var q = (query || '').trim();
+        if (!q || q.length < 2) return [];
+        var lang = this._prefLang();
+        var hdrs = mbHeaders(lang);
+        var url  = MB_API + '/wefeed-h5api-bff/search'
+            + '?keyword=' + encodeURIComponent(q)
+            + '&pageNum=1&pageSize=8';
+        try {
+            var res = await new Client().get(url, hdrs);
+            var j; try { j = JSON.parse(res.body); } catch(_) { return []; }
+            if (!j || j.code !== 0 || !j.data) return [];
+            var d = j.data;
+            var items = d.subjects || d.subjectList || d.list || d.data || d.items || [];
+            var suggestions = [];
+            for (var i = 0; i < items.length && i < 8; i++) {
+                var name = items[i].title || items[i].subjectName || '';
+                if (name) suggestions.push(name);
+            }
+            return suggestions;
+        } catch (_) {
+            return [];
+        }
+    }
+
 
     // ── Filtrage local best-effort (fallback quand l'API est indisponible) ──
     // Applique type, genre et pays sur le cache home.
