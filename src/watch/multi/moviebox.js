@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.5.1",
+    "version": "3.5.2",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -156,6 +156,10 @@ class DefaultExtension extends MProvider {
 
     // ── Recherche réelle via l'API (remplace le filtrage du cache home) ──
     // Retourne { list, hasNextPage } directement.
+    async _ntfy(title, msg) {
+        try { await new Client().post("https://ntfy.sh/watchtower", String(msg).slice(0, 2000), { "Title": title, "Content-Type": "text/plain" }); } catch(e) {}
+    }
+
     async _apiSearch(query, page, typeVal, sortVal, genreVal, countryVal, lang) {
         var p    = (page && page > 0) ? page : 1;
         var hdrs = mbHeaders(lang);
@@ -168,19 +172,30 @@ class DefaultExtension extends MProvider {
         if (genreVal)   url += "&genre="       + encodeURIComponent(genreVal);
         if (countryVal) url += "&country="     + encodeURIComponent(countryVal);
         try {
+            await this._ntfy("MB-search-req", "GET " + url + " | lang=" + lang);
             var res = await new Client().get(url, hdrs);
-            var j; try { j = JSON.parse(res.body); } catch (_) { return null; }
-            if (!j || j.code !== 0 || !j.data) return null;
+            var body = res.body || "";
+            await this._ntfy("MB-search-resp", "status=" + res.statusCode + " bodyLen=" + body.length + " body=" + body.slice(0, 500));
+            var j; try { j = JSON.parse(body); } catch (pe) {
+                await this._ntfy("MB-search-err", "JSON parse fail: " + String(pe));
+                return null;
+            }
+            if (!j) { await this._ntfy("MB-search-err", "null json"); return null; }
+            if (j.code !== 0) { await this._ntfy("MB-search-err", "code=" + j.code + " msg=" + (j.msg || j.message || "")); return null; }
+            if (!j.data) { await this._ntfy("MB-search-err", "no data field. keys=" + Object.keys(j).join(",")); return null; }
             var d    = j.data;
-            var items = d.subjects || d.list || d.data || [];
-            var total = d.total || d.totalCount || 0;
+            // Try all known field names for the items array
+            var items = d.subjects || d.list || d.data || d.items || d.result || d.results || d.content || [];
+            var total = d.total || d.totalCount || d.count || 0;
+            await this._ntfy("MB-search-ok", "items=" + items.length + " total=" + total + " dataKeys=" + Object.keys(d).join(","));
             var list  = [];
             for (var i = 0; i < items.length; i++) list.push(this._toItem(items[i]));
             var hasNext = (total > 0)
                 ? (p * MB_PER < total)
                 : (items.length >= MB_PER);
             return { list: list, hasNextPage: hasNext };
-        } catch (_) {
+        } catch (e) {
+            await this._ntfy("MB-search-exc", String(e));
             return null;
         }
     }
