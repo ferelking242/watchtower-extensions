@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "4.4.0",
+    "version": "4.4.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,7 +19,7 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox v4.4.0 — Recherche via POST /subject/search avec session Bearer token; suggestions via POST /search-suggest."
+    "notes": "MovieBox v4.4.1 — Recherche via POST /subject/search avec session Bearer token; suggestions via POST /search-suggest."
 }];
 
 // ══════════════════════════════════════════════════════════════
