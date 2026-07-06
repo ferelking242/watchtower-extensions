@@ -2,7 +2,7 @@
   "_comment": "Plugin registry — submit a PR to add your plugin",
   "_schema": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/schema.json",
   "_templates": "https://github.com/ferelking242/watchtower-extensions/tree/main/plugins/_templates",
-  "_lastUpdated": "2026-06-19",
+  "_lastUpdated": "2026-07-06",
   "plugins": [
     {
       "id": "com.watchtower.tiktok-downloader",
@@ -312,6 +312,118 @@
         ]
       },
       "zipUrl": "https://github.com/ferelking242/watchtower-telegram-plugin/releases/download/latest/com.watchtower.telegram-source_1.0.0.zip"
+    }    ,
+    {
+      "id": "com.spotube.youtube-audio",
+      "name": "YouTube Audio",
+      "version": "1.0.0",
+      "author": "Kingkor Roy Tirtho",
+      "description": "YouTube audio source plugin for the Watchtower Music Hub.",
+      "longDescription": "Streams audio directly from YouTube. Supports track matching, quality selection, and local cache. Required to play music via the Music Hub when no other audio source is configured.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-youtube-audio/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-audio-source",
+      "runtime": "hetu",
+      "permissions": ["network", "storage.read"],
+      "networkAccess": {
+        "allowedDomains": ["*.youtube.com", "*.googlevideo.com", "*.googleapis.com"]
+      },
+      "tags": ["music", "youtube", "audio", "streaming"],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-youtube-audio",
+      "isNsfw": false,
+      "requiresAccount": false,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": ["HTTP", "Storage", "Cache"]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-youtube-audio/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.jiosaavn-audio",
+      "name": "Jiosaavn Audio",
+      "version": "1.0.0",
+      "author": "Kingkor Roy Tirtho",
+      "description": "Jiosaavn audio source plugin for the Watchtower Music Hub.",
+      "longDescription": "Streams audio from JioSaavn — large catalog of Hindi, Tamil, Telugu, and other South Asian music. Great alternative to YouTube Audio for regional content.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-jiosaavn-audio/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-audio-source",
+      "runtime": "hetu",
+      "permissions": ["network", "storage.read"],
+      "networkAccess": {
+        "allowedDomains": ["*.jiosaavn.com", "*.saavncdn.com"]
+      },
+      "tags": ["music", "jiosaavn", "audio", "streaming", "hindi", "south-asian"],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-jiosaavn-audio",
+      "isNsfw": false,
+      "requiresAccount": false,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": ["HTTP", "Storage", "Cache"]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-jiosaavn-audio/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.dab-music",
+      "name": "DAB Music",
+      "version": "1.0.0",
+      "author": "Kingkor Roy Tirtho",
+      "description": "dab.yeet.su HiFi audio source plugin for the Watchtower Music Hub.",
+      "longDescription": "Streams lossless HiFi audio (up to 24-bit/96 kHz) from dab.yeet.su. Requires account authentication. Best quality audio source available in the Music Hub.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-dab-music/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-audio-source",
+      "runtime": "hetu",
+      "permissions": ["network", "storage.read", "storage.write"],
+      "networkAccess": {
+        "allowedDomains": ["dab.yeet.su", "*.yeet.su"]
+      },
+      "tags": ["music", "hifi", "lossless", "audio", "streaming"],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-dab-music",
+      "isNsfw": false,
+      "requiresAccount": true,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": ["HTTP", "Storage", "Cache", "SecureStorage"]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-dab-music/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.musicbrainz-listenbrainz",
+      "name": "Musicbrainz & Listenbrainz",
+      "version": "1.0.0",
+      "author": "Kingkor Roy Tirtho",
+      "description": "Musicbrainz metadata + Listenbrainz scrobbling plugin for the Watchtower Music Hub.",
+      "longDescription": "Enriches tracks with MusicBrainz metadata (release year, labels, ISRCs) and scrobbles listening history to ListenBrainz — the open-source alternative to Last.fm. Also supports authentication for personalized recommendations.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-musicbrainz-listenbrainz/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-metadata",
+      "runtime": "hetu",
+      "permissions": ["network", "storage.read", "storage.write"],
+      "networkAccess": {
+        "allowedDomains": ["musicbrainz.org", "listenbrainz.org", "*.musicbrainz.org", "*.listenbrainz.org"]
+      },
+      "tags": ["music", "metadata", "scrobbling", "musicbrainz", "listenbrainz"],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-musicbrainz-listenbrainz",
+      "isNsfw": false,
+      "requiresAccount": false,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": ["HTTP", "Storage", "Cache", "SecureStorage"]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-musicbrainz-listenbrainz/releases/download/continuous/plugin.smplug"
     }
   ]
 }
