@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.4.0",
+    "version": "1.5.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,7 +19,7 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox App v1.4.0 — API native app (wefeed-mobile-bff) → tous les streams HLS+MP4 multi-qualités. Fallback H5 si région bloquée. Box langue sur les épisodes (scanlator)."
+    "notes": "MovieBox App v1.5.0 — API native app (wefeed-mobile-bff) → tous les streams HLS+MP4 multi-qualités. Fallback H5 si région bloquée. Box langue avec les vraies langues dispo par titre (dubsList)."
 }];
 
 // ══════════════════════════════════════════════════════════════
@@ -725,32 +725,58 @@ class DefaultExtension extends MProvider {
         var seasons  = (res2.seasons) ? res2.seasons : [];
         var chapters = [], isMovie = (realType === 1) || !seasons.length;
 
-        // Tag de langue sur chaque chapitre → alimente la box langue de l'app
-        // (Chapter.scanlator est lu par _detectLanguages() côté watch_detail_view).
-        // Le contenu est déjà filtré/localisé pour la langue courante (mb_content_lang),
-        // donc on tague avec cette langue — le choix du dub se fait ensuite dans le
-        // lecteur via dubsList (prefDub, cf. getVideoList).
-        var langTag = mbLangTag(this._prefLang());
+        // ── Langues réellement disponibles pour ce titre ──────────────
+        // On sonde UNE fois le play-info d'un épisode représentatif pour
+        // récupérer dubsList (les vrais doublages dispo côté API), et on
+        // duplique la liste de chapitres une fois par langue trouvée.
+        // Chaque doublon est tagué (Chapter.scanlator) avec le nom de la
+        // langue → _detectLanguages()/_filterChapters() côté app affichent
+        // alors une vraie box langue avec plusieurs choix sélectionnables
+        // (comme la box saison), au lieu d'un tag unique figé.
+        var prefLangCode = this._prefLang();
+        var langs = [];
+        try {
+            var probeSe = isMovie ? 0 : (seasons[0] ? (seasons[0].se || 1) : 1);
+            var probeEp = isMovie ? 0 : 1;
+            var probeJ  = await this._fetchPlay(realId, realDp, probeSe, probeEp, prefLangCode);
+            var probeDubs = (probeJ && probeJ.data && probeJ.data.dubsList) ? probeJ.data.dubsList : [];
+            var seenLang = {};
+            for (var pd = 0; pd < probeDubs.length; pd++) {
+                var pdub = probeDubs[pd];
+                var pcode = (pdub.lan || "").toLowerCase();
+                if (!pcode || seenLang[pcode]) continue;
+                seenLang[pcode] = 1;
+                langs.push({ code: pcode, label: pdub.lanName || mbLangTag(pcode) });
+            }
+        } catch (_) {}
+        if (!langs.length) langs.push({ code: prefLangCode, label: mbLangTag(prefLangCode) });
+        // Langue préférée en premier
+        for (var lo = 1; lo < langs.length; lo++) {
+            if (langs[lo].code === prefLangCode) { langs.unshift(langs.splice(lo, 1)[0]); break; }
+        }
 
-        if (isMovie) {
-            chapters.push({
-                name:       "▶ Regarder",
-                url:        JSON.stringify({ subjectId: realId, detailPath: realDp, se: 0, ep: 0 }),
-                dateUpload: s.releaseDate || "",
-                scanlator:  langTag
-            });
-        } else {
-            for (var si = 0; si < seasons.length; si++) {
-                var season = seasons[si];
-                var seNum  = season.se || (si + 1);
-                var maxEp  = season.maxEp || 0;
-                for (var ep = 1; ep <= maxEp; ep++) {
-                    chapters.push({
-                        name:       maxEp > 1 ? ("S" + seNum + " E" + ep) : (s.title || "Episode"),
-                        url:        JSON.stringify({ subjectId: realId, detailPath: realDp, se: seNum, ep: ep }),
-                        dateUpload: "",
-                        scanlator:  langTag
-                    });
+        for (var li = 0; li < langs.length; li++) {
+            var lg = langs[li];
+            if (isMovie) {
+                chapters.push({
+                    name:       "▶ Regarder",
+                    url:        JSON.stringify({ subjectId: realId, detailPath: realDp, se: 0, ep: 0, dub: lg.code }),
+                    dateUpload: s.releaseDate || "",
+                    scanlator:  lg.label
+                });
+            } else {
+                for (var si = 0; si < seasons.length; si++) {
+                    var season = seasons[si];
+                    var seNum  = season.se || (si + 1);
+                    var maxEp  = season.maxEp || 0;
+                    for (var ep = 1; ep <= maxEp; ep++) {
+                        chapters.push({
+                            name:       maxEp > 1 ? ("S" + seNum + " E" + ep) : (s.title || "Episode"),
+                            url:        JSON.stringify({ subjectId: realId, detailPath: realDp, se: seNum, ep: ep, dub: lg.code }),
+                            dateUpload: "",
+                            scanlator:  lg.label
+                        });
+                    }
                 }
             }
         }
@@ -835,9 +861,12 @@ class DefaultExtension extends MProvider {
         var detailPath = payload.detailPath || "";
         var se = (payload.se !== undefined) ? payload.se : 0;
         var ep = (payload.ep !== undefined) ? payload.ep : 0;
+        // Langue choisie via la box langue (scanlator du chapitre) — prioritaire
+        // sur la préférence globale d'extension pour le choix du doublage.
+        var chapterDub = (payload.dub || "").toLowerCase();
         if (!subjectId) throw new Error("subjectId manquant");
 
-        var lang = this._prefLang();
+        var lang = chapterDub || this._prefLang();
         var j    = await this._fetchPlay(subjectId, detailPath, se, ep, lang);
         if ((!j || j.code !== 0 || !j.data || !j.data.hasResource) && lang !== "en") {
             var retry = await this._fetchPlay(subjectId, detailPath, se, ep, "en");
@@ -853,7 +882,7 @@ class DefaultExtension extends MProvider {
 
         var refHdrs   = { "Referer": detailPath ? (MB_ORIG + "/movies/" + detailPath) : MB_ORIG + "/" };
         var prefSub   = this._prefSub();
-        var prefDub   = this._prefDub();
+        var prefDub   = chapterDub || this._prefDub();
         var bilingual = this._prefBilingual();
         var prefSub2  = this._prefBilingual2();
         var subtitles = [];
