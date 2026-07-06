@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.1.0",
+    "version": "1.2.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -33,7 +33,16 @@ const watchtowerSources = [{
 //   - Reste (home, search, catalog, detail) : H5 BFF inchangé.
 // ══════════════════════════════════════════════════════════════
 
-var MB_MOBILE_API = "https://api3.aoneroom.com";
+// Serveurs natifs dans l'ordre de priorité — le premier qui répond gagne
+var MB_MOBILE_SERVERS = [
+    "https://api3.aoneroom.com",
+    "https://api4.aoneroom.com",
+    "https://api5.aoneroom.com",
+    "https://api6.aoneroom.com",
+    "https://api7.aoneroom.com",
+    "https://api8.aoneroom.com"
+];
+var MB_MOBILE_API = MB_MOBILE_SERVERS[0]; // gardé pour les captions
 var MB_API      = "https://h5-api.aoneroom.com";
 var MB_ORIG     = "https://themoviebox.xyz";
 var MB_PER      = 30;
@@ -672,22 +681,28 @@ class DefaultExtension extends MProvider {
     }
 
     async _fetchPlay(subjectId, detailPath, se, ep, lang) {
-        // ── Tentative 1 : API native app (wefeed-mobile-bff) ─────
-        // Retourne tous les streams HLS + MP4 multi-qualités.
-        // Géo-bloquée (403) dans certaines régions → fallback H5.
-        try {
-            var mUrl = MB_MOBILE_API + "/wefeed-mobile-bff/subject-api/play-info"
-                + "?subjectId=" + encodeURIComponent(subjectId)
-                + "&se=" + se + "&ep=" + ep
-                + (detailPath ? "&detailPath=" + encodeURIComponent(detailPath) : "");
-            var mRes = await new Client().get(mUrl, mbHeaders(lang, detailPath));
-            var mJ; try { mJ = JSON.parse(mRes.body); } catch (_) {}
-            if (mJ && mJ.code === 0 && mJ.data && mJ.data.hasResource) {
-                return mJ;
-            }
-        } catch (_) {}
+        // ── Tentative : API native app — parcourt api3→api4→…→api8 ──
+        // Chaque serveur est identique. Le premier qui répond avec
+        // code=0 + hasResource=true est utilisé. Les autres sont ignorés.
+        var playPath = "/wefeed-mobile-bff/subject-api/play-info"
+            + "?subjectId=" + encodeURIComponent(subjectId)
+            + "&se=" + se + "&ep=" + ep
+            + (detailPath ? "&detailPath=" + encodeURIComponent(detailPath) : "");
+        for (var si = 0; si < MB_MOBILE_SERVERS.length; si++) {
+            try {
+                var mUrl = MB_MOBILE_SERVERS[si] + playPath;
+                var mRes = await new Client().get(mUrl, mbHeaders(lang, detailPath));
+                var mJ; try { mJ = JSON.parse(mRes.body); } catch (_) {}
+                if (mJ && mJ.code === 0 && mJ.data && mJ.data.hasResource) {
+                    // Mémorise le serveur qui a répondu pour les captions
+                    MB_MOBILE_API = MB_MOBILE_SERVERS[si];
+                    return mJ;
+                }
+            } catch (_) {}
+            // Serveur suivant
+        }
 
-        // ── Fallback : H5 API ─────────────────────────────────────
+        // ── Fallback final : H5 API ────────────────────────────────
         var url = MB_API + "/wefeed-h5api-bff/subject/play"
             + "?subjectId=" + encodeURIComponent(subjectId)
             + "&se=" + se + "&ep=" + ep
