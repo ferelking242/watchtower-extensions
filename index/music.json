@@ -2,7 +2,7 @@
   {
     "id": 3001,
     "name": "Spotify",
-    "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/200px-Spotify_logo_without_text.svg.png",
+    "iconUrl": "https://cdn.simpleicons.org/spotify",
     "lang": "all",
     "version": "1.0.0",
     "itemType": 3,
@@ -19,7 +19,7 @@
   {
     "id": 3002,
     "name": "FLAC Music",
-    "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/FLAC_logo.svg/200px-FLAC_logo.svg.png",
+    "iconUrl": "https://cdn.simpleicons.org/flac",
     "lang": "all",
     "version": "1.0.0",
     "itemType": 3,
@@ -36,7 +36,7 @@
   {
     "id": 3003,
     "name": "Apple Music",
-    "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Apple_Music_icon.svg/200px-Apple_Music_icon.svg.png",
+    "iconUrl": "https://cdn.simpleicons.org/applemusic",
     "lang": "all",
     "version": "1.0.0",
     "itemType": 3,
@@ -53,7 +53,7 @@
   {
     "id": 3004,
     "name": "Deezer",
-    "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Deezer_Logo.svg/200px-Deezer_Logo.svg.png",
+    "iconUrl": "https://cdn.simpleicons.org/deezer",
     "lang": "all",
     "version": "1.0.0",
     "itemType": 3,
@@ -70,7 +70,7 @@
   {
     "id": 3005,
     "name": "YouTube Music",
-    "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Youtube_Music_icon.svg/200px-Youtube_Music_icon.svg.png",
+    "iconUrl": "https://cdn.simpleicons.org/youtubemusic",
     "lang": "all",
     "version": "1.0.0",
     "itemType": 3,
@@ -87,7 +87,7 @@
   {
     "id": 3006,
     "name": "MusicBrainz",
-    "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/MusicBrainz_Logo_Square.svg/200px-MusicBrainz_Logo_Square.svg.png",
+    "iconUrl": "https://cdn.simpleicons.org/musicbrainz",
     "lang": "all",
     "version": "1.0.0",
     "itemType": 3,
