@@ -155,6 +155,7 @@ var MB_HOME_SECTIONS = [
 class DefaultExtension extends MProvider {
 
     // ── Cache home brut (bannerList + operatingList avec titres) ─
+    // Extrait aussi le Bearer JWT depuis le header x-user de la réponse.
     async _fetchHomeRaw() {
         var now = Date.now();
         if (this._homeRawCache && (now - (this._homeRawAt || 0)) < MB_HOME_TTL) {
@@ -165,6 +166,17 @@ class DefaultExtension extends MProvider {
                 MB_API + "/wefeed-h5api-bff/home",
                 mbHeaders(this._prefLang())
             );
+            // Extraire le JWT Bearer depuis x-user (JSON: {"token":"<jwt>",...})
+            try {
+                var xu = res.headers && (res.headers["x-user"] || res.headers["X-User"]);
+                if (xu) {
+                    var xuObj = JSON.parse(xu);
+                    if (xuObj && xuObj.token) {
+                        this._sessionToken   = xuObj.token;
+                        this._sessionTokenAt = now;
+                    }
+                }
+            } catch (_) {}
             var j; try { j = JSON.parse(res.body); } catch (_) { return this._homeRawCache || null; }
             if (!j || j.code !== 0 || !j.data) return this._homeRawCache || null;
             this._homeRawCache = j.data;
@@ -268,28 +280,22 @@ class DefaultExtension extends MProvider {
         } catch (_) { return null; }
     }
 
-    // ── Session Bearer token (extrait de x-user via search-suggest) ─
-    // TTL 25 min — search-suggest est léger et ne compte pas comme recherche.
-    // forceRefresh=true contourne le cache (ex : après un 401/403).
+    // ── Session Bearer token (extrait de x-user via GET /home) ──
+    // Le GET /home retourne un header x-user JSON : {"token":"<jwt>",...}
+    // _fetchHomeRaw() l'extrait automatiquement à chaque appel non-caché.
+    // forceRefresh=true force un nouveau GET /home même si le cache home est frais.
     async _getSessionToken(lang, forceRefresh) {
         var now = Date.now();
         var TTL = 25 * 60 * 1000;
         if (!forceRefresh && this._sessionToken && (now - (this._sessionTokenAt || 0)) < TTL) {
             return this._sessionToken;
         }
-        try {
-            var body = JSON.stringify({ keyword: "a", pageNum: 1, pageSize: 1 });
-            var hdrs = mbHeaders(lang);
-            hdrs["content-type"] = "application/json";
-            var res = await new Client().post(MB_API + "/wefeed-h5api-bff/search-suggest", hdrs, body);
-            var token = res.headers && (res.headers["x-user"] || res.headers["X-User"]);
-            if (token) {
-                this._sessionToken   = token;
-                this._sessionTokenAt = now;
-                return token;
-            }
-        } catch (_) {}
-        return null;
+        // Force un GET /home frais pour obtenir un nouveau token
+        if (forceRefresh) {
+            this._homeRawAt = 0; // invalide le cache home
+        }
+        await this._fetchHomeRaw(); // met à jour this._sessionToken en interne
+        return this._sessionToken || null;
     }
 
     // ── Recherche réelle via POST /subject/search ─────────────
@@ -325,11 +331,13 @@ class DefaultExtension extends MProvider {
                 }
                 if (!j || j.code !== 0 || !j.data) return null;
                 var d = j.data;
-                var items = d.subjects || d.subjectList || d.list || d.data || d.items || d.results || d.content || d.records || [];
-                var total = d.total || d.totalCount || d.count || 0;
+                var items = d.items || d.subjects || d.subjectList || d.list || d.data || d.results || d.content || d.records || [];
+                var pager = d.pager || {};
+                var total = pager.totalCount || d.total || d.totalCount || d.count || 0;
+                var hasMore = pager.hasMore !== undefined ? pager.hasMore : (total > 0 ? (p * MB_PER < total) : (items.length >= MB_PER));
                 var list  = [];
                 for (var i = 0; i < items.length; i++) list.push(this._toItem(items[i]));
-                return { list: list, hasNextPage: total > 0 ? (p * MB_PER < total) : (items.length >= MB_PER) };
+                return { list: list, hasNextPage: hasMore };
             } catch (_) { return null; }
         }
         return null;
@@ -538,24 +546,12 @@ class DefaultExtension extends MProvider {
     async getSuggestions(query) {
         var q = (query || "").trim();
         if (!q || q.length < 2) return [];
-        var lang = this._prefLang();
         try {
-            var hdrs = mbHeaders(lang);
-            hdrs["content-type"] = "application/json";
-            var res = await new Client().post(
-                MB_API + "/wefeed-h5api-bff/search-suggest",
-                hdrs,
-                JSON.stringify({ keyword: q, pageNum: 1, pageSize: 8 })
-            );
-            // Cache the session token if returned
-            var token = res.headers && (res.headers["x-user"] || res.headers["X-User"]);
-            if (token) { this._sessionToken = token; this._sessionTokenAt = Date.now(); }
-            var j; try { j = JSON.parse(res.body); } catch (_) { return []; }
-            if (!j || j.code !== 0 || !j.data) return [];
-            var items = j.data.subjects || j.data.subjectList || j.data.list || j.data.data || j.data.items || [];
+            var res = await this._apiSearch(q, 1, "", "", "", "", this._prefLang());
+            if (!res || !res.list) return [];
             var out = [];
-            for (var i = 0; i < items.length && i < 8; i++) {
-                var nm = items[i].title || items[i].subjectName || "";
+            for (var i = 0; i < res.list.length && i < 8; i++) {
+                var nm = res.list[i].name || "";
                 if (nm) out.push(nm);
             }
             return out;
