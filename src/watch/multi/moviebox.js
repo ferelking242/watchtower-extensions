@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "5.2.5-dbg",
+    "version": "5.2.6",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -790,21 +790,9 @@ class DefaultExtension extends MProvider {
         } catch (_) {}
 
         // ── Étiquette qualité/langue ─────────────────────────────
+        // Construit un label lisible : "🇫🇷 Français · 1080p"
+        // Priorité : langue (avec drapeau) > résolution > fallback numéroté
         function _buildVideoLabel(item, fmt, idx) {
-            // DEBUG 5.2.5 : affiche tous les champs bruts du stream
-            try {
-                var dbgParts = [];
-                var keys = Object.keys(item || {});
-                for (var dk = 0; dk < keys.length; dk++) {
-                    var dv = item[keys[dk]];
-                    if (typeof dv !== "object" || dv === null) {
-                        dbgParts.push(keys[dk] + "=" + String(dv).slice(0, 40));
-                    }
-                }
-                return fmt + idx + " | " + dbgParts.join(" | ");
-            } catch(_) { return fmt + idx; }
-        }
-        function _buildVideoLabel_DISABLED(item, fmt, idx) {
             var LANG = {
                 "en":          "🇺🇸 English",
                 "english":     "🇺🇸 English",
@@ -904,14 +892,14 @@ class DefaultExtension extends MProvider {
             var hl = reorderDub(data.hls);
             for (var hi = 0; hi < hl.length; hi++) {
                 var h = hl[hi];
-                if (h) out.push({ url: h.url || "NO_URL_HLS", originalUrl: h.url || "", quality: _buildVideoLabel(h, "HLS", hi), headers: refH, subtitles: subs });
+                if (h && h.url) out.push({ url: h.url, originalUrl: h.url, quality: _buildVideoLabel(h, "HLS", hi), headers: refH, subtitles: subs });
             }
         }
         if (data.streams && data.streams.length) {
             var st = reorderDub(data.streams);
             for (var sti = 0; sti < st.length; sti++) {
                 var s2 = st[sti];
-                if (s2) out.push({ url: s2.url || "NO_URL_MP4", originalUrl: s2.url || "", quality: _buildVideoLabel(s2, "MP4", sti), headers: refH, subtitles: subs });
+                if (s2 && s2.url) out.push({ url: s2.url, originalUrl: s2.url, quality: _buildVideoLabel(s2, "MP4", sti), headers: refH, subtitles: subs });
             }
         }
         if (!out.length) {
