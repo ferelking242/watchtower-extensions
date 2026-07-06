@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.6.0",
+    "version": "3.7.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
 }];
 
 // ══════════════════════════════════════════════════════════════
-//  MovieBox  v3.6.0
+//  MovieBox  v3.7.0
 //  Fixes v3.5.1:
 //   - SEARCH : utilise le vrai endpoint /search de l'API
 //     au lieu de filtrer le cache de la home (→ plus de 0 résultats)
@@ -320,19 +320,19 @@ class DefaultExtension extends MProvider {
     // ── Sections déclaratives de l'accueil ──────────────────────────
     getCustomLists() {
         return [
-            { id: "all",      name: "🎭 Tout",         layout: "spotlight", color: "#7C4DFF", icon: "apps",         seeAll: "popular" },
-            { id: "latest",   name: "🆕 Récents",       layout: "spotlight", color: "#00BCD4", icon: "fiber_new",    seeAll: "latest" },
-            { id: "topRated", name: "🏆 Mieux notés",   layout: "ranked",    color: "#FFB300", icon: "trending_up",  seeAll: false },
-            { id: "movies",   name: "🎬 Films",         layout: "grid",      color: "#E53935", icon: "movie",        seeAll: true },
-            { id: "series",   name: "📺 Séries",        layout: "grid",      color: "#3949AB", icon: "tv",           seeAll: true },
-            { id: "anime",    name: "⛩️ Anime",         layout: "grid",      color: "#8E24AA", icon: "animation",    seeAll: true },
-            { id: "animation",name: "🎨 Animation",     layout: "compact",   color: "#9C27B0", icon: "animation",    seeAll: true },
-            { id: "action",   name: "💥 Action",        layout: "compact",   color: "#F4511E", icon: "local_fire_department", seeAll: false },
-            { id: "horror",   name: "👻 Horreur",       layout: "compact",   color: "#455A64", icon: "dark_mode",    seeAll: false },
-            { id: "comedy",   name: "😂 Comédie",       layout: "compact",   color: "#FDD835", icon: "sentiment_very_satisfied", seeAll: false },
-            { id: "romance",  name: "💞 Romance",       layout: "compact",   color: "#EC407A", icon: "favorite",     seeAll: false },
-            { id: "drama",    name: "🎭 Drame",         layout: "compact",   color: "#6D4C41", icon: "theaters",     seeAll: false },
-            { id: "kdrama",   name: "🇰🇷 K-Drama",       layout: "compact",   color: "#00897B", icon: "language",     seeAll: false }
+            { id: "all",      name: "Tout",         layout: "spotlight", color: "#7C4DFF", icon: "apps",         seeAll: "popular" },
+            { id: "latest",   name: "Récents",       layout: "spotlight", color: "#00BCD4", icon: "fiber_new",    seeAll: "latest" },
+            { id: "topRated", name: "Mieux notés",   layout: "ranked",    color: "#FFB300", icon: "trending_up",  seeAll: false },
+            { id: "movies",   name: "Films",         layout: "grid",      color: "#E53935", icon: "movie",        seeAll: true },
+            { id: "series",   name: "Séries",        layout: "grid",      color: "#3949AB", icon: "tv",           seeAll: true },
+            { id: "anime",    name: "Anime",         layout: "grid",      color: "#8E24AA", icon: "animation",    seeAll: true },
+            { id: "animation",name: "Animation",     layout: "compact",   color: "#9C27B0", icon: "animation",    seeAll: true },
+            { id: "action",   name: "Action",        layout: "compact",   color: "#F4511E", icon: "local_fire_department", seeAll: false },
+            { id: "horror",   name: "Horreur",       layout: "compact",   color: "#455A64", icon: "dark_mode",    seeAll: false },
+            { id: "comedy",   name: "Comédie",       layout: "compact",   color: "#FDD835", icon: "sentiment_very_satisfied", seeAll: false },
+            { id: "romance",  name: "Romance",       layout: "compact",   color: "#EC407A", icon: "favorite",     seeAll: false },
+            { id: "drama",    name: "Drame",         layout: "compact",   color: "#6D4C41", icon: "theaters",     seeAll: false },
+            { id: "kdrama",   name: "K-Drama",       layout: "compact",   color: "#00897B", icon: "language",     seeAll: false }
         ];
     }
 
@@ -808,11 +808,11 @@ class DefaultExtension extends MProvider {
                 name:      "Type",
                 state:     0,
                 values: [
-                    { type_name: "SelectOption", name: "🎭 Tout",      value: "" },
-                    { type_name: "SelectOption", name: "🎬 Films",     value: "1" },
-                    { type_name: "SelectOption", name: "📺 Séries",    value: "2" },
-                    { type_name: "SelectOption", name: "⛩️ Anime",     value: "5" },
-                    { type_name: "SelectOption", name: "🎨 Animation", value: "4" }
+                    { type_name: "SelectOption", name: "Tout",      value: "" },
+                    { type_name: "SelectOption", name: "Films",     value: "1" },
+                    { type_name: "SelectOption", name: "Séries",    value: "2" },
+                    { type_name: "SelectOption", name: "Anime",     value: "5" },
+                    { type_name: "SelectOption", name: "Animation", value: "4" }
                 ]
             },
             {
@@ -848,18 +848,18 @@ class DefaultExtension extends MProvider {
                 state:     0,
                 values: [
                     { type_name: "SelectOption", name: "Tous",          value: "" },
-                    { type_name: "SelectOption", name: "🇺🇸 USA",        value: "US" },
-                    { type_name: "SelectOption", name: "🇰🇷 Corée",      value: "KR" },
-                    { type_name: "SelectOption", name: "🇯🇵 Japon",      value: "JP" },
-                    { type_name: "SelectOption", name: "🇨🇳 Chine",      value: "CN" },
-                    { type_name: "SelectOption", name: "🇫🇷 France",     value: "FR" },
-                    { type_name: "SelectOption", name: "🇬🇧 UK",         value: "GB" },
-                    { type_name: "SelectOption", name: "🇮🇳 Inde",       value: "IN" },
-                    { type_name: "SelectOption", name: "🇮🇹 Italie",     value: "IT" },
-                    { type_name: "SelectOption", name: "🇩🇪 Allemagne",  value: "DE" },
-                    { type_name: "SelectOption", name: "🇪🇸 Espagne",    value: "ES" },
-                    { type_name: "SelectOption", name: "🇲🇽 Mexique",    value: "MX" },
-                    { type_name: "SelectOption", name: "🇹🇭 Thaïlande",  value: "TH" }
+                    { type_name: "SelectOption", name: "USA",        value: "US" },
+                    { type_name: "SelectOption", name: "Corée",      value: "KR" },
+                    { type_name: "SelectOption", name: "Japon",      value: "JP" },
+                    { type_name: "SelectOption", name: "Chine",      value: "CN" },
+                    { type_name: "SelectOption", name: "France",     value: "FR" },
+                    { type_name: "SelectOption", name: "UK",         value: "GB" },
+                    { type_name: "SelectOption", name: "Inde",       value: "IN" },
+                    { type_name: "SelectOption", name: "Italie",     value: "IT" },
+                    { type_name: "SelectOption", name: "Allemagne",  value: "DE" },
+                    { type_name: "SelectOption", name: "Espagne",    value: "ES" },
+                    { type_name: "SelectOption", name: "Mexique",    value: "MX" },
+                    { type_name: "SelectOption", name: "Thaïlande",  value: "TH" }
                 ]
             },
             {
