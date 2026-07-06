@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.2.0",
+    "version": "1.3.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -317,6 +317,8 @@ class DefaultExtension extends MProvider {
         if (sortVal)    payload.sortType    = sortVal;
         if (genreVal)   payload.genre       = genreVal;
         if (countryVal) payload.country     = countryVal;
+        // Filtre API par langue → retourne les entrées doublées dans la bonne langue
+        if (lang && lang !== "en") payload.lan = lang;
 
         // Attempt once, then force-refresh token on 401/403 and retry once.
         for (var attempt = 0; attempt < 2; attempt++) {
@@ -576,18 +578,77 @@ class DefaultExtension extends MProvider {
         } catch (_) { return []; }
     }
 
+    // ── Filtre les résultats dont le titre contient un tag de langue étrangère ──
+    // Ex : "[Hindi]", "[Arabic]", "[Tagalog]" → exclus si l'user est en français.
+    // Les entrées sans tag ou avec le bon tag sont gardées.
+    _filterLangResults(list, lang) {
+        // Tags de langues étrangères et leurs codes associés
+        var LANG_TAGS = {
+            "hi": ["hindi"],
+            "ar": ["arabic", "arab"],
+            "tl": ["tagalog", "filipino"],
+            "tr": ["turkish", "turc"],
+            "ta": ["tamil"],
+            "te": ["telugu"],
+            "ms": ["malay"],
+            "id": ["indonesian"],
+            "zh": ["chinese", "mandarin", "cantonese"],
+            "ko": ["korean"],
+            "ja": ["japanese"],
+            "pt": ["portuguese", "portugues", "ptbr"],
+            "es": ["spanish", "español", "espanol", "esla"],
+            "fr": ["french", "français", "francais", "version fran"],
+            "de": ["german", "deutsch"],
+            "it": ["italian", "italiano"],
+            "ru": ["russian"]
+        };
+        // Collecte tous les tags des langues AUTRES que celle de l'user
+        var foreignTags = [];
+        for (var code in LANG_TAGS) {
+            if (code !== lang) {
+                foreignTags = foreignTags.concat(LANG_TAGS[code]);
+            }
+        }
+        var filtered = [];
+        for (var i = 0; i < list.length; i++) {
+            var name = (list[i].name || "").toLowerCase();
+            // Extrait tout ce qui est entre crochets
+            var bracketRe = /\[([^\]]+)\]/g, m, hasForeign = false;
+            while ((m = bracketRe.exec(name)) !== null) {
+                var tag = m[1].trim();
+                for (var t = 0; t < foreignTags.length; t++) {
+                    if (tag.indexOf(foreignTags[t]) >= 0) { hasForeign = true; break; }
+                }
+                if (hasForeign) break;
+            }
+            if (!hasForeign) filtered.push(list[i]);
+        }
+        // Si le filtre a tout retiré (contenu absent dans cette langue) → retour liste originale
+        return filtered.length > 0 ? filtered : list;
+    }
+
     async search(query, page, filterList) {
         var lang    = this._prefLang();
         var filters = this._readFilters(filterList);
         var q       = (query || "").trim();
 
         if (q) {
-            // ── Recherche API (toujours en premier) ──────────
+            // ── Recherche dans la langue de l'user ────────────
             var res = await this._apiSearch(q, page, filters.typeVal, filters.sortVal, filters.genreVal, filters.countryVal, lang);
-            if (res !== null) return res;
+            if (res !== null) {
+                // Filtre les entrées [Hindi], [Arabic], etc. si elles ne matchent pas la langue
+                if (res.list && res.list.length && lang !== "en") {
+                    res.list = this._filterLangResults(res.list, lang);
+                }
+                return res;
+            }
+            // Fallback anglais UNIQUEMENT en cas d'erreur réseau (res === null), pas pour résultats vides
             if (lang !== "en") {
                 res = await this._apiSearch(q, page, filters.typeVal, filters.sortVal, filters.genreVal, filters.countryVal, "en");
-                if (res !== null) return res;
+                if (res !== null) {
+                    if (res.list && res.list.length) res.list = this._filterLangResults(res.list, lang);
+                    return res;
+                }
             }
             throw new Error("Recherche indisponible — impossible de joindre l'API MovieBox. Vérifiez votre connexion ou réessayez.");
 
