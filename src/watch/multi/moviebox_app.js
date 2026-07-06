@@ -738,7 +738,7 @@ class DefaultExtension extends MProvider {
         try {
             var probeSe = isMovie ? 0 : (seasons[0] ? (seasons[0].se || 1) : 1);
             var probeEp = isMovie ? 0 : 1;
-            var probeJ  = await this._fetchPlay(realId, realDp, probeSe, probeEp, prefLangCode);
+            var probeJ  = await this._fetchPlay(realId, realDp, probeSe, probeEp, "en");
             var probeDubs = (probeJ && probeJ.data && probeJ.data.dubsList) ? probeJ.data.dubsList : [];
             var seenLang = {};
             for (var pd = 0; pd < probeDubs.length; pd++) {
