@@ -2,7 +2,7 @@
   {
     "id": 3001,
     "name": "Spotify",
-    "iconUrl": "https://cdn.simpleicons.org/spotify",
+    "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/200px-Spotify_logo_without_text.svg.png",
     "lang": "all",
     "version": "1.0.0",
     "itemType": 3,
@@ -12,12 +12,14 @@
     "isAggregator": false,
     "paywall": "free",
     "supportsComments": false,
+    "subCategories": ["Metadata Provider", "Audio Provider"],
+    "description": "Métadonnées complètes (titres, albums, artistes, playlists) et lecture audio via l'API Spotify.",
     "upstream": "https://github.com/ferelking242/spotube-plugin-spotify"
   },
   {
     "id": 3002,
     "name": "FLAC Music",
-    "iconUrl": "https://cdn.simpleicons.org/flac",
+    "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/FLAC_logo.svg/200px-FLAC_logo.svg.png",
     "lang": "all",
     "version": "1.0.0",
     "itemType": 3,
@@ -27,12 +29,14 @@
     "isAggregator": false,
     "paywall": "free",
     "supportsComments": false,
+    "subCategories": ["Audio Provider"],
+    "description": "Lecture de fichiers locaux et distants en qualité lossless FLAC. Aucun compte requis.",
     "upstream": "https://github.com/ferelking242/spotube-plugin-flac"
   },
   {
     "id": 3003,
     "name": "Apple Music",
-    "iconUrl": "https://cdn.simpleicons.org/applemusic",
+    "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Apple_Music_icon.svg/200px-Apple_Music_icon.svg.png",
     "lang": "all",
     "version": "1.0.0",
     "itemType": 3,
@@ -42,12 +46,14 @@
     "isAggregator": false,
     "paywall": "free",
     "supportsComments": false,
+    "subCategories": ["Metadata Provider", "Audio Provider"],
+    "description": "Catalogue complet via l'API MusicKit. Métadonnées et lecture audio pour les abonnés Apple Music.",
     "upstream": "https://github.com/ferelking242/spotube-plugin-applemusic"
   },
   {
     "id": 3004,
     "name": "Deezer",
-    "iconUrl": "https://cdn.simpleicons.org/deezer",
+    "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Deezer_Logo.svg/200px-Deezer_Logo.svg.png",
     "lang": "all",
     "version": "1.0.0",
     "itemType": 3,
@@ -57,12 +63,14 @@
     "isAggregator": false,
     "paywall": "free",
     "supportsComments": false,
+    "subCategories": ["Metadata Provider", "Audio Provider"],
+    "description": "Accès au catalogue mondial via l'API Deezer. Métadonnées complètes et streaming haute qualité.",
     "upstream": "https://github.com/ferelking242/spotube-plugin-deezer"
   },
   {
     "id": 3005,
     "name": "YouTube Music",
-    "iconUrl": "https://cdn.simpleicons.org/youtubemusic",
+    "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Youtube_Music_icon.svg/200px-Youtube_Music_icon.svg.png",
     "lang": "all",
     "version": "1.0.0",
     "itemType": 3,
@@ -72,12 +80,14 @@
     "isAggregator": false,
     "paywall": "free",
     "supportsComments": false,
+    "subCategories": ["Metadata Provider", "Audio Provider"],
+    "description": "Accès gratuit au catalogue YouTube Music. Aucun compte requis pour la plupart des fonctionnalités.",
     "upstream": "https://github.com/ferelking242/spotube-plugin-youtubemusic"
   },
   {
     "id": 3006,
     "name": "MusicBrainz",
-    "iconUrl": "https://cdn.simpleicons.org/musicbrainz",
+    "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/MusicBrainz_Logo_Square.svg/200px-MusicBrainz_Logo_Square.svg.png",
     "lang": "all",
     "version": "1.0.0",
     "itemType": 3,
@@ -87,6 +97,8 @@
     "isAggregator": false,
     "paywall": "free",
     "supportsComments": false,
+    "subCategories": ["Metadata Provider"],
+    "description": "Base de données musicale open source. Métadonnées enrichies, ISRC, et scrobbling via ListenBrainz.",
     "upstream": "https://github.com/ferelking242/spotube-plugin-musicbrainz"
   }
 ]
