@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.3.0",
+    "version": "1.4.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,7 +19,7 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox App v1.0 — API native app (wefeed-mobile-bff) → tous les streams HLS+MP4 multi-qualités. Fallback H5 si région bloquée."
+    "notes": "MovieBox App v1.4.0 — API native app (wefeed-mobile-bff) → tous les streams HLS+MP4 multi-qualités. Fallback H5 si région bloquée. Box langue sur les épisodes (scanlator)."
 }];
 
 // ══════════════════════════════════════════════════════════════
@@ -43,6 +43,20 @@ var MB_MOBILE_SERVERS = [
     "https://api8.aoneroom.com"
 ];
 var MB_MOBILE_API = MB_MOBILE_SERVERS[0]; // gardé pour les captions
+
+// ── Tag de langue par code — utilisé comme Chapter.scanlator pour que
+//    l'app détecte la langue et affiche la box langue (_detectLanguages).
+//    Doit matcher le regex étendu dans watch_detail_view.dart.
+var MB_LANG_TAG = {
+    fr: "French", en: "English", ja: "Japanese", zh: "Chinese", ko: "Korean",
+    es: "Spanish", pt: "Portuguese", ru: "Russian", ar: "Arabic", de: "German",
+    it: "Italian", pl: "Polish", tr: "Turkish", vi: "Vietnamese", th: "Thai",
+    id: "Indonesian", hi: "Hindi", nl: "Dutch", sv: "Swedish", fi: "Finnish",
+    no: "Norwegian", da: "Danish", cs: "Czech", sk: "Slovak", ro: "Romanian",
+    hu: "Hungarian", bg: "Bulgarian", hr: "Croatian", sr: "Serbian", uk: "Ukrainian",
+    he: "Hebrew", fa: "Persian"
+};
+function mbLangTag(lang) { return MB_LANG_TAG[(lang || "").toLowerCase()] || "Multi"; }
 var MB_API      = "https://h5-api.aoneroom.com";
 var MB_ORIG     = "https://themoviebox.xyz";
 var MB_PER      = 30;
@@ -711,11 +725,19 @@ class DefaultExtension extends MProvider {
         var seasons  = (res2.seasons) ? res2.seasons : [];
         var chapters = [], isMovie = (realType === 1) || !seasons.length;
 
+        // Tag de langue sur chaque chapitre → alimente la box langue de l'app
+        // (Chapter.scanlator est lu par _detectLanguages() côté watch_detail_view).
+        // Le contenu est déjà filtré/localisé pour la langue courante (mb_content_lang),
+        // donc on tague avec cette langue — le choix du dub se fait ensuite dans le
+        // lecteur via dubsList (prefDub, cf. getVideoList).
+        var langTag = mbLangTag(this._prefLang());
+
         if (isMovie) {
             chapters.push({
                 name:       "▶ Regarder",
                 url:        JSON.stringify({ subjectId: realId, detailPath: realDp, se: 0, ep: 0 }),
-                dateUpload: s.releaseDate || ""
+                dateUpload: s.releaseDate || "",
+                scanlator:  langTag
             });
         } else {
             for (var si = 0; si < seasons.length; si++) {
@@ -726,7 +748,8 @@ class DefaultExtension extends MProvider {
                     chapters.push({
                         name:       maxEp > 1 ? ("S" + seNum + " E" + ep) : (s.title || "Episode"),
                         url:        JSON.stringify({ subjectId: realId, detailPath: realDp, se: seNum, ep: ep }),
-                        dateUpload: ""
+                        dateUpload: "",
+                        scanlator:  langTag
                     });
                 }
             }
