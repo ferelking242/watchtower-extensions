@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "4.2.0",
+    "version": "4.3.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,11 +19,11 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox v4.1.0 — Fix: accueil restauré, filtres corrigés, recherche multi-résultats, getDetail/play fiables."
+    "notes": "MovieBox v4.3.0 — Carousel bannerList exact, chips catégories, sections 100% dynamiques API, catalogue infini."
 }];
 
 // ══════════════════════════════════════════════════════════════
-//  MovieBox  v4.1.0
+//  MovieBox  v4.3.0
 //  Fixes v4.0.0 :
 //   - getCustomLists() redevient SYNC (l'app ne supporte pas async)
 //     Les sections sont définies statiquement, le CONTENU est
@@ -104,12 +104,12 @@ function mbHeaders(lang, detailPath) {
 var MB_HOME_SECTIONS = [
     { id: "carousel",  name: "🎬 À la une",                  layout: "banner",    color: "#1CB7FF" },
     // ── Catégories ────────────────────────────────────────────
-    { id: "cat_all",       name: "All",       layout: "compact", color: "#2C3E50" },
-    { id: "cat_action",    name: "Action",    layout: "compact", color: "#C0392B" },
-    { id: "cat_comedy",    name: "Comédie",   layout: "compact", color: "#D4AC0D" },
-    { id: "cat_animation", name: "Animation", layout: "compact", color: "#8E44AD" },
-    { id: "cat_adventure", name: "Aventure",  layout: "compact", color: "#1E8449" },
-    { id: "cat_romance",   name: "Romance",   layout: "compact", color: "#E91E63" },
+    { id: "cat_all",       name: "All",       layout: "category", color: "#2C3E50" },
+    { id: "cat_action",    name: "Action",    layout: "category", color: "#C0392B" },
+    { id: "cat_comedy",    name: "Comédie",   layout: "category", color: "#D4AC0D" },
+    { id: "cat_animation", name: "Animation", layout: "category", color: "#8E44AD" },
+    { id: "cat_adventure", name: "Aventure",  layout: "category", color: "#1E8449" },
+    { id: "cat_romance",   name: "Romance",   layout: "category", color: "#E91E63" },
     // ── Sections du site (operatingList — contenu live) ───────
     { id: "op_0",  name: "Trending🔥",                       layout: "spotlight", color: "#FF6F00" },
     { id: "op_1",  name: "New Series",                       layout: "spotlight", color: "#1CB7FF" },
@@ -367,10 +367,42 @@ class DefaultExtension extends MProvider {
 
     // ─────────────────────────────────────────────────────────
     //  ACCUEIL — SYNC (contrainte plateforme)
-    //  Sections statiques, CONTENU dynamique depuis l'API.
-    // ─────────────────────────────────────────────────────────
+    //  Si le cache home est disponible → sections construites dynamiquement
+    //  depuis l'API (titres + ordre exacts du site). Fallback statique sinon.
+    // ─────────────────────────────────────────────────────────────────────────
     getCustomLists() {
+        if (this._homeRawCache && this._homeRawCache.operatingList &&
+                this._homeRawCache.operatingList.length > 0) {
+            return this._buildDynamicSections(this._homeRawCache);
+        }
         return MB_HOME_SECTIONS;
+    }
+
+    _buildDynamicSections(data) {
+        var sections = [
+            { id: "carousel",      name: "\uD83C\uDFAC \u00C0 la une", layout: "banner",   color: "#1CB7FF" },
+            { id: "cat_all",       name: "All",                           layout: "category", color: "#2C3E50" },
+            { id: "cat_action",    name: "Action",                        layout: "category", color: "#C0392B" },
+            { id: "cat_comedy",    name: "Com\u00E9die",                  layout: "category", color: "#D4AC0D" },
+            { id: "cat_animation", name: "Animation",                     layout: "category", color: "#8E44AD" },
+            { id: "cat_adventure", name: "Aventure",                      layout: "category", color: "#1E8449" },
+            { id: "cat_romance",   name: "Romance",                       layout: "category", color: "#E91E63" }
+        ];
+        var ops    = data.operatingList || [];
+        var colors = ["#FF6F00","#1CB7FF","#1CB7FF","#FF6F00","#8E44AD","#00BCD4","#8E44AD",
+                      "#1CB7FF","#1CB7FF","#E53935","#00897B","#E91E63","#E53935","#8E44AD",
+                      "#1CB7FF","#E91E63","#FF6F00","#1CB7FF","#8E44AD","#FF6F00","#1CB7FF",
+                      "#FF6F00","#1CB7FF","#1CB7FF","#E91E63","#1CB7FF","#1CB7FF","#FF6F00",
+                      "#E53935","#E53935","#1CB7FF","#8E44AD","#8E44AD","#1CB7FF","#FF6F00",
+                      "#8E44AD","#8E44AD","#E91E63","#1CB7FF","#1CB7FF","#E53935","#FF6F00"];
+        var ranked = [18, 27];
+        for (var i = 0; i < ops.length; i++) {
+            var title  = ops[i].title || ops[i].name || ("Section " + i);
+            var layout = (ranked.indexOf(i) >= 0) ? "ranked" : "spotlight";
+            sections.push({ id: "op_" + i, name: title, layout: layout, color: colors[i % colors.length] });
+        }
+        sections.push({ id: "catalogue", name: "Catalogue", layout: "catalogue", color: "#7C4DFF" });
+        return sections;
     }
 
     async getCustomList(listId, page) {
