@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "5.2.2",
+    "version": "5.2.3",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -891,14 +891,17 @@ class DefaultExtension extends MProvider {
             var hl = reorderDub(data.hls);
             for (var hi = 0; hi < hl.length; hi++) {
                 var h = hl[hi];
-                if (h && h.url) out.push({ url: h.url, originalUrl: h.url, quality: _buildVideoLabel(h, "HLS", hi), headers: refH, subtitles: subs });
+                // DEBUG: affiche tous les champs du stream pour diagnostic
+                var dbg = h ? Object.keys(h).map(function(k){ return k + "=" + JSON.stringify(h[k]); }).join(" | ") : "null";
+                if (h && h.url) out.push({ url: h.url, originalUrl: h.url, quality: "DBG:" + dbg, headers: refH, subtitles: subs });
             }
         }
         if (data.streams && data.streams.length) {
             var st = reorderDub(data.streams);
             for (var sti = 0; sti < st.length; sti++) {
                 var s2 = st[sti];
-                if (s2 && s2.url) out.push({ url: s2.url, originalUrl: s2.url, quality: _buildVideoLabel(s2, "MP4", sti), headers: refH, subtitles: subs });
+                var dbg2 = s2 ? Object.keys(s2).map(function(k){ return k + "=" + JSON.stringify(s2[k]); }).join(" | ") : "null";
+                if (s2 && s2.url) out.push({ url: s2.url, originalUrl: s2.url, quality: "DBG:" + dbg2, headers: refH, subtitles: subs });
             }
         }
         if (!out.length) {
