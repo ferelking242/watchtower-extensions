@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.1.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -928,6 +928,45 @@ class DefaultExtension extends MProvider {
             return list;
         }
 
+        // ── dubsList : API native retourne les doublages ici ─────────
+        // Structure : [{lan, lanName, hls:[], streams:[], dubs:[]}]
+        // Chaque entrée = une langue d'audio avec ses propres qualités.
+        // On injecte lan/lanName dans chaque stream pour que
+        // _buildVideoLabel() génère une étiquette "Français · 1080p HLS".
+        if (data.dubsList && data.dubsList.length) {
+            var dubs = data.dubsList;
+            // Reorder: langue préférée en premier
+            if (prefDub) {
+                for (var di = 0; di < dubs.length; di++) {
+                    if ((dubs[di].lan || dubs[di].lanName || "").toLowerCase().indexOf(prefDub) >= 0) {
+                        dubs.unshift(dubs.splice(di, 1)[0]); break;
+                    }
+                }
+            }
+            for (var dubi = 0; dubi < dubs.length; dubi++) {
+                var dub = dubs[dubi];
+                var dubLan     = dub.lan     || "";
+                var dubLanName = dub.lanName || dub.lan || "";
+                // HLS de ce doublage
+                var dubHls = dub.hls || dub.dubs || [];
+                for (var dhi = 0; dhi < dubHls.length; dhi++) {
+                    var dh = Object.assign({}, dubHls[dhi]);
+                    if (!dh.lan) dh.lan = dubLan;
+                    if (!dh.lanName) dh.lanName = dubLanName;
+                    if (dh && dh.url) out.push({ url: dh.url, originalUrl: dh.url, quality: _buildVideoLabel(dh, "HLS", dhi), headers: refH, subtitles: subs });
+                }
+                // MP4 de ce doublage
+                var dubStreams = dub.streams || [];
+                for (var dsi = 0; dsi < dubStreams.length; dsi++) {
+                    var ds = Object.assign({}, dubStreams[dsi]);
+                    if (!ds.lan) ds.lan = dubLan;
+                    if (!ds.lanName) ds.lanName = dubLanName;
+                    if (ds && ds.url) out.push({ url: ds.url, originalUrl: ds.url, quality: _buildVideoLabel(ds, "MP4", dsi), headers: refH, subtitles: subs });
+                }
+            }
+        }
+
+        // ── Flux plats (H5 fallback ou API native sans dubsList) ──────
         if (data.hls && data.hls.length) {
             var hl = reorderDub(data.hls);
             for (var hi = 0; hi < hl.length; hi++) {
