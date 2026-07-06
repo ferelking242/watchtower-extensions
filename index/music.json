@@ -14,7 +14,7 @@
     "supportsComments": false,
     "subCategories": ["Metadata Provider", "Audio Provider"],
     "description": "Métadonnées complètes (titres, albums, artistes, playlists) et lecture audio via l'API Spotify.",
-    "upstream": "https://github.com/ferelking242/spotube-plugin-spotify"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/spotify.smplug"
   },
   {
     "id": 3002,
@@ -31,7 +31,7 @@
     "supportsComments": false,
     "subCategories": ["Audio Provider"],
     "description": "Lecture de fichiers locaux et distants en qualité lossless FLAC. Aucun compte requis.",
-    "upstream": "https://github.com/ferelking242/spotube-plugin-flac"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/flac.smplug"
   },
   {
     "id": 3003,
@@ -48,7 +48,7 @@
     "supportsComments": false,
     "subCategories": ["Metadata Provider", "Audio Provider"],
     "description": "Catalogue complet via l'API MusicKit. Métadonnées et lecture audio pour les abonnés Apple Music.",
-    "upstream": "https://github.com/ferelking242/spotube-plugin-applemusic"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/applemusic.smplug"
   },
   {
     "id": 3004,
@@ -65,7 +65,7 @@
     "supportsComments": false,
     "subCategories": ["Metadata Provider", "Audio Provider"],
     "description": "Accès au catalogue mondial via l'API Deezer. Métadonnées complètes et streaming haute qualité.",
-    "upstream": "https://github.com/ferelking242/spotube-plugin-deezer"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/deezer.smplug"
   },
   {
     "id": 3005,
@@ -82,7 +82,7 @@
     "supportsComments": false,
     "subCategories": ["Metadata Provider", "Audio Provider"],
     "description": "Accès gratuit au catalogue YouTube Music. Aucun compte requis pour la plupart des fonctionnalités.",
-    "upstream": "https://github.com/ferelking242/spotube-plugin-youtubemusic"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/youtubemusic.smplug"
   },
   {
     "id": 3006,
@@ -99,6 +99,6 @@
     "supportsComments": false,
     "subCategories": ["Metadata Provider"],
     "description": "Base de données musicale open source. Métadonnées enrichies, ISRC, et scrobbling via ListenBrainz.",
-    "upstream": "https://github.com/ferelking242/spotube-plugin-musicbrainz"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/musicbrainz.smplug"
   }
 ]
