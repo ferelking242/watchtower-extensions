@@ -312,7 +312,7 @@
         ]
       },
       "zipUrl": "https://github.com/ferelking242/watchtower-telegram-plugin/releases/download/latest/com.watchtower.telegram-source_1.0.0.zip"
-    }    ,
+    },
     {
       "id": "com.spotube.youtube-audio",
       "name": "YouTube Audio",
@@ -325,11 +325,23 @@
       "screenshots": [],
       "category": "music-audio-source",
       "runtime": "hetu",
-      "permissions": ["network", "storage.read"],
+      "permissions": [
+        "network",
+        "storage.read"
+      ],
       "networkAccess": {
-        "allowedDomains": ["*.youtube.com", "*.googlevideo.com", "*.googleapis.com"]
+        "allowedDomains": [
+          "*.youtube.com",
+          "*.googlevideo.com",
+          "*.googleapis.com"
+        ]
       },
-      "tags": ["music", "youtube", "audio", "streaming"],
+      "tags": [
+        "music",
+        "youtube",
+        "audio",
+        "streaming"
+      ],
       "license": "MIT",
       "repository": "https://github.com/ferelking242/spotube-plugin-youtube-audio",
       "isNsfw": false,
@@ -337,7 +349,11 @@
       "paywall": "free",
       "watchtower": {
         "minVersion": "8.1.0",
-        "apis": ["HTTP", "Storage", "Cache"]
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache"
+        ]
       },
       "zipUrl": "https://github.com/ferelking242/spotube-plugin-youtube-audio/releases/download/continuous/plugin.smplug"
     },
@@ -353,11 +369,24 @@
       "screenshots": [],
       "category": "music-audio-source",
       "runtime": "hetu",
-      "permissions": ["network", "storage.read"],
+      "permissions": [
+        "network",
+        "storage.read"
+      ],
       "networkAccess": {
-        "allowedDomains": ["*.jiosaavn.com", "*.saavncdn.com"]
+        "allowedDomains": [
+          "*.jiosaavn.com",
+          "*.saavncdn.com"
+        ]
       },
-      "tags": ["music", "jiosaavn", "audio", "streaming", "hindi", "south-asian"],
+      "tags": [
+        "music",
+        "jiosaavn",
+        "audio",
+        "streaming",
+        "hindi",
+        "south-asian"
+      ],
       "license": "MIT",
       "repository": "https://github.com/ferelking242/spotube-plugin-jiosaavn-audio",
       "isNsfw": false,
@@ -365,7 +394,11 @@
       "paywall": "free",
       "watchtower": {
         "minVersion": "8.1.0",
-        "apis": ["HTTP", "Storage", "Cache"]
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache"
+        ]
       },
       "zipUrl": "https://github.com/ferelking242/spotube-plugin-jiosaavn-audio/releases/download/continuous/plugin.smplug"
     },
@@ -381,11 +414,24 @@
       "screenshots": [],
       "category": "music-audio-source",
       "runtime": "hetu",
-      "permissions": ["network", "storage.read", "storage.write"],
+      "permissions": [
+        "network",
+        "storage.read",
+        "storage.write"
+      ],
       "networkAccess": {
-        "allowedDomains": ["dab.yeet.su", "*.yeet.su"]
+        "allowedDomains": [
+          "dab.yeet.su",
+          "*.yeet.su"
+        ]
       },
-      "tags": ["music", "hifi", "lossless", "audio", "streaming"],
+      "tags": [
+        "music",
+        "hifi",
+        "lossless",
+        "audio",
+        "streaming"
+      ],
       "license": "MIT",
       "repository": "https://github.com/ferelking242/spotube-plugin-dab-music",
       "isNsfw": false,
@@ -393,7 +439,12 @@
       "paywall": "free",
       "watchtower": {
         "minVersion": "8.1.0",
-        "apis": ["HTTP", "Storage", "Cache", "SecureStorage"]
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache",
+          "SecureStorage"
+        ]
       },
       "zipUrl": "https://github.com/ferelking242/spotube-plugin-dab-music/releases/download/continuous/plugin.smplug"
     },
@@ -409,11 +460,26 @@
       "screenshots": [],
       "category": "music-metadata",
       "runtime": "hetu",
-      "permissions": ["network", "storage.read", "storage.write"],
+      "permissions": [
+        "network",
+        "storage.read",
+        "storage.write"
+      ],
       "networkAccess": {
-        "allowedDomains": ["musicbrainz.org", "listenbrainz.org", "*.musicbrainz.org", "*.listenbrainz.org"]
+        "allowedDomains": [
+          "musicbrainz.org",
+          "listenbrainz.org",
+          "*.musicbrainz.org",
+          "*.listenbrainz.org"
+        ]
       },
-      "tags": ["music", "metadata", "scrobbling", "musicbrainz", "listenbrainz"],
+      "tags": [
+        "music",
+        "metadata",
+        "scrobbling",
+        "musicbrainz",
+        "listenbrainz"
+      ],
       "license": "MIT",
       "repository": "https://github.com/ferelking242/spotube-plugin-musicbrainz-listenbrainz",
       "isNsfw": false,
@@ -421,9 +487,238 @@
       "paywall": "free",
       "watchtower": {
         "minVersion": "8.1.0",
-        "apis": ["HTTP", "Storage", "Cache", "SecureStorage"]
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache",
+          "SecureStorage"
+        ]
       },
       "zipUrl": "https://github.com/ferelking242/spotube-plugin-musicbrainz-listenbrainz/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.spotify",
+      "name": "Spotify",
+      "version": "1.0.0",
+      "author": "sonic-liberation",
+      "description": "Spotify metadata plugin for the Watchtower Music Hub.",
+      "longDescription": "Full Spotify metadata integration. Browse playlists, albums and artists. Requires a Spotify account.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-spotify/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-metadata",
+      "runtime": "hetu",
+      "permissions": [
+        "network",
+        "storage.read",
+        "storage.write"
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*.spotify.com",
+          "*.scdn.co",
+          "*.spotilocal.com"
+        ]
+      },
+      "tags": [
+        "music",
+        "spotify",
+        "metadata",
+        "streaming"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-spotify",
+      "isNsfw": false,
+      "requiresAccount": true,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache",
+          "Webview"
+        ]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-spotify/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.flac-audio",
+      "name": "FLAC Audio",
+      "version": "1.0.0",
+      "author": "aztecempire",
+      "description": "FLAC lossless audio source plugin for the Watchtower Music Hub.",
+      "longDescription": "Streams lossless FLAC audio for high-quality playback. Replaces default audio source with FLAC quality.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-flac-audio/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-audio-source",
+      "runtime": "hetu",
+      "permissions": [
+        "network",
+        "storage.read"
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*"
+        ]
+      },
+      "tags": [
+        "music",
+        "flac",
+        "audio",
+        "lossless"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-flac-audio",
+      "isNsfw": false,
+      "requiresAccount": false,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache"
+        ]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-flac-audio/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.applemusic",
+      "name": "Apple Music",
+      "version": "1.0.0",
+      "author": "CornHead764",
+      "description": "Apple Music metadata plugin for the Watchtower Music Hub.",
+      "longDescription": "Integrates Apple Music catalog: albums, artists, playlists. Requires an Apple Music account.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-applemusic/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-metadata",
+      "runtime": "hetu",
+      "permissions": [
+        "network",
+        "storage.read",
+        "storage.write"
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*.apple.com",
+          "*.mzstatic.com"
+        ]
+      },
+      "tags": [
+        "music",
+        "apple",
+        "metadata",
+        "streaming"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-applemusic",
+      "isNsfw": false,
+      "requiresAccount": true,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache",
+          "Webview"
+        ]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-applemusic/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.deezer",
+      "name": "Deezer",
+      "version": "1.0.0",
+      "author": "000Tonio",
+      "description": "Deezer metadata plugin for the Watchtower Music Hub.",
+      "longDescription": "Deezer catalog integration: albums, playlists, artists. Requires a Deezer account.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-deezer/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-metadata",
+      "runtime": "hetu",
+      "permissions": [
+        "network",
+        "storage.read",
+        "storage.write"
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*.deezer.com",
+          "*.dzcdn.net"
+        ]
+      },
+      "tags": [
+        "music",
+        "deezer",
+        "metadata",
+        "streaming"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-deezer",
+      "isNsfw": false,
+      "requiresAccount": true,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache",
+          "Webview"
+        ]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-deezer/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.youtube-music",
+      "name": "YouTube Music",
+      "version": "1.0.0",
+      "author": "Benisgo",
+      "description": "YouTube Music metadata plugin for the Watchtower Music Hub.",
+      "longDescription": "YouTube Music catalog integration: playlists, albums, artists from YT Music. Requires a Google account.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-youtube-music/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-metadata",
+      "runtime": "hetu",
+      "permissions": [
+        "network",
+        "storage.read",
+        "storage.write"
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*.music.youtube.com",
+          "*.googlevideo.com",
+          "*.googleapis.com"
+        ]
+      },
+      "tags": [
+        "music",
+        "youtube",
+        "metadata",
+        "streaming"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-youtube-music",
+      "isNsfw": false,
+      "requiresAccount": true,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache",
+          "Webview"
+        ]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-youtube-music/releases/download/continuous/plugin.smplug"
     }
   ]
 }
