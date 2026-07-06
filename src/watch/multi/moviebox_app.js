@@ -516,6 +516,11 @@ class DefaultExtension extends MProvider {
     // Le layout "ranked" est auto-détecté sur le titre (pas d'indices hardcodés).
     _buildDynamicSections(data) {
         var sections = [
+            // Onglets navigation (extensible par chaque extension, pas hardcodes app-side)
+            { id: "__tab_0", name: "FightZone", layout: "__tab__" },
+            { id: "__tab_1", name: "Movie",     layout: "__tab__" },
+            { id: "__tab_2", name: "TV Shows",  layout: "__tab__" },
+            { id: "__tab_3", name: "Popular",   layout: "__tab__" },
             { id: "carousel",      name: "\uD83C\uDFAC \u00C0 la une", layout: "banner",   color: "#1CB7FF" },
             { id: "cat_all",       name: "All",                          layout: "category", color: "#2C3E50" },
             { id: "cat_action",    name: "Action",                       layout: "category", color: "#C0392B" },
