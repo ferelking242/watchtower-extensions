@@ -1249,7 +1249,7 @@ class DefaultExtension extends MProvider {
                     entries:    [
                         "English",    "Fran\u00E7ais","Espa\u00F1ol","Portugu\u00EAs",
                         "\u0627\u0644\u0639\u0631\u0628\u064A\u0629",
-                        "\u4E2D\u6587", "\u65E5\u本\u8A9E",
+                        "\u4E2D\u6587", "\u65E5\u672C\u8A9E",
                         "\uD55C\uAD6D\uC5B4",
                         "Hindi", "Indonesian", "Русский",
                         "T\u00FCrk\u00E7e","Portugu\u00EAs (BR)","Swahili"
