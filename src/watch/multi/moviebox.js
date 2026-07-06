@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "5.2.0",
+    "version": "5.2.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -336,7 +336,11 @@ class DefaultExtension extends MProvider {
                 var items = d.items || d.subjects || d.subjectList || d.list || d.data || d.results || d.content || d.records || [];
                 var pager = d.pager || {};
                 var total = pager.totalCount || d.total || d.totalCount || d.count || 0;
-                var hasMore = pager.hasMore !== undefined ? pager.hasMore : (total > 0 ? (p * MB_PER < total) : (items.length >= MB_PER));
+                // Si l'API retourne moins d'items que demandé, c'est la dernière page.
+                // Ne pas se fier à pager.hasMore seul : l'API wrappe parfois et
+                // continue de retourner des résultats indéfiniment.
+                var apiHasMore = pager.hasMore !== undefined ? pager.hasMore : (total > 0 ? (p * MB_PER < total) : true);
+                var hasMore = (items.length >= MB_PER) && apiHasMore;
                 var list  = [];
                 for (var i = 0; i < items.length; i++) list.push(this._toItem(items[i]));
                 return { list: list, hasNextPage: hasMore };
