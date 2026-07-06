@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "4.3.0",
+    "version": "4.4.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,21 +19,16 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox v4.3.0 — Carousel bannerList exact, chips catégories, sections 100% dynamiques API, catalogue infini."
+    "notes": "MovieBox v4.4.0 — Recherche via POST /subject/search avec session Bearer token; suggestions via POST /search-suggest."
 }];
 
 // ══════════════════════════════════════════════════════════════
-//  MovieBox  v4.3.0
-//  Fixes v4.0.0 :
-//   - getCustomLists() redevient SYNC (l'app ne supporte pas async)
-//     Les sections sont définies statiquement, le CONTENU est
-//     toujours récupéré en direct depuis l'API à chaque appel.
-//   - getFilters() → renommé getFilterList() (correct)
-//   - Format filtres corrigé (type_name: "SelectFilter" / "SelectOption")
-//   - _readFilters() lit la valeur de l'option sélectionnée directement
-//   - _apiSearch() : ntfy retiré du chemin critique → plus de timeout
-//   - _toItem() : subjectId 0 / null correctement géré (plus de "Unknown")
-//   - Recherche : retourne tous les résultats API, plus juste 1
+//  MovieBox  v4.4.0
+//  Fixes v4.3.0 :
+//   - _apiSearch() : GET /search remplacé par POST /subject/search
+//     avec Authorization Bearer (session token extrait de x-user)
+//   - getSuggestions() : GET /search remplacé par POST /search-suggest
+//   - _getSessionToken() : cache TTL 25 min, récupéré via search-suggest
 // ══════════════════════════════════════════════════════════════
 
 var MB_API      = "https://h5-api.aoneroom.com";
@@ -273,20 +268,50 @@ class DefaultExtension extends MProvider {
         } catch (_) { return null; }
     }
 
-    // ── Recherche réelle via /search ──────────────────────────
+    // ── Session Bearer token (extrait de x-user via search-suggest) ─
+    // TTL 25 min — search-suggest est léger et ne compte pas comme recherche.
+    async _getSessionToken(lang) {
+        var now = Date.now();
+        var TTL = 25 * 60 * 1000;
+        if (this._sessionToken && (now - (this._sessionTokenAt || 0)) < TTL) {
+            return this._sessionToken;
+        }
+        try {
+            var body = JSON.stringify({ keyword: "a", pageNum: 1, pageSize: 1 });
+            var hdrs = mbHeaders(lang);
+            hdrs["content-type"] = "application/json";
+            var res = await new Client().post(MB_API + "/wefeed-h5api-bff/search-suggest", hdrs, body);
+            var token = res.headers && (res.headers["x-user"] || res.headers["X-User"]);
+            if (token) {
+                this._sessionToken   = token;
+                this._sessionTokenAt = now;
+                return token;
+            }
+        } catch (_) {}
+        return null;
+    }
+
+    // ── Recherche réelle via POST /subject/search ─────────────
     async _apiSearch(query, page, typeVal, sortVal, genreVal, countryVal, lang) {
         var p = (page && page > 0) ? page : 1;
-        var url = MB_API + "/wefeed-h5api-bff/search"
-            + "?keyword=" + encodeURIComponent(query || "")
-            + "&pageNum=" + p + "&pageSize=" + MB_PER;
-        if (typeVal)    url += "&subjectType=" + encodeURIComponent(typeVal);
-        if (sortVal)    url += "&sortType="    + encodeURIComponent(sortVal);
-        if (genreVal)   url += "&genre="       + encodeURIComponent(genreVal);
-        if (countryVal) url += "&country="     + encodeURIComponent(countryVal);
+        var token = await this._getSessionToken(lang);
+        if (!token && lang !== "en") token = await this._getSessionToken("en");
+        if (!token) return null;
+        var payload = { keyword: query || "", pageNum: p, pageSize: MB_PER };
+        if (typeVal)    payload.subjectType = parseInt(typeVal, 10) || undefined;
+        if (sortVal)    payload.sortType    = sortVal;
+        if (genreVal)   payload.genre       = genreVal;
+        if (countryVal) payload.country     = countryVal;
         try {
-            var res  = await new Client().get(url, mbHeaders(lang));
-            var body = res.body || "";
-            var j; try { j = JSON.parse(body); } catch (_) { return null; }
+            var hdrs = mbHeaders(lang);
+            hdrs["content-type"]  = "application/json";
+            hdrs["Authorization"] = "Bearer " + token;
+            var res = await new Client().post(
+                MB_API + "/wefeed-h5api-bff/subject/search",
+                hdrs,
+                JSON.stringify(payload)
+            );
+            var j; try { j = JSON.parse(res.body || ""); } catch (_) { return null; }
             if (!j || j.code !== 0 || !j.data) return null;
             var d = j.data;
             var items = d.subjects || d.subjectList || d.list || d.data || d.items || d.results || d.content || d.records || [];
@@ -501,10 +526,17 @@ class DefaultExtension extends MProvider {
         var q = (query || "").trim();
         if (!q || q.length < 2) return [];
         var lang = this._prefLang();
-        var url  = MB_API + "/wefeed-h5api-bff/search"
-            + "?keyword=" + encodeURIComponent(q) + "&pageNum=1&pageSize=8";
         try {
-            var res = await new Client().get(url, mbHeaders(lang));
+            var hdrs = mbHeaders(lang);
+            hdrs["content-type"] = "application/json";
+            var res = await new Client().post(
+                MB_API + "/wefeed-h5api-bff/search-suggest",
+                hdrs,
+                JSON.stringify({ keyword: q, pageNum: 1, pageSize: 8 })
+            );
+            // Cache the session token if returned
+            var token = res.headers && (res.headers["x-user"] || res.headers["X-User"]);
+            if (token) { this._sessionToken = token; this._sessionTokenAt = Date.now(); }
             var j; try { j = JSON.parse(res.body); } catch (_) { return []; }
             if (!j || j.code !== 0 || !j.data) return [];
             var items = j.data.subjects || j.data.subjectList || j.data.list || j.data.data || j.data.items || [];
