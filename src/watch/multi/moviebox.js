@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "5.2.1",
+    "version": "5.2.2",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -789,6 +789,90 @@ class DefaultExtension extends MProvider {
             }
         } catch (_) {}
 
+        // ── Étiquette qualité/langue ─────────────────────────────
+        // Construit un label lisible : "🇫🇷 Français · 1080p"
+        // Priorité : langue (avec drapeau) > résolution > fallback numéroté
+        function _buildVideoLabel(item, fmt, idx) {
+            var LANG = {
+                "en":          "🇺🇸 English",
+                "english":     "🇺🇸 English",
+                "eng":         "🇺🇸 English",
+                "fr":          "🇫🇷 Français",
+                "french":      "🇫🇷 Français",
+                "français":    "🇫🇷 Français",
+                "fra":         "🇫🇷 Français",
+                "es":          "🇪🇸 Español",
+                "spanish":     "🇪🇸 Español",
+                "español":     "🇪🇸 Español",
+                "spa":         "🇪🇸 Español",
+                "esl":         "🇪🇸 Español",
+                "pt":          "🇧🇷 Português",
+                "ptbr":        "🇧🇷 Português",
+                "ptbr":        "🇧🇷 Português",
+                "portuguese":  "🇧🇷 Português",
+                "português":   "🇧🇷 Português",
+                "por":         "🇧🇷 Português",
+                "de":          "🇩🇪 Deutsch",
+                "german":      "🇩🇪 Deutsch",
+                "deu":         "🇩🇪 Deutsch",
+                "ger":         "🇩🇪 Deutsch",
+                "it":          "🇮🇹 Italiano",
+                "italian":     "🇮🇹 Italiano",
+                "ita":         "🇮🇹 Italiano",
+                "ja":          "🇯🇵 日本語",
+                "japanese":    "🇯🇵 日本語",
+                "jpn":         "🇯🇵 日本語",
+                "ko":          "🇰🇷 한국어",
+                "korean":      "🇰🇷 한국어",
+                "kor":         "🇰🇷 한국어",
+                "zh":          "🇨🇳 中文",
+                "chinese":     "🇨🇳 中文",
+                "zho":         "🇨🇳 中文",
+                "chi":         "🇨🇳 中文",
+                "ar":          "🇸🇦 عربي",
+                "arabic":      "🇸🇦 عربي",
+                "ara":         "🇸🇦 عربي",
+                "tr":          "🇹🇷 Türkçe",
+                "turkish":     "🇹🇷 Türkçe",
+                "tur":         "🇹🇷 Türkçe",
+                "ru":          "🇷🇺 Русский",
+                "russian":     "🇷🇺 Русский",
+                "rus":         "🇷🇺 Русский",
+                "hi":          "🇮🇳 हिंदी",
+                "hindi":       "🇮🇳 हिंदी",
+                "hin":         "🇮🇳 हिंदी",
+                "th":          "🇹🇭 ไทย",
+                "thai":        "🇹🇭 ไทย",
+                "tha":         "🇹🇭 ไทย",
+                "vi":          "🇻🇳 Tiếng Việt",
+                "vietnamese":  "🇻🇳 Tiếng Việt",
+                "vie":         "🇻🇳 Tiếng Việt",
+                "id":          "🇮🇩 Indonesia",
+                "indonesian":  "🇮🇩 Indonesia",
+                "ind":         "🇮🇩 Indonesia",
+                "multi":       "🌐 MULTI",
+                "original":    "🇺🇸 English (VO)",
+            };
+            // Normalise le code langue : minuscules, retire tirets/espaces, unifie pt-br → ptbr
+            var raw = String(item.lan || item.lanCode || item.audioLan || item.lanName || item.language || "")
+                .toLowerCase().replace(/[\s\-_]/g, "");
+            if (/^pt.{0,2}br$/.test(raw)) raw = "ptbr";
+            var langLabel = LANG[raw] || (item.lanName ? String(item.lanName).trim() : "");
+
+            // Normalise la résolution
+            var RES = { "2160": "4K", "4k": "4K", "uhd": "4K", "1080": "1080p", "fullhd": "1080p", "fhd": "1080p", "720": "720p", "hd": "720p", "480": "480p", "sd": "480p", "360": "360p", "240": "240p", "ld": "360p" };
+            var resRaw = String(item.resolution || item.definition || item.clarity || "")
+                .toLowerCase().replace(/p$/, "").replace(/[^0-9a-z]/g, "");
+            var resLabel = RES[resRaw] || (/^\d{3,4}$/.test(resRaw) ? resRaw + "p" : "");
+
+            // Assemblage
+            var parts = [];
+            if (langLabel) parts.push(langLabel);
+            if (resLabel)  parts.push(resLabel);
+            if (!parts.length) parts.push(fmt + " " + (idx + 1));
+            return parts.join(" · ");
+        }
+
         var out = [];
         var refH = refHdrs;
         var subs = subtitles;
@@ -807,14 +891,14 @@ class DefaultExtension extends MProvider {
             var hl = reorderDub(data.hls);
             for (var hi = 0; hi < hl.length; hi++) {
                 var h = hl[hi];
-                if (h && h.url) out.push({ url: h.url, originalUrl: h.url, quality: h.resolution || h.quality || h.lanName || ("HLS " + (hi + 1)), headers: refH, subtitles: subs });
+                if (h && h.url) out.push({ url: h.url, originalUrl: h.url, quality: _buildVideoLabel(h, "HLS", hi), headers: refH, subtitles: subs });
             }
         }
         if (data.streams && data.streams.length) {
             var st = reorderDub(data.streams);
             for (var sti = 0; sti < st.length; sti++) {
                 var s2 = st[sti];
-                if (s2 && s2.url) out.push({ url: s2.url, originalUrl: s2.url, quality: s2.resolution || s2.quality || s2.lanName || ("MP4 " + (sti + 1)), headers: refH, subtitles: subs });
+                if (s2 && s2.url) out.push({ url: s2.url, originalUrl: s2.url, quality: _buildVideoLabel(s2, "MP4", sti), headers: refH, subtitles: subs });
             }
         }
         if (!out.length) {
