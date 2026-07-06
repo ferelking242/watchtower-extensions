@@ -38,7 +38,7 @@
     "hasCloudflare": false,
     "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/watch/multi/moviebox.js",
     "apiUrl": "https://h5-api.aoneroom.com",
-    "version": "5.2.3",
+    "version": "5.2.4",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
