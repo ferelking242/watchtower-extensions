@@ -270,10 +270,11 @@ class DefaultExtension extends MProvider {
 
     // ── Session Bearer token (extrait de x-user via search-suggest) ─
     // TTL 25 min — search-suggest est léger et ne compte pas comme recherche.
-    async _getSessionToken(lang) {
+    // forceRefresh=true contourne le cache (ex : après un 401/403).
+    async _getSessionToken(lang, forceRefresh) {
         var now = Date.now();
         var TTL = 25 * 60 * 1000;
-        if (this._sessionToken && (now - (this._sessionTokenAt || 0)) < TTL) {
+        if (!forceRefresh && this._sessionToken && (now - (this._sessionTokenAt || 0)) < TTL) {
             return this._sessionToken;
         }
         try {
@@ -294,32 +295,44 @@ class DefaultExtension extends MProvider {
     // ── Recherche réelle via POST /subject/search ─────────────
     async _apiSearch(query, page, typeVal, sortVal, genreVal, countryVal, lang) {
         var p = (page && page > 0) ? page : 1;
-        var token = await this._getSessionToken(lang);
-        if (!token && lang !== "en") token = await this._getSessionToken("en");
-        if (!token) return null;
         var payload = { keyword: query || "", pageNum: p, pageSize: MB_PER };
         if (typeVal)    payload.subjectType = parseInt(typeVal, 10) || undefined;
         if (sortVal)    payload.sortType    = sortVal;
         if (genreVal)   payload.genre       = genreVal;
         if (countryVal) payload.country     = countryVal;
-        try {
-            var hdrs = mbHeaders(lang);
-            hdrs["content-type"]  = "application/json";
-            hdrs["Authorization"] = "Bearer " + token;
-            var res = await new Client().post(
-                MB_API + "/wefeed-h5api-bff/subject/search",
-                hdrs,
-                JSON.stringify(payload)
-            );
-            var j; try { j = JSON.parse(res.body || ""); } catch (_) { return null; }
-            if (!j || j.code !== 0 || !j.data) return null;
-            var d = j.data;
-            var items = d.subjects || d.subjectList || d.list || d.data || d.items || d.results || d.content || d.records || [];
-            var total = d.total || d.totalCount || d.count || 0;
-            var list  = [];
-            for (var i = 0; i < items.length; i++) list.push(this._toItem(items[i]));
-            return { list: list, hasNextPage: total > 0 ? (p * MB_PER < total) : (items.length >= MB_PER) };
-        } catch (_) { return null; }
+
+        // Attempt once, then force-refresh token on 401/403 and retry once.
+        for (var attempt = 0; attempt < 2; attempt++) {
+            var forceRefresh = attempt > 0;
+            var token = await this._getSessionToken(lang, forceRefresh);
+            if (!token && lang !== "en") token = await this._getSessionToken("en", forceRefresh);
+            if (!token) return null;
+            try {
+                var hdrs = mbHeaders(lang);
+                hdrs["content-type"]  = "application/json";
+                hdrs["Authorization"] = "Bearer " + token;
+                var res = await new Client().post(
+                    MB_API + "/wefeed-h5api-bff/subject/search",
+                    hdrs,
+                    JSON.stringify(payload)
+                );
+                var j; try { j = JSON.parse(res.body || ""); } catch (_) { return null; }
+                // On auth failure, invalidate cache and retry
+                if (j && (j.code === 401 || j.code === 403) && attempt === 0) {
+                    this._sessionToken = null;
+                    this._sessionTokenAt = 0;
+                    continue;
+                }
+                if (!j || j.code !== 0 || !j.data) return null;
+                var d = j.data;
+                var items = d.subjects || d.subjectList || d.list || d.data || d.items || d.results || d.content || d.records || [];
+                var total = d.total || d.totalCount || d.count || 0;
+                var list  = [];
+                for (var i = 0; i < items.length; i++) list.push(this._toItem(items[i]));
+                return { list: list, hasNextPage: total > 0 ? (p * MB_PER < total) : (items.length >= MB_PER) };
+            } catch (_) { return null; }
+        }
+        return null;
     }
 
     // ── Filtrage local (fallback) ─────────────────────────────
