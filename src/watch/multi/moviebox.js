@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "4.4.1",
+    "version": "5.0.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,11 +19,11 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox v4.4.1 — Recherche via POST /subject/search avec session Bearer token; suggestions via POST /search-suggest."
+    "notes": "MovieBox v5.0.0 — Recherche via POST /subject/search avec session Bearer token; suggestions via POST /search-suggest."
 }];
 
 // ══════════════════════════════════════════════════════════════
-//  MovieBox  v4.4.0
+//  MovieBox  v5.0.0
 //  Fixes v4.3.0 :
 //   - _apiSearch() : GET /search remplacé par POST /subject/search
 //     avec Authorization Bearer (session token extrait de x-user)
