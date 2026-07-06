@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "4.1.0",
+    "version": "4.2.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -498,18 +498,7 @@ class DefaultExtension extends MProvider {
                 res = await this._apiSearch(q, page, filters.typeVal, filters.sortVal, filters.genreVal, filters.countryVal, "en");
                 if (res !== null) return res;
             }
-            // Fallback local
-            var all     = await this._fetchHome();
-            var typed   = this._filterLocal(all, filters.typeVal, filters.genreVal, filters.countryVal);
-            var ql      = q.toLowerCase(), matched = [];
-            for (var i = 0; i < typed.length; i++) {
-                var t = (typed[i].title || typed[i].subjectName || "").toLowerCase();
-                var g = (typed[i].genre || "").toLowerCase();
-                if (t.indexOf(ql) >= 0 || g.indexOf(ql) >= 0) matched.push(typed[i]);
-            }
-            if (filters.sortVal === "1") matched = this._sortLatest(matched);
-            else if (filters.sortVal === "2") matched = this._sortRating(matched);
-            return this._page(matched, page);
+            throw new Error("Recherche indisponible — impossible de joindre l'API MovieBox. Vérifiez votre connexion ou réessayez.");
 
         } else {
             // ── Browse sans mot-clé (catalogue filtré) ───────
@@ -519,11 +508,7 @@ class DefaultExtension extends MProvider {
                 cat = await this._apiCatalog(page, filters.typeVal, filters.sortVal, filters.genreVal, filters.countryVal, "en");
                 if (cat !== null) return cat;
             }
-            var home = await this._fetchHome();
-            var filt = this._filterLocal(home, filters.typeVal, filters.genreVal, filters.countryVal);
-            if (filters.sortVal === "1") filt = this._sortLatest(filt);
-            else if (filters.sortVal === "2") filt = this._sortRating(filt);
-            return this._page(filt, page);
+            throw new Error("Catalogue indisponible — impossible de joindre l'API MovieBox. Vérifiez votre connexion ou réessayez.");
         }
     }
 
