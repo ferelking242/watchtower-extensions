@@ -282,19 +282,18 @@ class DefaultExtension extends MProvider {
 
     // ── Session Bearer token (extrait de x-user via GET /home) ──
     // Le GET /home retourne un header x-user JSON : {"token":"<jwt>",...}
-    // _fetchHomeRaw() l'extrait automatiquement à chaque appel non-caché.
-    // forceRefresh=true force un nouveau GET /home même si le cache home est frais.
+    // _fetchHomeRaw() l'extrait à chaque appel HTTP réel (pas depuis cache).
+    // On invalide toujours le cache home quand on n'a pas encore de token
+    // pour forcer un vrai GET et récupérer le header x-user.
     async _getSessionToken(lang, forceRefresh) {
         var now = Date.now();
         var TTL = 25 * 60 * 1000;
         if (!forceRefresh && this._sessionToken && (now - (this._sessionTokenAt || 0)) < TTL) {
             return this._sessionToken;
         }
-        // Force un GET /home frais pour obtenir un nouveau token
-        if (forceRefresh) {
-            this._homeRawAt = 0; // invalide le cache home
-        }
-        await this._fetchHomeRaw(); // met à jour this._sessionToken en interne
+        // Pas de token (ou force refresh) → invalide cache home pour forcer GET /home
+        this._homeRawAt = 0;
+        await this._fetchHomeRaw();
         return this._sessionToken || null;
     }
 
@@ -317,10 +316,13 @@ class DefaultExtension extends MProvider {
                 var hdrs = mbHeaders(lang);
                 hdrs["content-type"]  = "application/json";
                 hdrs["Authorization"] = "Bearer " + token;
+                // Passer payload comme objet (pas JSON.stringify) :
+                // le Dart runtime encode lui-même en JSON via json.encode().
+                // JSON.stringify + json.encode = double-encodage → corps invalide.
                 var res = await new Client().post(
                     MB_API + "/wefeed-h5api-bff/subject/search",
                     hdrs,
-                    JSON.stringify(payload)
+                    payload
                 );
                 var j; try { j = JSON.parse(res.body || ""); } catch (_) { return null; }
                 // On auth failure, invalidate cache and retry
