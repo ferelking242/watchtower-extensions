@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "5.2.3",
+    "version": "5.2.4",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -861,7 +861,8 @@ class DefaultExtension extends MProvider {
 
             // Normalise la résolution
             var RES = { "2160": "4K", "4k": "4K", "uhd": "4K", "1080": "1080p", "fullhd": "1080p", "fhd": "1080p", "720": "720p", "hd": "720p", "480": "480p", "sd": "480p", "360": "360p", "240": "240p", "ld": "360p" };
-            var resRaw = String(item.resolution || item.definition || item.clarity || "")
+            // Champ réel de l'API MovieBox : "resolutions" (pluriel), pas "resolution"
+            var resRaw = String(item.resolutions || item.resolution || item.definition || item.clarity || item.quality || "")
                 .toLowerCase().replace(/p$/, "").replace(/[^0-9a-z]/g, "");
             var resLabel = RES[resRaw] || (/^\d{3,4}$/.test(resRaw) ? resRaw + "p" : "");
 
@@ -891,17 +892,14 @@ class DefaultExtension extends MProvider {
             var hl = reorderDub(data.hls);
             for (var hi = 0; hi < hl.length; hi++) {
                 var h = hl[hi];
-                // DEBUG: affiche tous les champs du stream pour diagnostic
-                var dbg = h ? Object.keys(h).map(function(k){ return k + "=" + JSON.stringify(h[k]); }).join(" | ") : "null";
-                if (h && h.url) out.push({ url: h.url, originalUrl: h.url, quality: "DBG:" + dbg, headers: refH, subtitles: subs });
+                if (h && h.url) out.push({ url: h.url, originalUrl: h.url, quality: _buildVideoLabel(h, "HLS", hi), headers: refH, subtitles: subs });
             }
         }
         if (data.streams && data.streams.length) {
             var st = reorderDub(data.streams);
             for (var sti = 0; sti < st.length; sti++) {
                 var s2 = st[sti];
-                var dbg2 = s2 ? Object.keys(s2).map(function(k){ return k + "=" + JSON.stringify(s2[k]); }).join(" | ") : "null";
-                if (s2 && s2.url) out.push({ url: s2.url, originalUrl: s2.url, quality: "DBG:" + dbg2, headers: refH, subtitles: subs });
+                if (s2 && s2.url) out.push({ url: s2.url, originalUrl: s2.url, quality: _buildVideoLabel(s2, "MP4", sti), headers: refH, subtitles: subs });
             }
         }
         if (!out.length) {
