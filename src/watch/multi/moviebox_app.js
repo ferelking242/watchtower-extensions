@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.5.0",
+    "version": "1.6.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,7 +19,7 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox App v1.5.0 — API native app (wefeed-mobile-bff) → tous les streams HLS+MP4 multi-qualités. Fallback H5 si région bloquée. Box langue avec les vraies langues dispo par titre (dubsList)."
+    "notes": "MovieBox App v1.6.0 — API native app (wefeed-mobile-bff) → tous les streams HLS+MP4 multi-qualités. Fallback H5 si région bloquée. Box langue localisée (drapeau + nom traduit dans la langue de l'app)."
 }];
 
 // ══════════════════════════════════════════════════════════════
@@ -762,7 +762,7 @@ class DefaultExtension extends MProvider {
                     name:       "▶ Regarder",
                     url:        JSON.stringify({ subjectId: realId, detailPath: realDp, se: 0, ep: 0, dub: lg.code }),
                     dateUpload: s.releaseDate || "",
-                    scanlator:  lg.label
+                    scanlator:  lg.code + "|" + lg.label
                 });
             } else {
                 for (var si = 0; si < seasons.length; si++) {
@@ -774,7 +774,7 @@ class DefaultExtension extends MProvider {
                             name:       maxEp > 1 ? ("S" + seNum + " E" + ep) : (s.title || "Episode"),
                             url:        JSON.stringify({ subjectId: realId, detailPath: realDp, se: seNum, ep: ep, dub: lg.code }),
                             dateUpload: "",
-                            scanlator:  lg.label
+                            scanlator:  lg.code + "|" + lg.label
                         });
                     }
                 }
