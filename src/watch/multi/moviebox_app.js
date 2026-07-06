@@ -528,7 +528,8 @@ class DefaultExtension extends MProvider {
         var maxSections = this._prefMaxSections ? this._prefMaxSections() : 25;
 
         for (var i = 0; i < ops.length && i < maxSections; i++) {
-            var title  = ops[i].title || ops[i].name || ("Section " + i);
+            if (!ops[i] || typeof ops[i] !== "object") continue;
+            var title  = String(ops[i].title || ops[i].name || ("Section " + i));
             var titleL = title.toLowerCase();
             // Détection automatique du layout "ranked" (classements numérotés)
             var isRanked = (
