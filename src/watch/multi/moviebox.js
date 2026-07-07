@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "5.3.0",
+    "version": "5.3.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -859,8 +859,7 @@ class DefaultExtension extends MProvider {
                 "te":          "🇮🇳 Telugu",
                 "telugu":      "🇮🇳 Telugu",
                 "esla":        "🌎 Español (Latino)",
-                "es-la":       "🌎 Español (Latino)",
-                "es-419":      "🌎 Español (Latino)",
+                                "es419":        "🌎 Español (Latino)",
                 "multi":              "🌐 MULTI",
                 "original":    "🇺🇸 English (VO)",
             };

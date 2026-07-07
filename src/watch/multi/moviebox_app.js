@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "2.4.0",
+    "version": "2.5.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -64,7 +64,11 @@ var MB_LANG_TAG = {
     tl: "Tagalog",   fil: "Filipino", esla: "Español (Latino)", ptbr: "Português (Brasil)"
 };
 function mbLangTag(lang) {
-    return MB_LANG_TAG[(lang || "").toLowerCase()] || "Multi";
+    var k = (lang || "").toLowerCase().replace(/[\s\-_]/g, "");
+    // Normalise les variantes composées → clé compacte
+    if (/^es(la|419)$/.test(k)) k = "esla";
+    if (/^pt.{0,2}br$/.test(k)) k = "ptbr";
+    return MB_LANG_TAG[k] || "Multi";
 }
 
 var MB_H5_API    = "https://h5-api.aoneroom.com";
@@ -1057,11 +1061,15 @@ class DefaultExtension extends MProvider {
                 "bn":"🇧🇩 বাংলা","bengali":"🇧🇩 বাংলা",
                 "fa":"🇮🇷 فارسی","persian":"🇮🇷 فارسی",
                 "sw":"🌍 Kiswahili","swahili":"🌍 Kiswahili",
+                "tl":"🇵🇭 Tagalog","tagalog":"🇵🇭 Tagalog","fil":"🇵🇭 Filipino","filipino":"🇵🇭 Filipino",
+                "ta":"🇮🇳 Tamil","tamil":"🇮🇳 Tamil","te":"🇮🇳 Telugu","telugu":"🇮🇳 Telugu",
+                "esla":"🌎 Español (Latino)","es419":"🌎 Español (Latino)",
                 "multi":"🌐 MULTI","original":"🇺🇸 English (VO)"
             };
             var raw = String(item.lan || item.lanCode || item.audioLan || item.lanName || item.language || "")
                 .toLowerCase().replace(/[\s\-_]/g, "");
             if (/^pt.{0,2}br$/.test(raw)) raw = "ptbr";
+            if (/^es.{0,3}(la|419)$/.test(raw)) raw = "esla";
             var langLabel = LANG[raw] || (item.lanName ? String(item.lanName).trim() : "");
 
             var DEF = {
