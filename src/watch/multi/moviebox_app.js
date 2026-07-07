@@ -820,11 +820,13 @@ class DefaultExtension extends MProvider {
             if (langs[lo].code === prefLangCode) { langs.unshift(langs.splice(lo, 1)[0]); break; }
         }
 
+        // Series: deduplicate by S×E — one chapter per episode (preferred lang first)
+        var seenEpKey = {};
         for (var li = 0; li < langs.length; li++) {
             var lg = langs[li];
             if (isMovie) {
                 chapters.push({
-                    name:       "\u25B6 Regarder",
+                    name:       "\u25B6 Regarder" + (langs.length > 1 ? " — " + lg.label : ""),
                     url:        JSON.stringify({ subjectId: lg.subjectId, detailPath: lg.detailPath, se: 0, ep: 0, dub: lg.code }),
                     dateUpload: s.releaseDate || "",
                     scanlator:  lg.code + "|" + lg.label
@@ -835,6 +837,9 @@ class DefaultExtension extends MProvider {
                     var seNum  = season.se || (si + 1);
                     var maxEp  = season.maxEp || 0;
                     for (var ep = 1; ep <= maxEp; ep++) {
+                        var epKey = seNum + "x" + ep;
+                        if (seenEpKey[epKey]) continue; // skip duplicate lang versions
+                        seenEpKey[epKey] = 1;
                         chapters.push({
                             name:       maxEp > 1 ? ("S" + seNum + " E" + ep) : (s.title || "Episode"),
                             url:        JSON.stringify({ subjectId: lg.subjectId, detailPath: lg.detailPath, se: seNum, ep: ep, dub: lg.code }),
@@ -855,6 +860,7 @@ class DefaultExtension extends MProvider {
         };
     }
 
+    // yes for you yes
     // ── Titres similaires (Pour vous) ────────────────────────────
     // Appellé par Flutter quand l'extension déclare getRecommendations:true.
     // Retourne un tableau d'objets { name, imageUrl, description, link }.
@@ -895,6 +901,7 @@ class DefaultExtension extends MProvider {
         return result;
     }
 
+    // yes comments yes
     // ── Commentaires / Avis ───────────────────────────────────────
     // Retourne un tableau d'objets { author, content, date, score }.
     async getComments(url) {
