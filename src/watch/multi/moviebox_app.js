@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.1.0",
+    "version": "3.2.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,7 +19,7 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox App v3.1.0 — Carousel dynamique (bannerList + fallback operatingList[0]). _fetchPlay parallèle (api3→api8 simultanés, ~7s max vs 42s séquentiel). Login optionnel (email/tel+pwd), Family Mode, Langue, Pays/géo-bypass, Fuseau, Bilingual subs. supportsComments:true getRecommendations:true"
+    "notes": "MovieBox App v3.2.0 — Toutes les langues visibles (seenEpKey supprimé, fallback subjectId dubs), vidéo ~4s (timer 28s→4s). Login optionnel, Family Mode, Bilingual subs."
 }];
 
 // ══════════════════════════════════════════════════════════════
@@ -863,28 +863,31 @@ class DefaultExtension extends MProvider {
         var chapters = [], isMovie = (realType === 1) || !seasons.length;
 
         // ── Langues disponibles via subject.dubs du détail ───────────
-        // Chaque version linguistique est un subjectId distinct sur MovieBox.
-        // subject.dubs liste toutes les versions avec leur propre subjectId+detailPath.
-        // type=0 → doublage audio, type=1 → sous-titre uniquement.
+        // subject.dubs liste toutes les versions audio disponibles.
+        // Si un dub n'a pas son propre subjectId, on réutilise celui du sujet courant.
+        // IMPORTANT : on garde TOUTES les entrées (pas de filtre type=0 strict,
+        // pas de skip subjectId null) pour ne pas perdre les versions FR/ES/etc.
         var prefLangCode = this._prefLang();
         var langs = [];
         var seenDubCode = {};
         var subjDubs = s.dubs || [];
         for (var di = 0; di < subjDubs.length; di++) {
             var dubEntry = subjDubs[di];
-            if ((dubEntry.type || 0) !== 0) continue; // ignorer les versions sous-titres uniquement
+            // type 1 = sous-titres uniquement → on les garde quand même si pas d'autre option
             var dubCode = (dubEntry.lanCode || "").toLowerCase();
             if (!dubCode || seenDubCode[dubCode]) continue;
-            if (dubEntry.subjectId == null || !dubEntry.detailPath) continue; // skip entrées invalides
             seenDubCode[dubCode] = 1;
+            // Si le dub n'a pas son propre subjectId/detailPath → réutiliser ceux du sujet courant
+            var dubSid = (dubEntry.subjectId != null) ? String(dubEntry.subjectId) : realId;
+            var dubDp  = dubEntry.detailPath || realDp;
             langs.push({
                 code:       dubCode,
                 label:      dubEntry.lanName || mbLangTag(dubCode),
-                subjectId:  String(dubEntry.subjectId),
-                detailPath: dubEntry.detailPath
+                subjectId:  dubSid,
+                detailPath: dubDp
             });
         }
-        // Fallback : si aucun dub listé, utiliser le titre courant avec la langue préférée
+        // Fallback : si aucun dub listé, utiliser le titre courant
         if (!langs.length) {
             langs.push({ code: prefLangCode, label: mbLangTag(prefLangCode), subjectId: realId, detailPath: realDp });
         }
@@ -893,8 +896,9 @@ class DefaultExtension extends MProvider {
             if (langs[lo].code === prefLangCode) { langs.unshift(langs.splice(lo, 1)[0]); break; }
         }
 
-        // Series: deduplicate by S×E — one chapter per episode (preferred lang first)
-        var seenEpKey = {};
+        // Series : toutes les langues × tous les épisodes
+        // Pas de deduplication S×E : chaque langue génère ses propres entrées,
+        // l'utilisateur change de langue via le sélecteur scanlator.
         for (var li = 0; li < langs.length; li++) {
             var lg = langs[li];
             if (isMovie) {
@@ -910,9 +914,6 @@ class DefaultExtension extends MProvider {
                     var seNum  = season.se || (si + 1);
                     var maxEp  = season.maxEp || 0;
                     for (var ep = 1; ep <= maxEp; ep++) {
-                        var epKey = seNum + "x" + ep;
-                        if (seenEpKey[epKey]) continue; // skip duplicate lang versions
-                        seenEpKey[epKey] = 1;
                         chapters.push({
                             name:       maxEp > 1 ? ("S" + seNum + " E" + ep) : (s.title || "Episode"),
                             url:        JSON.stringify({ subjectId: lg.subjectId, detailPath: lg.detailPath, se: seNum, ep: ep, dub: lg.code }),
@@ -1086,15 +1087,15 @@ class DefaultExtension extends MProvider {
         var hdrs  = this._h(lang, detailPath);
 
         // ── Requêtes parallèles — prend la première réponse valide ───
-        // Timeout de sécurité (28s) : si aucun serveur ne répond, on resolve null
-        // et on bascule sur le fallback H5 plutôt que de dépasser le timeout Watchtower (40s).
+        // Timeout de sécurité (4s) : si des serveurs TCP-raccrochent sans répondre,
+        // on bascule immédiatement sur le fallback H5. Les serveurs qui répondent vite
+        // résolvent bien avant ce timer; 4s couvre les lenteurs réseau normales.
         var mResult = await new Promise(function(resolve) {
             var done    = false;
             var pending = MB_MOBILE_SERVERS.length;
-            // Timeout global : garantit la résolution même si un serveur raccroche sans répondre
             var safetyTimer = setTimeout(function() {
                 if (!done) { done = true; resolve(null); }
-            }, 28000);
+            }, 4000);
             function settle() {
                 if (--pending === 0 && !done) { clearTimeout(safetyTimer); resolve(null); }
             }
