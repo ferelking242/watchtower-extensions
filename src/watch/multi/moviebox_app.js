@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "2.3.0",
+    "version": "2.4.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -60,7 +60,8 @@ var MB_LANG_TAG = {
     ro: "Romanian",  hu: "Hungarian", bg: "Bulgarian", hr: "Croatian",
     sr: "Serbian",   uk: "Ukrainian", he: "Hebrew",    fa: "Persian",
     ur: "Urdu",      bn: "Bengali",   pa: "Punjabi",   fil: "Filipino",
-    ms: "Malay",     ta: "Tamil",     te: "Telugu",    sw: "Swahili"
+    ms: "Malay",     ta: "Tamil",     te: "Telugu",    sw: "Swahili",
+    tl: "Tagalog",   fil: "Filipino", esla: "Español (Latino)", ptbr: "Português (Brasil)"
 };
 function mbLangTag(lang) {
     return MB_LANG_TAG[(lang || "").toLowerCase()] || "Multi";
