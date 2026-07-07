@@ -797,12 +797,13 @@ class DefaultExtension extends MProvider {
             if ((dubEntry.type || 0) !== 0) continue; // ignorer les versions sous-titres uniquement
             var dubCode = (dubEntry.lanCode || "").toLowerCase();
             if (!dubCode || seenDubCode[dubCode]) continue;
+            if (dubEntry.subjectId == null || !dubEntry.detailPath) continue; // skip entrées invalides
             seenDubCode[dubCode] = 1;
             langs.push({
                 code:       dubCode,
                 label:      dubEntry.lanName || mbLangTag(dubCode),
-                subjectId:  dubEntry.subjectId != null ? String(dubEntry.subjectId) : realId,
-                detailPath: dubEntry.detailPath || realDp
+                subjectId:  String(dubEntry.subjectId),
+                detailPath: dubEntry.detailPath
             });
         }
         // Fallback : si aucun dub listé, utiliser le titre courant avec la langue préférée
