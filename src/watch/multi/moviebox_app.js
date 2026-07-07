@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "2.2.0",
+    "version": "2.1.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -785,51 +785,22 @@ class DefaultExtension extends MProvider {
         var chapters = [], isMovie = (realType === 1) || !seasons.length;
 
         // ── Langues disponibles pour ce titre (via probe play-info) ──
-        // On sonde le premier épisode pour récupérer dubsList réel,
+        // On sonde UNE fois le premier épisode pour récupérer dubsList réel,
         // puis on duplique les chapitres par langue disponible.
-        // Probe 1 : langue préférée de l'utilisateur
-        // Probe 2 : "en" si différente (l'API peut retourner plus de dubs en anglais)
-        // On fusionne les deux pour avoir la liste la plus complète possible.
-        // On scanne aussi data.hls/streams pour les lan codes non présents dans dubsList.
         var prefLangCode = this._prefLang();
         var langs = [];
         try {
             var probeSe = isMovie ? 0 : (seasons[0] ? (seasons[0].se || 1) : 1);
             var probeEp = isMovie ? 0 : 1;
+            var probeJ  = await this._fetchPlay(realId, realDp, probeSe, probeEp, "en");
+            var probeDubs = (probeJ && probeJ.data && probeJ.data.dubsList) ? probeJ.data.dubsList : [];
             var seenLang = {};
-
-            function _collectDubs(probeJ) {
-                if (!probeJ || !probeJ.data) return;
-                // 1) dubsList
-                var dubs = probeJ.data.dubsList || [];
-                for (var pd = 0; pd < dubs.length; pd++) {
-                    var pdub  = dubs[pd];
-                    var pcode = (pdub.lan || "").toLowerCase();
-                    if (!pcode || seenLang[pcode]) continue;
-                    seenLang[pcode] = 1;
-                    langs.push({ code: pcode, label: pdub.lanName || mbLangTag(pcode) });
-                }
-                // 2) lan codes dans data.hls / data.streams (certains titres n'ont pas de dubsList)
-                var flat = (probeJ.data.hls || []).concat(probeJ.data.streams || []);
-                for (var fi = 0; fi < flat.length; fi++) {
-                    var fitem = flat[fi];
-                    var fcode = (fitem.lan || fitem.lanCode || fitem.audioLan || "").toLowerCase();
-                    if (!fcode || seenLang[fcode]) continue;
-                    seenLang[fcode] = 1;
-                    langs.push({ code: fcode, label: fitem.lanName || mbLangTag(fcode) });
-                }
-            }
-
-            // Probe avec la langue préférée de l'utilisateur
-            var probeJ = await this._fetchPlay(realId, realDp, probeSe, probeEp, prefLangCode);
-            _collectDubs(probeJ);
-
-            // Probe secondaire en anglais pour récupérer des dubs supplémentaires
-            if (prefLangCode !== "en") {
-                try {
-                    var probeEn = await this._fetchPlay(realId, realDp, probeSe, probeEp, "en");
-                    _collectDubs(probeEn);
-                } catch (_) {}
+            for (var pd = 0; pd < probeDubs.length; pd++) {
+                var pdub  = probeDubs[pd];
+                var pcode = (pdub.lan || "").toLowerCase();
+                if (!pcode || seenLang[pcode]) continue;
+                seenLang[pcode] = 1;
+                langs.push({ code: pcode, label: pdub.lanName || mbLangTag(pcode) });
             }
         } catch (_) {}
         if (!langs.length) langs.push({ code: prefLangCode, label: mbLangTag(prefLangCode) });
@@ -1163,14 +1134,10 @@ class DefaultExtension extends MProvider {
         }
 
         // ── Flux plats (H5 fallback ou native sans dubsList) ──────────
-        // Si le stream n'a pas de champ lan (API ne le retourne pas),
-        // on hérite du dub demandé via le chapitre (chapterDub).
-        // Ça corrige le cas : label "English" affiché alors que le stream est en français.
         if (data.hls && data.hls.length) {
             var hl = reorderDub(data.hls);
             for (var hi = 0; hi < hl.length; hi++) {
-                var h2 = Object.assign({}, hl[hi]);
-                if (!h2.lan && !h2.lanCode && !h2.audioLan && chapterDub) h2.lan = chapterDub;
+                var h2 = hl[hi];
                 if (h2 && h2.url) out.push({
                     url: h2.url, originalUrl: h2.url,
                     quality: _buildVideoLabel(h2, "HLS", hi),
@@ -1181,8 +1148,7 @@ class DefaultExtension extends MProvider {
         if (data.streams && data.streams.length) {
             var st = reorderDub(data.streams);
             for (var sti = 0; sti < st.length; sti++) {
-                var s2 = Object.assign({}, st[sti]);
-                if (!s2.lan && !s2.lanCode && !s2.audioLan && chapterDub) s2.lan = chapterDub;
+                var s2 = st[sti];
                 if (s2 && s2.url) out.push({
                     url: s2.url, originalUrl: s2.url,
                     quality: _buildVideoLabel(s2, "MP4", sti),
