@@ -629,15 +629,22 @@ class DefaultExtension extends MProvider {
                 ? data.bannerList : [];
             // Fallback : première section operatingList → contenu vedette
             if (!banners.length && data && data.operatingList && data.operatingList.length > 0) {
-                var op0subs = data.operatingList[0].subjects || data.operatingList[0].subjectList || [];
-                for (var fb = 0; fb < op0subs.length; fb++) banners.push({ subject: op0subs[fb] });
+                var op0 = data.operatingList[0];
+                if (op0 && typeof op0 === "object") {
+                    var op0subs = op0.subjects || op0.subjectList || [];
+                    for (var fb = 0; fb < op0subs.length; fb++) {
+                        if (op0subs[fb]) banners.push({ subject: op0subs[fb] });
+                    }
+                }
             }
             var items = [];
             for (var b = 0; b < banners.length; b++) {
-                var bn  = banners[b];
-                var sub = bn.subject || bn;
-                if (Array.isArray(sub)) sub = sub[0] || bn;
-                items.push(this._toItem(sub));
+                try {
+                    var bn  = banners[b];
+                    var sub = bn.subject || bn;
+                    if (Array.isArray(sub)) sub = sub[0] || bn;
+                    if (sub && typeof sub === "object") items.push(this._toItem(sub));
+                } catch (_) {}
             }
             return { list: items, hasNextPage: false };
         }
@@ -1079,22 +1086,32 @@ class DefaultExtension extends MProvider {
         var hdrs  = this._h(lang, detailPath);
 
         // ── Requêtes parallèles — prend la première réponse valide ───
+        // Timeout de sécurité (28s) : si aucun serveur ne répond, on resolve null
+        // et on bascule sur le fallback H5 plutôt que de dépasser le timeout Watchtower (40s).
         var mResult = await new Promise(function(resolve) {
             var done    = false;
             var pending = MB_MOBILE_SERVERS.length;
+            // Timeout global : garantit la résolution même si un serveur raccroche sans répondre
+            var safetyTimer = setTimeout(function() {
+                if (!done) { done = true; resolve(null); }
+            }, 28000);
+            function settle() {
+                if (--pending === 0 && !done) { clearTimeout(safetyTimer); resolve(null); }
+            }
             MB_MOBILE_SERVERS.forEach(function(srv) {
                 new Client().get(srv + playPath, hdrs).then(function(mRes) {
                     var mJ = null;
                     try { mJ = JSON.parse(mRes.body); } catch (_) {}
                     if (!done && mJ && mJ.code === 0 && mJ.data && mJ.data.hasResource) {
                         done = true;
+                        clearTimeout(safetyTimer);
                         MB_MOBILE_API = srv;
                         resolve(mJ);
+                    } else {
+                        settle();
                     }
-                    if (--pending === 0 && !done) resolve(null);
                 }, function() {
-                    // Erreur réseau pour ce serveur
-                    if (--pending === 0 && !done) resolve(null);
+                    settle(); // Erreur réseau pour ce serveur
                 });
             });
         });
