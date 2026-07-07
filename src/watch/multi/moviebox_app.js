@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "2.5.0",
+    "version": "2.6.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,7 +19,7 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox App v2.0.0 — API native (wefeed-mobile-bff) multi-serveurs api3→api8. Family Mode (X-Family-Mode), langue (X-Language), pays/géo-bypass (Accept-Country), fuseau (Accept-Timezone), mode affichage. Sections 100% dynamiques depuis API. Streams HLS+MP4 multi-qualités, dubs, sous-titres bilingues."
+    "notes": "MovieBox App v2.6.0 — API native (wefeed-mobile-bff) multi-serveurs api3→api8. Family Mode (X-Family-Mode), langue (X-Language), pays/géo-bypass (Accept-Country), fuseau (Accept-Timezone), mode affichage. Sections 100% dynamiques depuis API. Streams HLS+MP4 multi-qualités, dubs, sous-titres bilingues. supportsComments:true getRecommendations:true"
 }];
 
 // ══════════════════════════════════════════════════════════════
@@ -853,6 +853,85 @@ class DefaultExtension extends MProvider {
             status:      isMovie ? 1 : 0,
             chapters:    chapters
         };
+    }
+
+    // ── Titres similaires (Pour vous) ────────────────────────────
+    // Appellé par Flutter quand l'extension déclare getRecommendations:true.
+    // Retourne un tableau d'objets { name, imageUrl, description, link }.
+    async getRecommendations(url) {
+        var payload;
+        try { payload = JSON.parse(url); } catch (_) { payload = {}; }
+        var subjectId  = payload.subjectId  || "";
+        var detailPath = payload.detailPath || "";
+        if (!subjectId && !detailPath) return [];
+
+        var param = detailPath
+            ? "detailPath=" + encodeURIComponent(detailPath)
+            : "subjectId="  + encodeURIComponent(subjectId);
+
+        var j = null;
+        try {
+            var res = await new Client().get(
+                MB_H5_API + "/wefeed-h5api-bff/detail/similar?" + param,
+                this._h(this._prefLang(), detailPath)
+            );
+            try { j = JSON.parse(res.body); } catch (_) {}
+        } catch (_) {}
+
+        if (!j || j.code !== 0 || !j.data) return [];
+        var items = j.data.subjects || j.data.list || j.data || [];
+        var result = [];
+        for (var i = 0; i < items.length; i++) {
+            var s = items[i];
+            var sid = s.subjectId != null ? String(s.subjectId) : "";
+            var dp  = s.detailPath || "";
+            result.push({
+                name:        s.title || s.name || "Unknown",
+                imageUrl:    this._cover(s),
+                description: s.description || "",
+                link:        JSON.stringify({ subjectId: sid, detailPath: dp, subjectType: s.subjectType || 1 })
+            });
+        }
+        return result;
+    }
+
+    // ── Commentaires / Avis ───────────────────────────────────────
+    // Retourne un tableau d'objets { author, content, date, score }.
+    async getComments(url) {
+        var payload;
+        try { payload = JSON.parse(url); } catch (_) { payload = {}; }
+        var subjectId  = payload.subjectId  || "";
+        var detailPath = payload.detailPath || "";
+        var page       = payload.page || 1;
+        if (!subjectId && !detailPath) return [];
+
+        var param = (detailPath
+            ? "detailPath=" + encodeURIComponent(detailPath)
+            : "subjectId="  + encodeURIComponent(subjectId))
+            + "&page=" + page + "&pageSize=20";
+
+        var j = null;
+        try {
+            var res = await new Client().get(
+                MB_H5_API + "/wefeed-h5api-bff/review/list?" + param,
+                this._h(this._prefLang(), detailPath)
+            );
+            try { j = JSON.parse(res.body); } catch (_) {}
+        } catch (_) {}
+
+        if (!j || j.code !== 0 || !j.data) return [];
+        var items = j.data.reviewList || j.data.list || j.data || [];
+        var result = [];
+        for (var i = 0; i < items.length; i++) {
+            var r = items[i];
+            result.push({
+                author:  r.nickName || r.userName || "Anonymous",
+                content: r.content  || r.review   || "",
+                date:    r.createTime || r.date    || "",
+                score:   r.score != null ? r.score : -1
+            });
+        }
+        return result;
     }
 
     // ── Lecture : API native app (api3→api8), fallback H5 ─────────
