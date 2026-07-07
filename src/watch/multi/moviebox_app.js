@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.2.0",
+    "version": "3.3.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,7 +19,7 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox App v3.2.0 — Toutes les langues visibles (seenEpKey supprimé, fallback subjectId dubs), vidéo ~4s (timer 28s→4s). Login optionnel, Family Mode, Bilingual subs."
+    "notes": "MovieBox App v3.3.0 — Toutes les langues visibles (seenEpKey supprimé, fallback subjectId dubs), vidéo ~4s (timer 28s→4s). Login optionnel, Family Mode, Bilingual subs."
 }];
 
 // ══════════════════════════════════════════════════════════════
@@ -59,7 +59,7 @@ var MB_LANG_TAG = {
     no: "Norwegian", da: "Danish",    cs: "Czech",     sk: "Slovak",
     ro: "Romanian",  hu: "Hungarian", bg: "Bulgarian", hr: "Croatian",
     sr: "Serbian",   uk: "Ukrainian", he: "Hebrew",    fa: "Persian",
-    ur: "Urdu",      bn: "Bengali",   pa: "Punjabi",   fil: "Filipino",
+    ur: "Urdu",      bn: "Bengali",   pa: "Punjabi",   ku: "Kurdish",
     ms: "Malay",     ta: "Tamil",     te: "Telugu",    sw: "Swahili",
     tl: "Tagalog",   fil: "Filipino", esla: "Español (Latino)", ptbr: "Português (Brasil)"
 };
@@ -69,6 +69,20 @@ function mbLangTag(lang) {
     if (/^es(la|419)$/.test(k)) k = "esla";
     if (/^pt.{0,2}br$/.test(k)) k = "ptbr";
     return MB_LANG_TAG[k] || "Multi";
+}
+// Normalise dubEntry.lanName : "DUB", codes bruts ("ku","tl"…) → nom lisible
+// Retourne toujours une chaîne propre, jamais un code nu ou "DUB".
+function mbNormalizeLanName(lanCode, lanName) {
+    var n = (lanName || "").trim();
+    // "DUB" générique ou absent → utiliser le code
+    if (!n || n.toUpperCase() === "DUB") return mbLangTag(lanCode);
+    // Code brut (2-5 chars alpha) → normaliser via le map
+    if (/^[a-zA-Z]{2,5}$/.test(n)) {
+        var mapped = mbLangTag(n);
+        if (mapped !== "Multi") return mapped;
+    }
+    // Sinon garder le lanName tel quel (ex: "Español (Latino)")
+    return n;
 }
 
 var MB_H5_API    = "https://h5-api.aoneroom.com";
@@ -882,7 +896,7 @@ class DefaultExtension extends MProvider {
             var dubDp  = dubEntry.detailPath || realDp;
             langs.push({
                 code:       dubCode,
-                label:      dubEntry.lanName || mbLangTag(dubCode),
+                label:      mbNormalizeLanName(dubCode, dubEntry.lanName),
                 subjectId:  dubSid,
                 detailPath: dubDp
             });
@@ -915,7 +929,7 @@ class DefaultExtension extends MProvider {
                     var maxEp  = season.maxEp || 0;
                     for (var ep = 1; ep <= maxEp; ep++) {
                         chapters.push({
-                            name:       maxEp > 1 ? ("S" + seNum + " E" + ep) : (s.title || "Episode"),
+                            name:       "S" + seNum + " E" + ep,
                             url:        JSON.stringify({ subjectId: lg.subjectId, detailPath: lg.detailPath, se: seNum, ep: ep, dub: lg.code }),
                             dateUpload: "",
                             scanlator:  lg.code + "|" + lg.label
@@ -1086,16 +1100,33 @@ class DefaultExtension extends MProvider {
         var self  = this;
         var hdrs  = this._h(lang, detailPath);
 
+        // ── Fast-path : si un serveur a déjà répondu dans cette session, on l'essaie
+        //    seul d'abord (1.5 s). S'il répond → gain immédiat. Sinon → parallèle complet.
+        var _cachedSrv = MB_MOBILE_API;
+        if (_cachedSrv !== MB_MOBILE_SERVERS[0]) {
+            var _fastResult = await new Promise(function(resolve) {
+                var _fastDone = false;
+                var _fastTimer = setTimeout(function() { if (!_fastDone) { _fastDone = true; resolve(null); } }, 1500);
+                new Client().get(_cachedSrv + playPath, hdrs).then(function(mRes) {
+                    if (_fastDone) return;
+                    var mJ = null; try { mJ = JSON.parse(mRes.body); } catch (_) {}
+                    _fastDone = true; clearTimeout(_fastTimer);
+                    resolve((mJ && mJ.code === 0 && mJ.data && mJ.data.hasResource) ? mJ : null);
+                }, function() { if (!_fastDone) { _fastDone = true; clearTimeout(_fastTimer); resolve(null); } });
+            });
+            if (_fastResult) return _fastResult;
+        }
+
         // ── Requêtes parallèles — prend la première réponse valide ───
-        // Timeout de sécurité (4s) : si des serveurs TCP-raccrochent sans répondre,
+        // Timeout de sécurité (3s) : si des serveurs TCP-raccrochent sans répondre,
         // on bascule immédiatement sur le fallback H5. Les serveurs qui répondent vite
-        // résolvent bien avant ce timer; 4s couvre les lenteurs réseau normales.
+        // résolvent bien avant ce timer; 3s couvre les lenteurs réseau normales.
         var mResult = await new Promise(function(resolve) {
             var done    = false;
             var pending = MB_MOBILE_SERVERS.length;
             var safetyTimer = setTimeout(function() {
                 if (!done) { done = true; resolve(null); }
-            }, 4000);
+            }, 3000);
             function settle() {
                 if (--pending === 0 && !done) { clearTimeout(safetyTimer); resolve(null); }
             }
