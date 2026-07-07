@@ -7,19 +7,19 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.0.0",
+    "version": "3.1.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": false,
     "pkgPath": "watch/multi/moviebox_app.js",
-    "requiresAccount": true,
+    "requiresAccount": false,
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox App v3.0.0 — API native (wefeed-mobile-bff) multi-serveurs api3→api8. Login compte (email/tel+password), Family Mode, Langue, Pays/géo-bypass, Fuseau. Commentaires et recommandations via native mobile BFF. supportsComments:true getRecommendations:true"
+    "notes": "MovieBox App v3.1.0 — Carousel dynamique (bannerList + fallback operatingList[0]). _fetchPlay parallèle (api3→api8 simultanés, ~7s max vs 42s séquentiel). Login optionnel (email/tel+pwd), Family Mode, Langue, Pays/géo-bypass, Fuseau, Bilingual subs. supportsComments:true getRecommendations:true"
 }];
 
 // ══════════════════════════════════════════════════════════════
@@ -621,10 +621,18 @@ class DefaultExtension extends MProvider {
         var data = await this._fetchHomeRaw();
         var lang = this._prefLang();
 
-        // ── Carousel : bannerList exact de l'API ──────────────────
+        // ── Carousel : bannerList de l'API, fallback operatingList[0] ─
+        // L'API H5 ne retourne pas toujours bannerList — on utilise
+        // la première section de operatingList comme fallback banner.
         if (listId === "carousel") {
-            var banners = (data && data.bannerList) ? data.bannerList : [];
-            var items   = [];
+            var banners = (data && data.bannerList && data.bannerList.length > 0)
+                ? data.bannerList : [];
+            // Fallback : première section operatingList → contenu vedette
+            if (!banners.length && data && data.operatingList && data.operatingList.length > 0) {
+                var op0subs = data.operatingList[0].subjects || data.operatingList[0].subjectList || [];
+                for (var fb = 0; fb < op0subs.length; fb++) banners.push({ subject: op0subs[fb] });
+            }
+            var items = [];
             for (var b = 0; b < banners.length; b++) {
                 var bn  = banners[b];
                 var sub = bn.subject || bn;
@@ -1058,32 +1066,42 @@ class DefaultExtension extends MProvider {
     }
 
     // ── Lecture : API native app (api3→api8), fallback H5 ─────────
-    // Chaque serveur native est identique — le premier qui retourne
-    // code=0 + hasResource=true est sélectionné. Les erreurs réseau
-    // ou réponses invalides sont silencieuses (on essaie le suivant).
+    // PARALLÈLE : tous les serveurs sont interrogés simultanément.
+    // Le premier à répondre avec code=0 + hasResource=true est utilisé.
+    // Évite le timeout séquentiel (6×7s = 42s > limite 40s).
     async _fetchPlay(subjectId, detailPath, se, ep, lang) {
         var playPath = "/wefeed-mobile-bff/subject-api/play-info"
             + "?subjectId=" + encodeURIComponent(subjectId)
             + "&se=" + se + "&ep=" + ep
             + (detailPath ? "&detailPath=" + encodeURIComponent(detailPath) : "");
 
-        // Tentative sur chaque serveur natif
-        for (var si = 0; si < MB_MOBILE_SERVERS.length; si++) {
-            var mJ = null;
-            try {
-                var mUrl = MB_MOBILE_SERVERS[si] + playPath;
-                var mRes = await new Client().get(mUrl, this._h(lang, detailPath));
-                try { mJ = JSON.parse(mRes.body); } catch (_) {}
-            } catch (_) {
-                continue; // Ce serveur est unreachable — serveur suivant
-            }
-            if (mJ && mJ.code === 0 && mJ.data && mJ.data.hasResource) {
-                MB_MOBILE_API = MB_MOBILE_SERVERS[si]; // mémorise le serveur actif
-                return mJ;
-            }
-        }
+        var self  = this;
+        var hdrs  = this._h(lang, detailPath);
 
-        // Fallback H5 API (moins de qualités, pas de dubsList)
+        // ── Requêtes parallèles — prend la première réponse valide ───
+        var mResult = await new Promise(function(resolve) {
+            var done    = false;
+            var pending = MB_MOBILE_SERVERS.length;
+            MB_MOBILE_SERVERS.forEach(function(srv) {
+                new Client().get(srv + playPath, hdrs).then(function(mRes) {
+                    var mJ = null;
+                    try { mJ = JSON.parse(mRes.body); } catch (_) {}
+                    if (!done && mJ && mJ.code === 0 && mJ.data && mJ.data.hasResource) {
+                        done = true;
+                        MB_MOBILE_API = srv;
+                        resolve(mJ);
+                    }
+                    if (--pending === 0 && !done) resolve(null);
+                }, function() {
+                    // Erreur réseau pour ce serveur
+                    if (--pending === 0 && !done) resolve(null);
+                });
+            });
+        });
+
+        if (mResult) return mResult;
+
+        // ── Fallback H5 API (moins de qualités, pas de dubsList) ──────
         var h5Url = MB_H5_API + "/wefeed-h5api-bff/subject/play"
             + "?subjectId=" + encodeURIComponent(subjectId)
             + "&se=" + se + "&ep=" + ep
@@ -1462,14 +1480,8 @@ class DefaultExtension extends MProvider {
     setupPreferences() {
         return [
             // ── COMPTE MOVIEBOX ────────────────────────────────────────
-            {
-                key: "mb_account_header",
-                editTextPreference: {
-                    title:   "\uD83D\uDC64 Compte MovieBox (optionnel)",
-                    summary: "Connectez-vous pour acc\u00E9der aux favoris, historique et contenu exclusif.",
-                    value:   ""
-                }
-            },
+            // Note : mb_account_header supprimé — editTextPreference vide
+            // causait un crash silencieux de TOUTES les prefs dans Watchtower.
             {
                 key: "mb_account_id",
                 editTextPreference: {
