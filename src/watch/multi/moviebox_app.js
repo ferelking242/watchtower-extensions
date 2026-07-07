@@ -7,19 +7,19 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "2.6.0",
+    "version": "3.0.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": false,
     "pkgPath": "watch/multi/moviebox_app.js",
-    "requiresAccount": false,
+    "requiresAccount": true,
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox App v2.6.0 — API native (wefeed-mobile-bff) multi-serveurs api3→api8. Family Mode (X-Family-Mode), langue (X-Language), pays/géo-bypass (Accept-Country), fuseau (Accept-Timezone), mode affichage. Sections 100% dynamiques depuis API. Streams HLS+MP4 multi-qualités, dubs, sous-titres bilingues. supportsComments:true getRecommendations:true"
+    "notes": "MovieBox App v3.0.0 — API native (wefeed-mobile-bff) multi-serveurs api3→api8. Login compte (email/tel+password), Family Mode, Langue, Pays/géo-bypass, Fuseau. Commentaires et recommandations via native mobile BFF. supportsComments:true getRecommendations:true"
 }];
 
 // ══════════════════════════════════════════════════════════════
@@ -122,7 +122,8 @@ function mbClientToken() {
 // familyMode : true → X-Family-Mode: 1 (filtrage 18+ côté serveur)
 // country    : code ISO 3166-1 alpha-2 (ex: "NG") → Accept-Country (bypass géo)
 // timezone   : IANA tz (ex: "Africa/Lagos") → Accept-Timezone
-function mbHeaders(lang, detailPath, familyMode, country, timezone) {
+// authToken  : Bearer JWT (depuis login ou x-user header)
+function mbHeaders(lang, detailPath, familyMode, country, timezone, authToken) {
     var tz = timezone || "UTC";
     var h = {
         "Accept":           "application/json",
@@ -136,11 +137,7 @@ function mbHeaders(lang, detailPath, familyMode, country, timezone) {
         "X-Request-Lang":   lang || "en",   // header H5 BFF
     };
     // Family Mode — filtre 18+ côté serveur
-    if (familyMode) {
-        h["X-Family-Mode"] = "1";
-    } else {
-        h["X-Family-Mode"] = "0";
-    }
+    h["X-Family-Mode"] = familyMode ? "1" : "0";
     // Bypass géolocalisation
     if (country) {
         h["Accept-Country"] = country.toUpperCase();
@@ -148,6 +145,10 @@ function mbHeaders(lang, detailPath, familyMode, country, timezone) {
     // Fuseau horaire
     if (tz && tz !== "UTC") {
         h["Accept-Timezone"] = tz;
+    }
+    // Bearer JWT (login utilisateur ou session anonyme)
+    if (authToken) {
+        h["Authorization"] = "Bearer " + authToken;
     }
     return h;
 }
@@ -181,14 +182,15 @@ class DefaultExtension extends MProvider {
 
     // ── Raccourci headers avec toutes les préférences ─────────────
     // Utiliser this._h() dans tous les appels HTTP internes à la place
-    // de mbHeaders() pour injecter automatiquement Family Mode / pays / tz.
+    // de mbHeaders() pour injecter automatiquement Family Mode / pays / tz / token.
     _h(lang, detailPath) {
         return mbHeaders(
             lang || this._prefLang(),
             detailPath,
             this._prefFamilyMode(),
             this._prefCountry(),
-            this._prefTimezone()
+            this._prefTimezone(),
+            this._authToken || this._sessionToken || null
         );
     }
 
@@ -279,6 +281,14 @@ class DefaultExtension extends MProvider {
 
     /** Mode d'affichage : "standard" | "compact" | "confort" */
     _prefDisplayMode(){ return this._pref("mb_display_mode", "standard"); }
+
+    // ── Compte MovieBox ──────────────────────────────────────────
+    /** Identifiant (email ou numéro de téléphone) */
+    _prefEmail()    { return this._pref("mb_account_id",  ""); }
+    /** Mot de passe */
+    _prefPassword() { return this._pref("mb_account_pwd", ""); }
+    /** Code pays pour le login téléphone (ex: "+33") */
+    _prefPhoneCC()  { return this._pref("mb_phone_cc",    "+1"); }
 
     /**
      * Nombre max de sections dynamiques retournées dans _buildDynamicSections.
@@ -379,6 +389,54 @@ class DefaultExtension extends MProvider {
         this._homeRawAt = 0;
         await this._fetchHomeRaw();
         return this._sessionToken || null;
+    }
+
+    // ── Login compte MovieBox ─────────────────────────────────────
+    // Appelé par Watchtower quand requiresAccount: true.
+    // Stocke le accessToken dans this._authToken et refreshToken dans this._refreshToken.
+    // Accepte email OU téléphone+indicatif.
+    async login(username, password) {
+        if (!username || !password) return { success: false, message: "Identifiant et mot de passe requis." };
+        var isEmail = username.indexOf("@") !== -1;
+        var payload;
+        if (isEmail) {
+            payload = { emailAddress: username, password: password };
+        } else {
+            var cc = this._prefPhoneCC() || "+1";
+            payload = { countryCode: cc, phone: username, password: password };
+        }
+        for (var si = 0; si < MB_MOBILE_SERVERS.length; si++) {
+            try {
+                var hdrs = this._h(this._prefLang());
+                hdrs["Content-Type"] = "application/json";
+                var res = await new Client().post(
+                    MB_MOBILE_SERVERS[si] + "/wefeed-mobile-bff/user-api/login",
+                    hdrs,
+                    JSON.stringify(payload)
+                );
+                var j; try { j = JSON.parse(res.body); } catch(_) {}
+                if (j && j.code === 0 && j.data) {
+                    this._authToken    = j.data.accessToken  || j.data.token || null;
+                    this._refreshToken = j.data.refreshToken || null;
+                    this._authTokenAt  = Date.now();
+                    this._authUserId   = j.data.userId || "";
+                    this._authNick     = j.data.nickName || j.data.username || "";
+                    return { success: true, message: "Connecté en tant que " + (this._authNick || username) };
+                }
+                if (j && j.code !== 0) {
+                    return { success: false, message: j.msg || j.message || ("Erreur " + j.code) };
+                }
+            } catch(_) { continue; }
+        }
+        return { success: false, message: "Connexion impossible — vérifiez vos identifiants." };
+    }
+
+    // ── Tentative de login automatique depuis les préférences ─────
+    async _autoLogin() {
+        if (this._authToken && (Date.now() - (this._authTokenAt || 0)) < 3 * 3600 * 1000) return;
+        var id  = this._prefEmail();
+        var pwd = this._prefPassword();
+        if (id && pwd) await this.login(id, pwd);
     }
 
     // ── Recherche via POST /subject/search ────────────────────────
@@ -862,40 +920,56 @@ class DefaultExtension extends MProvider {
 
     // yes for you yes
     // ── Titres similaires (Pour vous) ────────────────────────────
-    // Appellé par Flutter quand l'extension déclare getRecommendations:true.
-    // Retourne un tableau d'objets { name, imageUrl, description, link }.
+    // Native mobile BFF: /subject-api/detail-rec (recommandations éditorialisées)
+    // Fallback: /subject-api/play-related-rec puis H5 /detail/similar
     async getRecommendations(url) {
         var payload;
         try { payload = JSON.parse(url); } catch (_) { payload = {}; }
-        var subjectId  = payload.subjectId  || "";
+        var subjectId  = String(payload.subjectId  || "");
         var detailPath = payload.detailPath || "";
         if (!subjectId && !detailPath) return [];
+        await this._autoLogin();
 
-        var param = detailPath
-            ? "detailPath=" + encodeURIComponent(detailPath)
-            : "subjectId="  + encodeURIComponent(subjectId);
+        var ENDPOINTS = [
+            // 1. Recommandations détail (native mobile)
+            "/wefeed-mobile-bff/subject-api/detail-rec?subjectId=" + encodeURIComponent(subjectId)
+                + (detailPath ? "&detailPath=" + encodeURIComponent(detailPath) : "") + "&pageNum=1&pageSize=24",
+            // 2. Recommandations post-lecture (native mobile)
+            "/wefeed-mobile-bff/subject-api/play-related-rec?subjectId=" + encodeURIComponent(subjectId)
+                + (detailPath ? "&detailPath=" + encodeURIComponent(detailPath) : "") + "&pageNum=1&pageSize=24",
+            // 3. Fallback H5 similar
+            "/wefeed-h5api-bff/detail/similar?subjectId=" + encodeURIComponent(subjectId)
+                + (detailPath ? "&detailPath=" + encodeURIComponent(detailPath) : ""),
+        ];
 
         var j = null;
-        try {
-            var res = await new Client().get(
-                MB_H5_API + "/wefeed-h5api-bff/detail/similar?" + param,
-                this._h(this._prefLang(), detailPath)
-            );
-            try { j = JSON.parse(res.body); } catch (_) {}
-        } catch (_) {}
+        for (var ei = 0; ei < ENDPOINTS.length; ei++) {
+            var baseApi = (ei < 2) ? MB_MOBILE_API : MB_H5_API;
+            try {
+                var res = await new Client().get(baseApi + ENDPOINTS[ei], this._h(this._prefLang(), detailPath));
+                var parsed; try { parsed = JSON.parse(res.body); } catch (_) {}
+                if (parsed && parsed.code === 0 && parsed.data) {
+                    var items = parsed.data.subjects || parsed.data.list || parsed.data.recList || [];
+                    if (items.length > 0) { j = items; break; }
+                }
+            } catch (_) {}
+        }
 
-        if (!j || j.code !== 0 || !j.data) return [];
-        var items = j.data.subjects || j.data.list || j.data || [];
+        if (!j || j.length === 0) return [];
         var result = [];
-        for (var i = 0; i < items.length; i++) {
-            var s = items[i];
+        for (var i = 0; i < j.length; i++) {
+            var s = j[i];
             var sid = s.subjectId != null ? String(s.subjectId) : "";
             var dp  = s.detailPath || "";
             result.push({
                 name:        s.title || s.name || "Unknown",
                 imageUrl:    this._cover(s),
-                description: s.description || "",
-                link:        JSON.stringify({ subjectId: sid, detailPath: dp, subjectType: s.subjectType || 1 })
+                description: [
+                    s.score   ? "\u2605 " + s.score : null,
+                    s.releaseDate ? s.releaseDate.substring(0, 4) : null,
+                    s.description || s.desc || null
+                ].filter(Boolean).join("  \u2022  "),
+                link: JSON.stringify({ subjectId: sid, detailPath: dp, subjectType: s.subjectType || 1 })
             });
         }
         return result;
@@ -903,39 +977,81 @@ class DefaultExtension extends MProvider {
 
     // yes comments yes
     // ── Commentaires / Avis ───────────────────────────────────────
-    // Retourne un tableau d'objets { author, content, date, score }.
+    // Native mobile BFF: GET /wefeed-mobile-bff/comment/list
+    // Params: subjectId, pageNum, pageSize, commentType=1
+    // Response: { code:0, data: { commentList:[{commentId,userId,nickName,avatar,content,
+    //             likeCount,subCommentCount,createTime,score}], hasMore, total } }
     async getComments(url) {
         var payload;
         try { payload = JSON.parse(url); } catch (_) { payload = {}; }
-        var subjectId  = payload.subjectId  || "";
+        var subjectId  = String(payload.subjectId  || "");
         var detailPath = payload.detailPath || "";
-        var page       = payload.page || 1;
+        var page       = parseInt(payload.page, 10) || 1;
         if (!subjectId && !detailPath) return [];
+        await this._autoLogin();
 
-        var param = (detailPath
-            ? "detailPath=" + encodeURIComponent(detailPath)
-            : "subjectId="  + encodeURIComponent(subjectId))
-            + "&page=" + page + "&pageSize=20";
+        var qp = "pageNum=" + page + "&pageSize=20&commentType=1";
+        if (subjectId) qp += "&subjectId=" + encodeURIComponent(subjectId);
+        if (detailPath) qp += "&detailPath=" + encodeURIComponent(detailPath);
 
         var j = null;
-        try {
-            var res = await new Client().get(
-                MB_H5_API + "/wefeed-h5api-bff/review/list?" + param,
-                this._h(this._prefLang(), detailPath)
-            );
-            try { j = JSON.parse(res.body); } catch (_) {}
-        } catch (_) {}
+        // Essai sur chaque serveur natif
+        for (var si = 0; si < MB_MOBILE_SERVERS.length; si++) {
+            try {
+                var res = await new Client().get(
+                    MB_MOBILE_SERVERS[si] + "/wefeed-mobile-bff/comment/list?" + qp,
+                    this._h(this._prefLang(), detailPath)
+                );
+                var parsed; try { parsed = JSON.parse(res.body); } catch (_) {}
+                if (parsed && parsed.code === 0 && parsed.data) {
+                    j = parsed.data; break;
+                }
+            } catch (_) {}
+        }
 
-        if (!j || j.code !== 0 || !j.data) return [];
-        var items = j.data.reviewList || j.data.list || j.data || [];
+        // Fallback H5 review/list si mobile BFF échoue
+        if (!j) {
+            var h5qp = (subjectId ? "subjectId=" + encodeURIComponent(subjectId) : "detailPath=" + encodeURIComponent(detailPath))
+                + "&page=" + page + "&pageSize=20";
+            try {
+                var h5res = await new Client().get(
+                    MB_H5_API + "/wefeed-h5api-bff/review/list?" + h5qp,
+                    this._h(this._prefLang(), detailPath)
+                );
+                var h5parsed; try { h5parsed = JSON.parse(h5res.body); } catch (_) {}
+                if (h5parsed && h5parsed.code === 0 && h5parsed.data) {
+                    j = h5parsed.data;
+                }
+            } catch (_) {}
+        }
+
+        if (!j) return [];
+        var items = j.commentList || j.list || j.reviewList || j.data || [];
         var result = [];
         for (var i = 0; i < items.length; i++) {
             var r = items[i];
+            // Format date: timestamp ms → readable ou string brut
+            var rawDate = r.createTime || r.date || r.pubTime || "";
+            var dateStr = rawDate;
+            if (rawDate && !isNaN(Number(rawDate))) {
+                var d = new Date(Number(rawDate));
+                dateStr = d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+            }
+            // Score : entier 1-10 ou -1 si absent
+            var score = -1;
+            if (r.score != null && r.score !== "") score = parseFloat(r.score);
+            else if (r.rating != null) score = parseFloat(r.rating);
+            // Likes / réponses en suffixe du contenu
+            var meta = [];
+            if (r.likeCount > 0) meta.push("\uD83D\uDC4D " + r.likeCount);
+            if (r.subCommentCount > 0) meta.push("\uD83D\uDCAC " + r.subCommentCount);
+            var content = (r.content || r.review || "").trim();
+            if (meta.length) content = content + "  " + meta.join("  ");
             result.push({
-                author:  r.nickName || r.userName || "Anonymous",
-                content: r.content  || r.review   || "",
-                date:    r.createTime || r.date    || "",
-                score:   r.score != null ? r.score : -1
+                author:  r.nickName || r.userName || r.authorName || "Anonymous",
+                content: content,
+                date:    dateStr,
+                score:   score
             });
         }
         return result;
@@ -1345,6 +1461,45 @@ class DefaultExtension extends MProvider {
     // ── Paramètres utilisateur ─────────────────────────────────────
     setupPreferences() {
         return [
+            // ── COMPTE MOVIEBOX ────────────────────────────────────────
+            {
+                key: "mb_account_header",
+                editTextPreference: {
+                    title:   "\uD83D\uDC64 Compte MovieBox (optionnel)",
+                    summary: "Connectez-vous pour acc\u00E9der aux favoris, historique et contenu exclusif.",
+                    value:   ""
+                }
+            },
+            {
+                key: "mb_account_id",
+                editTextPreference: {
+                    title:   "Email ou num\u00E9ro de t\u00E9l\u00E9phone",
+                    summary: "Votre identifiant MovieBox (email ou t\u00E9l\u00E9phone avec indicatif, ex: +33612345678)",
+                    value:   ""
+                }
+            },
+            {
+                key: "mb_account_pwd",
+                editTextPreference: {
+                    title:   "Mot de passe",
+                    summary: "Votre mot de passe MovieBox",
+                    value:   ""
+                }
+            },
+            {
+                key: "mb_phone_cc",
+                listPreference: {
+                    title:      "Indicatif pays (t\u00E9l\u00E9phone)",
+                    summary:    "Utilis\u00E9 si votre identifiant est un num\u00E9ro de t\u00E9l\u00E9phone",
+                    valueIndex: 0,
+                    entries:    [
+                        "+1 (US/CA)", "+33 (FR)", "+44 (UK)", "+49 (DE)", "+81 (JP)",
+                        "+82 (KR)", "+86 (CN)", "+91 (IN)", "+234 (NG)", "+27 (ZA)",
+                        "+55 (BR)", "+52 (MX)", "+34 (ES)", "+39 (IT)", "+7 (RU)"
+                    ],
+                    entryValues:["+1","+33","+44","+49","+81","+82","+86","+91","+234","+27","+55","+52","+34","+39","+7"]
+                }
+            },
             // ── LANGUE ─────────────────────────────────────────────────
             {
                 key: "mb_content_lang",
