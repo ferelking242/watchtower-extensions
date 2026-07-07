@@ -11,9 +11,9 @@ const watchtowerSources = [{
   "iconUrl": "https://www.redgifs.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.2",
+  "version": "2.0.0",
   "pkgPath": "nsfw/multi/redgifs.js",
-  "notes": "RedGIFs v1.0.2 — flat-header fix. TikTok reel feed, niche-based, 12 chips.",
+  "notes": "RedGIFs v2.0.0 — WatchReelScreen (Explorer/Suivis/Pour toi). for_you feed, creators_trending, richer link JSON (width/height/likes/creator/title).",
   "isNsfw": true
 }];
 
@@ -83,6 +83,8 @@ class DefaultExtension extends MProvider {
     }
     sections.push({ id: 'trending',  layout: 'spotlight', name: '🔥 Trending', color: '#FF3B30', icon: 'local_fire_department', seeAll: 'trending' });
     sections.push({ id: 'new',       layout: 'spotlight', name: '✨ New',      color: '#34C759', icon: 'fiber_new',             seeAll: 'new'      });
+    sections.push({ id: 'for_you',       layout: 'spotlight', name: '🎯 Pour toi',  color: '#FF3B5C' });
+    sections.push({ id: 'creators_trending', layout: 'ranked', name: '🌟 Créateurs', color: '#5856D6' });
     sections.push({ id: 'catalogue', layout: 'catalogue', name: 'Catalogue' });
     return sections;
   }
@@ -97,12 +99,33 @@ class DefaultExtension extends MProvider {
       hd, sd, poster: thumb,
       hasAudio: gif.hasAudio || false,
       duration: gif.duration || 0,
+      width:    gif.width    || 0,
+      height:   gif.height   || 0,
+      likes:    gif.likes    || 0,
+      views:    gif.views    || 0,
+      creator:  gif.userName || '',
+      title:    (gif.tags || []).slice(0, 3).join(' · '),
     });
     return {
       name:        gif.userName || gif.id || 'RedGIFs',
       imageUrl:    thumb,
       link:        link,
       description: (gif.tags || []).slice(0, 5).join(' · '),
+    };
+  }
+
+  _creatorToItem(creator) {
+    return {
+      name:        creator.username || creator.name || 'Creator',
+      imageUrl:    creator.profileImageUrl || creator.poster || creator.profileUrl || '',
+      link:        JSON.stringify({
+        type:      'creator',
+        username:  creator.username  || '',
+        followers: creator.followers || 0,
+        totalGifs: creator.nbGifs    || 0,
+        verified:  creator.verified  || false,
+      }),
+      description: (creator.nbGifs || 0) + ' GIFs',
     };
   }
 
@@ -115,6 +138,24 @@ class DefaultExtension extends MProvider {
 
   async getCustomList(listId, page) {
     const count = 20;
+
+    // ── For You feed — trending gifs ──────────────────────────────────────
+    if (listId === 'for_you') {
+      const data = await this._apiGet(
+        '/v2/gifs/trending?count=30&page=' + page
+      );
+      const gifs = data.gifs || [];
+      return { list: gifs.map(g => this._gifToItem(g, 'for_you')), hasNextPage: gifs.length >= 30 };
+    }
+
+    // ── Popular creators (Suivis tab) ──────────────────────────────────────
+    if (listId === 'creators_trending') {
+      const data = await this._apiGet(
+        '/v2/creators/search?order=trending&count=20&page=' + page
+      );
+      const creators = data.items || data.creators || [];
+      return { list: creators.map(c => this._creatorToItem(c)), hasNextPage: creators.length >= 20 };
+    }
 
     if (listId === 'trending' || listId === 'new') {
       const order    = listId === 'new' ? 'new' : 'trending';
