@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "2.2.0",
+    "version": "2.3.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -784,26 +784,31 @@ class DefaultExtension extends MProvider {
         var seasons  = (res2.seasons) ? res2.seasons : [];
         var chapters = [], isMovie = (realType === 1) || !seasons.length;
 
-        // ── Langues disponibles pour ce titre (via probe play-info) ──
-        // On sonde UNE fois le premier épisode pour récupérer dubsList réel,
-        // puis on duplique les chapitres par langue disponible.
+        // ── Langues disponibles via subject.dubs du détail ───────────
+        // Chaque version linguistique est un subjectId distinct sur MovieBox.
+        // subject.dubs liste toutes les versions avec leur propre subjectId+detailPath.
+        // type=0 → doublage audio, type=1 → sous-titre uniquement.
         var prefLangCode = this._prefLang();
         var langs = [];
-        try {
-            var probeSe = isMovie ? 0 : (seasons[0] ? (seasons[0].se || 1) : 1);
-            var probeEp = isMovie ? 0 : 1;
-            var probeJ  = await this._fetchPlay(realId, realDp, probeSe, probeEp, prefLangCode);
-            var probeDubs = (probeJ && probeJ.data && probeJ.data.dubsList) ? probeJ.data.dubsList : [];
-            var seenLang = {};
-            for (var pd = 0; pd < probeDubs.length; pd++) {
-                var pdub  = probeDubs[pd];
-                var pcode = (pdub.lan || "").toLowerCase();
-                if (!pcode || seenLang[pcode]) continue;
-                seenLang[pcode] = 1;
-                langs.push({ code: pcode, label: pdub.lanName || mbLangTag(pcode) });
-            }
-        } catch (_) {}
-        if (!langs.length) langs.push({ code: prefLangCode, label: mbLangTag(prefLangCode) });
+        var seenDubCode = {};
+        var subjDubs = s.dubs || [];
+        for (var di = 0; di < subjDubs.length; di++) {
+            var dubEntry = subjDubs[di];
+            if ((dubEntry.type || 0) !== 0) continue; // ignorer les versions sous-titres uniquement
+            var dubCode = (dubEntry.lanCode || "").toLowerCase();
+            if (!dubCode || seenDubCode[dubCode]) continue;
+            seenDubCode[dubCode] = 1;
+            langs.push({
+                code:       dubCode,
+                label:      dubEntry.lanName || mbLangTag(dubCode),
+                subjectId:  dubEntry.subjectId != null ? String(dubEntry.subjectId) : realId,
+                detailPath: dubEntry.detailPath || realDp
+            });
+        }
+        // Fallback : si aucun dub listé, utiliser le titre courant avec la langue préférée
+        if (!langs.length) {
+            langs.push({ code: prefLangCode, label: mbLangTag(prefLangCode), subjectId: realId, detailPath: realDp });
+        }
         // Langue préférée en premier
         for (var lo = 1; lo < langs.length; lo++) {
             if (langs[lo].code === prefLangCode) { langs.unshift(langs.splice(lo, 1)[0]); break; }
@@ -814,7 +819,7 @@ class DefaultExtension extends MProvider {
             if (isMovie) {
                 chapters.push({
                     name:       "\u25B6 Regarder",
-                    url:        JSON.stringify({ subjectId: realId, detailPath: realDp, se: 0, ep: 0, dub: lg.code }),
+                    url:        JSON.stringify({ subjectId: lg.subjectId, detailPath: lg.detailPath, se: 0, ep: 0, dub: lg.code }),
                     dateUpload: s.releaseDate || "",
                     scanlator:  lg.code + "|" + lg.label
                 });
@@ -826,7 +831,7 @@ class DefaultExtension extends MProvider {
                     for (var ep = 1; ep <= maxEp; ep++) {
                         chapters.push({
                             name:       maxEp > 1 ? ("S" + seNum + " E" + ep) : (s.title || "Episode"),
-                            url:        JSON.stringify({ subjectId: realId, detailPath: realDp, se: seNum, ep: ep, dub: lg.code }),
+                            url:        JSON.stringify({ subjectId: lg.subjectId, detailPath: lg.detailPath, se: seNum, ep: ep, dub: lg.code }),
                             dateUpload: "",
                             scanlator:  lg.code + "|" + lg.label
                         });
