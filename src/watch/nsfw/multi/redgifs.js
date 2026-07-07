@@ -1,6 +1,7 @@
 // RedGIFs — TikTok-style adult GIF/video feed
 // Type: reel — items open in WatchReelFeedScreen (vertical PageView)
 // API: api.redgifs.com v2 — public temporary token (no account required)
+// v1.0.1 — fix: use /v2/niches/{id}/gifs endpoints (search without search_text returns empty)
 
 const watchtowerSources = [{
   "name": "RedGIFs",
@@ -10,9 +11,9 @@ const watchtowerSources = [{
   "iconUrl": "https://www.redgifs.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "pkgPath": "nsfw/multi/redgifs.js",
-  "notes": "RedGIFs v1.0.0 — TikTok-style vertical reel feed (type=reel). Token auto-refresh, 12 niche chips, trending/new spotlights, infinite catalogue.",
+  "notes": "RedGIFs v1.0.1 — TikTok-style vertical reel feed (type=reel). Niche-based feeds, 12 category chips, trending/new spotlights, infinite catalogue.",
   "isNsfw": true
 }];
 
@@ -31,11 +32,10 @@ class DefaultExtension extends MProvider {
       const json = JSON.parse(res.body);
       if (json.token) {
         this._token = json.token;
-        this._tokenExp = now + 50 * 60 * 1000; // 50 min
+        this._tokenExp = now + 50 * 60 * 1000;
         return this._token;
       }
     } catch (_) {}
-    // Fallback: guest token from web scrape
     return null;
   }
 
@@ -45,7 +45,6 @@ class DefaultExtension extends MProvider {
     if (token) headers['Authorization'] = 'Bearer ' + token;
     const res = await new Client().get('https://api.redgifs.com' + path, { headers });
     if (res.statusCode === 401) {
-      // Force token refresh on 401
       this._token = null;
       this._tokenExp = 0;
       return this._apiGet(path);
@@ -53,27 +52,26 @@ class DefaultExtension extends MProvider {
     return JSON.parse(res.body);
   }
 
-  // ── 12 most popular niches (for category chips on home) ───────────────────
+  // ── 12 popular niches ─────────────────────────────────────────────────────
+  // NOTE: these ids are valid /v2/niches/{id}/gifs endpoints (confirmed working)
   _NICHES = [
     { id: 'just-boobs',    name: 'Just Boobs'    },
     { id: 'blowjobs',      name: 'Blowjobs'      },
     { id: 'thick-booty',   name: 'Thick Booty'   },
-    { id: 'legal-teens',   name: 'Legal Teens'   },
     { id: 'amateur-girls', name: 'Amateur Girls' },
-    { id: 'tik-tok',       name: 'Tik Tok'       },
     { id: 'real-couples',  name: 'Real Couples'  },
     { id: 'real-orgasms',  name: 'Real Orgasms'  },
     { id: 'curvy-chicks',  name: 'Curvy Chicks'  },
     { id: 'rough-sex',     name: 'Rough Sex'     },
+    { id: 'legal-teens',   name: 'Legal Teens'   },
+    { id: 'busty-asians',  name: 'Busty Asians'  },
     { id: 'goth-girls',    name: 'Goth Girls'    },
     { id: 'latinas',       name: 'Latinas'       },
   ];
 
   // ── Home layout ───────────────────────────────────────────────────────────
-  // category chips → trending spotlight → new spotlight → catalogue grid
   getCustomLists() {
     const sections = [];
-    // Category chips (12 popular niches)
     for (const n of this._NICHES) {
       sections.push({
         id: 'niche_' + n.id,
@@ -82,7 +80,6 @@ class DefaultExtension extends MProvider {
         color: '#1A1A2E',
       });
     }
-    // Spotlight sections — portrait 116×172 cards, same as MovieBox
     sections.push({
       id: 'trending',
       layout: 'spotlight',
@@ -99,7 +96,6 @@ class DefaultExtension extends MProvider {
       icon: 'fiber_new',
       seeAll: 'new',
     });
-    // Infinite catalogue grid
     sections.push({
       id: 'catalogue',
       layout: 'catalogue',
@@ -111,50 +107,90 @@ class DefaultExtension extends MProvider {
   // ── Convert a RedGIFs gif object → MManga with type=reel link ─────────────
   _gifToItem(gif, listId) {
     const urls = gif.urls || {};
-    const hd = urls.hd || '';
-    const sd = urls.sd || hd || '';
-    const poster = urls.thumbnail || urls.poster || urls.vthumbnail || '';
-    // Encode all playback data into the link field as JSON.
-    // The Flutter app detects type='reel' and opens WatchReelFeedScreen.
+    // hd = full quality mp4, sd = mobile mp4
+    const hd = urls.hd || urls.sd || '';
+    const sd = urls.sd || urls.hd || '';
+    // thumbnail = mobile jpg (ideal for card), poster = full poster jpg
+    const thumb = urls.thumbnail || urls.poster || '';
     const link = JSON.stringify({
       type: 'reel',
       listId: listId,
       gifId: gif.id || '',
       hd: hd,
       sd: sd,
-      poster: poster,
+      poster: thumb,
       hasAudio: gif.hasAudio || false,
       duration: gif.duration || 0,
     });
     return {
       name: gif.userName || gif.id || 'RedGIFs',
-      imageUrl: poster || urls.gif || '',
+      imageUrl: thumb,
       link: link,
       description: (gif.tags || []).slice(0, 5).join(' · '),
     };
   }
 
+  // ── Fetch items from a niche ───────────────────────────────────────────────
+  // All reliable endpoints go through /v2/niches/{id}/gifs
+  // The generic /v2/gifs/search without search_text returns empty arrays.
+  async _nicheGifs(nicheId, order, count, page) {
+    const data = await this._apiGet(
+      `/v2/niches/${nicheId}/gifs?order=${order}&count=${count}&page=${page}`
+    );
+    return data.gifs || data.items || [];
+  }
+
   // ── Custom list fetching ───────────────────────────────────────────────────
   async getCustomList(listId, page) {
-    let data;
-    const count = listId === 'catalogue' ? 30 : 20;
+    const count = 20;
 
-    if (listId === 'catalogue') {
-      data = await this._apiGet(`/v2/gifs/search?order=trending&count=${count}&page=${page}`);
-    } else if (listId === 'trending') {
-      data = await this._apiGet(`/v2/gifs/search?order=trending&count=${count}&page=${page}`);
-    } else if (listId === 'new') {
-      data = await this._apiGet(`/v2/gifs/search?order=new&count=${count}&page=${page}`);
-    } else if (listId.startsWith('niche_')) {
-      const nicheId = listId.slice(6); // strip 'niche_' prefix
-      data = await this._apiGet(`/v2/niches/${nicheId}/gifs?order=trending&count=${count}&page=${page}`);
-    } else {
-      // seeAll targets ('popular', 'latest', etc.)
-      const order = listId === 'new' || listId === 'latest' ? 'new' : 'trending';
-      data = await this._apiGet(`/v2/gifs/search?order=${order}&count=${count}&page=${page}`);
+    if (listId === 'trending') {
+      // Rotate through niches round-robin so the feed stays fresh
+      const nicheIdx = (page - 1) % this._NICHES.length;
+      const nicheId  = this._NICHES[nicheIdx].id;
+      const gifs = await this._nicheGifs(nicheId, 'trending', count, 1);
+      return {
+        list: gifs.map(g => this._gifToItem(g, 'trending')),
+        hasNextPage: gifs.length >= count,
+      };
     }
 
-    const gifs = data.gifs || data.items || [];
+    if (listId === 'new') {
+      const nicheIdx = (page - 1) % this._NICHES.length;
+      const nicheId  = this._NICHES[nicheIdx].id;
+      const gifs = await this._nicheGifs(nicheId, 'new', count, 1);
+      return {
+        list: gifs.map(g => this._gifToItem(g, 'new')),
+        hasNextPage: gifs.length >= count,
+      };
+    }
+
+    if (listId === 'catalogue') {
+      // Each page cycles through a different niche so catalogue feels infinite
+      const catalogueCount = 30;
+      const nicheIdx = (page - 1) % this._NICHES.length;
+      const nicheId  = this._NICHES[nicheIdx].id;
+      const nichePage = Math.floor((page - 1) / this._NICHES.length) + 1;
+      const gifs = await this._nicheGifs(nicheId, 'trending', catalogueCount, nichePage);
+      return {
+        list: gifs.map(g => this._gifToItem(g, 'catalogue')),
+        hasNextPage: true, // always more niches to cycle through
+      };
+    }
+
+    if (listId.startsWith('niche_')) {
+      const nicheId = listId.slice(6);
+      const gifs = await this._nicheGifs(nicheId, 'trending', count, page);
+      return {
+        list: gifs.map(g => this._gifToItem(g, listId)),
+        hasNextPage: gifs.length >= count,
+      };
+    }
+
+    // Fallback for seeAll targets
+    const order = (listId === 'new' || listId === 'latest') ? 'new' : 'trending';
+    const nicheId = this._NICHES[0].id;
+    const gifs = await this._nicheGifs(nicheId, order, count, page);
     return {
       list: gifs.map(g => this._gifToItem(g, listId)),
       hasNextPage: gifs.length >= count,
@@ -165,27 +201,30 @@ class DefaultExtension extends MProvider {
   get supportsLatest() { return true; }
 
   async getPopular(page) {
-    const data = await this._apiGet(`/v2/gifs/search?order=trending&count=20&page=${page}`);
-    const gifs = data.gifs || data.items || [];
+    const nicheId = this._NICHES[(page - 1) % this._NICHES.length].id;
+    const gifs = await this._nicheGifs(nicheId, 'trending', 20, 1);
     return {
       list: gifs.map(g => this._gifToItem(g, 'trending')),
-      hasNextPage: gifs.length >= 20,
+      hasNextPage: true,
     };
   }
 
   async getLatestUpdates(page) {
-    const data = await this._apiGet(`/v2/gifs/search?order=new&count=20&page=${page}`);
-    const gifs = data.gifs || data.items || [];
+    const nicheId = this._NICHES[(page - 1) % this._NICHES.length].id;
+    const gifs = await this._nicheGifs(nicheId, 'new', 20, 1);
     return {
       list: gifs.map(g => this._gifToItem(g, 'new')),
-      hasNextPage: gifs.length >= 20,
+      hasNextPage: true,
     };
   }
 
   async search(query, page, filters) {
+    // Search endpoint requires search_text — works correctly with a term
     const q = encodeURIComponent(query.trim());
-    const data = await this._apiGet(`/v2/gifs/search?search_text=${q}&count=20&page=${page}`);
-    const gifs = data.gifs || data.items || [];
+    const data = await this._apiGet(
+      `/v2/gifs/search?search_text=${q}&order=trending&count=20&page=${page}`
+    );
+    const gifs = data.gifs || [];
     return {
       list: gifs.map(g => this._gifToItem(g, 'search_' + q)),
       hasNextPage: gifs.length >= 20,
@@ -194,19 +233,14 @@ class DefaultExtension extends MProvider {
 
   // ── Detail (fallback for non-reel flows) ──────────────────────────────────
   async getDetail(url) {
-    // url may be a raw gifId or a JSON link string
     let gifId = url;
-    try {
-      const d = JSON.parse(url);
-      gifId = d.gifId || url;
-    } catch (_) {}
+    try { const d = JSON.parse(url); gifId = d.gifId || url; } catch (_) {}
     const data = await this._apiGet(`/v2/gifs/${gifId}`);
-    const gif = data.gif || data;
+    const gif  = data.gif || data;
     const urls = gif.urls || {};
-    const poster = urls.thumbnail || urls.poster || '';
     return {
       name: gif.userName || gifId,
-      imageUrl: poster,
+      imageUrl: urls.thumbnail || urls.poster || '',
       description: (gif.tags || []).join(' · '),
       episodes: [{ name: '▶ Watch', url: gifId }],
     };
@@ -215,19 +249,14 @@ class DefaultExtension extends MProvider {
   // ── Video list (fallback for non-reel flows) ──────────────────────────────
   async getVideoList(url) {
     let gifId = url;
-    try {
-      const d = JSON.parse(url);
-      gifId = d.gifId || url;
-    } catch (_) {}
+    try { const d = JSON.parse(url); gifId = d.gifId || url; } catch (_) {}
     const data = await this._apiGet(`/v2/gifs/${gifId}`);
-    const gif = data.gif || data;
+    const gif  = data.gif || data;
     const urls = gif.urls || {};
     const videos = [];
     if (urls.hd) videos.push({ url: urls.hd, quality: 'HD',  originalUrl: urls.hd });
     if (urls.sd) videos.push({ url: urls.sd, quality: 'SD',  originalUrl: urls.sd });
-    if (videos.length === 0 && urls.gif) {
-      videos.push({ url: urls.gif, quality: 'GIF', originalUrl: urls.gif });
-    }
+    if (!videos.length && urls.gif) videos.push({ url: urls.gif, quality: 'GIF', originalUrl: urls.gif });
     return videos;
   }
 
