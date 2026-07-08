@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.1porn.tv/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "pkgPath": "watch/nsfw/en/1porntv.js",
   "notes": "Adult content (18+) — multi-quality MP4",
   "isNsfw": true
@@ -26,7 +26,7 @@ class DefaultExtension extends MProvider {
       ? `https://www.1porn.tv/?from=${from}`
       : `https://www.1porn.tv/`;
     const res = await new Client().get(url, this.getHeaders(url));
-    return this._parseList(res.body, "https://www.1porn.tv", page);
+    return this._parseList(res.body, "https://www.1porn.tv", page, true);
   }
 
   get supportsLatest() { return true; }
@@ -35,7 +35,7 @@ class DefaultExtension extends MProvider {
     // 1PornTV /new/ — limited list, no offset pagination
     const url = `https://www.1porn.tv/new/`;
     const res = await new Client().get(url, this.getHeaders(url));
-    return this._parseList(res.body, "https://www.1porn.tv", 1);
+    return this._parseList(res.body, "https://www.1porn.tv", 1, false);
   }
 
   async search(query, page, filters) {
@@ -43,10 +43,11 @@ class DefaultExtension extends MProvider {
     const q = encodeURIComponent(query.trim());
     const url = `https://www.1porn.tv/search/?q=${q}`;
     const res = await new Client().get(url, this.getHeaders(url));
-    return this._parseList(res.body, "https://www.1porn.tv", 1);
+    return this._parseList(res.body, "https://www.1porn.tv", 1, false);
   }
 
-  _parseList(html, base, page) {
+  // canPaginate: true for popular (?from= offset), false for /new/ and search (fixed sets)
+  _parseList(html, base, page, canPaginate) {
     const doc = new Document(html);
     const items = [];
     const seen = {};
@@ -72,10 +73,9 @@ class DefaultExtension extends MProvider {
     }
     extLog('info', `1PornTV._parseList: page=${page} items=${items.length}`);
 
-    // hasNextPage: true only if we received a full page of results AND it's not the
-    // /new/ or search page (those return a fixed, non-paginated set).
-    // For popular (?from=) we attempt the next offset if we got >= 30 items.
-    const hasNext = page > 1 ? false : items.length >= 30;
+    // hasNextPage: only for paginated endpoints (popular ?from= offset).
+    // /new/ and search are single fixed sets — canPaginate=false for those.
+    const hasNext = canPaginate && items.length >= 30;
     return { list: items, hasNextPage: hasNext };
   }
 
