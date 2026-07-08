@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.xnxx.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.7",
+    "version": "1.0.8",
     "pkgPath": "watch/nsfw/en/xnxx.js",
     "notes": "Adult content (18+)",
     "isNsfw": true
@@ -33,16 +33,14 @@ class DefaultExtension extends MProvider {
     }
 
     // ── Date-offset helper ────────────────────────────────────────────────────
-    // XNXX /best/ switched from page-based (/best/en/N) to month-based (/best/YYYY-MM).
+    // XNXX /best/ uses month-based URLs (/best/YYYY-MM).
     // page=1 → current month, page=2 → last month, etc.
     _monthSlug(page) {
-        // Use a fixed reference date approach safe for JS engines without Date.now
-        // Approximate: build year/month by counting back from a known date.
-        // We use string math on a hardcoded "current" date that extensions can rely on.
-        // Extensions run in 2026; we start from 2026-07 (confirmed redirect target).
-        const baseYear  = 2026;
-        const baseMonth = 7; // July 2026 = page 1
-        let totalMonths = (baseYear * 12 + baseMonth - 1) - (page - 1);
+        // Use Date.now() so this stays correct across months without hardcoding.
+        const now        = new Date(Date.now());
+        const baseYear   = now.getFullYear();
+        const baseMonth  = now.getMonth() + 1; // getMonth() is 0-based
+        let totalMonths  = (baseYear * 12 + baseMonth - 1) - (page - 1);
         const year  = Math.floor(totalMonths / 12);
         const month = (totalMonths % 12) + 1;
         return `${year}-${String(month).padStart(2, '0')}`;
