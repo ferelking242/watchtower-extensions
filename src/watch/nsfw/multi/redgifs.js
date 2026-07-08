@@ -1,7 +1,7 @@
 // RedGIFs — TikTok-style adult GIF/video feed
 // Type: reel — items open in ReelScreen (TikTok-style 3-tab screen)
 // API: api.redgifs.com v2 — public temporary token (no account required)
-// v1.0.2 — fix: pass headers as flat object to Client().get() (not { headers:{} })
+// v2.1.0 — Explorer split GIF/Image, niches directory, creator banners, real source prefs
 
 const watchtowerSources = [{
   "name": "RedGIFs",
@@ -11,9 +11,9 @@ const watchtowerSources = [{
   "iconUrl": "https://www.redgifs.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "2.0.4",
+  "version": "2.1.0",
   "pkgPath": "nsfw/multi/redgifs.js",
-  "notes": "RedGIFs v2.0.4 — fix: pour toi endpoint mort (405), remplacé par mix niches trending",
+  "notes": "RedGIFs v2.1.0 — Explorer GIF/Image, écran Niches, cartes créateurs pro, préférences réelles",
   "isNsfw": true
 }];
 
@@ -114,30 +114,101 @@ class DefaultExtension extends MProvider {
     };
   }
 
+  // The creator-search endpoint has no dedicated banner field — we reuse the
+  // profile picture (cropped) as a banner background so cards never look empty.
   _creatorToItem(creator) {
+    const avatar = creator.profileImageUrl || creator.poster || '';
     return {
       name:        creator.username || creator.name || creator.profileUrl || 'Creator',
-      imageUrl:    creator.profileImageUrl || creator.poster || creator.profileUrl || '',
+      imageUrl:    avatar,
       link:        JSON.stringify({
-        type:      'creator',
-        username:  creator.username  || '',
-        followers: creator.followers || 0,
-        totalGifs: creator.nbGifs    || 0,
-        verified:  creator.verified  || false,
+        type:       'creator',
+        username:   creator.username    || creator.name || '',
+        followers:  creator.followers   || 0,
+        following:  creator.following   || 0,
+        totalGifs:  creator.gifs        || creator.nbGifs || 0,
+        verified:   creator.verified    || false,
+        description: creator.description || '',
+        bannerUrl:  avatar,
+        profileUrl: creator.profileUrl  || '',
       }),
-      description: (creator.nbGifs || 0) + ' GIFs',
+      description: (creator.gifs || creator.nbGifs || 0) + ' GIFs',
     };
   }
 
-  async _nicheGifs(nicheId, order, count, page) {
+  _nicheToItem(n) {
+    return {
+      name:        n.name || n.id,
+      imageUrl:    n.thumbnail || '',
+      link:        JSON.stringify({
+        type:        'niche',
+        nicheId:     n.id,
+        subscribers: n.subscribers || 0,
+        gifs:        n.gifs        || 0,
+        tags:        (n.tags || []).slice(0, 4),
+      }),
+      description: (n.tags || []).slice(0, 3).join(' · '),
+    };
+  }
+
+  async _nicheGifs(nicheId, order, count, page, type) {
+    const t = type ? `&type=${type}` : '';
     const data = await this._apiGet(
-      `/v2/niches/${nicheId}/gifs?order=${order}&count=${count}&page=${page}`
+      `/v2/niches/${nicheId}/gifs?order=${order}&count=${count}&page=${page}${t}`
     );
     return data.gifs || data.items || [];
   }
 
+  // ── Preference helpers ───────────────────────────────────────────────────
+  // `preference` is a global bridged object — preference.get(key) reads the
+  // value the user picked in Extensions → RedGIFs → Préférences.
+  _pref(key, fallback) {
+    try {
+      const v = preference.get(key);
+      return v === null || v === undefined || v === '' ? fallback : v;
+    } catch (_) { return fallback; }
+  }
+
+  get _prefSort()  { return this._pref('default_sort', 'trending'); }
+  get _prefCount() { return parseInt(this._pref('results_per_page', '20'), 10) || 20; }
+
+  getSourcePreferences() {
+    return [
+      {
+        key: 'default_sort',
+        listPreference: {
+          title: 'Tri par défaut',
+          summary: "Ordre utilisé pour Explorer, Pour toi et les niches",
+          valueIndex: 0,
+          entries: ['Tendances', 'Nouveau'],
+          entryValues: ['trending', 'new'],
+        },
+      },
+      {
+        key: 'content_quality',
+        listPreference: {
+          title: 'Qualité vidéo',
+          summary: 'Résolution utilisée en priorité pour la lecture',
+          valueIndex: 0,
+          entries: ['HD', 'SD (économise de la donnée)'],
+          entryValues: ['hd', 'sd'],
+        },
+      },
+      {
+        key: 'results_per_page',
+        listPreference: {
+          title: 'Résultats par page',
+          summary: "Nombre d'éléments chargés à chaque défilement",
+          valueIndex: 1,
+          entries: ['15', '20', '30'],
+          entryValues: ['15', '20', '30'],
+        },
+      },
+    ];
+  }
+
   async getCustomList(listId, page) {
-    const count = 20;
+    const count = this._prefCount;
 
     // ── For You feed — mix trending gifs from 3 niches per page ─────────────
     // /v2/gifs/trending no longer exists (405). We rotate across niches instead
@@ -181,8 +252,31 @@ class DefaultExtension extends MProvider {
       return { list: gifs.map(g => this._gifToItem(g, 'catalogue')), hasNextPage: true };
     }
 
+    // ── Explorer tab — GIF-only / Image-only feeds, mixed across niches ─────
+    if (listId === 'explorer_gif' || listId === 'explorer_image') {
+      const mediaType = listId === 'explorer_image' ? 'i' : 'g';
+      const base   = ((page - 1) * 2) % this._NICHES.length;
+      const picks  = [base, (base + 1) % this._NICHES.length];
+      const groups = await Promise.all(
+        picks.map(i => this._nicheGifs(this._NICHES[i].id, this._prefSort, Math.ceil(count / 2), 1, mediaType))
+      );
+      const merged  = [];
+      const maxLen  = Math.max(...groups.map(a => a.length), 0);
+      for (let i = 0; i < maxLen; i++) {
+        for (const arr of groups) { if (i < arr.length) merged.push(arr[i]); }
+      }
+      return { list: merged.map(g => this._gifToItem(g, listId)), hasNextPage: true };
+    }
+
+    // ── Niches directory (flame icon screen) ─────────────────────────────────
+    if (listId === 'niches_list') {
+      const data   = await this._apiGet(`/v2/niches?count=30&page=${page}`);
+      const niches = data.niches || [];
+      return { list: niches.map(n => this._nicheToItem(n)), hasNextPage: (data.page || page) < (data.pages || 1) };
+    }
+
     if (listId.startsWith('niche_')) {
-      const gifs = await this._nicheGifs(listId.slice(6), 'trending', count, page);
+      const gifs = await this._nicheGifs(listId.slice(6), this._prefSort, count, page);
       return { list: gifs.map(g => this._gifToItem(g, listId)), hasNextPage: gifs.length >= count };
     }
 
