@@ -1,5 +1,5 @@
 // RedGIFs — TikTok-style adult GIF/video feed
-// Type: reel — items open in WatchReelFeedScreen (vertical PageView)
+// Type: reel — items open in ReelScreen (TikTok-style 3-tab screen)
 // API: api.redgifs.com v2 — public temporary token (no account required)
 // v1.0.2 — fix: pass headers as flat object to Client().get() (not { headers:{} })
 
