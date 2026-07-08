@@ -1,7 +1,7 @@
 // RedGIFs — TikTok-style adult GIF/video feed
 // Type: reel — items open in ReelScreen (TikTok-style 3-tab screen)
 // API: api.redgifs.com v2 — public temporary token (no account required)
-// v2.1.0 — Explorer split GIF/Image, niches directory, creator banners, real source prefs
+// v2.1.1 — Fix: suppression du getSourcePreferences() vide dupliqué
 
 const watchtowerSources = [{
   "name": "RedGIFs",
@@ -11,9 +11,9 @@ const watchtowerSources = [{
   "iconUrl": "https://www.redgifs.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "2.1.0",
+  "version": "2.1.1",
   "pkgPath": "nsfw/multi/redgifs.js",
-  "notes": "RedGIFs v2.1.0 — Explorer GIF/Image, écran Niches, cartes créateurs pro, préférences réelles",
+  "notes": "RedGIFs v2.1.1 — Explorer GIF/Image/Tout, bannières créateurs, préférences réelles",
   "isNsfw": true
 }];
 
@@ -333,5 +333,4 @@ class DefaultExtension extends MProvider {
 
   async getPageList(url) { return []; }
   getFilterList() { return []; }
-  getSourcePreferences() { return []; }
 }
