@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.rexporn.st/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "1.0.9",
+      "version": "1.1.1",
       "pkgPath": "watch/nsfw/en/rexporn.js",
       "notes": "Adult content (18+) — multi-quality MP4 streaming",
       "isNsfw": true
@@ -35,7 +35,7 @@ const watchtowerSources = [{
           ? `https://www.rexporn.st/page-${page}.html`
           : `https://www.rexporn.st/`;
         const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
-        return this._parseList(res.body, url, page);
+        return this._parseList(res.body, url, page, 'popular');
       }
 
       get supportsLatest() { return true; }
@@ -45,7 +45,7 @@ const watchtowerSources = [{
           ? `https://www.rexporn.st/?sort=new&page=${page}`
           : `https://www.rexporn.st/?sort=new`;
         const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
-        return this._parseList(res.body, url, page);
+        return this._parseList(res.body, url, page, 'latest');
       }
 
       async search(query, page, filters) {
@@ -54,11 +54,11 @@ const watchtowerSources = [{
           ? `https://www.rexporn.st/videos/search/?query=${q}&page=${page}`
           : `https://www.rexporn.st/videos/search/?query=${q}`;
         const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
-        return this._parseList(res.body, url, page);
+        return this._parseList(res.body, url, page, 'search');
       }
 
-      // page is the current page number (1-based), used to detect the correct next-page link.
-      _parseList(html, srcUrl, page) {
+      // style: 'popular' (uses /page-N.html links), 'latest'/'search' (uses item count)
+      _parseList(html, srcUrl, page, style) {
         const doc = new Document(html);
         const cards = doc.select(".pitem");
         extLog('info', `RexPorn._parseList: url=${(srcUrl||'').slice(0,60)} html_len=${html.length} cards=${cards.length}`);
@@ -90,10 +90,26 @@ const watchtowerSources = [{
         }
         extLog('info', `RexPorn._parseList: items=${items.length}`);
 
-        // Check for the next-page link specifically — avoids the false-positive of finding
-        // "page-2" as a back-link on page 2, page 3, etc.
-        const nextPage = (page || 1) + 1;
-        const hasNext = html.includes(`/page-${nextPage}.html`);
+        // hasNextPage strategy depends on URL format:
+        // • popular: links use /page-N.html — check for next page anchor specifically
+        // • latest (?sort=new&page=N) and search (?query=...&page=N):
+        //   - primary: detect explicit next-page nav link containing &page=N+1 or ?page=N+1
+        //   - fallback: item count >= 20 (heuristic, only if no explicit nav found)
+        //   - hard cap at page 50 to prevent runaway pagination on terminal pages
+        const currentPage = page || 1;
+        let hasNext = false;
+        if (style === 'popular') {
+          hasNext = html.includes(`/page-${currentPage + 1}.html`);
+        } else {
+          if (currentPage >= 50) {
+            hasNext = false; // hard cap
+          } else {
+            // Prefer explicit nav link (e.g. href="?sort=new&page=3", href="?query=...&page=3")
+            const nextPageStr = `page=${currentPage + 1}`;
+            const hasNavLink = html.includes(nextPageStr);
+            hasNext = hasNavLink || items.length >= 20;
+          }
+        }
         return { list: items, hasNextPage: hasNext };
       }
 
