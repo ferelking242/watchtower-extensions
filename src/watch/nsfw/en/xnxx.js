@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.xnxx.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.6",
+    "version": "1.0.7",
     "pkgPath": "watch/nsfw/en/xnxx.js",
     "notes": "Adult content (18+)",
     "isNsfw": true
@@ -25,55 +25,93 @@ class DefaultExtension extends MProvider {
     getHeaders(url) {
         return {
             "Referer": "https://www.xnxx.com/",
-            "User-Agent": "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
             "Accept-Language": this.langCode + ",en;q=0.8",
             "Cookie": "lang=" + this.langCode
         };
     }
 
+    // ── Date-offset helper ────────────────────────────────────────────────────
+    // XNXX /best/ switched from page-based (/best/en/N) to month-based (/best/YYYY-MM).
+    // page=1 → current month, page=2 → last month, etc.
+    _monthSlug(page) {
+        // Use a fixed reference date approach safe for JS engines without Date.now
+        // Approximate: build year/month by counting back from a known date.
+        // We use string math on a hardcoded "current" date that extensions can rely on.
+        // Extensions run in 2026; we start from 2026-07 (confirmed redirect target).
+        const baseYear  = 2026;
+        const baseMonth = 7; // July 2026 = page 1
+        let totalMonths = (baseYear * 12 + baseMonth - 1) - (page - 1);
+        const year  = Math.floor(totalMonths / 12);
+        const month = (totalMonths % 12) + 1;
+        return `${year}-${String(month).padStart(2, '0')}`;
+    }
+
     // ---------- listing ----------
     async getPopular(page) {
-        const url = `https://www.xnxx.com/best/${this.langCode}/${page}`;
-        const res = await new Client().get(url, this.getHeaders(url));
-        return this._parseVideoList(res.body);
+        // /best/YYYY-MM — monthly "best of" archive
+        const slug = this._monthSlug(page);
+        const url  = `https://www.xnxx.com/best/${slug}`;
+        extLog('info', `XNXX.getPopular page=${page} → ${url}`);
+        const res  = await new Client().get(url, this.getHeaders(url));
+        return this._parseVideoList(res.body, page, 24);
     }
+
     get supportsLatest() { return true; }
+
     async getLatestUpdates(page) {
         const url = `https://www.xnxx.com/new/${this.langCode}/${page}`;
         const res = await new Client().get(url, this.getHeaders(url));
-        return this._parseVideoList(res.body);
-    }
-    async search(query, page, filters) {
-        const q = encodeURIComponent(query.trim().replace(/\s+/g, "+"));
-        const url = `https://www.xnxx.com/search/${this.langCode}/${q}/${page}`;
-        const res = await new Client().get(url, this.getHeaders(url));
-        return this._parseVideoList(res.body);
+        return this._parseVideoList(res.body, page, 0);
     }
 
-    _parseVideoList(html) {
-        const doc = new Document(html);
+    async search(query, page, filters) {
+        const q   = encodeURIComponent(query.trim().replace(/\s+/g, "+"));
+        const url = `https://www.xnxx.com/search/${this.langCode}/${q}/${page}`;
+        const res = await new Client().get(url, this.getHeaders(url));
+        return this._parseVideoList(res.body, page, 0);
+    }
+
+    // minItems: if >= minItems were found we assume there's another page
+    _parseVideoList(html, page, minItems) {
+        const doc   = new Document(html);
         const items = [];
-        const seen = {};
-        const cards = doc.select(".mozaique .thumb-block");
+        const seen  = {};
+
+        // XNXX uses .mozaique > .thumb-block; try broad fallback if mozaique not present
+        let cards = doc.select(".mozaique .thumb-block");
+        if (!cards || cards.length === 0) {
+            cards = doc.select(".thumb-block");
+        }
+        extLog('info', `XNXX._parseVideoList: cards=${cards.length}`);
+
         for (const card of cards) {
-            // Title is on the anchor in .thumb-under (its `title` attr or text), not on the inner thumb anchor.
+            // Title: prefer the <a title="…"> inside .thumb-under
             let title = "";
-            const aWithTitle = card.selectFirst(".thumb-under a[title]") || card.selectFirst("a[title]");
-            if (aWithTitle) title = (aWithTitle.attr("title") || aWithTitle.text || "").trim();
+            const aTitle = card.selectFirst(".thumb-under a[title]") || card.selectFirst("a[title]");
+            if (aTitle) title = (aTitle.attr("title") || aTitle.text || "").trim();
             if (!title) {
                 const u = card.selectFirst(".thumb-under p a") || card.selectFirst(".thumb-under a");
                 if (u) title = (u.text || "").trim();
             }
+
+            // Link: must contain /video-
             const anchor = card.selectFirst("a[href*='/video-']") || card.selectFirst("a");
             if (!anchor) continue;
             const href = anchor.attr("href") || "";
             if (!href || href === "#") continue;
             const link = href.startsWith("http") ? href : `https://www.xnxx.com${href}`;
-            if ((link in seen)) continue;
-            (seen[link] = 1);
+            if (seen[link]) continue;
+            seen[link] = 1;
 
+            // Thumbnail
             const imgEl = card.selectFirst("img");
-            const thumb = imgEl ? (imgEl.attr("data-src") || imgEl.attr("data-original") || imgEl.attr("src") || "") : "";
+            const thumb = imgEl
+                ? (imgEl.attr("data-src") || imgEl.attr("data-original") || imgEl.attr("src") || "")
+                : "";
+
+            // Duration
             const durEl = card.selectFirst(".thumb-under .metadata") || card.selectFirst(".duration");
             let duration = "";
             if (durEl) {
@@ -83,80 +121,108 @@ class DefaultExtension extends MProvider {
             }
 
             items.push({
-                name: title || "Untitled",
-                imageUrl: thumb,
+                name:        title || "Untitled",
+                imageUrl:    thumb,
                 link,
                 description: duration ? `Duration: ${duration}` : ""
             });
         }
-        const hasNext = !!doc.selectFirst(".pagination .next, a[rel='next'], .no-page.next-page");
+
+        extLog('info', `XNXX._parseVideoList: items=${items.length}`);
+
+        // hasNextPage:
+        // • For /best/ (date-based): true while items found AND page < 24 (2 years of archives)
+        // • For /new/ and search: use pagination link detection
+        let hasNext = false;
+        if (minItems > 0) {
+            // Date-based popular: more months available
+            hasNext = items.length > 0 && page < 24;
+        } else {
+            // Page-based (new/search): check for next-page link
+            const nextSel = doc.selectFirst(".pagination .next, a[rel='next'], .no-page.next-page");
+            hasNext = !!nextSel;
+            // Fallback: if we got items and haven't tried many pages yet
+            if (!hasNext && items.length >= 30 && page < 10) hasNext = true;
+        }
+
         return { list: items, hasNextPage: hasNext };
     }
 
-    // ---------- detail ----------
+    // ---------- detail page ----------
     async getDetail(url) {
         const res = await new Client().get(url, this.getHeaders(url));
         const doc = new Document(res.body);
-        const title = (doc.selectFirst('meta[property="og:title"]')?.attr("content")
-            || doc.selectFirst("h2.page-title, h1.content-title")?.text
-            || "").trim();
-        const description = (doc.selectFirst('meta[property="og:description"]')?.attr("content")
-            || doc.selectFirst(".video-description, .metadata")?.text
-            || "").trim();
+        const title = (doc.selectFirst("h1.page-title") || doc.selectFirst("h2.page-title") ||
+                       doc.selectFirst("h1.content-title"))?.text?.trim()
+            || doc.selectFirst('meta[property="og:title"]')?.attr("content")?.trim()
+            || "Unknown";
         const thumb = doc.selectFirst('meta[property="og:image"]')?.attr("content") || "";
-        // Tags as plain strings (not {name:...} objects).
-        const tagEls = doc.select(".video-tags a, .metadata-row.tags a, a[href*='/tags/'], a[href*='/categories/']");
+        const tagEls = doc.select(".video-tags a, .tags a");
         const tags = [];
-        const seen = {};
         for (const el of tagEls) {
-            const t = (el.text || "").trim();
-            if (t && !(t in seen)) { (seen[t] = 1); tags.push(t); }
+            const n = (el.text || "").trim();
+            if (n) tags.push({ name: n });
         }
         return {
-            name: title || "Untitled",
-            imageUrl: thumb,
-            description,
+            name: title, imageUrl: thumb, description: "",
             genre: tags,
-            status: 0,
-            episodes: [{ name: (title && title.trim ? title.trim() : (title || "Watch")), url }]
+            episodes: [{ name: title, url }]
         };
     }
 
     // ---------- video sources ----------
     async getVideoList(url) {
-        const res = await new Client().get(url, this.getHeaders(url));
+        const res  = await new Client().get(url, this.getHeaders(url));
         const html = res.body;
         const videos = [];
-        const hls  = (html.match(/html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/)       || [])[1];
-        const high = (html.match(/html5player\.setVideoUrlHigh\(['"]([^'"]+)['"]\)/)   || [])[1];
-        const low  = (html.match(/html5player\.setVideoUrlLow\(['"]([^'"]+)['"]\)/)    || [])[1];
-        const headers = this.getHeaders(url);
-        if (hls)  videos.push({ url: hls,  quality: "Auto · HLS", originalUrl: hls,  headers });
-        if (high) videos.push({ url: high, quality: "720p",       originalUrl: high, headers });
-        if (low)  videos.push({ url: low,  quality: "360p",       originalUrl: low,  headers });
+        const headers = {
+            "Referer":    url,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+        };
+
+        // HLS (auto)
+        const hlsMatch = html.match(/html5player\.setVideoHLS\('([^']+)'\)/);
+        if (hlsMatch) {
+            videos.push({ url: hlsMatch[1], quality: "Auto (HLS)", originalUrl: hlsMatch[1], headers });
+        }
+
+        // MP4 sources
+        const mp4High = html.match(/html5player\.setVideoUrlHigh\('([^']+)'\)/);
+        const mp4Low  = html.match(/html5player\.setVideoUrlLow\('([^']+)'\)/);
+        if (mp4High) {
+            const high = mp4High[1];
+            videos.push({ url: high, quality: "720p", originalUrl: high, headers });
+        }
+        if (mp4Low) {
+            const low = mp4Low[1];
+            videos.push({ url: low, quality: "360p", originalUrl: low, headers });
+        }
+
         // Sort with preferred quality first
         const want = (this.prefQuality || "auto").toLowerCase();
         const matchKey = q => {
             const ql = q.toLowerCase();
             if (want === "auto"  && ql.includes("auto")) return 0;
-            if (want === "720p"  && ql.includes("720")) return 0;
-            if (want === "360p"  && ql.includes("360")) return 0;
+            if (want === "720p"  && ql.includes("720"))  return 0;
+            if (want === "360p"  && ql.includes("360"))  return 0;
             return 1;
         };
         videos.sort((a, b) => matchKey(a.quality) - matchKey(b.quality));
+        extLog('info', `XNXX.getVideoList: ${videos.length} sources found`);
         return videos;
     }
+
     async getPageList(url) { return []; }
     getFilterList() { return []; }
 
-    // ---------- preferences schema (shown in app settings) ----------
+    // ---------- preferences schema ----------
     getSourcePreferences() {
         return [
             {
                 key: "xnxx_lang",
                 list_preference: {
                     title: "Content language",
-                    summary: "Selects the XNXX language section (Popular/New/Search) — sent as `lang` cookie + Accept-Language.",
+                    summary: "Selects the XNXX language section (New/Search) — sent as `lang` cookie + Accept-Language.",
                     valueIndex: 0,
                     entries: [
                         "English", "Français", "Deutsch", "Español", "Italiano",

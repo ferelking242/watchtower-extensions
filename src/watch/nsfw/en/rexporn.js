@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.rexporn.st/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "1.0.8",
+      "version": "1.0.9",
       "pkgPath": "watch/nsfw/en/rexporn.js",
       "notes": "Adult content (18+) — multi-quality MP4 streaming",
       "isNsfw": true
@@ -35,7 +35,7 @@ const watchtowerSources = [{
           ? `https://www.rexporn.st/page-${page}.html`
           : `https://www.rexporn.st/`;
         const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
-        return this._parseList(res.body, url);
+        return this._parseList(res.body, url, page);
       }
 
       get supportsLatest() { return true; }
@@ -45,7 +45,7 @@ const watchtowerSources = [{
           ? `https://www.rexporn.st/?sort=new&page=${page}`
           : `https://www.rexporn.st/?sort=new`;
         const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
-        return this._parseList(res.body, url);
+        return this._parseList(res.body, url, page);
       }
 
       async search(query, page, filters) {
@@ -54,19 +54,24 @@ const watchtowerSources = [{
           ? `https://www.rexporn.st/videos/search/?query=${q}&page=${page}`
           : `https://www.rexporn.st/videos/search/?query=${q}`;
         const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
-        return this._parseList(res.body, url);
+        return this._parseList(res.body, url, page);
       }
 
-      _parseList(html, srcUrl) {
+      // page is the current page number (1-based), used to detect the correct next-page link.
+      _parseList(html, srcUrl, page) {
         const doc = new Document(html);
         const cards = doc.select(".pitem");
         extLog('info', `RexPorn._parseList: url=${(srcUrl||'').slice(0,60)} html_len=${html.length} cards=${cards.length}`);
         const items = [];
+        const seen = {};
         for (const card of cards) {
           const a = card.selectFirst("a");
           if (!a) continue;
           const href = a.attr("href") || "";
           if (!href.includes("/watch/")) continue;
+          const link = href.startsWith("http") ? href : "https://www.rexporn.st" + href;
+          if (seen[link]) continue;
+          seen[link] = 1;
           const img = a.selectFirst("img") || card.selectFirst("img");
           const thumb = img ? (img.attr("src") || "") : "";
           const ftitle = card.selectFirst(".ftitle");
@@ -79,12 +84,16 @@ const watchtowerSources = [{
           items.push({
             name: title || "Unknown",
             imageUrl: thumb,
-            link: href.startsWith("http") ? href : "https://www.rexporn.st" + href,
+            link: link,
             description: desc
           });
         }
         extLog('info', `RexPorn._parseList: items=${items.length}`);
-        const hasNext = html.indexOf("page-" + 2) !== -1 || html.indexOf('rel="next"') !== -1;
+
+        // Check for the next-page link specifically — avoids the false-positive of finding
+        // "page-2" as a back-link on page 2, page 3, etc.
+        const nextPage = (page || 1) + 1;
+        const hasNext = html.includes(`/page-${nextPage}.html`);
         return { list: items, hasNextPage: hasNext };
       }
 
@@ -172,4 +181,3 @@ const watchtowerSources = [{
       getFilterList() { return []; }
       getSourcePreferences() { return []; }
     }
-    
