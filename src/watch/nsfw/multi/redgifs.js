@@ -11,9 +11,9 @@ const watchtowerSources = [{
   "iconUrl": "https://www.redgifs.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "2.0.0",
+  "version": "2.0.1",
   "pkgPath": "nsfw/multi/redgifs.js",
-  "notes": "RedGIFs v2.0.0 — WatchReelScreen (Explorer/Suivis/Pour toi). for_you feed, creators_trending, richer link JSON (width/height/likes/creator/title).",
+  "notes": "RedGIFs v2.0.1 — fix null creator names; route renamed to reel",
   "isNsfw": true
 }];
 
@@ -103,7 +103,7 @@ class DefaultExtension extends MProvider {
       height:   gif.height   || 0,
       likes:    gif.likes    || 0,
       views:    gif.views    || 0,
-      creator:  gif.userName || '',
+      creator:  gif.userName || gif.id || '',
       title:    (gif.tags || []).slice(0, 3).join(' · '),
     });
     return {
@@ -116,7 +116,7 @@ class DefaultExtension extends MProvider {
 
   _creatorToItem(creator) {
     return {
-      name:        creator.username || creator.name || 'Creator',
+      name:        creator.username || creator.name || creator.profileUrl || 'Creator',
       imageUrl:    creator.profileImageUrl || creator.poster || creator.profileUrl || '',
       link:        JSON.stringify({
         type:      'creator',
