@@ -11,9 +11,9 @@ const watchtowerSources = [{
   "iconUrl": "https://www.redgifs.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "2.0.1",
+  "version": "2.0.2",
   "pkgPath": "nsfw/multi/redgifs.js",
-  "notes": "RedGIFs v2.0.1 — fix null creator names; route renamed to reel",
+  "notes": "RedGIFs v2.0.2 — additionalParams type=reel: source opens ReelScreen directly",
   "isNsfw": true
 }];
 
