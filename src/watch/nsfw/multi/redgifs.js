@@ -1,7 +1,7 @@
 // RedGIFs — TikTok-style adult GIF/video feed
 // Type: reel — items open in ReelScreen (TikTok-style 3-tab screen)
 // API: api.redgifs.com v2 — public temporary token (no account required)
-// v2.1.1 — Fix: suppression du getSourcePreferences() vide dupliqué
+// v2.2.0 — tags, creatorAvatar, verified, creator feed, profil créateur
 
 const watchtowerSources = [{
   "name": "RedGIFs",
@@ -11,9 +11,9 @@ const watchtowerSources = [{
   "iconUrl": "https://www.redgifs.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "2.1.1",
+  "version": "2.2.0",
   "pkgPath": "nsfw/multi/redgifs.js",
-  "notes": "RedGIFs v2.1.1 — Explorer GIF/Image/Tout, bannières créateurs, préférences réelles",
+  "notes": "RedGIFs v2.2.0 — tags, creatorAvatar, verified, creator feed, profil créateur",
   "isNsfw": true
 }];
 
@@ -90,27 +90,32 @@ class DefaultExtension extends MProvider {
   }
 
   _gifToItem(gif, listId) {
-    const urls  = gif.urls || {};
-    const hd    = urls.hd || urls.sd || '';
-    const sd    = urls.sd || urls.hd || '';
-    const thumb = urls.thumbnail || urls.poster || '';
+    const urls          = gif.urls || {};
+    const hd            = urls.hd || urls.sd || '';
+    const sd            = urls.sd || urls.hd || '';
+    const thumb         = urls.thumbnail || urls.poster || '';
+    const creatorAvatar = gif.userProfileImageUrl || gif.profileImageUrl || '';
+    const tags          = (gif.tags || []).slice(0, 8);
     const link  = JSON.stringify({
       type: 'reel', listId, gifId: gif.id || '',
       hd, sd, poster: thumb,
-      hasAudio: gif.hasAudio || false,
-      duration: gif.duration || 0,
-      width:    gif.width    || 0,
-      height:   gif.height   || 0,
-      likes:    gif.likes    || 0,
-      views:    gif.views    || 0,
-      creator:  gif.userName || gif.id || '',
-      title:    (gif.tags || []).slice(0, 3).join(' · '),
+      hasAudio:      gif.hasAudio  || false,
+      duration:      gif.duration  || 0,
+      width:         gif.width     || 0,
+      height:        gif.height    || 0,
+      likes:         gif.likes     || 0,
+      views:         gif.views     || 0,
+      creator:       gif.userName  || gif.id || '',
+      creatorAvatar: creatorAvatar,
+      verified:      gif.verified  || false,
+      tags:          tags,
+      title:         tags.slice(0, 3).join(' · '),
     });
     return {
       name:        gif.userName || gif.id || 'RedGIFs',
       imageUrl:    thumb,
       link:        link,
-      description: (gif.tags || []).slice(0, 5).join(' · '),
+      description: tags.slice(0, 5).join(' · '),
     };
   }
 
@@ -273,6 +278,26 @@ class DefaultExtension extends MProvider {
       const data   = await this._apiGet(`/v2/niches?count=30&page=${page}`);
       const niches = data.niches || [];
       return { list: niches.map(n => this._nicheToItem(n)), hasNextPage: (data.page || page) < (data.pages || 1) };
+    }
+
+    // ── Creator feed for CreatorProfileScreen ────────────────────────────────
+    if (listId.startsWith('creator_')) {
+      const username = listId.slice(8);
+      try {
+        const data = await this._apiGet(
+          '/v2/users/' + encodeURIComponent(username) + '/search?order=trending&count=20&page=' + page
+        );
+        const gifs = data.gifs || [];
+        if (gifs.length > 0) {
+          return { list: gifs.map(g => this._gifToItem(g, listId)), hasNextPage: gifs.length >= 20 };
+        }
+      } catch (_) {}
+      // Fallback: tag search by username
+      const fallback = await this._apiGet(
+        '/v2/gifs/search?search_text=' + encodeURIComponent(username) + '&order=trending&count=20&page=' + page
+      );
+      const fb = fallback.gifs || [];
+      return { list: fb.map(g => this._gifToItem(g, listId)), hasNextPage: fb.length >= 20 };
     }
 
     if (listId.startsWith('niche_')) {
