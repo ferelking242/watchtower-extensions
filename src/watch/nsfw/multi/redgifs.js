@@ -11,9 +11,9 @@ const watchtowerSources = [{
   "iconUrl": "https://www.redgifs.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "2.0.3",
+  "version": "2.0.4",
   "pkgPath": "nsfw/multi/redgifs.js",
-  "notes": "RedGIFs v2.0.3 — bump: force sync additionalParams type=reel via fixed fetch path",
+  "notes": "RedGIFs v2.0.4 — fix: pour toi endpoint mort (405), remplacé par mix niches trending",
   "isNsfw": true
 }];
 
@@ -139,13 +139,23 @@ class DefaultExtension extends MProvider {
   async getCustomList(listId, page) {
     const count = 20;
 
-    // ── For You feed — trending gifs ──────────────────────────────────────
+    // ── For You feed — mix trending gifs from 3 niches per page ─────────────
+    // /v2/gifs/trending no longer exists (405). We rotate across niches instead
+    // to give a varied "for you" feel without requiring a working global endpoint.
     if (listId === 'for_you') {
-      const data = await this._apiGet(
-        '/v2/gifs/trending?count=30&page=' + page
+      const perNiche  = 10;
+      const base      = ((page - 1) * 3) % this._NICHES.length;
+      const picks     = [base, (base + 1) % this._NICHES.length, (base + 2) % this._NICHES.length];
+      const nicheGifs = await Promise.all(
+        picks.map(i => this._nicheGifs(this._NICHES[i].id, 'trending', perNiche, 1))
       );
-      const gifs = data.gifs || [];
-      return { list: gifs.map(g => this._gifToItem(g, 'for_you')), hasNextPage: gifs.length >= 30 };
+      // interleave: 1 from each niche in turn
+      const merged = [];
+      const maxLen  = Math.max(...nicheGifs.map(a => a.length));
+      for (let i = 0; i < maxLen; i++) {
+        for (const arr of nicheGifs) { if (i < arr.length) merged.push(arr[i]); }
+      }
+      return { list: merged.map(g => this._gifToItem(g, 'for_you')), hasNextPage: true };
     }
 
     // ── Popular creators (Suivis tab) ──────────────────────────────────────
