@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.1.1",
+  "version": "1.1.2",
   "pkgPath": "watch/nsfw/en/xnxx.js",
   "notes": "Adult content (18+)",
   "isNsfw": true
@@ -92,7 +92,7 @@ class DefaultExtension extends MProvider {
 
     // Category filter: browse by keyword
     if (cat) {
-      const q   = encodeURIComponent(cat.replace(/\s+/g, "+"));
+      const q   = encodeURIComponent(cat).replace(/%20/g, "+");
       const url = `https://www.xnxx.com/search/${q}/${page}`;
       extLog('info', `XNXX.getPopular[cat=${cat}] page=${page} → ${url}`);
       const res = await new Client().get(url, this.getHeaders(url));
@@ -135,9 +135,11 @@ class DefaultExtension extends MProvider {
     }
 
     const top    = sort === 1; // Sort: 0=Recent, 1=Top Rated
-    const search = cat
-      ? encodeURIComponent((q + " " + cat).trim().replace(/\s+/g, "+"))
-      : encodeURIComponent(q.replace(/\s+/g, "+"));
+    // encodeURIComponent then replace %20 with + (XNXX expects + as word separator in path)
+    const keyword = cat
+      ? (q + " " + cat).trim()
+      : q;
+    const search = encodeURIComponent(keyword).replace(/%20/g, "+");
 
     const url = top
       ? `https://www.xnxx.com/search/${search}/${page}?top`
@@ -201,19 +203,34 @@ class DefaultExtension extends MProvider {
     extLog('info', `XNXX._parseVideoList: items=${items.length}`);
 
     // ── hasNextPage ───────────────────────────────────────────────────────
+    const MAX_PAGE = 50;
     let hasNext = false;
-    if (mode === "best") {
+
+    if (page >= MAX_PAGE) {
+      hasNext = false;
+    } else if (mode === "best") {
       // Date-based: up to 24 months back
       hasNext = items.length > 0 && page < 24;
     } else if (mode === "hits") {
-      // /hits/N — detect explicit next-page link
-      const nextStr = `/hits/${page + 1}`;
-      hasNext = html.includes(nextStr);
-      if (!hasNext && items.length >= 20) hasNext = true;
+      // /hits/N — look for a scoped next-page anchor href="/hits/{N+1}" or "https://www.xnxx.com/hits/{N+1}"
+      const nextHits = `/hits/${page + 1}`;
+      // Only match if it appears as a link target (href attribute), not as arbitrary text
+      hasNext = html.includes(`href="${nextHits}"`) || html.includes(`href="https://www.xnxx.com${nextHits}"`);
+      // Fallback: item count (guard against sites that don't emit pagination anchors)
+      if (!hasNext && items.length >= 30) hasNext = true;
     } else {
-      // search: detect next page number in pagination links
-      const nextStr = `/${page + 1}`;
-      hasNext = html.includes(nextStr) && items.length > 0;
+      // search: look for next-page anchor in pagination container
+      // XNXX pagination uses href="/search/{q}/{N}" links
+      const doc2 = new Document(html);
+      const pagerLinks = doc2.select(".pagination a, .pager a, nav a, .browse-content a");
+      const nextPat = `/${page + 1}`;
+      let foundPager = false;
+      for (const a of pagerLinks) {
+        const h = a.attr("href") || "";
+        if (h.endsWith(nextPat) || h.endsWith(nextPat + "?top")) { foundPager = true; break; }
+      }
+      hasNext = foundPager;
+      // Fallback: item count with reasonable threshold + cap
       if (!hasNext && items.length >= 30) hasNext = true;
     }
 
