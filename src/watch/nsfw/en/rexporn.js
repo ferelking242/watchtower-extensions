@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.rexporn.st/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.0",
+  "version": "1.2.1",
   "pkgPath": "watch/nsfw/en/rexporn.js",
   "notes": "Adult content (18+) — multi-quality MP4 streaming",
   "isNsfw": true
@@ -198,27 +198,52 @@ class DefaultExtension extends MProvider {
     }
 
     // ── hasNextPage strategy ──────────────────────────────────────────────
+    // Scoped detection: look for the next-page link inside pagination containers
+    // rather than broad html.includes() to avoid false positives.
+    const doc2 = new Document(html);
     const cap = 50;
     let hasNext = false;
 
     if (page >= cap) {
       hasNext = false;
     } else if (style === "popular") {
-      // Home /page-N.html links
-      hasNext = html.includes(`/page-${page + 1}.html`);
+      // Home /page-N.html — check nav anchor hrefs only
+      const nextSlug = `/page-${page + 1}.html`;
+      const navLinks = doc2.select(".pagination a, .pager a, .pages a, nav.pages a");
+      for (const a of navLinks) {
+        if ((a.attr("href") || "").includes(nextSlug)) { hasNext = true; break; }
+      }
+      if (!hasNext) hasNext = items.length >= 20; // fallback
     } else if (style === "category") {
-      // /slug-page-N.html links
-      hasNext = html.includes(`-page-${page + 1}.html`);
+      // /slug-page-N.html — scoped check
+      const nextSlug = `-page-${page + 1}.html`;
+      const navLinks = doc2.select(".pagination a, .pager a, .pages a, nav.pages a");
+      for (const a of navLinks) {
+        if ((a.attr("href") || "").includes(nextSlug)) { hasNext = true; break; }
+      }
+      if (!hasNext) hasNext = items.length >= 20;
     } else if (style === "sorted") {
-      // /path/page-N.html links
-      hasNext = html.includes(`/page-${page + 1}.html`);
+      // /path/page-N.html — scoped check
+      const nextSlug = `/page-${page + 1}.html`;
+      const navLinks = doc2.select(".pagination a, .pager a, .pages a, nav.pages a");
+      for (const a of navLinks) {
+        if ((a.attr("href") || "").includes(nextSlug)) { hasNext = true; break; }
+      }
+      if (!hasNext) hasNext = items.length >= 20;
     } else if (style === "new") {
       // ?page=N in nav links OR item count heuristic
-      hasNext = html.includes(`page=${page + 1}`) || items.length >= 20;
+      const navLinks = doc2.select(".pagination a, .pager a, .pages a, nav.pages a");
+      for (const a of navLinks) {
+        if ((a.attr("href") || "").includes(`page=${page + 1}`)) { hasNext = true; break; }
+      }
+      if (!hasNext) hasNext = items.length >= 20;
     } else {
-      // search: nav link or item count
-      const hasNavLink = html.includes(`page=${page + 1}`);
-      hasNext = hasNavLink || items.length >= 20;
+      // search: nav link or item count (search results don't always have explicit nav)
+      const navLinks = doc2.select(".pagination a, .pager a, .pages a, nav.pages a");
+      for (const a of navLinks) {
+        if ((a.attr("href") || "").includes(`page=${page + 1}`)) { hasNext = true; break; }
+      }
+      if (!hasNext) hasNext = items.length >= 20;
     }
 
     return { list: items, hasNextPage: hasNext };
