@@ -167,49 +167,7 @@ class DefaultExtension extends MProvider {
 
     // ── Custom home sections ───────────────────────────────────────────────
 
-    getCustomLists() {
-        // Declarative layout contract (supported by Watchtower ≥ next):
-        // layout  → "spotlight" | "ranked" | "compact" | "carousel" | "grid"
-        // color   → CSS hex string (accent bar + header icon tint)
-        // icon    → key from _kIconMap in watch_home_screen.dart
-        // seeAll  → false | "latest" | "popular" | true (custom paginated page)
-        return [
-            {
-                id:     "derniers-ajouts",
-                name:   "Derniers ajouts",
-                layout: "spotlight",
-                color:  "#00BCD4",
-                icon:   "fiber_new",
-                seeAll: "latest",
-            },
-            {
-                id:     "top15",
-                name:   "Top 15 Tendances",
-                layout: "ranked",
-                color:  "#FFB300",
-                icon:   "trending_up",
-                seeAll: false,
-            },
-            {
-                id:     "animations",
-                name:   "Animations",
-                layout: "compact",
-                color:  "#9C27B0",
-                icon:   "animation",
-                seeAll: true,
-            },
-            {
-                id:     "docs-spectacles",
-                name:   "Docs & Spectacles",
-                layout: "compact",
-                color:  "#4CAF50",
-                icon:   "theaters",
-                seeAll: true,
-            },
-        ];
-    }
-
-    async getCustomList(listId, page) {
+async getCustomList(listId, page) {
         await this._log(`customList ${listId} p${page}`);
 
         if (listId === "derniers-ajouts") {

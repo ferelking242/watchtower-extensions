@@ -422,15 +422,7 @@ class DefaultExtension extends MProvider {
     //  Si le cache home est disponible → sections construites dynamiquement
     //  depuis l'API (titres + ordre exacts du site). Fallback statique sinon.
     // ─────────────────────────────────────────────────────────────────────────
-    getCustomLists() {
-        if (this._homeRawCache && this._homeRawCache.operatingList &&
-                this._homeRawCache.operatingList.length > 0) {
-            return this._buildDynamicSections(this._homeRawCache);
-        }
-        return MB_HOME_SECTIONS;
-    }
-
-    _buildDynamicSections(data) {
+_buildDynamicSections(data) {
         var sections = [
             { id: "carousel",      name: "\uD83C\uDFAC \u00C0 la une", layout: "banner",   color: "#1CB7FF" },
             { id: "cat_all",       name: "All",                           layout: "category", color: "#2C3E50" },

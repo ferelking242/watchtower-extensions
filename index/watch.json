@@ -25,7 +25,8 @@
     "isAggregator": false,
     "paywall": "free",
     "hasSubtitles": false,
-    "hasDub": false
+    "hasDub": false,
+    "uiLayout": "ui-layouts/mock.json"
   },
   {
     "name": "Google",
@@ -79,7 +80,8 @@
     "isAggregator": false,
     "paywall": "free",
     "hasSubtitles": true,
-    "hasDub": true
+    "hasDub": true,
+    "uiLayout": "ui-layouts/moviebox.json"
   },
   {
     "name": "MovieBox App",
@@ -107,7 +109,8 @@
     "isAggregator": false,
     "paywall": "free",
     "hasSubtitles": true,
-    "supportsComments": true
+    "supportsComments": true,
+    "uiLayout": "ui-layouts/moviebox_app.json"
   },
   {
     "name": "TropiStream",
@@ -267,7 +270,8 @@
     "isAggregator": false,
     "paywall": "free",
     "hasSubtitles": true,
-    "hasDub": false
+    "hasDub": false,
+    "uiLayout": "ui-layouts/frenchstream.json"
   },
   {
     "name": "ÃÂ¥ÃÂ°ÃÂÃÂ§ÃÂ±ÃÂ³UCÃÂ¨ÃÂµÃÂÃÂ¦ÃÂºÃÂÃÂ§ÃÂ«ÃÂ",
@@ -633,7 +637,8 @@
     "isAggregator": false,
     "paywall": "free",
     "hasSubtitles": true,
-    "hasDub": false
+    "hasDub": false,
+    "uiLayout": "ui-layouts/dotriv.json"
   },
   {
     "name": "ÃÂ¦ÃÂ¨ÃÂ±ÃÂ¨ÃÂÃÂ±ÃÂ¥ÃÂÃÂ¨ÃÂ¦ÃÂ¼ÃÂ« (YHDM)",
@@ -6106,7 +6111,8 @@
       "anime",
       "live-tv",
       "collections"
-    ]
+    ],
+    "uiLayout": "ui-layouts/movix.json"
   },
   {
     "name": "RedGIFs",
@@ -6134,6 +6140,7 @@
     "isAggregator": false,
     "paywall": "free",
     "hasSubtitles": false,
-    "hasDub": false
+    "hasDub": false,
+    "uiLayout": "ui-layouts/redgifs.json"
   }
 ]

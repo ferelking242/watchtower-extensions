@@ -504,17 +504,7 @@ class DefaultExtension extends MProvider {
     }
       // ─── Custom lists: Accueil uses getPopular (list), Popular & Recently Added use grids ───
 
-      getCustomLists() {
-            return [
-                { id: "home",            name: "Accueil",               icon: "home"         },
-                { id: "new_titles",      name: "New Titles",            icon: "fiber_new"    },
-                { id: "recommended",     name: "Recommended",           icon: "star"         },
-                { id: "self_published",  name: "Self-Published",        icon: "trending_up"  },
-                { id: "seasonal_spring", name: "Seasonal: Spring 2026", icon: "animation"    },
-            ];
-        }
-
-        async getCustomList(listId, page) {
+async getCustomList(listId, page) {
             if (listId === "popular")         return this.getFollowedPopular(page);
             if (listId === "recently_added")  return this.getLatestUpdates(page);
             if (listId === "new_titles")      return this.getNewTitles(page);

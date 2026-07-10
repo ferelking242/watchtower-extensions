@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      { "id": "originals", "component": "carousel", "title": "⭐ Originals", "accent": "#00BCD4", "icon": "star",          "seeAll": true },
+      { "id": "canvas",    "component": "carousel", "title": "🎨 Canvas",    "accent": "#9C27B0", "icon": "palette",       "seeAll": true }
+    ]
+  },
+  "browse": {
+    "popular": { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "latest":  { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "search":  { "results": { "component": "grid", "columns": 3 }, "filters": "chips" }
+  },
+  "player": { "mode": "standard" }
+}

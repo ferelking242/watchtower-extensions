@@ -580,15 +580,7 @@ class DefaultExtension extends MProvider {
     //    (titres et ordre exacts de l'API, jamais hardcodés)
     //  • Sinon → fallback minimal : carousel + catégories + catalogue
     // ─────────────────────────────────────────────────────────────
-    getCustomLists() {
-        if (this._homeRawCache && this._homeRawCache.operatingList &&
-                this._homeRawCache.operatingList.length > 0) {
-            return this._buildDynamicSections(this._homeRawCache);
-        }
-        return MB_HOME_SECTIONS;
-    }
-
-    // ── Construction dynamique des sections depuis l'API ──────────
+// ── Construction dynamique des sections depuis l'API ──────────
     // Les noms de sections viennent entièrement du serveur.
     // Le layout "ranked" est auto-détecté sur le titre (pas d'indices hardcodés).
     _buildDynamicSections(data) {

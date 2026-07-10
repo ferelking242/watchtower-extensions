@@ -75,20 +75,6 @@ class DefaultExtension extends MProvider {
     { id: 'goth-girls',    name: 'Goth Girls'    },
     { id: 'latinas',       name: 'Latinas'       },
   ];
-
-  getCustomLists() {
-    const sections = [];
-    for (const n of this._NICHES) {
-      sections.push({ id: 'niche_' + n.id, layout: 'category', name: n.name, color: '#1A1A2E' });
-    }
-    sections.push({ id: 'trending',  layout: 'spotlight', name: '🔥 Trending', color: '#FF3B30', icon: 'local_fire_department', seeAll: 'trending' });
-    sections.push({ id: 'new',       layout: 'spotlight', name: '✨ New',      color: '#34C759', icon: 'fiber_new',             seeAll: 'new'      });
-    sections.push({ id: 'for_you',       layout: 'spotlight', name: '🎯 Pour toi',  color: '#FF3B5C' });
-    sections.push({ id: 'creators_trending', layout: 'ranked', name: '🌟 Créateurs', color: '#5856D6' });
-    sections.push({ id: 'catalogue', layout: 'catalogue', name: 'Catalogue' });
-    return sections;
-  }
-
   _gifToItem(gif, listId) {
     const urls          = gif.urls || {};
     const hd            = urls.hd || urls.sd || '';

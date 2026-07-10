@@ -257,24 +257,7 @@ class DefaultExtension extends MProvider {
     }
 
     // ── Custom lists (sections accueil) ──────────────────────────────────────
-    getCustomLists() {
-        return [
-            { id: "all",            name: "📺 Toutes les chaînes"      },
-            { id: "sport",          name: "⚽ Sport"                    },
-            { id: "info",           name: "📰 Info & Actualités"        },
-            { id: "divertissement", name: "🎬 Divertissement"           },
-            { id: "cinema",         name: "🎞️ Cinéma"                   },
-            { id: "series",         name: "🎭 Séries"                   },
-            { id: "documentaire",   name: "🎥 Documentaires"            },
-            { id: "jeunesse",       name: "🧒 Jeunesse"                 },
-            { id: "musique",        name: "🎵 Musique"                  },
-            { id: "france",         name: "🇫🇷 Chaînes françaises"       },
-            { id: "international",  name: "🌍 International"            },
-            { id: "sport_foot",     name: "🏆 Football"                 },
-        ];
-    }
-
-    async getCustomList(listId, page) {
+async getCustomList(listId, page) {
         var url;
         switch (listId) {
             case "all":

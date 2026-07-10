@@ -266,24 +266,7 @@ class DefaultExtension extends MProvider {
     }
 
     // ── Custom lists (accueil) ───────────────────────────────────────────────
-    getCustomLists() {
-        return [
-            { id: "trending",    name: "🔥 Tendances"          },
-            { id: "vf",          name: "🇫🇷 VF"                 },
-            { id: "vostfr",      name: "🌐 VOSTFR"             },
-            { id: "action",      name: "💥 Action"              },
-            { id: "adventure",   name: "⚔️ Aventure"            },
-            { id: "shonen",      name: "👊 Shōnen"             },
-            { id: "romance",     name: "💕 Romance"             },
-            { id: "fantasy",     name: "🧙 Fantaisie"           },
-            { id: "sci_fi",      name: "🚀 Science-Fiction"     },
-            { id: "comedy",      name: "😄 Comédie"             },
-            { id: "horror",      name: "👻 Horreur"             },
-            { id: "season_2026", name: "📅 Saison 2026"         },
-        ];
-    }
-
-    async getCustomList(listId, page) {
+async getCustomList(listId, page) {
         var url;
         switch (listId) {
             case "trending":

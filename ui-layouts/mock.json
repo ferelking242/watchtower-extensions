@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      { "id": "carousel",   "component": "banner",        "title": null,                   "accent": "#1CB7FF" },
+      { "id": "cat_action", "component": "categoryPills", "title": "Action",               "accent": "#C0392B" },
+      { "id": "cat_anime",  "component": "categoryPills", "title": "Anime",                "accent": "#8E44AD" },
+      { "id": "cat_drama",  "component": "categoryPills", "title": "Drame",                "accent": "#00897B" },
+      { "id": "trending",   "component": "carousel",      "title": "Tendances du moment",  "accent": "#FF6F00", "icon": "trending_up", "seeAll": true },
+      { "id": "anime",      "component": "carousel",      "title": "Anime & Animation",    "accent": "#8E44AD", "icon": "animation",   "seeAll": true },
+      { "id": "top15",      "component": "ranked",        "title": "Top 15 du moment",     "accent": "#FFB300" },
+      { "id": "catalogue",  "component": "grid",          "title": "Catalogue",            "paginated": true }
+    ]
+  },
+  "browse": {
+    "popular": { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "latest":  { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "search":  { "results": { "component": "grid", "columns": 3 }, "filters": "chips" }
+  },
+  "player": { "mode": "standard" }
+}

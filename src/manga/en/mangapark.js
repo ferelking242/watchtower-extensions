@@ -660,14 +660,7 @@ class DefaultExtension extends MProvider {
       },
     ];
   }
-      getCustomLists() {
-          return [
-          { id: "trending", name: "Trending" },
-        { id: "new_titles", name: "New Titles" },
-          ];
-      }
-
-      async getCustomList(listId, page) {
+async getCustomList(listId, page) {
           if (listId === "new_titles") {
               return await this.searchPage({ sort: "field_create", page: page });
           }

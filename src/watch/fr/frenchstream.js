@@ -406,25 +406,7 @@ class DefaultExtension extends MProvider {
     }
 
     // ── Sections accueil ─────────────────────────────────────────────────────
-    getCustomLists() {
-        return [
-            { id: "trending",       name: "🔥 À l'affiche"           },
-            { id: "films",          name: "🎬 Films"                  },
-            { id: "series",         name: "📺 Séries"                 },
-            { id: "films_recent",   name: "🆕 Films récents"          },
-            { id: "series_recent",  name: "🆕 Séries récentes"        },
-            { id: "vf",             name: "🇫🇷 Version Française"      },
-            { id: "vostfr",         name: "🌐 VOSTFR"                 },
-            { id: "animation",      name: "🎭 Animation"              },
-            { id: "action",         name: "💥 Action"                 },
-            { id: "comedie",        name: "😂 Comédie"                },
-            { id: "horreur",        name: "👻 Horreur"                },
-            { id: "thriller",       name: "🔪 Thriller"               },
-            { id: "science_fiction",name: "🚀 Science-Fiction"        },
-        ];
-    }
-
-    async getCustomList(listId, page) {
+async getCustomList(listId, page) {
         var url;
         switch (listId) {
             case "trending":

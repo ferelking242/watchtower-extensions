@@ -649,14 +649,7 @@ class DefaultExtension extends MProvider {
     // Base64URL
     return this.base64UrlEncodeBytes(bytes);
   }
-    getCustomLists() {
-      return [
-        { id: "new_manga", name: "New Manga" },
-        { id: "trending", name: "Trending" },
-      ];
-    }
-
-    async getCustomList(listId, page) {
+async getCustomList(listId, page) {
       if (listId === "new_manga") {
         return await this.filterPage({
           keyword: "",

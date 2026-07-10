@@ -419,14 +419,7 @@ class DefaultExtension extends MProvider {
       },
     ];
   }
-      getCustomLists() {
-          return [
-          { id: "popular", name: "Popular" },
-        { id: "latest", name: "Latest Updates" },
-          ];
-      }
-
-      async getCustomList(listId, page) {
+async getCustomList(listId, page) {
           if (listId === "popular") {
               const url = `${this.getBaseUrl()}/manga-list/?page=${page}&m_orderby=trending`;
               const res = await new Client().get(url, this.getHeaders());

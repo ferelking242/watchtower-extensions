@@ -126,20 +126,7 @@ class DefaultExtension extends MProvider {
   get supportsLatest() { return false; }
 
   // Called synchronously — returns section descriptors
-  getCustomLists() {
-    return [
-      { id: "carousel",   name: "🎬 À la une",     layout: "banner",    color: "#1CB7FF" },
-      { id: "cat_action", name: "Action",            layout: "category",  color: "#C0392B" },
-      { id: "cat_anime",  name: "Anime",             layout: "category",  color: "#8E44AD" },
-      { id: "cat_drama",  name: "Drame",             layout: "category",  color: "#00897B" },
-      { id: "trending",   name: "Tendances du moment", layout: "spotlight", color: "#FF6F00", icon: "trending_up" },
-      { id: "anime",      name: "Anime & Animation",  layout: "spotlight", color: "#8E44AD", icon: "animation" },
-      { id: "top15",      name: "Top 15 du moment",   layout: "ranked",    color: "#FFB300", seeAll: false },
-      { id: "catalogue",  name: "Catalogue",           layout: "catalogue", color: "#7C4DFF" },
-    ];
-  }
-
-  async getCustomList(listId, page) {
+async getCustomList(listId, page) {
     // Carousel — bannières 16:9
     if (listId === "carousel") {
       return { list: MOCK_BANNERS.map(m => this._item(m)), hasNextPage: false };

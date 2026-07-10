@@ -144,14 +144,7 @@ class DefaultExtension extends MProvider {
         }];
     }
 
-      getCustomLists() {
-          return [
-          { id: "popular", name: "Popular" },
-        { id: "latest", name: "Latest Updates" },
-          ];
-      }
-
-      async getCustomList(listId, page) {
+async getCustomList(listId, page) {
           if (listId === "popular") {
               const baseUrl = new SharedPreferences().get("overrideBaseUrl1");
               const res = await new Client().get(`${baseUrl}/series?order=popular&page=${page}`);

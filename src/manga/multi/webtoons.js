@@ -633,14 +633,7 @@ class DefaultExtension extends MProvider {
       },
     ];
   }
-      getCustomLists() {
-          return [
-          { id: "originals", name: "Originals" },
-        { id: "canvas", name: "Canvas" },
-          ];
-      }
-
-      async getCustomList(listId, page) {
+async getCustomList(listId, page) {
           if (listId === "canvas") {
               const res = await new Client().get(`${this.getBaseUrl()}/${this.langCode()}/canvas?sortOrder=UPDATE`);
               const doc = new Document(res.body);

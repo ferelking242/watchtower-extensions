@@ -430,15 +430,7 @@ class DefaultExtension extends MProvider {
       },
     ];
   }
-  getCustomLists() {
-    return [
-      { id: "home",      name: "Accueil",   icon: "home"         },
-      { id: "new",       name: "New Manga", icon: "new_releases" },
-      { id: "completed", name: "Completed", icon: "star"         },
-    ];
-  }
-
-  async getCustomList(listId, page) {
+async getCustomList(listId, page) {
     const baseUrl = this.getBaseUrl();
     // Map each section to Madara query params
     const orderMap    = { popular: "views", latest: "latest", new: "new-manga", completed: "latest" };

@@ -422,15 +422,7 @@ class DefaultExtension extends MProvider {
     ll(url) {
         return url.includes("?") ? "&" : "?";
     }
-      getCustomLists() {
-          // Extra home sections for the Accueil carousel
-          return [
-              { id: "trending", name: "Trending" },
-              { id: "new_titles", name: "New Titles" },
-          ];
-      }
-
-      async getCustomList(listId, page) {
+async getCustomList(listId, page) {
           if (listId === "new_titles") {
               const url = `${this.source.apiUrl}/v1.0/search?sort=new&page=${page}&tachiyomi=true`;
               const res = await new Client().get(url, this.getHeaders());

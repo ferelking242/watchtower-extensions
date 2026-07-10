@@ -27,7 +27,8 @@
     "subCategories": [
       "Multi-lang"
     ],
-    "supportsComments": false
+    "supportsComments": false,
+    "uiLayout": "ui-layouts/mangadex.json"
   },
   {
     "name": "Comick",
@@ -57,7 +58,8 @@
     "subCategories": [
       "Multi-lang"
     ],
-    "supportsComments": false
+    "supportsComments": false,
+    "uiLayout": "ui-layouts/comick.json"
   },
   {
     "name": "Webtoons",
@@ -87,7 +89,8 @@
     "subCategories": [
       "Multi-lang"
     ],
-    "supportsComments": false
+    "supportsComments": false,
+    "uiLayout": "ui-layouts/webtoons.json"
   },
   {
     "name": "Mangafire",
@@ -117,7 +120,8 @@
     "subCategories": [
       "Multi-lang"
     ],
-    "supportsComments": false
+    "supportsComments": false,
+    "uiLayout": "ui-layouts/mangafire.json"
   },
   {
     "name": "MangaDex (unlocked)",
@@ -178,7 +182,8 @@
     "subCategories": [
       "Multi-lang"
     ],
-    "supportsComments": false
+    "supportsComments": false,
+    "uiLayout": "ui-layouts/batoto_v2.json"
   },
   {
     "name": "Oduto - Boruto",
@@ -262,7 +267,8 @@
     "isAggregator": false,
     "paywall": "free",
     "subCategories": [],
-    "supportsComments": false
+    "supportsComments": false,
+    "uiLayout": "ui-layouts/asura_scans.json"
   },
   {
     "name": "ComicsAll",
@@ -290,7 +296,8 @@
     "isAggregator": false,
     "paywall": "free",
     "subCategories": [],
-    "supportsComments": false
+    "supportsComments": false,
+    "uiLayout": "ui-layouts/comics_all.json"
   },
   {
     "name": "Comix",
@@ -346,7 +353,8 @@
     "isAggregator": true,
     "paywall": "free",
     "subCategories": [],
-    "supportsComments": false
+    "supportsComments": false,
+    "uiLayout": "ui-layouts/mangapark.json"
   },
   {
     "name": "ManhwaZ",
@@ -374,7 +382,8 @@
     "isAggregator": false,
     "paywall": "free",
     "subCategories": [],
-    "supportsComments": false
+    "supportsComments": false,
+    "uiLayout": "ui-layouts/manhwaz.json"
   },
   {
     "name": "Weeb Central",
@@ -402,7 +411,8 @@
     "isAggregator": false,
     "paywall": "free",
     "subCategories": [],
-    "supportsComments": false
+    "supportsComments": false,
+    "uiLayout": "ui-layouts/weeb_central.json"
   },
   {
     "name": "MangaWorld",
@@ -1098,7 +1108,8 @@
       "JavaScript"
     ],
     "supportsComments": false,
-    "upstream": ""
+    "upstream": "",
+    "uiLayout": "ui-layouts/harimanga.json"
   },
   {
     "name": "ImpÃÂ©rio Scans",
@@ -8425,7 +8436,8 @@
       "Manhua"
     ],
     "supportsComments": false,
-    "upstream": "mangayomi"
+    "upstream": "mangayomi",
+    "uiLayout": "ui-layouts/copymanga.json"
   },
   {
     "name": "Ã¥ÂÂ¨Ã¦Â¼Â«Ã¤Â¹ÂÃ¥Â®Â¶",
@@ -8545,7 +8557,8 @@
     "paywall": "free",
     "subCategories": [],
     "supportsComments": false,
-    "upstream": "mangayomi"
+    "upstream": "mangayomi",
+    "uiLayout": "ui-layouts/mangapill.json"
   },
   {
     "name": "CrunchyScan",
