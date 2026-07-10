@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.3.0",
+    "version": "3.4.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,7 +19,7 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox App v3.3.0 — Toutes les langues visibles (seenEpKey supprimé, fallback subjectId dubs), vidéo ~4s (timer 28s→4s). Login optionnel, Family Mode, Bilingual subs."
+    "notes": "MovieBox App v3.4.0 — supportsComments; author=releaseYear, artist=director+cast, country in genre list."
 }];
 
 // ══════════════════════════════════════════════════════════════
@@ -938,13 +938,27 @@ class DefaultExtension extends MProvider {
                 }
             }
         }
+        var dirList    = s.directorList || s.directors || [];
+        var dirName    = dirList.length > 0
+            ? (dirList[0].name || dirList[0].directorName || "").trim() : "";
+        var castList   = s.castList || s.actors || [];
+        var actorNames = castList.slice(0, 4)
+            .map(function(a) { return (a.name || a.actorName || "").trim(); })
+            .filter(function(n) { return n.length > 0; });
+        var artistParts = dirName ? [dirName].concat(actorNames) : actorNames;
+        var releaseYear = s.releaseDate ? s.releaseDate.substring(0, 4) : "";
+        // Country: embed as last genre with · prefix so the app can split it
+        var country = (s.country || s.areaName || s.countryName || "").trim();
+        if (country) genres.push("·" + country);
         return {
             name:        s.title || "Unknown",
             imageUrl:    this._cover(s),
             description: desc,
             genre:       genres,
             status:      isMovie ? 1 : 0,
-            chapters:    chapters
+            chapters:    chapters,
+            author:      releaseYear,
+            artist:      artistParts.join(", ")
         };
     }
 
