@@ -6142,5 +6142,33 @@
     "hasSubtitles": false,
     "hasDub": false,
     "uiLayout": "ui-layouts/redgifs.json"
+  },
+  {
+    "name": "LyokoPlay",
+    "id": 1946070001,
+    "baseUrl": "https://www.lyokoplay.fr",
+    "lang": "fr",
+    "typeSource": "single",
+    "iconUrl": "https://www.lyokoplay.fr/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/watch/fr/lyokoplay.js",
+    "apiUrl": "https://www.lyokoplay.fr",
+    "version": "1.0.0",
+    "isManga": false,
+    "itemType": 1,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Streaming officiel et gratuit de Code Lyoko (Genèse + Saisons 1-4) et Code Lyoko Evolution, propose par le C.R.C.L.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "hasSubtitles": false,
+    "hasDub": false
   }
 ]
