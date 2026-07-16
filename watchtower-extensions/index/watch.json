@@ -12,7 +12,7 @@
     "hasCloudflare": true,
     "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/watch/multi/miraculum.js",
     "apiUrl": "https://internal.miraculum.ml",
-    "version": "1.0.0",
+    "version": "2.1.0",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,

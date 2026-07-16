@@ -106,7 +106,7 @@
     "name": "Miraculum Music",
     "iconUrl": "https://miraculum.ml/android-chrome-192x192.png",
     "lang": "multi",
-    "version": "1.0.0",
+    "version": "2.1.0",
     "itemType": 3,
     "sourceCodeLanguage": 1,
     "requiresAccount": false,
