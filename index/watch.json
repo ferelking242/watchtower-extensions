@@ -6197,7 +6197,8 @@
     "isAggregator": false,
     "paywall": "free",
     "hasSubtitles": false,
-    "hasDub": false, {
+    "hasDub": false
+  }, {
     "name": "Miraculum Music",
     "id": 1900000002,
     "baseUrl": "https://miraculum.ml",
