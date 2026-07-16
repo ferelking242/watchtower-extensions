@@ -1,11 +1,11 @@
 {
   "name": "WatchTower Extensions",
   "website": "https://ferelking242.github.io/watchtower-extensions",
-  "watchJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/watch.json",
-  "mangaJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/manga.json",
-  "novelJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/novel.json",
-  "gameJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/game.json",
-  "musicJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/music.json",
-  "pluginsJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/plugins.json",
+  "watchJsonUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/index/watch.json",
+  "mangaJsonUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/index/manga.json",
+  "novelJsonUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/index/novel.json",
+  "gameJsonUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/index/game.json",
+  "musicJsonUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/index/music.json",
+  "pluginsJsonUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/index/plugins.json",
   "localSourcesPath": "local_sources/"
 }

@@ -10,7 +10,7 @@
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": true,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/game/en/en.romsfun.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/game/en/en.romsfun.js",
     "apiUrl": "",
     "version": "1.0.2",
     "isManga": false,

@@ -10,7 +10,7 @@
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": true,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/annas_archive.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/annas_archive.js",
     "apiUrl": "",
     "version": "0.0.4",
     "isManga": false,
@@ -36,7 +36,7 @@
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": true,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novel_updates.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novel_updates.js",
     "apiUrl": "",
     "version": "0.0.7",
     "isManga": false,
@@ -62,7 +62,7 @@
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": false,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelbuddy.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelbuddy.js",
     "apiUrl": "",
     "version": "0.0.11",
     "isManga": false,
@@ -88,7 +88,7 @@
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": false,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelfire.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelfire.js",
     "apiUrl": "",
     "version": "0.0.3",
     "isManga": false,
@@ -114,7 +114,7 @@
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": false,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/web_novel_translations.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/web_novel_translations.js",
     "apiUrl": "",
     "version": "1.0.3",
     "isManga": false,
@@ -140,7 +140,7 @@
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": false,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/wordrain69.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/wordrain69.js",
     "apiUrl": "",
     "version": "0.0.6",
     "isManga": false,
@@ -166,7 +166,7 @@
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": false,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/royalroad.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/royalroad.js",
     "apiUrl": "",
     "version": "1.0.2",
     "isManga": false,
@@ -192,7 +192,7 @@
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": false,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelcool.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelcool.js",
     "apiUrl": "",
     "version": "1.0.2",
     "isManga": false,
@@ -218,7 +218,7 @@
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": false,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/wuxiaworld.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/wuxiaworld.js",
     "apiUrl": "",
     "version": "1.0.2",
     "isManga": false,
@@ -244,7 +244,7 @@
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": false,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelhub.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelhub.js",
     "apiUrl": "",
     "version": "1.0.2",
     "isManga": false,
@@ -270,7 +270,7 @@
     "dateFormatLocale": "",
     "isNsfw": false,
     "hasCloudflare": false,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ar/kolnovel.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ar/kolnovel.js",
     "apiUrl": "",
     "version": "0.0.3",
     "isManga": false,
@@ -302,7 +302,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1402190502,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ar/arnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ar/arnovel.js"
   },
   {
     "name": "Azora",
@@ -321,7 +321,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3579537175,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ar/azora.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ar/azora.js"
   },
   {
     "name": "dilar tube",
@@ -340,7 +340,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4537430074,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ar/dilartube.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ar/dilartube.js"
   },
   {
     "name": "Free Kol Novel",
@@ -359,7 +359,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3379191258,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ar/freekolnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ar/freekolnovel.js"
   },
   {
     "name": "HizoManga",
@@ -378,7 +378,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4725270986,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ar/hizomanga.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ar/hizomanga.js"
   },
   {
     "name": "Markazriwayat",
@@ -397,7 +397,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1917881204,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ar/markazriwayat.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ar/markazriwayat.js"
   },
   {
     "name": "Novel4Up",
@@ -416,7 +416,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3493953524,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ar/novel4up.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ar/novel4up.js"
   },
   {
     "name": "Novels Paradise",
@@ -435,7 +435,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1897971486,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ar/novelsparadise.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ar/novelsparadise.js"
   },
   {
     "name": "Olaoe.cyou",
@@ -454,7 +454,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3980491317,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ar/olaoe.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ar/olaoe.js"
   },
   {
     "name": "Rewayat Club",
@@ -473,7 +473,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1329902741,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ar/rewayatclub.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ar/rewayatclub.js"
   },
   {
     "name": "Riwyat",
@@ -492,7 +492,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 5270101904,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ar/riwyat.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ar/riwyat.js"
   },
   {
     "name": "Sunovels",
@@ -511,7 +511,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3230110324,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ar/sunovels.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ar/sunovels.js"
   },
   {
     "name": "69书吧",
@@ -530,7 +530,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4821151832,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/zh/69shu.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/zh/69shu.js"
   },
   {
     "name": "爱下电子书",
@@ -549,7 +549,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2551585588,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/zh/69shu.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/zh/69shu.js"
   },
   {
     "name": "linovel",
@@ -568,7 +568,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1800146716,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/zh/linovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/zh/linovel.js"
   },
   {
     "name": "Linovelib",
@@ -587,7 +587,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4597677410,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/zh/linovelib.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/zh/linovelib.js"
   },
   {
     "name": "Linovelib(繁體)",
@@ -606,7 +606,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4280398437,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/zh/linovelib.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/zh/linovelib.js"
   },
   {
     "name": "Novel543",
@@ -625,7 +625,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4181291789,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/zh/novel543.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/zh/novel543.js"
   },
   {
     "name": "Quanben",
@@ -644,7 +644,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4872991722,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/zh/quanben.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/zh/quanben.js"
   },
   {
     "name": "FirstKissNovel",
@@ -663,7 +663,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2898089391,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/1stkissnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/1stkissnovel.js"
   },
   {
     "name": "AllNovel",
@@ -682,7 +682,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2318231151,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/allnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/allnovel.js"
   },
   {
     "name": "AllNovelFull",
@@ -701,7 +701,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2388771085,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/allnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/allnovel.js"
   },
   {
     "name": "Arcane Translations",
@@ -720,7 +720,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1424124332,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/arcane.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/arcane.js"
   },
   {
     "name": "Archive Of Our Own",
@@ -739,7 +739,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4367374895,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/archiveofourown.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/archiveofourown.js"
   },
   {
     "name": "Belle Reservoir",
@@ -758,7 +758,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4158535092,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/bellereservoir.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/bellereservoir.js"
   },
   {
     "name": "BoxNovel",
@@ -777,7 +777,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4950636288,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/boxnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/boxnovel.js"
   },
   {
     "name": "Cherry Mist Cafe",
@@ -796,7 +796,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3186033205,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/cherrymistcafe.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/cherrymistcafe.js"
   },
   {
     "name": "Chrysanthemum Garden",
@@ -815,7 +815,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4167584763,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/chrysanthemumgarden.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/chrysanthemumgarden.js"
   },
   {
     "name": "Citrus Aurora",
@@ -834,7 +834,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3296608564,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/citrusaurora.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/citrusaurora.js"
   },
   {
     "name": "Coral Boutique",
@@ -853,7 +853,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1438696366,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/coralboutique.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/coralboutique.js"
   },
   {
     "name": "CPUnovel",
@@ -872,7 +872,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3913790388,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/cpunovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/cpunovel.js"
   },
   {
     "name": "Crimson Scrolls",
@@ -891,7 +891,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4910606565,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/crimsonscrolls.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/crimsonscrolls.js"
   },
   {
     "name": "Daoist Quest",
@@ -910,7 +910,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2088281114,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/daoistquest.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/daoistquest.js"
   },
   {
     "name": "DaoNovel",
@@ -929,7 +929,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2608143097,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/daonovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/daonovel.js"
   },
   {
     "name": "DaoTranslate",
@@ -948,7 +948,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2007247668,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/daotranslate.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/daotranslate.js"
   },
   {
     "name": "Dearest Rosalie",
@@ -967,7 +967,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2028541435,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/dearestrosalie.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/dearestrosalie.js"
   },
   {
     "name": "Dragonholic",
@@ -986,7 +986,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2813332180,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/dragonholic.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/dragonholic.js"
   },
   {
     "name": "Dragon Tea",
@@ -1005,7 +1005,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1967724537,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/dragontea.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/dragontea.js"
   },
   {
     "name": "Dream Big Translations",
@@ -1024,7 +1024,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4848859533,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/dreambigtl.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/dreambigtl.js"
   },
   {
     "name": "Dusk Blossoms",
@@ -1043,7 +1043,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3191966004,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/duskblossoms.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/duskblossoms.js"
   },
   {
     "name": "ElloTL",
@@ -1062,7 +1062,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2777121332,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/ellotl.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/ellotl.js"
   },
   {
     "name": "Eternalune",
@@ -1081,7 +1081,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2787739828,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/eternalune.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/eternalune.js"
   },
   {
     "name": "Etude Translations",
@@ -1100,7 +1100,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2327417012,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/etudetranslations.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/etudetranslations.js"
   },
   {
     "name": "FanNovel",
@@ -1119,7 +1119,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1452447465,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/fannovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/fannovel.js"
   },
   {
     "name": "Fans Translations",
@@ -1138,7 +1138,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4309367348,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/fanstranslations.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/fanstranslations.js"
   },
   {
     "name": "Fenrir Realm",
@@ -1157,7 +1157,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2084612702,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/fenrir.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/fenrir.js"
   },
   {
     "name": "Fiction Zone",
@@ -1176,7 +1176,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3245584261,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/fictionzone.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/fictionzone.js"
   },
   {
     "name": "Foxaholic",
@@ -1195,7 +1195,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1497240045,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/foxaholic.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/foxaholic.js"
   },
   {
     "name": "Foxteller",
@@ -1214,7 +1214,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 5056351938,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/foxteller.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/foxteller.js"
   },
   {
     "name": "Free Web Novel",
@@ -1233,7 +1233,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1834842142,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/webnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/webnovel.js"
   },
   {
     "name": "Galaxy Translations",
@@ -1252,7 +1252,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4724612374,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/galaxytranslations.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/galaxytranslations.js"
   },
   {
     "name": "Genesis",
@@ -1271,7 +1271,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4984882043,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/genesistudio.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/genesistudio.js"
   },
   {
     "name": "Guavaread",
@@ -1290,7 +1290,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 5271136468,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/guavaread.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/guavaread.js"
   },
   {
     "name": "Hiraeth Translation",
@@ -1309,7 +1309,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1752844724,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/hiraethtranslation.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/hiraethtranslation.js"
   },
   {
     "name": "HotNovelPub",
@@ -1328,7 +1328,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4739001371,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/hotnovelpub.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/hotnovelpub.js"
   },
   {
     "name": "Hyacinth in Bloom",
@@ -1347,7 +1347,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1673401204,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/hyacinthbloom.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/hyacinthbloom.js"
   },
   {
     "name": "Indra Translations",
@@ -1366,7 +1366,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2385912667,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/indratranslations.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/indratranslations.js"
   },
   {
     "name": "Inkitt",
@@ -1385,7 +1385,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4148175842,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/inkitt.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/inkitt.js"
   },
   {
     "name": "iNovelTranslation",
@@ -1404,7 +1404,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3847755675,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/inoveltranslation.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/inoveltranslation.js"
   },
   {
     "name": "Ippotranslations",
@@ -1423,7 +1423,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2427788340,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/ippotranslations.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/ippotranslations.js"
   },
   {
     "name": "KDT Novels",
@@ -1442,7 +1442,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1295808266,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/kdtnovels.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/kdtnovels.js"
   },
   {
     "name": "Keopi Translations",
@@ -1461,7 +1461,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3398940675,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/keopi.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/keopi.js"
   },
   {
     "name": "KnoxT",
@@ -1480,7 +1480,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2035703985,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/knoxt.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/knoxt.js"
   },
   {
     "name": "Lazy Girl Translations",
@@ -1499,7 +1499,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2723269947,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/lazygirltranslations.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/lazygirltranslations.js"
   },
   {
     "name": "LeafStudio",
@@ -1518,7 +1518,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1536106590,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/leafstudio.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/leafstudio.js"
   },
   {
     "name": "Lib Read",
@@ -1537,7 +1537,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1052327092,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/libread.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/libread.js"
   },
   {
     "name": "LightNovelCave",
@@ -1556,7 +1556,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4012963981,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/lightnovelcave.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/lightnovelcave.js"
   },
   {
     "name": "LightNovelPlus",
@@ -1575,7 +1575,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4123778356,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/lightnovelplus.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/lightnovelplus.js"
   },
   {
     "name": "LightNovelPub Vip",
@@ -1594,7 +1594,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1468329973,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/lightnovelpubvip.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/lightnovelpubvip.js"
   },
   {
     "name": "Light Novel Translations",
@@ -1613,7 +1613,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1848473959,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/lightnoveltranslations.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/lightnoveltranslations.js"
   },
   {
     "name": "Light Novel Updates",
@@ -1632,7 +1632,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3357087149,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/lightnovelupdates.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/lightnovelupdates.js"
   },
   {
     "name": "Lily on the Valley",
@@ -1651,7 +1651,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1838741115,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/lilyonthevalley.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/lilyonthevalley.js"
   },
   {
     "name": "LightNovelHeaven",
@@ -1670,7 +1670,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3261594262,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/lnheaven.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/lnheaven.js"
   },
   {
     "name": "LnMTL",
@@ -1689,7 +1689,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4537968500,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/lnmtl.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/lnmtl.js"
   },
   {
     "name": "LNORI",
@@ -1708,7 +1708,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4900793556,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/lnori.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/lnori.js"
   },
   {
     "name": "Ltnovel",
@@ -1727,7 +1727,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 5062845105,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/ltnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/ltnovel.js"
   },
   {
     "name": "LulloBox",
@@ -1746,7 +1746,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3392078772,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/lullobox.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/lullobox.js"
   },
   {
     "name": "LunarLetters",
@@ -1765,7 +1765,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2807809140,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/lunarletters.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/lunarletters.js"
   },
   {
     "name": "Meownovel",
@@ -1784,7 +1784,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4816452052,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/meownovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/meownovel.js"
   },
   {
     "name": "Moonlight Novels",
@@ -1803,7 +1803,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 5140038516,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/moonlightnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/moonlightnovel.js"
   },
   {
     "name": "MostNovel",
@@ -1822,7 +1822,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2985203956,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/mostnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/mostnovel.js"
   },
   {
     "name": "MTL-Novel",
@@ -1841,7 +1841,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1382474772,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/mtl-novel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/mtl-novel.js"
   },
   {
     "name": "MTL Novel",
@@ -1860,7 +1860,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1162569534,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/mtl-novel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/mtl-novel.js"
   },
   {
     "name": "MVLEMPYR",
@@ -1879,7 +1879,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4813563909,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/mvlempyr_com.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/mvlempyr_com.js"
   },
   {
     "name": "MysticalSeries",
@@ -1898,7 +1898,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2915738996,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/mysticalmerries.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/mysticalmerries.js"
   },
   {
     "name": "NeoSekai Translations",
@@ -1917,7 +1917,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2047501054,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/neosekaitls.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/neosekaitls.js"
   },
   {
     "name": "Nitro Manga",
@@ -1936,7 +1936,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4092382772,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/nitromanga.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/nitromanga.js"
   },
   {
     "name": "NobleMTL",
@@ -1955,7 +1955,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3481699316,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/noblemtl.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/noblemtl.js"
   },
   {
     "name": "Noice Translations",
@@ -1974,7 +1974,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2592899028,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/noicetranslations.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/noicetranslations.js"
   },
   {
     "name": "Novel Arrow",
@@ -1993,7 +1993,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4179129076,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelarrow.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelarrow.js"
   },
   {
     "name": "Novel Bin",
@@ -2012,7 +2012,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1306890484,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelbin.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelbin.js"
   },
   {
     "name": "NovelCool",
@@ -2031,7 +2031,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2799111426,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelcool.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelcool.js"
   },
   {
     "name": "NovelFull",
@@ -2050,7 +2050,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3387698868,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelfull.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelfull.js"
   },
   {
     "name": "Novel Hall",
@@ -2069,7 +2069,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2584335732,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelhall.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelhall.js"
   },
   {
     "name": "NovelHi",
@@ -2088,7 +2088,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2115770740,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelhi.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelhi.js"
   },
   {
     "name": "NovelLib",
@@ -2107,7 +2107,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1386301755,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelib.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelib.js"
   },
   {
     "name": "Novelight",
@@ -2126,7 +2126,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3769306890,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelight.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelight.js"
   },
   {
     "name": "NovelMultiverse",
@@ -2145,7 +2145,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4511516429,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelmultiverse.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelmultiverse.js"
   },
   {
     "name": "Novel Ninja",
@@ -2164,7 +2164,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3445145838,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelninja.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelninja.js"
   },
   {
     "name": "NovelRest",
@@ -2183,7 +2183,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3477738430,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelrest.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelrest.js"
   },
   {
     "name": "NovelsKnight",
@@ -2202,7 +2202,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3163824368,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/novelsknight.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/novelsknight.js"
   },
   {
     "name": "NovelTranslate",
@@ -2221,7 +2221,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3735672746,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/noveltl.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/noveltl.js"
   },
   {
     "name": "Panda Machine Translations",
@@ -2240,7 +2240,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2675936372,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/pandamtl.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/pandamtl.js"
   },
   {
     "name": "Pastel Tales",
@@ -2259,7 +2259,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3007625940,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/pasteltales.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/pasteltales.js"
   },
   {
     "name": "PawRead",
@@ -2278,7 +2278,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3656759735,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/pawread.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/pawread.js"
   },
   {
     "name": "Penguin Squad",
@@ -2297,7 +2297,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2539781942,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/penguinsquad.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/penguinsquad.js"
   },
   {
     "name": "Prizma",
@@ -2316,7 +2316,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2842592411,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/prizmatranslation.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/prizmatranslation.js"
   },
   {
     "name": "Rainofsnow",
@@ -2335,7 +2335,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3778688692,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/rainofsnow.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/rainofsnow.js"
   },
   {
     "name": "Ranobes",
@@ -2354,7 +2354,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2043175697,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/ranobes.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/ranobes.js"
   },
   {
     "name": "Ranovel",
@@ -2373,7 +2373,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 5051612340,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/ranovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/ranovel.js"
   },
   {
     "name": "Read Fanfic",
@@ -2392,7 +2392,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1008673844,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/readfanfic.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/readfanfic.js"
   },
   {
     "name": "Read From Net",
@@ -2411,7 +2411,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1286911210,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/readfrom.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/readfrom.js"
   },
   {
     "name": "ReadNovelFull",
@@ -2430,7 +2430,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4160231156,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/readnovelfull.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/readnovelfull.js"
   },
   {
     "name": "Re:Library",
@@ -2449,7 +2449,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2796201838,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/relib.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/relib.js"
   },
   {
     "name": "Requiem Translations",
@@ -2468,7 +2468,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3856346484,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/requiemtls.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/requiemtls.js"
   },
   {
     "name": "Salmon Latte",
@@ -2487,7 +2487,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 5234761876,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/salmonlatte.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/salmonlatte.js"
   },
   {
     "name": "Scribble Hub",
@@ -2506,7 +2506,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1529326189,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/scribblehub.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/scribblehub.js"
   },
   {
     "name": "SleepyTranslations",
@@ -2525,7 +2525,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1507273066,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/sleepttls.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/sleepttls.js"
   },
   {
     "name": "SonicMTL",
@@ -2544,7 +2544,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4785666829,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/sonicmtl.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/sonicmtl.js"
   },
   {
     "name": "StorySeedling",
@@ -2563,7 +2563,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2015371796,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/storyseedling.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/storyseedling.js"
   },
   {
     "name": "Sweet Escape",
@@ -2582,7 +2582,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4380491180,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/sweetescape.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/sweetescape.js"
   },
   {
     "name": "System Translation",
@@ -2601,7 +2601,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1929359892,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/systemtranslation.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/systemtranslation.js"
   },
   {
     "name": "TranslatinOtaku",
@@ -2620,7 +2620,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1662242570,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/translatinotaku.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/translatinotaku.js"
   },
   {
     "name": "Translation Weaver",
@@ -2639,7 +2639,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1385905236,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/transweaver.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/transweaver.js"
   },
   {
     "name": "Universal Novel",
@@ -2658,7 +2658,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2193808052,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/universalnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/universalnovel.js"
   },
   {
     "name": "Vandy Translate",
@@ -2677,7 +2677,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1725590843,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/vandytranslate.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/vandytranslate.js"
   },
   {
     "name": "Violet Lily",
@@ -2696,7 +2696,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4136434783,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/violetlily.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/violetlily.js"
   },
   {
     "name": "VyNovel",
@@ -2715,7 +2715,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4235561403,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/vynovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/vynovel.js"
   },
   {
     "name": "Webnovel",
@@ -2734,7 +2734,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2346631074,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/webnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/webnovel.js"
   },
   {
     "name": "WebNovelLover",
@@ -2753,7 +2753,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4845454157,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/webnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/webnovel.js"
   },
   {
     "name": "Web Novel Pub",
@@ -2772,7 +2772,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3697342230,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/webnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/webnovel.js"
   },
   {
     "name": "White Moonlight Novels",
@@ -2791,7 +2791,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2108388724,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/whitemoonlightnovels.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/whitemoonlightnovels.js"
   },
   {
     "name": "Witch Cult Translations",
@@ -2810,7 +2810,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1764968104,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/witchculttranslations.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/witchculttranslations.js"
   },
   {
     "name": "Wook's Teahouse",
@@ -2829,7 +2829,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2530370420,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/wooksteahouse.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/wooksteahouse.js"
   },
   {
     "name": "WordExcerpt",
@@ -2848,7 +2848,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3712843252,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/wordexcerpt.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/wordexcerpt.js"
   },
   {
     "name": "WTR-LAB",
@@ -2867,7 +2867,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3394730745,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/wtrlab.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/wtrlab.js"
   },
   {
     "name": "Wuxia Space",
@@ -2886,7 +2886,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4166386526,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/wuxiaspace.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/wuxiaspace.js"
   },
   {
     "name": "WuxiaV",
@@ -2905,7 +2905,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3804298978,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/wuxiav.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/wuxiav.js"
   },
   {
     "name": "Wuxia World",
@@ -2924,7 +2924,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4296022733,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/wuxiaworld.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/wuxiaworld.js"
   },
   {
     "name": "WuxiaWorld.Site",
@@ -2943,7 +2943,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4425165435,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/wuxiaworld_site.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/wuxiaworld_site.js"
   },
   {
     "name": "Zetro Translation",
@@ -2962,7 +2962,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 5292541991,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/en/zetrotl.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/en/zetrotl.js"
   },
   {
     "name": "Chireads",
@@ -2981,7 +2981,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 5175243515,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/fr/chireads.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/fr/chireads.js"
   },
   {
     "name": "HarkenEliwood",
@@ -3000,7 +3000,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1629215772,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/fr/harkeneliwood.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/fr/harkeneliwood.js"
   },
   {
     "name": "KissWood",
@@ -3019,7 +3019,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2576255050,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/fr/kisswood.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/fr/kisswood.js"
   },
   {
     "name": "Ligh Novel FR",
@@ -3038,7 +3038,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3008112180,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/fr/lightnovelfr.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/fr/lightnovelfr.js"
   },
   {
     "name": "MassNovel",
@@ -3057,7 +3057,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2212019745,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/fr/massnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/fr/massnovel.js"
   },
   {
     "name": "MTL Novel (FR)",
@@ -3076,7 +3076,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1507789476,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/fr/mtlnovel-fr.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/fr/mtlnovel-fr.js"
   },
   {
     "name": "NovelDeGlace",
@@ -3095,7 +3095,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3358968884,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/fr/noveldeglace.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/fr/noveldeglace.js"
   },
   {
     "name": "NovelFrance",
@@ -3114,7 +3114,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4701141121,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/fr/novelfrance.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/fr/novelfrance.js"
   },
   {
     "name": "Novhell",
@@ -3133,7 +3133,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4063948448,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/fr/novhell.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/fr/novhell.js"
   },
   {
     "name": "Re:Zero Web Novel FR",
@@ -3152,7 +3152,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1799626940,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/fr/rezerowebnovelfr.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/fr/rezerowebnovelfr.js"
   },
   {
     "name": "Warrior Legend Trad",
@@ -3171,7 +3171,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4020958236,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/fr/warriorlegendtrad.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/fr/warriorlegendtrad.js"
   },
   {
     "name": "WorldNovel",
@@ -3190,7 +3190,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1788835596,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/fr/worldnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/fr/worldnovel.js"
   },
   {
     "name": "WuxiaLnScantrad",
@@ -3209,7 +3209,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3058627804,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/fr/wuxialnscantrad.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/fr/wuxialnscantrad.js"
   },
   {
     "name": "Xiaowaz",
@@ -3228,7 +3228,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 5205803246,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/fr/xiaowaz.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/fr/xiaowaz.js"
   },
   {
     "name": "Baca Light Novel",
@@ -3247,7 +3247,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 5256561401,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/id/bacalightnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/id/bacalightnovel.js"
   },
   {
     "name": "MeioNovel",
@@ -3266,7 +3266,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4284293383,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/id/meionovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/id/meionovel.js"
   },
   {
     "name": "MTL Novel (ID)",
@@ -3285,7 +3285,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2862023908,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/id/mtlnovel-id.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/id/mtlnovel-id.js"
   },
   {
     "name": "NovelBookID",
@@ -3304,7 +3304,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1187442156,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/id/novelbookid.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/id/novelbookid.js"
   },
   {
     "name": "SakuraNovel",
@@ -3323,7 +3323,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1076455557,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/id/sakura_id.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/id/sakura_id.js"
   },
   {
     "name": "Sekte Novel",
@@ -3342,7 +3342,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1877299622,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/id/sektenovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/id/sektenovel.js"
   },
   {
     "name": "WBNovel",
@@ -3361,7 +3361,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1374072308,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/id/wbnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/id/wbnovel.js"
   },
   {
     "name": "kakuyomu",
@@ -3380,7 +3380,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1660297248,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ja/kakuyomu.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ja/kakuyomu.js"
   },
   {
     "name": "Syosetu",
@@ -3399,7 +3399,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4517359796,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ja/yomou_syosetu.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ja/yomou_syosetu.js"
   },
   {
     "name": "Agitoon",
@@ -3418,7 +3418,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1415392192,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ko/agit_xyz.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ko/agit_xyz.js"
   },
   {
     "name": "Fortune Eternal",
@@ -3437,7 +3437,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2325655074,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ko/fortuneeternal.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ko/fortuneeternal.js"
   },
   {
     "name": "Novelki",
@@ -3456,7 +3456,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1805700180,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/pl/novelki_pl.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/pl/novelki_pl.js"
   },
   {
     "name": "Better Novels",
@@ -3475,7 +3475,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4335609258,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/pt/betternovels.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/pt/betternovels.js"
   },
   {
     "name": "Blog do Amon Novels",
@@ -3494,7 +3494,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2836734050,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/pt/blogdoamonnovels.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/pt/blogdoamonnovels.js"
   },
   {
     "name": "Central Novel",
@@ -3513,7 +3513,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4920334964,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/pt/centralnovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/pt/centralnovel.js"
   },
   {
     "name": "Illusia",
@@ -3532,7 +3532,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3119901605,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/pt/illusia.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/pt/illusia.js"
   },
   {
     "name": "Kiniga",
@@ -3551,7 +3551,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3913076020,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/pt/kiniga.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/pt/kiniga.js"
   },
   {
     "name": "LaNovels",
@@ -3570,7 +3570,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4271879227,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/pt/lanovels.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/pt/lanovels.js"
   },
   {
     "name": "Light Novel Brasil",
@@ -3589,7 +3589,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1810323828,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/pt/lightnovelbrasil.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/pt/lightnovelbrasil.js"
   },
   {
     "name": "MTL Novel (PT)",
@@ -3608,7 +3608,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3510041764,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/pt/mtlnovel-pt.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/pt/mtlnovel-pt.js"
   },
   {
     "name": "Novel Mania",
@@ -3627,7 +3627,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1363157076,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/pt/novelmania_com_br.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/pt/novelmania_com_br.js"
   },
   {
     "name": "Tsundoku Traduções",
@@ -3646,7 +3646,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 5263104997,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/pt/tsundoku.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/pt/tsundoku.js"
   },
   {
     "name": "Автор Тудей",
@@ -3665,7 +3665,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4241950141,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/at.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/at.js"
   },
   {
     "name": "Bllate (API)",
@@ -3684,7 +3684,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3582478837,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/bllate-api.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/bllate-api.js"
   },
   {
     "name": "Bookhamster",
@@ -3703,7 +3703,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2933618365,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/bookhamster.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/bookhamster.js"
   },
   {
     "name": "Bookriver",
@@ -3722,7 +3722,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4714268669,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/bookriver.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/bookriver.js"
   },
   {
     "name": "Erolate (API)",
@@ -3741,7 +3741,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 5052448398,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/erolate-api.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/erolate-api.js"
   },
   {
     "name": "EzNovels",
@@ -3760,7 +3760,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1129275835,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/eznovels.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/eznovels.js"
   },
   {
     "name": "ficbook",
@@ -3779,7 +3779,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1734788133,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/ficbook.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/ficbook.js"
   },
   {
     "name": "Свободный Мир Ранобэ",
@@ -3798,7 +3798,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2166177372,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/at.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/at.js"
   },
   {
     "name": "Jaomix",
@@ -3817,7 +3817,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1541064020,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/jaomix_ru.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/jaomix_ru.js"
   },
   {
     "name": "MTL Novel (RU)",
@@ -3836,7 +3836,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4344305956,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/mtlnovel-ru.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/mtlnovel-ru.js"
   },
   {
     "name": "Neobook",
@@ -3855,7 +3855,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 5161396608,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/neobook.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/neobook.js"
   },
   {
     "name": "NovelCool (RU)",
@@ -3874,7 +3874,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1794355160,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/novelcool-ru.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/novelcool-ru.js"
   },
   {
     "name": "Ranobes (RU)",
@@ -3893,7 +3893,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2414889553,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/ranobes-ru.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/ranobes-ru.js"
   },
   {
     "name": "Renovels",
@@ -3912,7 +3912,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1740674403,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/ren.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/ren.js"
   },
   {
     "name": "РанобэРФ",
@@ -3931,7 +3931,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4357300953,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/at.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/at.js"
   },
   {
     "name": "Rulate (API)",
@@ -3950,7 +3950,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3018108446,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/rulate-api.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/rulate-api.js"
   },
   {
     "name": "NovelTL",
@@ -3969,7 +3969,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3059104836,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/tl.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/tl.js"
   },
   {
     "name": "ТопЛиба",
@@ -3988,7 +3988,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3992650875,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/at.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/at.js"
   },
   {
     "name": "Целлюлоза",
@@ -4007,7 +4007,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1860946589,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/ru/at.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/ru/at.js"
   },
   {
     "name": "AllNovelRead",
@@ -4026,7 +4026,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3028710196,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/allnovelread.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/allnovelread.js"
   },
   {
     "name": "AnimesHoy12",
@@ -4045,7 +4045,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2377767188,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/animeshoy12.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/animeshoy12.js"
   },
   {
     "name": "Hasu Translations",
@@ -4064,7 +4064,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3364557875,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/hasutl.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/hasutl.js"
   },
   {
     "name": "LightNovelDaily",
@@ -4083,7 +4083,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4288266299,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/lightnoveldaily.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/lightnoveldaily.js"
   },
   {
     "name": "MTL Novel (ES)",
@@ -4102,7 +4102,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4864774180,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/mtlnovel-es.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/mtlnovel-es.js"
   },
   {
     "name": "NOVA",
@@ -4121,7 +4121,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1728426040,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/nova.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/nova.js"
   },
   {
     "name": "Novelas Ligera",
@@ -4140,7 +4140,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1424943380,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/novelasligera.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/novelasligera.js"
   },
   {
     "name": "Novelyra",
@@ -4159,7 +4159,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3343725236,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/novelyra.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/novelyra.js"
   },
   {
     "name": "Oasis Translations",
@@ -4178,7 +4178,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3045120659,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/oasistranslations.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/oasistranslations.js"
   },
   {
     "name": "Pancho Translations",
@@ -4197,7 +4197,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1753589300,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/panchotranslations.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/panchotranslations.js"
   },
   {
     "name": "ReinoWuxia",
@@ -4216,7 +4216,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4038503166,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/reinowuxia.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/reinowuxia.js"
   },
   {
     "name": "SkyNovels",
@@ -4235,7 +4235,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4384216659,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/skynovels.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/skynovels.js"
   },
   {
     "name": "TC & Sega",
@@ -4254,7 +4254,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2918951280,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/tcsega.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/tcsega.js"
   },
   {
     "name": "Traducciones Amistosas",
@@ -4273,7 +4273,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4564499499,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/traducciones.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/traducciones.js"
   },
   {
     "name": "TuNovelaLigera",
@@ -4292,7 +4292,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3319122747,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/tunovelaligera.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/tunovelaligera.js"
   },
   {
     "name": "Yuuki Tls",
@@ -4311,7 +4311,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4534600500,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/es/yuukitls.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/es/yuukitls.js"
   },
   {
     "name": "Novel Lucky",
@@ -4330,7 +4330,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2578827636,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/th/novel-lucky.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/th/novel-lucky.js"
   },
   {
     "name": "Novel PDF",
@@ -4349,7 +4349,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3884116974,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/th/novelpdf.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/th/novelpdf.js"
   },
   {
     "name": "E-KİTAPLAR",
@@ -4368,7 +4368,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2301122937,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/tr/ekitaplar.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/tr/ekitaplar.js"
   },
   {
     "name": "EpikNovel",
@@ -4387,7 +4387,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4915770285,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/tr/epiknovel.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/tr/epiknovel.js"
   },
   {
     "name": "kakikata",
@@ -4406,7 +4406,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1054328796,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/tr/kakikata.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/tr/kakikata.js"
   },
   {
     "name": "Kodeks Library",
@@ -4425,7 +4425,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4572927693,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/tr/kodekslibrary.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/tr/kodekslibrary.js"
   },
   {
     "name": "MangaTR",
@@ -4444,7 +4444,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3417037593,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/tr/mangatr.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/tr/mangatr.js"
   },
   {
     "name": "NABİ SCANS",
@@ -4463,7 +4463,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1141100500,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/tr/nabiscans.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/tr/nabiscans.js"
   },
   {
     "name": "Namevt",
@@ -4482,7 +4482,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1338974324,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/tr/namevt.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/tr/namevt.js"
   },
   {
     "name": "Novel oku",
@@ -4501,7 +4501,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4380049020,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/tr/noveloku.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/tr/noveloku.js"
   },
   {
     "name": "NovelTR",
@@ -4520,7 +4520,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3738614292,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/tr/noveltr.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/tr/noveltr.js"
   },
   {
     "name": "Ragnar Scans",
@@ -4539,7 +4539,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1417330228,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/tr/ragnarscans.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/tr/ragnarscans.js"
   },
   {
     "name": "ThNovels",
@@ -4558,7 +4558,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3951268539,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/tr/thnovels.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/tr/thnovels.js"
   },
   {
     "name": "TurkceLightNovels",
@@ -4577,7 +4577,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2597859124,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/tr/turkcelightnovels.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/tr/turkcelightnovels.js"
   },
   {
     "name": "WebNovelOku",
@@ -4596,7 +4596,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3004241197,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/tr/webnoveloku.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/tr/webnoveloku.js"
   },
   {
     "name": "BakaInUA",
@@ -4615,7 +4615,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3839006516,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/uk/bakainua.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/uk/bakainua.js"
   },
   {
     "name": "Смаколики",
@@ -4634,7 +4634,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3224574078,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/uk/bakainua.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/uk/bakainua.js"
   },
   {
     "name": "Light Novel VN",
@@ -4653,7 +4653,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1061955060,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/vi/lightnovel_vn.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/vi/lightnovel_vn.js"
   },
   {
     "name": "Hako",
@@ -4672,7 +4672,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 2807880610,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/vi/ln_hako.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/vi/ln_hako.js"
   },
   {
     "name": "Nettruyen",
@@ -4691,7 +4691,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 3162904141,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/vi/nettruyen.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/vi/nettruyen.js"
   },
   {
     "name": "TruyenSS",
@@ -4710,7 +4710,7 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 4890554324,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/vi/truyenss_com.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/vi/truyenss_com.js"
   },
   {
     "name": "Komga",
@@ -4729,6 +4729,6 @@
     "sourceCodeLanguage": 1,
     "appMinVerReq": "0.5.0",
     "id": 1971469281,
-    "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/novel/all/komga.js"
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/novel/all/komga.js"
   }
 ]
