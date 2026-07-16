@@ -100,22 +100,5 @@
     "subCategories": ["Metadata Provider"],
     "description": "Base de données musicale open source. Métadonnées enrichies, ISRC, et scrobbling via ListenBrainz.",
     "upstream": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/plugins/musicbrainz.smplug"
-  },
-  {
-    "id": 3007,
-    "name": "Miraculum Music",
-    "iconUrl": "https://miraculum.ml/android-chrome-192x192.png",
-    "lang": "multi",
-    "version": "1.0.0",
-    "itemType": 3,
-    "sourceCodeLanguage": 1,
-    "requiresAccount": false,
-    "hasDRM": false,
-    "isAggregator": false,
-    "paywall": "free",
-    "supportsComments": false,
-    "subCategories": ["Audio Provider"],
-    "description": "Miraculous Ladybug — albums, chansons de la série/film/jeux en 40+ langues sur miraculum.ml. Intros, OSTs, chansons localisées.",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/music/multi/miraculum.js"
   }
 ]

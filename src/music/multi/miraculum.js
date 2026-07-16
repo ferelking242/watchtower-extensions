@@ -1,6 +1,6 @@
 // ══════════════════════════════════════════════════════════════
 //  Miraculum Music — miraculum.ml/songs
-//  v1.0.0 — Miraculous Ladybug music & albums in 40+ languages
+//  v2.1.0 — Miraculous Ladybug music & albums in 40+ languages
 //  Soundtracks, intros, game OSTs, movie songs
 // ══════════════════════════════════════════════════════════════
 
@@ -11,15 +11,15 @@ const watchtowerSources = [{
     "apiUrl": "https://Amexd.b-cdn.net",
     "iconUrl": "https://miraculum.ml/android-chrome-192x192.png",
     "typeSource": "single",
-    "itemType": 3,
-    "version": "1.0.0",
-    "pkgPath": "music/multi/miraculum.js",
+    "itemType": 1,
+    "version": "2.1.0",
+    "pkgPath": "watch/multi/miraculum_music.js",
     "requiresAccount": false,
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
     "isNsfw": false,
-    "notes": "Miraculous Ladybug — albums & chansons de la série, du film et des jeux sur miraculum.ml"
+    "notes": "v2.1.0 — fix: méthodes renommées, originalUrl, getFilterList, itemType 1 (JS runtime)"
 }];
 
 // ── Constants ─────────────────────────────────────────────────
@@ -45,7 +45,7 @@ class DefaultExtension extends MProvider {
 
     get supportsLatest() { return true; }
 
-    // ── Parse albums from the songs page HTML ─────────────────
+    // ── Parse albums from the songs page ─────────────────────
     async _fetchAlbums(lang) {
         var url = MIRKM_BASE + "/" + lang + "/songs";
         var res = await new Client().get(url, this.getHeaders(url));
@@ -76,7 +76,7 @@ class DefaultExtension extends MProvider {
         return items;
     }
 
-    async getPopularList(page) {
+    async getPopular(page) {
         if (page > 1) return { list: [], hasNextPage: false };
         var lang = this.getLang();
         var items = [];
@@ -84,9 +84,9 @@ class DefaultExtension extends MProvider {
         return { list: items, hasNextPage: false };
     }
 
-    async getLatestList(page) { return this.getPopularList(page); }
+    async getLatestUpdates(page) { return this.getPopular(page); }
 
-    async getSearchList(query, page, filters) {
+    async search(query, page, filters) {
         if (page > 1) return { list: [], hasNextPage: false };
         var lang = this.getLang();
         var all = [];
@@ -98,33 +98,25 @@ class DefaultExtension extends MProvider {
         return { list: filtered, hasNextPage: false };
     }
 
-    // ── Detail: parse tracks from listen page ─────────────────
+    // ── Detail: tracks from listen page ──────────────────────
     async getDetail(url) {
-        // url = https://miraculum.ml/{lang}/songs?album={key}
         var lang = this.getLang();
         var albumKey = "";
         var m = url.match(/album=([^&\s]+)/);
         if (m) albumKey = m[1];
 
-        // Convert songs URL to listen URL
         var listenUrl = url.replace("/songs?", "/listen?");
-
-        var coverUrl = albumKey
-            ? MIRKM_CDN + "/" + albumKey + "/cover.webp"
-            : "";
+        var coverUrl = albumKey ? MIRKM_CDN + "/" + albumKey + "/cover.webp" : "";
         var albumTitle = albumKey || "Album";
-
         var chapters = [];
 
         try {
             var res = await new Client().get(listenUrl, this.getHeaders(listenUrl));
             var doc = new Document(res.body);
 
-            // Try to extract title from page
             var h1 = doc.selectFirst("h1.album-title, h1, .album-name");
             if (h1) albumTitle = h1.text.trim();
 
-            // Extract track elements — various selectors the listen page may use
             var trackEls = doc.select(
                 ".track-item, .track_item, li.track, div.track, " +
                 ".song-track, .audio-item, .playlist-item, " +
@@ -132,7 +124,6 @@ class DefaultExtension extends MProvider {
             );
 
             trackEls.forEach(function(el) {
-                // Try different attribute/child combinations
                 var trackUrl = el.attr("data-audio-src") || el.attr("data-url") ||
                                el.attr("data-src") || el.attr("data-track-url") || "";
                 var trackName = "";
@@ -141,7 +132,6 @@ class DefaultExtension extends MProvider {
                 if (!trackName) trackName = el.attr("data-title") || el.attr("title") || "";
 
                 if (!trackUrl && albumKey) {
-                    // Try to build CDN URL from filename attribute
                     var fname = el.attr("data-filename") || el.attr("data-file") || "";
                     if (fname) trackUrl = MIRKM_CDN + "/" + albumKey + "/" + fname;
                 }
@@ -149,7 +139,6 @@ class DefaultExtension extends MProvider {
                 if (trackUrl && trackName) {
                     chapters.push({ name: trackName, url: trackUrl });
                 } else if (trackUrl) {
-                    // Derive name from URL filename
                     var parts = trackUrl.split("/");
                     chapters.push({
                         name: parts[parts.length - 1].replace(/\.(mp3|m4a|ogg|opus)$/, ""),
@@ -158,7 +147,6 @@ class DefaultExtension extends MProvider {
                 }
             });
 
-            // Fallback: look for direct audio links
             if (chapters.length === 0) {
                 doc.select("a[href*='.mp3'], a[href*='.m4a'], a[href*='.ogg']").forEach(function(a) {
                     var href = a.attr("href") || "";
@@ -170,10 +158,8 @@ class DefaultExtension extends MProvider {
                 });
             }
 
-            // Fallback: look for inline JSON array with track data
             if (chapters.length === 0) {
                 var body = res.body;
-                // Match a JS array like: [{title:"...",file:"...",src:"..."}]
                 var jsonM = body.match(/(?:tracks|songs|playlist|trackList)\s*=\s*(\[[^\]]{20,}\])/);
                 if (jsonM) {
                     try {
@@ -186,17 +172,13 @@ class DefaultExtension extends MProvider {
                             }
                             if (turl && tname) chapters.push({ name: tname, url: turl });
                         });
-                    } catch(e) { /* ignore parse error */ }
+                    } catch(e) { /* ignore */ }
                 }
             }
-        } catch(err) { /* ignore fetch error */ }
+        } catch(err) { /* ignore */ }
 
-        // Last resort: return the listen page as a single chapter (webview playback)
         if (chapters.length === 0) {
-            chapters.push({
-                name: "▶ Écouter l'album",
-                url: listenUrl
-            });
+            chapters.push({ name: "▶ Écouter l'album", url: listenUrl });
         }
 
         return {
@@ -207,45 +189,41 @@ class DefaultExtension extends MProvider {
         };
     }
 
-    // ── Video/Audio list: return the audio stream URL ─────────
+    // ── Audio/Video list ──────────────────────────────────────
     async getVideoList(url) {
-        // url may be a direct CDN audio URL or a listen page URL
         var isCdn = url.includes("b-cdn.net") || url.match(/\.(mp3|m4a|ogg|opus)$/);
 
         if (isCdn) {
-            // Direct audio file — return as-is
             var lang = this.getLang();
             var finalUrl = url.replace(/\/lang\.(m4a|mp3|ogg|opus)$/, "/" + lang + ".$1");
-            return [{ quality: "Audio", url: finalUrl }];
+            return [{ quality: "Audio", url: finalUrl, originalUrl: finalUrl }];
         }
 
-        // Listen page — try to extract audio source from page
         try {
             var res = await new Client().get(url, this.getHeaders(url));
             var body = res.body;
 
-            // Look for audio element source
             var audioM = body.match(/<source[^>]+src="([^"]+\.(mp3|m4a|ogg|opus)[^"]*)"/i);
-            if (audioM) return [{ quality: "Audio", url: audioM[1] }];
+            if (audioM) return [{ quality: "Audio", url: audioM[1], originalUrl: audioM[1] }];
 
-            // Look for CDN audio URLs in scripts
             var cdnM = body.match(/["'](https:\/\/Amexd\.b-cdn\.net\/[^"']+\.(mp3|m4a|ogg|opus))["']/i);
-            if (cdnM) return [{ quality: "Audio", url: cdnM[1] }];
+            if (cdnM) return [{ quality: "Audio", url: cdnM[1], originalUrl: cdnM[1] }];
         } catch(e) { /* ignore */ }
 
-        // Fallback: webview
-        return [{ quality: "WebView", url: url }];
+        return [{ quality: "WebView", url: url, originalUrl: url }];
     }
 
-    // ── Preferences ──────────────────────────────────────────
-    getPreferenceList() {
+    // ── Filters & Preferences ─────────────────────────────────
+    getFilterList() { return []; }
+
+    getSourcePreferences() {
         return [
             {
                 key: "mirkm_lang",
                 listPreference: {
                     title: "Langue des albums",
                     summary: "Sélectionnez la langue de la musique",
-                    valueIndex: 6,
+                    valueIndex: 12,
                     entries: [
                         "العربية (Fusha)", "العربية (Masriyya)", "Amharic", "Bengali",
                         "Български", "Català", "Cymraeg", "Čeština",

@@ -1,6 +1,6 @@
 // ══════════════════════════════════════════════════════════════
 //  Miraculum — miraculum.ml
-//  v1.0.0 — Miraculous Ladybug full episodes in 40+ languages
+//  v2.1.0 — Miraculous Ladybug full episodes in 40+ languages
 //  Seasons 1–6 + Miraculous World specials
 // ══════════════════════════════════════════════════════════════
 
@@ -13,7 +13,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "2.1.0",
     "pkgPath": "watch/multi/miraculum.js",
     "requiresAccount": false,
     "hasDRM": false,
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "hasDub": true,
     "isNsfw": false,
     "hasCloudflare": true,
-    "notes": "Miraculous Ladybug — épisodes complets en 40+ langues sur miraculum.ml. S1-S6 + specials."
+    "notes": "v2.1.0 — fix: méthodes renommées (getPopular/getLatestUpdates/search/getSourcePreferences), originalUrl, getFilterList"
 }];
 
 // ── Constants ─────────────────────────────────────────────────
@@ -34,7 +34,6 @@ var MIRK_COVER  = "https://miraculum.ml/res/thumbs/s6/601.webp";
 var MIRK_POSTER = "https://miraculum.ml/android-chrome-192x192.png";
 
 // Known season definitions: [season_id, episode_count, label]
-// episode IDs follow the pattern: {S}{2-digit ep} e.g. season 1 ep 3 → "103"
 var MIRK_SEASONS = [
     { s: "6", count: 26, label: "Saison 6" },
     { s: "5", count: 27, label: "Saison 5" },
@@ -67,10 +66,10 @@ class DefaultExtension extends MProvider {
 
     get supportsLatest() { return true; }
 
-    // ── Popular / Latest: show Miraculous as single entry ────
-    async getPopularList(page) {
+    // ── Popular / Latest ─────────────────────────────────────
+    async getPopular(page) {
         if (page > 1) return { list: [], hasNextPage: false };
-        const lang = this.getLang();
+        var lang = this.getLang();
         return {
             list: [{
                 name: "Miraculous: Tales of Ladybug & Cat Noir",
@@ -81,31 +80,29 @@ class DefaultExtension extends MProvider {
         };
     }
 
-    async getLatestList(page) { return this.getPopularList(page); }
+    async getLatestUpdates(page) { return this.getPopular(page); }
 
-    async getSearchList(query, page, filters) {
+    async search(query, page, filters) {
         if (page > 1) return { list: [], hasNextPage: false };
-        const q = query.toLowerCase();
-        const keywords = ["miraculous","ladybug","cat noir","marinette","adrien","miraculum"];
-        const match = keywords.some(k => k.includes(q) || q.includes(k));
+        var q = query.toLowerCase();
+        var keywords = ["miraculous","ladybug","cat noir","marinette","adrien","miraculum"];
+        var match = keywords.some(function(k) { return k.includes(q) || q.includes(k); });
         if (!match) return { list: [], hasNextPage: false };
-        return this.getPopularList(1);
+        return this.getPopular(1);
     }
 
-    // ── Detail: parse episodes page for selected season ──────
+    // ── Detail: episodes for selected season ─────────────────
     async getDetail(url) {
-        const lang = this.getLang();
-        const seasonPref = this.getSeasonPref();
-
-        // Build all episodes for the selected season
-        const chapters = [];
+        var lang = this.getLang();
+        var seasonPref = this.getSeasonPref();
+        var chapters = [];
         var seasonDef = null;
+
         for (var i = 0; i < MIRK_SEASONS.length; i++) {
             if (MIRK_SEASONS[i].s === seasonPref) { seasonDef = MIRK_SEASONS[i]; break; }
         }
 
         if (seasonDef) {
-            // Try to fetch the live episode list from the episodes page
             try {
                 var epUrl = MIRK_BASE + "/" + lang + "/episodes";
                 var res = await new Client().get(epUrl, this.getHeaders(epUrl));
@@ -129,7 +126,6 @@ class DefaultExtension extends MProvider {
                 }
             } catch(err) { /* fallback below */ }
 
-            // If live parse failed or returned 0, generate from known count
             if (chapters.length === 0) {
                 var s = seasonDef.s;
                 var count = seasonDef.count;
@@ -153,9 +149,7 @@ class DefaultExtension extends MProvider {
             }
         }
 
-        // Also add season-switcher entries if no preference is set
         if (chapters.length === 0) {
-            // Fallback: fetch whatever is on the episodes page
             try {
                 var epUrl2 = MIRK_BASE + "/" + lang + "/episodes";
                 var res2 = await new Client().get(epUrl2, this.getHeaders(epUrl2));
@@ -183,54 +177,50 @@ class DefaultExtension extends MProvider {
         };
     }
 
-    // ── Video list: extract m3u8 URL from watch page ──────────
+    // ── Video list ────────────────────────────────────────────
     async getVideoList(url) {
-        // url = https://miraculum.ml/{lang}/watch?s={s}&e={e}
         var res;
         try {
             res = await new Client().get(url, this.getHeaders(url));
         } catch(err) {
-            return [{ quality: "WebView", url: url }];
+            return [{ quality: "WebView", url: url, originalUrl: url }];
         }
 
         var body = res.body;
-
-        // Extract auth token and episode params from inline JS
-        var tokenM   = body.match(/userToken\s*=\s*'([a-fA-F0-9]{64})'/);
-        var sM       = body.match(/seasonIdDownload\s*=\s*'([^']+)'/);
-        var eM       = body.match(/episodeIdDownload\s*=\s*'([^']+)'/);
-        var langM    = body.match(/phpLang\s*=\s*'([^']+)'/);
+        var tokenM = body.match(/userToken\s*=\s*'([a-fA-F0-9]{64})'/);
+        var sM     = body.match(/seasonIdDownload\s*=\s*'([^']+)'/);
+        var eM     = body.match(/episodeIdDownload\s*=\s*'([^']+)'/);
+        var langM  = body.match(/phpLang\s*=\s*'([^']+)'/);
 
         if (!tokenM || !sM || !eM) {
-            // Fallback: open watch page as webview
-            return [{ quality: "WebView", url: url }];
+            return [{ quality: "WebView", url: url, originalUrl: url }];
         }
 
         var token = tokenM[1];
         var s     = sM[1];
         var e     = eM[1];
         var lang  = langM ? langM[1] : this.getLang();
-
-        // Construct m3u8 URLs (HD and LQ)
-        var base = MIRK_INT + "/m3u8.m3u8?lang=" + lang + "&s=" + s + "&e=" + e + "&token=" + token;
+        var base  = MIRK_INT + "/m3u8.m3u8?lang=" + lang + "&s=" + s + "&e=" + e + "&token=" + token;
         var hdUrl = base;
         var lqUrl = base + "&q=lq";
 
         return [
-            { quality: "HD",     url: hdUrl },
-            { quality: "SD (LQ)", url: lqUrl }
+            { quality: "HD",       url: hdUrl, originalUrl: hdUrl },
+            { quality: "SD (LQ)",  url: lqUrl, originalUrl: lqUrl }
         ];
     }
 
-    // ── Preferences ──────────────────────────────────────────
-    getPreferenceList() {
+    // ── Filters & Preferences ─────────────────────────────────
+    getFilterList() { return []; }
+
+    getSourcePreferences() {
         return [
             {
                 key: "mirk_lang",
                 listPreference: {
                     title: "Langue des épisodes",
                     summary: "Sélectionnez la langue de doublage",
-                    valueIndex: 6,
+                    valueIndex: 12,
                     entries: [
                         "العربية (Fusha)", "العربية (Masriyya)", "Amharic", "Bengali",
                         "Български", "Català", "Cymraeg", "Čeština",
@@ -247,7 +237,7 @@ class DefaultExtension extends MProvider {
                         "Suomi", "Svenska", "தமிழ்", "Telugu",
                         "ภาษาไทย", "Türkçe", "Українська", "اردو",
                         "Uyghur", "Tiếng Việt", "普通話 (Mandarin)", "粵語 (Cantonese)",
-                        "台灣話 (Taiwanese)", "Sinhala", "தமிழ்", "Galego"
+                        "台灣話 (Taiwanese)", "Sinhala", "Galego"
                     ],
                     entryValues: [
                         "ar", "ar-eg", "am", "bn",
@@ -265,7 +255,7 @@ class DefaultExtension extends MProvider {
                         "fi", "sv", "ta", "te",
                         "th", "tr", "uk", "ur",
                         "ug", "vi", "zh-cmn", "zh-yue",
-                        "zh-tw", "si", "ta", "gl"
+                        "zh-tw", "si", "gl"
                     ]
                 }
             },
