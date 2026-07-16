@@ -1,0 +1,39 @@
+name: Purge jsDelivr CDN
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Purge jsDelivr — index files (toujours)
+        run: |
+          BASE="https://purge.jsdelivr.net/gh/${{ github.repository }}@main"
+          for FILE in \
+            "index/watch.json" \
+            "index/manga.json" \
+            "index/novel.json" \
+            "index/music.json" \
+            "index/game.json" \
+            "repo.json"; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${BASE}/${FILE}")
+            echo "index  ${STATUS}  ${FILE}"
+          done
+
+      - name: Purge jsDelivr — fichiers changés dans ce push
+        run: |
+          BASE="https://purge.jsdelivr.net/gh/${{ github.repository }}@main"
+          # git diff entre le commit précédent et HEAD — couvre tous les fichiers
+          # modifiés peu importe leur chemin. Jamais de liste hardcodée.
+          git diff --name-only HEAD~1 HEAD | while read FILE; do
+            [ -f "$FILE" ] || continue
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${BASE}/${FILE}")
+            echo "changed  ${STATUS}  ${FILE}"
+          done

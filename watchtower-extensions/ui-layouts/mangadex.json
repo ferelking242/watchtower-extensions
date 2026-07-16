@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      { "id": "home",            "component": "carousel", "title": "🏠 Accueil",         "accent": "primary",   "icon": "home",       "seeAll": true },
+      { "id": "new_titles",      "component": "carousel", "title": "✨ New Titles",       "accent": "tertiary",  "icon": "fiber_new",  "seeAll": true },
+      { "id": "recommended",     "component": "carousel", "title": "⭐ Recommended",      "accent": "secondary", "icon": "star",       "seeAll": true },
+      { "id": "self_published",  "component": "carousel", "title": "📈 Self-Published",   "accent": "#FF6F00",   "icon": "trending_up","seeAll": true },
+      { "id": "seasonal_spring", "component": "carousel", "title": "🌸 Seasonal: Spring", "accent": "#E91E63",   "icon": "animation",  "seeAll": true }
+    ]
+  },
+  "browse": {
+    "popular": { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "latest":  { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "search":  { "results": { "component": "grid", "columns": 3 }, "filters": "chips" }
+  },
+  "player": { "mode": "standard" }
+}

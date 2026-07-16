@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      { "id": "derniers-ajouts", "component": "carousel",   "title": "Derniers ajouts",   "accent": "#00BCD4", "icon": "fiber_new",   "seeAll": true },
+      { "id": "top15",           "component": "ranked",     "title": "Top 15 Tendances",  "accent": "#FFB300", "icon": "trending_up" },
+      { "id": "animations",      "component": "compactRow", "title": "Animations",        "accent": "#9C27B0", "icon": "animation",   "seeAll": true },
+      { "id": "docs-spectacles", "component": "compactRow", "title": "Docs & Spectacles", "accent": "#4CAF50", "icon": "theaters",    "seeAll": true }
+    ]
+  },
+  "browse": {
+    "popular": { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "latest":  { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "search":  { "results": { "component": "grid", "columns": 3 }, "filters": "chips" }
+  },
+  "player": { "mode": "standard" }
+}

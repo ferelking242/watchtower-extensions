@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      { "id": "carousel",      "component": "banner",        "title": null,               "accent": "#1CB7FF" },
+      { "id": "cat_all",       "component": "categoryPills", "title": "All",              "accent": "#2C3E50" },
+      { "id": "cat_action",    "component": "categoryPills", "title": "Action",           "accent": "#C0392B" },
+      { "id": "cat_comedy",    "component": "categoryPills", "title": "Comédie",          "accent": "#D4AC0D" },
+      { "id": "cat_animation", "component": "categoryPills", "title": "Animation",        "accent": "#8E44AD" },
+      { "id": "cat_adventure", "component": "categoryPills", "title": "Aventure",         "accent": "#1E8449" },
+      { "id": "cat_romance",   "component": "categoryPills", "title": "Romance",          "accent": "#E91E63" },
+      { "id": "op_0",          "component": "carousel",      "title": "🔥 Trending",      "accent": "#FF6F00", "seeAll": true },
+      { "id": "op_1",          "component": "carousel",      "title": "New Series",       "accent": "#1CB7FF", "seeAll": true },
+      { "id": "op_2",          "component": "carousel",      "title": "New Movies",       "accent": "#1CB7FF", "seeAll": true },
+      { "id": "op_3",          "component": "carousel",      "title": "🔥 Séries Courtes","accent": "#FF6F00", "seeAll": true },
+      { "id": "op_4",          "component": "carousel",      "title": "Animes",           "accent": "#8E44AD", "seeAll": true },
+      { "id": "op_5",          "component": "carousel",      "title": "Sci-Fi",           "accent": "#00BCD4", "seeAll": true },
+      { "id": "op_6",          "component": "carousel",      "title": "New Anime",        "accent": "#8E44AD", "seeAll": true },
+      { "id": "op_7",          "component": "carousel",      "title": "TV Series",        "accent": "#1CB7FF", "seeAll": true },
+      { "id": "op_8",          "component": "carousel",      "title": "SA Drama",         "accent": "#1CB7FF", "seeAll": true },
+      { "id": "op_9",          "component": "carousel",      "title": "Made in China",    "accent": "#E53935", "seeAll": true },
+      { "id": "op_10",         "component": "carousel",      "title": "K-Drama",          "accent": "#00897B", "seeAll": true },
+      { "id": "op_11",         "component": "carousel",      "title": "Barbie World",     "accent": "#E91E63", "seeAll": true },
+      { "id": "op_12",         "component": "carousel",      "title": "Martial Arts",     "accent": "#E53935", "seeAll": true },
+      { "id": "op_13",         "component": "carousel",      "title": "Animation",        "accent": "#8E44AD", "seeAll": true },
+      { "id": "op_14",         "component": "carousel",      "title": "Nollywood",        "accent": "#1CB7FF", "seeAll": true },
+      { "id": "op_15",         "component": "carousel",      "title": "Myth of Love",     "accent": "#E91E63", "seeAll": true },
+      { "id": "op_16",         "component": "carousel",      "title": "Reality Show",     "accent": "#FF6F00", "seeAll": true }
+    ]
+  },
+  "browse": {
+    "popular": { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "latest":  { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "search":  { "results": { "component": "grid", "columns": 3 }, "filters": "chips" }
+  },
+  "player": { "mode": "standard" }
+}
