@@ -1,7 +1,9 @@
 // ══════════════════════════════════════════════════════════════
-//  Miraculum — miraculum.ml
-//  v1.0.0 — Miraculous Ladybug full episodes in 40+ languages
-//  Seasons 1–6 + Miraculous World specials
+//  Miraculum — miraculum.ml  v2.0.0
+//  Miraculous Ladybug — épisodes complets, toutes saisons
+//  S1–S6 · Miraculous World & Chibi (C) · Spéciaux (S)
+//  Tales (T) · Secrets & Making-of (X)
+//  Qualité : HD (1080p) / LQ (480p)
 // ══════════════════════════════════════════════════════════════
 
 const watchtowerSources = [{
@@ -13,7 +15,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "2.0.0",
     "pkgPath": "watch/multi/miraculum.js",
     "requiresAccount": false,
     "hasDRM": false,
@@ -23,202 +25,215 @@ const watchtowerSources = [{
     "hasDub": true,
     "isNsfw": false,
     "hasCloudflare": true,
-    "notes": "Miraculous Ladybug — épisodes complets en 40+ langues sur miraculum.ml. S1-S6 + specials."
+    "notes": "Miraculous Ladybug — S1–S6 + World/Chibi/Spéciaux/Tales/Secrets. Qualité HD/LQ. 40+ langues."
 }];
 
 // ── Constants ─────────────────────────────────────────────────
-var MIRK_BASE   = "https://miraculum.ml";
-var MIRK_INT    = "https://internal.miraculum.ml";
-var MIRK_CDN    = "https://Amexd.b-cdn.net/eps/miraculum";
-var MIRK_COVER  = "https://miraculum.ml/res/thumbs/s6/601.webp";
-var MIRK_POSTER = "https://miraculum.ml/android-chrome-192x192.png";
+var MIRK_BASE = "https://miraculum.ml";
+var MIRK_INT  = "https://internal.miraculum.ml";
 
-// Known season definitions: [season_id, episode_count, label]
-// episode IDs follow the pattern: {S}{2-digit ep} e.g. season 1 ep 3 → "103"
+// All content categories on miraculum.ml
+// cover: first episode thumbnail path (relative to MIRK_BASE)
 var MIRK_SEASONS = [
-    { s: "6", count: 26, label: "Saison 6" },
-    { s: "5", count: 27, label: "Saison 5" },
-    { s: "4", count: 27, label: "Saison 4" },
-    { s: "3", count: 26, label: "Saison 3" },
-    { s: "2", count: 26, label: "Saison 2" },
-    { s: "1", count: 26, label: "Saison 1" },
-    { s: "C", count: 25, label: "Miraculous World & Specials" },
-    { s: "X", count: 10, label: "Extras" }
+    {
+        s: "1", label: "Saison 1",
+        desc: "Saison 1 — 26 épisodes. Stormy Weather, Bubbler, Lady Wifi…",
+        cover: "/res/episodes/season_1/101.webp"
+    },
+    {
+        s: "2", label: "Saison 2",
+        desc: "Saison 2 — 26 épisodes. The Collector, Riposte, Syren…",
+        cover: "/res/episodes/season_2/201.webp"
+    },
+    {
+        s: "3", label: "Saison 3",
+        desc: "Saison 3 — 26 épisodes. Chameleon, Animaestro, Bakerix…",
+        cover: "/res/episodes/season_3/301.webp"
+    },
+    {
+        s: "4", label: "Saison 4",
+        desc: "Saison 4 — 26 épisodes. Truth, Lies, Gang of Secrets…",
+        cover: "/res/episodes/season_4/401.webp"
+    },
+    {
+        s: "5", label: "Saison 5",
+        desc: "Saison 5 — 27 épisodes. Evolution, Multiplication, Jubilation…",
+        cover: "/res/episodes/season_5/501.webp"
+    },
+    {
+        s: "6", label: "Saison 6",
+        desc: "Saison 6 — épisodes en cours. Climatiqueen…",
+        cover: "/res/episodes/season_6/601.webp"
+    },
+    {
+        s: "C", label: "Miraculous World & Chibi",
+        desc: "51 épisodes — films Miraculous World, épisodes Chibi et specials animés.",
+        cover: "/res/episodes/season_6/601.webp"
+    },
+    {
+        s: "S", label: "Spéciaux",
+        desc: "7 épisodes spéciaux — New York, Shanghaï et autres.",
+        cover: "/res/episodes/season_6/601.webp"
+    },
+    {
+        s: "T", label: "Tales of Miraculous",
+        desc: "5 épisodes — Tales of Miraculous.",
+        cover: "/res/episodes/season_6/601.webp"
+    },
+    {
+        s: "X", label: "Secrets & Making-of",
+        desc: "39 contenus exclusifs — making-of, secrets, bonus.",
+        cover: "/res/episodes/season_6/601.webp"
+    }
 ];
 
-// ── Extension class ───────────────────────────────────────────
+// ── Extension ─────────────────────────────────────────────────
 class DefaultExtension extends MProvider {
     constructor() { super(); }
 
     getPreference(key) { return new SharedPreferences().get(key); }
 
+    // Language of the miraculum.ml pages (affects dubbing)
     getLang() { return this.getPreference("mirk_lang") || "en"; }
-
-    getSeasonPref() { return this.getPreference("mirk_season") || "6"; }
 
     getHeaders(url) {
         return {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
             "Referer": MIRK_BASE + "/",
             "Accept": "text/html,application/xhtml+xml,*/*",
-            "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8"
+            "Accept-Language": "en-US,en;q=0.9"
         };
     }
 
     get supportsLatest() { return true; }
 
-    // ── Popular / Latest: show Miraculous as single entry ────
+    // ── Build popular list: all season/content categories ────
     async getPopularList(page) {
         if (page > 1) return { list: [], hasNextPage: false };
-        const lang = this.getLang();
-        return {
-            list: [{
-                name: "Miraculous: Tales of Ladybug & Cat Noir",
-                imageUrl: MIRK_COVER,
-                link: MIRK_BASE + "/" + lang + "/episodes"
-            }],
-            hasNextPage: false
-        };
+        var lang = this.getLang();
+        var list = MIRK_SEASONS.map(function(def) {
+            return {
+                name: def.label,
+                imageUrl: MIRK_BASE + def.cover,
+                link: MIRK_BASE + "/" + lang + "/episodes?s=" + def.s
+            };
+        });
+        return { list: list, hasNextPage: false };
     }
 
     async getLatestList(page) { return this.getPopularList(page); }
 
     async getSearchList(query, page, filters) {
         if (page > 1) return { list: [], hasNextPage: false };
-        const q = query.toLowerCase();
-        const keywords = ["miraculous","ladybug","cat noir","marinette","adrien","miraculum"];
-        const match = keywords.some(k => k.includes(q) || q.includes(k));
-        if (!match) return { list: [], hasNextPage: false };
-        return this.getPopularList(1);
+        var lang = this.getLang();
+        var q = query.toLowerCase().trim();
+        var list = MIRK_SEASONS.filter(function(def) {
+            return def.label.toLowerCase().includes(q) ||
+                   def.desc.toLowerCase().includes(q) ||
+                   ["miraculous","ladybug","cat noir","marinette","adrien","chibi","miraculum"]
+                       .some(function(k){ return q.includes(k) || k.includes(q); });
+        }).map(function(def) {
+            return {
+                name: def.label,
+                imageUrl: MIRK_BASE + def.cover,
+                link: MIRK_BASE + "/" + lang + "/episodes?s=" + def.s
+            };
+        });
+        return { list: list, hasNextPage: false };
     }
 
-    // ── Detail: parse episodes page for selected season ──────
+    // ── Detail: fetch episodes live from episodes page ────────
     async getDetail(url) {
-        const lang = this.getLang();
-        const seasonPref = this.getSeasonPref();
+        var lang = this.getLang();
 
-        // Build all episodes for the selected season
-        const chapters = [];
-        var seasonDef = null;
+        // Extract season from URL (?s=X)
+        var seasonM = url.match(/[?&]s=([^&\s]+)/);
+        var season = seasonM ? seasonM[1] : "6";
+
+        // Find season definition
+        var def = null;
         for (var i = 0; i < MIRK_SEASONS.length; i++) {
-            if (MIRK_SEASONS[i].s === seasonPref) { seasonDef = MIRK_SEASONS[i]; break; }
+            if (MIRK_SEASONS[i].s === season) { def = MIRK_SEASONS[i]; break; }
         }
+        var label    = def ? def.label    : ("Saison " + season);
+        var desc     = def ? def.desc     : "Miraculous Ladybug";
+        var coverUrl = def ? (MIRK_BASE + def.cover) : (MIRK_BASE + "/res/episodes/season_6/601.webp");
 
-        if (seasonDef) {
-            // Try to fetch the live episode list from the episodes page
-            try {
-                var epUrl = MIRK_BASE + "/" + lang + "/episodes";
-                var res = await new Client().get(epUrl, this.getHeaders(epUrl));
-                var doc = new Document(res.body);
-                var allLinks = doc.select("a.episode_card_link");
+        // Fetch the season's episode list
+        var chapters = [];
+        try {
+            var fetchUrl = MIRK_BASE + "/" + lang + "/episodes?s=" + season;
+            var res = await new Client().get(fetchUrl, this.getHeaders(fetchUrl));
+            var doc = new Document(res.body);
 
-                if (allLinks.length > 0) {
-                    allLinks.forEach(function(a) {
-                        var href = a.attr("href") || "";
-                        var epDiv = a.selectFirst("div.episode_number");
-                        var epNum = epDiv ? epDiv.text.trim() : "";
-                        var m = href.match(/s=([^&]+)&e=([^&\s]+)/);
-                        if (!m) return;
-                        var s = m[1], e = m[2];
-                        if (s !== seasonPref) return;
-                        chapters.push({
-                            name: "S" + s + " — Épisode " + (epNum || e),
-                            url: MIRK_BASE + "/" + lang + "/watch?s=" + s + "&e=" + e
-                        });
-                    });
-                }
-            } catch(err) { /* fallback below */ }
-
-            // If live parse failed or returned 0, generate from known count
-            if (chapters.length === 0) {
-                var s = seasonDef.s;
-                var count = seasonDef.count;
-                for (var ep = 1; ep <= count; ep++) {
-                    var epId, epNum;
-                    if (s === "C") {
-                        epNum = ep < 10 ? "0" + ep : "" + ep;
-                        epId = "c" + epNum;
-                    } else if (s === "X") {
-                        epNum = ep < 10 ? "0" + ep : "" + ep;
-                        epId = "x" + epNum;
-                    } else {
-                        epNum = ep < 10 ? "0" + ep : "" + ep;
-                        epId = s + epNum;
-                    }
-                    chapters.push({
-                        name: seasonDef.label + " — Épisode " + ep,
-                        url: MIRK_BASE + "/" + lang + "/watch?s=" + s + "&e=" + epId
-                    });
-                }
-            }
-        }
-
-        // Also add season-switcher entries if no preference is set
-        if (chapters.length === 0) {
-            // Fallback: fetch whatever is on the episodes page
-            try {
-                var epUrl2 = MIRK_BASE + "/" + lang + "/episodes";
-                var res2 = await new Client().get(epUrl2, this.getHeaders(epUrl2));
-                var doc2 = new Document(res2.body);
-                doc2.select("a.episode_card_link").forEach(function(a) {
-                    var href = a.attr("href") || "";
-                    var epDiv = a.selectFirst("div.episode_number");
-                    var epNum = epDiv ? epDiv.text.trim() : "";
-                    var m = href.match(/s=([^&]+)&e=([^&\s]+)/);
-                    if (!m) return;
-                    var s = m[1], e = m[2];
-                    chapters.push({
-                        name: "S" + s + " — Épisode " + (epNum || e),
-                        url: MIRK_BASE + "/" + lang + "/watch?s=" + s + "&e=" + e
-                    });
+            doc.select("a.episode_card_link").forEach(function(a) {
+                var href   = a.attr("href") || "";
+                var numEl  = a.selectFirst("div.episode_number");
+                var epNum  = numEl ? numEl.text.trim() : "";
+                var m = href.match(/s=([^&]+)&e=([^&\s"]+)/);
+                if (!m) return;
+                var s = m[1], e = m[2];
+                var epLabel = epNum ? ("Épisode " + epNum) : e;
+                chapters.push({
+                    name: epLabel,
+                    url: MIRK_BASE + "/" + lang + "/watch?s=" + s + "&e=" + e
                 });
-            } catch(err) { /* silently fail */ }
+            });
+        } catch (err) { /* ignore fetch error */ }
+
+        if (chapters.length === 0) {
+            chapters.push({
+                name: "Ouvrir sur miraculum.ml",
+                url: MIRK_BASE + "/" + lang + "/episodes?s=" + season
+            });
         }
 
         return {
-            name: "Miraculous: Tales of Ladybug & Cat Noir",
-            imageUrl: MIRK_COVER,
-            description: "Regardez Miraculous Ladybug en " + lang.toUpperCase() + " sur miraculum.ml.\nSaisons 1–6 + Miraculous World en 40+ langues.",
+            name: label,
+            imageUrl: coverUrl,
+            description: desc + "\n\nmiraulum.ml — " + chapters.length + " épisode(s) disponible(s)",
             chapters: chapters
         };
     }
 
-    // ── Video list: extract m3u8 URL from watch page ──────────
+    // ── Video: extract m3u8 token and return HD + LQ ─────────
     async getVideoList(url) {
-        // url = https://miraculum.ml/{lang}/watch?s={s}&e={e}
+        var lang = this.getLang();
+
         var res;
         try {
             res = await new Client().get(url, this.getHeaders(url));
-        } catch(err) {
+        } catch (err) {
             return [{ quality: "WebView", url: url }];
         }
 
         var body = res.body;
 
-        // Extract auth token and episode params from inline JS
-        var tokenM   = body.match(/userToken\s*=\s*'([a-fA-F0-9]{64})'/);
-        var sM       = body.match(/seasonIdDownload\s*=\s*'([^']+)'/);
-        var eM       = body.match(/episodeIdDownload\s*=\s*'([^']+)'/);
-        var langM    = body.match(/phpLang\s*=\s*'([^']+)'/);
+        // Extract fields from inline JS
+        var tokenM = body.match(/userToken\s*=\s*'([a-fA-F0-9]{60,})'/);
+        var sM     = body.match(/var\s+seasonIdDownload\s*=\s*'([^']+)'/);
+        var eM     = body.match(/var\s+episodeIdDownload\s*=\s*'([^']+)'/);
+        var langM  = body.match(/var\s+phpLang\s*=\s*'([^']+)'/);
 
         if (!tokenM || !sM || !eM) {
-            // Fallback: open watch page as webview
+            // Fallback: open in WebView so player.js can load the video itself
             return [{ quality: "WebView", url: url }];
         }
 
-        var token = tokenM[1];
-        var s     = sM[1];
-        var e     = eM[1];
-        var lang  = langM ? langM[1] : this.getLang();
+        var token   = tokenM[1];
+        var s       = sM[1];
+        var e       = eM[1];
+        var epLang  = langM ? langM[1] : lang;
 
-        // Construct m3u8 URLs (HD and LQ)
-        var base = MIRK_INT + "/m3u8.m3u8?lang=" + lang + "&s=" + s + "&e=" + e + "&token=" + token;
-        var hdUrl = base;
-        var lqUrl = base + "&q=lq";
+        // Build HLS URLs (HD default, LQ via &q=lq)
+        var base = MIRK_INT + "/m3u8.m3u8?lang=" + epLang
+                             + "&s=" + s
+                             + "&e=" + e
+                             + "&token=" + token;
 
         return [
-            { quality: "HD",     url: hdUrl },
-            { quality: "SD (LQ)", url: lqUrl }
+            { quality: "HD (1080p)", url: base },
+            { quality: "LQ (480p)",  url: base + "&q=lq" }
         ];
     }
 
@@ -228,59 +243,35 @@ class DefaultExtension extends MProvider {
             {
                 key: "mirk_lang",
                 listPreference: {
-                    title: "Langue des épisodes",
-                    summary: "Sélectionnez la langue de doublage",
-                    valueIndex: 6,
+                    title: "Langue / Doublage",
+                    summary: "Langue des épisodes sur miraculum.ml",
+                    valueIndex: 2,  // English default
                     entries: [
-                        "العربية (Fusha)", "العربية (Masriyya)", "Amharic", "Bengali",
-                        "Български", "Català", "Cymraeg", "Čeština",
-                        "Dansk", "Deutsch", "Eesti", "Ελληνικά",
-                        "English", "Español", "Español (Latinoamérica)", "Euskara",
-                        "Farsi", "Filipino", "Français", "Gaeilge",
-                        "Galego", "한국어", "Հայերեն", "हिन्दी",
-                        "Hrvatski", "Bahasa Indonesia", "Italiano", "עברית",
-                        "ქართული", "Қазақша", "Latviešu", "Lietuvių",
-                        "Magyar", "Melayu", "Монгол", "Nederlands",
-                        "日本語", "Norsk", "O'zbekcha", "Polski",
-                        "Português", "Português (Brasil)", "Română", "Русский",
-                        "Shqip", "Slovenčina", "Slovenščina", "Srpski",
-                        "Suomi", "Svenska", "தமிழ்", "Telugu",
-                        "ภาษาไทย", "Türkçe", "Українська", "اردو",
-                        "Uyghur", "Tiếng Việt", "普通話 (Mandarin)", "粵語 (Cantonese)",
-                        "台灣話 (Taiwanese)", "Sinhala", "தமிழ்", "Galego"
+                        "العربية", "Deutsch", "English", "Español",
+                        "Español (LatAm)", "Français", "Italiano",
+                        "한국어", "日本語", "Polski", "Português",
+                        "Português (Brasil)", "Русский", "Türkçe",
+                        "普通話", "हिन्दी", "اردو", "Tiếng Việt",
+                        "ภาษาไทย", "Bahasa Indonesia", "Nederlands",
+                        "Svenska", "Norsk", "Suomi", "Dansk",
+                        "Čeština", "Română", "Magyar", "Hrvatski",
+                        "Slovenčina", "Slovenščina", "Srpski",
+                        "Български", "Ελληνικά", "Українська",
+                        "עברית", "فارسی", "台灣話", "粵語"
                     ],
                     entryValues: [
-                        "ar", "ar-eg", "am", "bn",
-                        "bg", "ca", "cy", "cs",
-                        "da", "de", "et", "el",
-                        "en", "es", "es-419", "eu",
-                        "fa", "fil", "fr", "ga",
-                        "gl", "ko", "hy", "hi",
-                        "hr", "id", "it", "he",
-                        "ka", "kk", "lv", "lt",
-                        "hu", "ms", "mn", "nl",
-                        "ja", "no", "uz", "pl",
-                        "pt", "pt-br", "ro", "ru",
-                        "sq", "sk", "sl", "sr",
-                        "fi", "sv", "ta", "te",
-                        "th", "tr", "uk", "ur",
-                        "ug", "vi", "zh-cmn", "zh-yue",
-                        "zh-tw", "si", "ta", "gl"
+                        "ar", "de", "en", "es",
+                        "es-419", "fr", "it",
+                        "ko", "ja", "pl", "pt",
+                        "pt-br", "ru", "tr",
+                        "zh-cmn", "hi", "ur", "vi",
+                        "th", "id", "nl",
+                        "sv", "no", "fi", "da",
+                        "cs", "ro", "hu", "hr",
+                        "sk", "sl", "sr",
+                        "bg", "el", "uk",
+                        "he", "fa", "zh-tw", "zh-yue"
                     ]
-                }
-            },
-            {
-                key: "mirk_season",
-                listPreference: {
-                    title: "Saison à afficher",
-                    summary: "Sélectionnez la saison dans getDetail",
-                    valueIndex: 0,
-                    entries: [
-                        "Saison 6 (2024)", "Saison 5", "Saison 4",
-                        "Saison 3", "Saison 2", "Saison 1",
-                        "Miraculous World & Specials", "Extras"
-                    ],
-                    entryValues: ["6", "5", "4", "3", "2", "1", "C", "X"]
                 }
             }
         ];
