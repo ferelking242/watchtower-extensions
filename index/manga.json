@@ -10127,5 +10127,33 @@
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free"
+  },
+  {
+    "name": "AllManga",
+    "id": 1800005070,
+    "baseUrl": "https://allmanga.to",
+    "lang": "en",
+    "typeSource": "single",
+    "iconUrl": "https://allmanga.to/pics/avatar.png",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/manga/en/allmanga.js",
+    "apiUrl": "https://api.allanime.day/api",
+    "version": "0.1.0",
+    "isManga": true,
+    "itemType": 0,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "Uses AllAnime GraphQL API. Chapter images via api.allanime.day.",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": true,
+    "paywall": "free",
+    "subCategories": ["Multi-lang"],
+    "supportsComments": false
   }
 ]
