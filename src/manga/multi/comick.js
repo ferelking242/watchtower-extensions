@@ -45,16 +45,16 @@ const watchtowerSources = [
             "sr": 373675453,
             "da": 574420905
         },
-        "baseUrl": "https://comick.io",
+        "baseUrl": "https://comick.dev",
         "apiUrl": "https://api.comick.fun",
         "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.comick.png",
         "typeSource": "single",
         "itemType": 0,
-        "version": "0.1.3",
+        "version": "0.1.4",
         "pkgPath": "manga/src/all/comick.js"
     }];
 
-const BASE_URL = "https://comick.io";
+const BASE_URL = "https://comick.dev";
 
 class DefaultExtension extends MProvider {
     constructor() {

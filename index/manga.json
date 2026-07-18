@@ -33,7 +33,7 @@
   {
     "name": "Comick",
     "id": 1800005016,
-    "baseUrl": "https://comick.io",
+    "baseUrl": "https://comick.dev",
     "lang": "multi",
     "typeSource": "single",
     "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.comick.png",

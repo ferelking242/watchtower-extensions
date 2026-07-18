@@ -6,9 +6,9 @@ const watchtowerSources = [{
     "name": "Coflix",
     "langs": ["fr"],
     "ids": { "fr": 501827364 },
-    "baseUrl": "https://coflix.trade",
-    "apiUrl": "https://coflix.trade",
-    "iconUrl": "https://coflix.trade/wp-content/uploads/2022/10/cropped-coflix-180x180-1-150x150.png",
+    "baseUrl": "https://coflix.re",
+    "apiUrl": "https://coflix.re",
+    "iconUrl": "https://coflix.re/wp-content/uploads/2022/10/cropped-coflix-180x180-1-150x150.png",
     "typeSource": "single",
     "itemType": 1,
     "version": "1.0.2",
@@ -24,10 +24,10 @@ const watchtowerSources = [{
     "hasDRM": false,
     "isAggregator": false,
     "paywall": "free",
-    "notes": "Coflix — Films & Séries VF. Domaine actuel: coflix.trade"
+    "notes": "Coflix — Films & Séries VF. Domaine actuel: coflix.re (juil 2026)"
 }];
 
-const BASE_URL = "https://coflix.trade";
+const BASE_URL = "https://coflix.re";
 
 class DefaultExtension extends MProvider {
     constructor() { super(); }

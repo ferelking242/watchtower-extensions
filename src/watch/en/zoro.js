@@ -2,25 +2,34 @@ const watchtowerSources = [{
     "name": "Zoro / Aniwatch",
     "langs": ["en"],
     "ids": { "en": 613418059 },
-    "baseUrl": "https://aniwatch.to",
-    "apiUrl": "https://aniwatch.to",
-    "iconUrl": "https://aniwatch.to/favicon.ico",
+    "baseUrl": "https://aniwatch.or.at",
+    "apiUrl": "https://aniwatch.or.at",
+    "iconUrl": "https://aniwatch.or.at/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.5",
-    "pkgPath": "anime/src/en/zoro.js"
+    "version": "0.1.6",
+    "pkgPath": "anime/src/en/zoro.js",
+    "editableBaseUrl": true,
+    "notes": "v0.1.6 — domaine migré aniwatch.to → aniwatch.or.at (juil 2026)"
 }];
 
-const BASE_URL = "https://aniwatch.to";
+// v0.1.6 — aniwatch.to → aniwatch.or.at (juillet 2026)
+// Le domaine aniwatch.to est mort; chaîne actuelle: aniwatch.wiki → aniwatchz.cv → aniwatch.or.at
+const BASE_URL = "https://aniwatch.or.at";
 
 class DefaultExtension extends MProvider {
     constructor() {
         super();
     }
 
+    getBaseUrl() {
+        return new SharedPreferences().get("zoro_base_url") || BASE_URL;
+    }
+
     getHeaders(url) {
+        const base = this.getBaseUrl();
         return {
-            "Referer": `${BASE_URL}/`,
+            "Referer": `${base}/`,
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
             "X-Requested-With": "XMLHttpRequest"
         };
@@ -37,14 +46,14 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        const res = await new Client().get(`${BASE_URL}/most-popular?page=${page}`, this.getHeaders());
+        const res = await new Client().get(`${this.getBaseUrl()}/most-popular?page=${page}`, this.getHeaders());
         const list = this._parseAnimeList(res.body);
         const hasNext = res.body.includes('class="next"') || res.body.includes('aria-label="Next"');
         return { list, hasNextPage: hasNext };
     }
 
     async getLatestUpdates(page) {
-        const res = await new Client().get(`${BASE_URL}/recently-updated?page=${page}`, this.getHeaders());
+        const res = await new Client().get(`${this.getBaseUrl()}/recently-updated?page=${page}`, this.getHeaders());
         const list = this._parseAnimeList(res.body);
         const hasNext = res.body.includes('class="next"') || res.body.includes('aria-label="Next"');
         return { list, hasNextPage: hasNext };
@@ -52,7 +61,7 @@ class DefaultExtension extends MProvider {
 
     async search(query, page, filterList) {
         const res = await new Client().get(
-            `${BASE_URL}/search?keyword=${encodeURIComponent(query)}&page=${page}`,
+            `${this.getBaseUrl()}/search?keyword=${encodeURIComponent(query)}&page=${page}`,
             this.getHeaders()
         );
         const list = this._parseAnimeList(res.body);
@@ -61,7 +70,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getDetail(url) {
-        const res = await new Client().get(`${BASE_URL}${url}`, this.getHeaders());
+        const res = await new Client().get(`${this.getBaseUrl()}${url}`, this.getHeaders());
         const html = res.body;
 
         const nameM = html.match(/<h2[^>]+class="[^"]*film-name[^"]*"[^>]*>([^<]+)</);
@@ -75,7 +84,7 @@ class DefaultExtension extends MProvider {
 
         const animeId = url.split("-").pop();
         const epRes = await new Client().get(
-            `${BASE_URL}/ajax/v2/episode/list/${animeId}`,
+            `${this.getBaseUrl()}/ajax/v2/episode/list/${animeId}`,
             this.getHeaders()
         );
         const epData = JSON.parse(epRes.body);
@@ -101,7 +110,7 @@ class DefaultExtension extends MProvider {
         const epId = epIdM[1];
 
         const serverRes = await new Client().get(
-            `${BASE_URL}/ajax/v2/episode/servers?episodeId=${epId}`,
+            `${this.getBaseUrl()}/ajax/v2/episode/servers?episodeId=${epId}`,
             this.getHeaders()
         );
         const serverData = JSON.parse(serverRes.body);
@@ -118,7 +127,7 @@ class DefaultExtension extends MProvider {
         for (const server of servers.slice(0, 4)) {
             try {
                 const srcRes = await new Client().get(
-                    `${BASE_URL}/ajax/v2/episode/sources?id=${server.id}`,
+                    `${this.getBaseUrl()}/ajax/v2/episode/sources?id=${server.id}`,
                     this.getHeaders()
                 );
                 const srcData = JSON.parse(srcRes.body);
@@ -136,5 +145,17 @@ class DefaultExtension extends MProvider {
     }
 
     getFilterList() { return []; }
-    getSourcePreferences() { return []; }
+
+    getSourcePreferences() {
+        return [{
+            key: "zoro_base_url",
+            editTextPreference: {
+                title: "Override Base URL",
+                summary: "Change si le domaine principal change",
+                value: BASE_URL,
+                dialogTitle: "Override Base URL",
+                dialogMessage: `Défaut: ${BASE_URL}`
+            }
+        }];
+    }
 }

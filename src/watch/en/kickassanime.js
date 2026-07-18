@@ -3,7 +3,7 @@ const watchtowerSources = [
   {
     "name": "KickAssAnime",
     "id": 4096048097,
-    "baseUrl": "https://kaa.to",
+    "baseUrl": "https://kaa.lt",
     "lang": "en",
     "typeSource": "multi",
     "iconUrl":
@@ -14,7 +14,7 @@ const watchtowerSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "1.2.8",
+    "version": "1.2.9",
     "isManga": false,
     "itemType": 1,
     "isFullData": false,
@@ -431,7 +431,7 @@ class DefaultExtension extends MProvider {
         editTextPreference: {
           title: "Override base url",
           summary: "",
-          value: "https://kaa.mx",
+          value: "https://kaa.lt",
           dialogTitle: "Override base url",
           dialogMessage: "",
         },
