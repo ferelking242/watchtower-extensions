@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      { "id": "home",      "component": "carousel", "title": "🏠 Accueil",    "accent": "primary",   "icon": "home",        "seeAll": true },
+      { "id": "new",       "component": "carousel", "title": "✨ New Manga",  "accent": "tertiary",  "icon": "fiber_new",   "seeAll": true },
+      { "id": "completed", "component": "carousel", "title": "✅ Completed",  "accent": "#4CAF50",   "icon": "check_circle","seeAll": true }
+    ]
+  },
+  "browse": {
+    "popular": { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "latest":  { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "search":  { "results": { "component": "grid", "columns": 3 }, "filters": "chips" }
+  },
+  "player": { "mode": "standard" }
+}

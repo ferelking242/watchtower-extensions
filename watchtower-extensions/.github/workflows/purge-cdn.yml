@@ -1,0 +1,69 @@
+name: Purge jsDelivr CDN
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Purge jsDelivr — index & repo (toujours)
+        run: |
+          BASE="https://purge.jsdelivr.net/gh/${{ github.repository }}@main"
+          PASS=0; FAIL=0
+          for FILE in \
+            "repo.json" \
+            "index/watch.json" \
+            "index/manga.json" \
+            "index/novel.json" \
+            "index/music.json" \
+            "index/game.json" \
+            "index/plugins.json"; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${BASE}/${FILE}")
+            if [ "$STATUS" = "200" ] || [ "$STATUS" = "201" ]; then
+              echo "✅ ${STATUS}  ${FILE}"
+              PASS=$((PASS+1))
+            else
+              echo "⚠️  ${STATUS}  ${FILE}"
+              FAIL=$((FAIL+1))
+            fi
+          done
+          echo "--- index: ${PASS} ok, ${FAIL} warn ---"
+
+      - name: Purge jsDelivr — tous les fichiers modifiés dans ce push
+        run: |
+          BASE="https://purge.jsdelivr.net/gh/${{ github.repository }}@main"
+          PASS=0; FAIL=0; SKIP=0
+
+          # Compatibilité: si premier commit (pas de HEAD~1), on prend tous les fichiers trackés
+          if git rev-parse HEAD~1 >/dev/null 2>&1; then
+            FILES=$(git diff --name-only HEAD~1 HEAD)
+          else
+            FILES=$(git ls-tree --name-only -r HEAD)
+          fi
+
+          echo "$FILES" | while read FILE; do
+            [ -z "$FILE" ] && continue
+            [ -f "$FILE" ] || { echo "skip  (deleted)  ${FILE}"; continue; }
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${BASE}/${FILE}")
+            if [ "$STATUS" = "200" ] || [ "$STATUS" = "201" ]; then
+              echo "✅ ${STATUS}  ${FILE}"
+            else
+              echo "⚠️  ${STATUS}  ${FILE}"
+            fi
+          done
+
+      - name: Résumé
+        run: |
+          echo ""
+          echo "jsDelivr CDN purgé pour ${{ github.sha }}"
+          echo "Les mises à jour sont visibles immédiatement via:"
+          echo "  https://cdn.jsdelivr.net/gh/${{ github.repository }}@main/repo.json"
+          echo "  https://cdn.jsdelivr.net/gh/${{ github.repository }}@main/index/watch.json"
+          echo "  https://cdn.jsdelivr.net/gh/${{ github.repository }}@main/index/music.json"

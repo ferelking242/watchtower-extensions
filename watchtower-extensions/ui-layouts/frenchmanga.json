@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      { "id": "trending",    "component": "carousel", "title": "🔥 Tendances",       "accent": "error",     "seeAll": true },
+      { "id": "vf",          "component": "carousel", "title": "🇫🇷 VF",              "accent": "primary",   "seeAll": true },
+      { "id": "vostfr",      "component": "carousel", "title": "🌐 VOSTFR",          "accent": "secondary", "seeAll": true },
+      { "id": "action",      "component": "carousel", "title": "💥 Action",          "accent": "#E53935",   "seeAll": true },
+      { "id": "adventure",   "component": "carousel", "title": "⚔️ Aventure",        "accent": "#FB8C00",   "seeAll": true },
+      { "id": "shonen",      "component": "carousel", "title": "👊 Shōnen",          "accent": "#F4511E",   "seeAll": true },
+      { "id": "romance",     "component": "carousel", "title": "💕 Romance",         "accent": "#E91E63",   "seeAll": true },
+      { "id": "fantasy",     "component": "carousel", "title": "🧙 Fantaisie",       "accent": "#7B1FA2",   "seeAll": true },
+      { "id": "sci_fi",      "component": "carousel", "title": "🚀 Science-Fiction", "accent": "#0288D1",   "seeAll": true },
+      { "id": "comedy",      "component": "carousel", "title": "😄 Comédie",         "accent": "#F9A825",   "seeAll": true },
+      { "id": "horror",      "component": "carousel", "title": "👻 Horreur",         "accent": "#37474F",   "seeAll": true },
+      { "id": "season_2026", "component": "carousel", "title": "📅 Saison 2026",     "accent": "tertiary",  "seeAll": true }
+    ]
+  },
+  "browse": {
+    "popular": { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "latest":  { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "search":  { "results": { "component": "grid", "columns": 3 }, "filters": "chips" }
+  },
+  "player": { "mode": "standard" }
+}

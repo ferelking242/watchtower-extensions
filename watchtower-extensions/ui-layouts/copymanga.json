@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      { "id": "popular", "component": "ranked",   "title": "🔥 Popular",        "accent": "error",    "seeAll": true },
+      { "id": "latest",  "component": "carousel", "title": "✨ Latest Updates", "accent": "tertiary", "seeAll": true }
+    ]
+  },
+  "browse": {
+    "popular": { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "latest":  { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "search":  { "results": { "component": "grid", "columns": 3 }, "filters": "chips" }
+  },
+  "player": { "mode": "standard" }
+}
