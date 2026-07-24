@@ -1,0 +1,724 @@
+{
+  "_comment": "Plugin registry — submit a PR to add your plugin",
+  "_schema": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/plugins/schema.json",
+  "_templates": "https://github.com/ferelking242/watchtower-extensions/tree/main/plugins/_templates",
+  "_lastUpdated": "2026-07-06",
+  "plugins": [
+    {
+      "id": "com.watchtower.tiktok-downloader",
+      "name": "TikTok Downloader",
+      "version": "1.0.0",
+      "author": "Watchtower Team",
+      "description": "Download TikTok videos and slideshows in HD without watermark. Powered by ZeusDL.",
+      "longDescription": "Download any TikTok video, slideshow, or audio track directly into Watchtower.\n\nSupports **watermark removal**, **HD quality**, **audio-only mode**, and **batch downloads**.\n\n**Requires ZeusDL** — Watchtower's built-in download engine that handles TikTok's anti-bot protection, rotating sessions and rate-limiting automatically.\n\n**Optional: FFmpeg** for 1080p quality (merges audio+video streams).",
+      "icon": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/plugins/com.watchtower.tiktok-downloader/assets/icon.svg",
+      "banner": "",
+      "screenshots": [],
+      "category": "downloader",
+      "runtime": "javascript",
+      "ui": "webview",
+      "permissions": [
+        "network",
+        "downloads",
+        "storage.read",
+        "storage.write",
+        "notifications",
+        "filesystem",
+        "system"
+      ],
+      "requirements": [
+        {
+          "id": "zeusdl",
+          "version": ">=1.0.0",
+          "optional": false,
+          "reason": "ZeusDL handles TikTok session management, watermark removal and HD extraction."
+        },
+        {
+          "id": "ffmpeg",
+          "version": ">=5.0.0",
+          "optional": true,
+          "reason": "Merges audio+video streams for 1080p quality."
+        }
+      ],
+      "commandScopes": [
+        {
+          "command": "zeusdl",
+          "description": "Download TikTok videos without watermark"
+        },
+        {
+          "command": "ffmpeg",
+          "description": "Merge audio and video streams for HD quality"
+        }
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*.tiktok.com",
+          "*.tiktokcdn.com",
+          "*.tiktokv.com",
+          "*.bytedance.com"
+        ]
+      },
+      "writePaths": [
+        "$DOWNLOADS/TikTok"
+      ],
+      "watchtower": {
+        "minVersion": "1.0.0",
+        "apis": [
+          "HTTP",
+          "Download",
+          "Notification",
+          "Storage",
+          "Cache",
+          "System"
+        ]
+      },
+      "userConfig": {
+        "fields": [
+          {
+            "key": "defaultQuality",
+            "type": "select",
+            "label": "Default quality",
+            "options": [
+              "1080p",
+              "720p",
+              "480p",
+              "360p",
+              "audio only"
+            ],
+            "default": "720p"
+          },
+          {
+            "key": "saveFolder",
+            "type": "string",
+            "label": "Save folder",
+            "default": "$DOWNLOADS/TikTok"
+          },
+          {
+            "key": "removeWatermark",
+            "type": "boolean",
+            "label": "Remove watermark",
+            "default": true
+          },
+          {
+            "key": "audioOnly",
+            "type": "boolean",
+            "label": "Audio only",
+            "default": false
+          }
+        ]
+      },
+      "tags": [
+        "tiktok",
+        "download",
+        "video",
+        "watermark-free",
+        "hd",
+        "social"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/watchtower-extensions/tree/main/plugins/com.watchtower.tiktok-downloader",
+      "isNsfw": false,
+      "requiresAccount": false,
+      "paywall": "free",
+      "downloads": 0,
+      "rating": 0,
+      "featured": true,
+      "publishedAt": "2026-06-09"
+    },
+    {
+      "id": "com.watchtower.facebook-downloader",
+      "name": "Facebook Downloader",
+      "version": "1.0.0",
+      "author": "Watchtower Team",
+      "description": "Download Facebook videos and Reels in HD. Powered by ZeusDL.",
+      "longDescription": "Download any public Facebook video, Reel, or story directly into Watchtower.\n\nSupports **HD quality**, **audio-only mode**, and **private video download** (when logged in via cookies).\n\n**Requires ZeusDL** — Watchtower's built-in download engine that handles Facebook's CDN and session management automatically.\n\n**Optional: FFmpeg** for best quality (merges audio+video streams).",
+      "icon": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/plugins/com.watchtower.facebook-downloader/assets/icon.svg",
+      "banner": "",
+      "screenshots": [],
+      "category": "downloader",
+      "runtime": "javascript",
+      "ui": "webview",
+      "permissions": [
+        "network",
+        "downloads",
+        "storage.read",
+        "storage.write",
+        "notifications",
+        "filesystem",
+        "system"
+      ],
+      "requirements": [
+        {
+          "id": "zeusdl",
+          "version": ">=1.0.0",
+          "optional": false,
+          "reason": "ZeusDL handles Facebook CDN, cookie session and HD stream extraction."
+        },
+        {
+          "id": "ffmpeg",
+          "version": ">=5.0.0",
+          "optional": true,
+          "reason": "Merges audio+video streams for best quality."
+        }
+      ],
+      "commandScopes": [
+        {
+          "command": "zeusdl",
+          "description": "Download Facebook videos and Reels"
+        },
+        {
+          "command": "ffmpeg",
+          "description": "Merge audio and video streams"
+        }
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*.facebook.com",
+          "*.fbcdn.net",
+          "*.fb.com",
+          "*.fbsbx.com"
+        ]
+      },
+      "writePaths": [
+        "$DOWNLOADS/Facebook"
+      ],
+      "watchtower": {
+        "minVersion": "1.0.0",
+        "apis": [
+          "HTTP",
+          "Download",
+          "Notification",
+          "Storage",
+          "Cache",
+          "System"
+        ]
+      },
+      "userConfig": {
+        "fields": [
+          {
+            "key": "defaultQuality",
+            "type": "select",
+            "label": "Default quality",
+            "options": [
+              "1080p",
+              "720p",
+              "480p",
+              "360p",
+              "audio only"
+            ],
+            "default": "720p"
+          },
+          {
+            "key": "saveFolder",
+            "type": "string",
+            "label": "Save folder",
+            "default": "$DOWNLOADS/Facebook"
+          },
+          {
+            "key": "audioOnly",
+            "type": "boolean",
+            "label": "Audio only",
+            "default": false
+          }
+        ]
+      },
+      "tags": [
+        "facebook",
+        "reels",
+        "download",
+        "video",
+        "hd",
+        "social"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/watchtower-extensions/tree/main/plugins/com.watchtower.facebook-downloader",
+      "isNsfw": false,
+      "requiresAccount": false,
+      "paywall": "free",
+      "downloads": 0,
+      "rating": 0,
+      "featured": false,
+      "publishedAt": "2026-06-12"
+    },
+    {
+      "id": "com.watchtower.telegram-source",
+      "name": "Telegram Source",
+      "version": "1.0.0",
+      "author": "Watchtower Team",
+      "description": "Use any Telegram channel as a manga, comics or document source. Stream CBR/CBZ/PDF/EPUB directly in Watchtower. 2FA supported.",
+      "longDescription": "Connect to any Telegram channel (public or private) and browse its files as a reading library in Watchtower. Each channel becomes a source with cover, description and chapter list.\n\n**Powered by Pyrogram** — connects via user account (not bot). Supports chunk streaming, search, thumbnail extraction from archives, and **two-step verification (2FA)**.\n\n**First use** requires a Telegram OTP authentication (code sent to your Telegram app). **Accounts with 2FA** are fully supported — you will be prompted for your cloud password.",
+      "icon": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/plugins/com.watchtower.telegram-source/assets/icon.svg",
+      "banner": "",
+      "screenshots": [],
+      "category": "reader",
+      "runtime": "binary",
+      "ui": "flutter_eval",
+      "permissions": [
+        "network",
+        "storage.read",
+        "storage.write",
+        "reader",
+        "account",
+        "crypto"
+      ],
+      "requirements": [
+        {
+          "id": "libpython",
+          "version": ">=3.11.0",
+          "optional": false,
+          "reason": "Runs the Pyrogram script natively on Android."
+        }
+      ],
+      "commandScopes": [
+        {
+          "command": "python",
+          "description": "Run Pyrogram Telegram source script",
+          "actions": [
+            "auth_send_code",
+            "auth_verify_code",
+            "auth_check_password",
+            "metadata",
+            "list",
+            "stream",
+            "search",
+            "thumbnail"
+          ]
+        }
+      ],
+      "tags": [
+        "telegram",
+        "manga",
+        "comics",
+        "cbr",
+        "cbz",
+        "pdf",
+        "epub",
+        "reader",
+        "source"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/watchtower-telegram-plugin",
+      "isNsfw": false,
+      "requiresAccount": true,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Reader",
+          "Storage",
+          "SecureStorage",
+          "Cache"
+        ]
+      },
+      "zipUrl": "https://github.com/ferelking242/watchtower-telegram-plugin/releases/download/latest/com.watchtower.telegram-source_1.0.0.zip"
+    },
+    {
+      "id": "com.spotube.youtube-audio",
+      "name": "YouTube Audio",
+      "version": "1.0.0",
+      "author": "Kingkor Roy Tirtho",
+      "description": "YouTube audio source plugin for the Watchtower Music Hub.",
+      "longDescription": "Streams audio directly from YouTube. Supports track matching, quality selection, and local cache. Required to play music via the Music Hub when no other audio source is configured.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-youtube-audio/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-audio-source",
+      "runtime": "hetu",
+      "permissions": [
+        "network",
+        "storage.read"
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*.youtube.com",
+          "*.googlevideo.com",
+          "*.googleapis.com"
+        ]
+      },
+      "tags": [
+        "music",
+        "youtube",
+        "audio",
+        "streaming"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-youtube-audio",
+      "isNsfw": false,
+      "requiresAccount": false,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache"
+        ]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-youtube-audio/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.jiosaavn-audio",
+      "name": "Jiosaavn Audio",
+      "version": "1.0.0",
+      "author": "Kingkor Roy Tirtho",
+      "description": "Jiosaavn audio source plugin for the Watchtower Music Hub.",
+      "longDescription": "Streams audio from JioSaavn — large catalog of Hindi, Tamil, Telugu, and other South Asian music. Great alternative to YouTube Audio for regional content.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-jiosaavn-audio/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-audio-source",
+      "runtime": "hetu",
+      "permissions": [
+        "network",
+        "storage.read"
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*.jiosaavn.com",
+          "*.saavncdn.com"
+        ]
+      },
+      "tags": [
+        "music",
+        "jiosaavn",
+        "audio",
+        "streaming",
+        "hindi",
+        "south-asian"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-jiosaavn-audio",
+      "isNsfw": false,
+      "requiresAccount": false,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache"
+        ]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-jiosaavn-audio/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.dab-music",
+      "name": "DAB Music",
+      "version": "1.0.0",
+      "author": "Kingkor Roy Tirtho",
+      "description": "dab.yeet.su HiFi audio source plugin for the Watchtower Music Hub.",
+      "longDescription": "Streams lossless HiFi audio (up to 24-bit/96 kHz) from dab.yeet.su. Requires account authentication. Best quality audio source available in the Music Hub.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-dab-music/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-audio-source",
+      "runtime": "hetu",
+      "permissions": [
+        "network",
+        "storage.read",
+        "storage.write"
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "dab.yeet.su",
+          "*.yeet.su"
+        ]
+      },
+      "tags": [
+        "music",
+        "hifi",
+        "lossless",
+        "audio",
+        "streaming"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-dab-music",
+      "isNsfw": false,
+      "requiresAccount": true,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache",
+          "SecureStorage"
+        ]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-dab-music/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.musicbrainz-listenbrainz",
+      "name": "Musicbrainz & Listenbrainz",
+      "version": "1.0.0",
+      "author": "Kingkor Roy Tirtho",
+      "description": "Musicbrainz metadata + Listenbrainz scrobbling plugin for the Watchtower Music Hub.",
+      "longDescription": "Enriches tracks with MusicBrainz metadata (release year, labels, ISRCs) and scrobbles listening history to ListenBrainz — the open-source alternative to Last.fm. Also supports authentication for personalized recommendations.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-musicbrainz-listenbrainz/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-metadata",
+      "runtime": "hetu",
+      "permissions": [
+        "network",
+        "storage.read",
+        "storage.write"
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "musicbrainz.org",
+          "listenbrainz.org",
+          "*.musicbrainz.org",
+          "*.listenbrainz.org"
+        ]
+      },
+      "tags": [
+        "music",
+        "metadata",
+        "scrobbling",
+        "musicbrainz",
+        "listenbrainz"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-musicbrainz-listenbrainz",
+      "isNsfw": false,
+      "requiresAccount": false,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache",
+          "SecureStorage"
+        ]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-musicbrainz-listenbrainz/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.spotify",
+      "name": "Spotify",
+      "version": "1.0.0",
+      "author": "sonic-liberation",
+      "description": "Spotify metadata plugin for the Watchtower Music Hub.",
+      "longDescription": "Full Spotify metadata integration. Browse playlists, albums and artists. Requires a Spotify account.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-spotify/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-metadata",
+      "runtime": "hetu",
+      "permissions": [
+        "network",
+        "storage.read",
+        "storage.write"
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*.spotify.com",
+          "*.scdn.co",
+          "*.spotilocal.com"
+        ]
+      },
+      "tags": [
+        "music",
+        "spotify",
+        "metadata",
+        "streaming"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-spotify",
+      "isNsfw": false,
+      "requiresAccount": true,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache",
+          "Webview"
+        ]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-spotify/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.flac-audio",
+      "name": "FLAC Audio",
+      "version": "1.0.0",
+      "author": "aztecempire",
+      "description": "FLAC lossless audio source plugin for the Watchtower Music Hub.",
+      "longDescription": "Streams lossless FLAC audio for high-quality playback. Replaces default audio source with FLAC quality.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-flac-audio/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-audio-source",
+      "runtime": "hetu",
+      "permissions": [
+        "network",
+        "storage.read"
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*"
+        ]
+      },
+      "tags": [
+        "music",
+        "flac",
+        "audio",
+        "lossless"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-flac-audio",
+      "isNsfw": false,
+      "requiresAccount": false,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache"
+        ]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-flac-audio/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.applemusic",
+      "name": "Apple Music",
+      "version": "1.0.0",
+      "author": "CornHead764",
+      "description": "Apple Music metadata plugin for the Watchtower Music Hub.",
+      "longDescription": "Integrates Apple Music catalog: albums, artists, playlists. Requires an Apple Music account.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-applemusic/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-metadata",
+      "runtime": "hetu",
+      "permissions": [
+        "network",
+        "storage.read",
+        "storage.write"
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*.apple.com",
+          "*.mzstatic.com"
+        ]
+      },
+      "tags": [
+        "music",
+        "apple",
+        "metadata",
+        "streaming"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-applemusic",
+      "isNsfw": false,
+      "requiresAccount": true,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache",
+          "Webview"
+        ]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-applemusic/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.deezer",
+      "name": "Deezer",
+      "version": "1.0.0",
+      "author": "000Tonio",
+      "description": "Deezer metadata plugin for the Watchtower Music Hub.",
+      "longDescription": "Deezer catalog integration: albums, playlists, artists. Requires a Deezer account.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-deezer/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-metadata",
+      "runtime": "hetu",
+      "permissions": [
+        "network",
+        "storage.read",
+        "storage.write"
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*.deezer.com",
+          "*.dzcdn.net"
+        ]
+      },
+      "tags": [
+        "music",
+        "deezer",
+        "metadata",
+        "streaming"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-deezer",
+      "isNsfw": false,
+      "requiresAccount": true,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache",
+          "Webview"
+        ]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-deezer/releases/download/continuous/plugin.smplug"
+    },
+    {
+      "id": "com.spotube.youtube-music",
+      "name": "YouTube Music",
+      "version": "1.0.0",
+      "author": "Benisgo",
+      "description": "YouTube Music metadata plugin for the Watchtower Music Hub.",
+      "longDescription": "YouTube Music catalog integration: playlists, albums, artists from YT Music. Requires a Google account.",
+      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-youtube-music/main/assets/logo.png",
+      "banner": "",
+      "screenshots": [],
+      "category": "music-metadata",
+      "runtime": "hetu",
+      "permissions": [
+        "network",
+        "storage.read",
+        "storage.write"
+      ],
+      "networkAccess": {
+        "allowedDomains": [
+          "*.music.youtube.com",
+          "*.googlevideo.com",
+          "*.googleapis.com"
+        ]
+      },
+      "tags": [
+        "music",
+        "youtube",
+        "metadata",
+        "streaming"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/ferelking242/spotube-plugin-youtube-music",
+      "isNsfw": false,
+      "requiresAccount": true,
+      "paywall": "free",
+      "watchtower": {
+        "minVersion": "8.1.0",
+        "apis": [
+          "HTTP",
+          "Storage",
+          "Cache",
+          "Webview"
+        ]
+      },
+      "zipUrl": "https://github.com/ferelking242/spotube-plugin-youtube-music/releases/download/continuous/plugin.smplug"
+    }
+  ]
+}

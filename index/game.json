@@ -1,0 +1,28 @@
+[
+  {
+    "name": "RomsFun",
+    "id": 6000000001,
+    "baseUrl": "https://romsfun.com",
+    "lang": "en",
+    "typeSource": "single",
+    "iconUrl": "https://romsfun.com/favicon.ico",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "isNsfw": false,
+    "hasCloudflare": true,
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/game/en/en.romsfun.js",
+    "apiUrl": "",
+    "version": "1.0.2",
+    "isManga": false,
+    "itemType": 4,
+    "isFullData": false,
+    "appMinVerReq": "0.6.1",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "ROM downloads — PSP, PS2, GBA, SNES, N64, NDS and more",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free"
+  }
+]

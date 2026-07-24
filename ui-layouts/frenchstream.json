@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      { "id": "trending",         "component": "carousel",   "title": "🔥 À l'affiche",        "accent": "error",    "icon": "local_fire_department", "seeAll": true },
+      { "id": "films",            "component": "carousel",   "title": "🎬 Films",              "accent": "#1565C0",  "icon": "movie",                 "seeAll": true },
+      { "id": "series",           "component": "carousel",   "title": "📺 Séries",             "accent": "#6A1B9A",  "icon": "live_tv",               "seeAll": true },
+      { "id": "films_recent",     "component": "compactRow", "title": "🆕 Films récents",      "accent": "tertiary", "icon": "fiber_new",             "seeAll": true },
+      { "id": "series_recent",    "component": "compactRow", "title": "🆕 Séries récentes",    "accent": "tertiary",                                  "seeAll": true },
+      { "id": "vf",               "component": "carousel",   "title": "🇫🇷 Version Française",  "accent": "#1565C0",                                   "seeAll": true },
+      { "id": "vostfr",           "component": "carousel",   "title": "🌐 VOSTFR",             "accent": "secondary",                                 "seeAll": true },
+      { "id": "animation",        "component": "carousel",   "title": "🎭 Animation",          "accent": "#00838F",  "icon": "animation",             "seeAll": true },
+      { "id": "action",           "component": "carousel",   "title": "💥 Action",             "accent": "#BF360C",                                   "seeAll": true },
+      { "id": "comedie",          "component": "carousel",   "title": "😂 Comédie",            "accent": "#F9A825",                                   "seeAll": true },
+      { "id": "horreur",          "component": "carousel",   "title": "👻 Horreur",            "accent": "#37474F",                                   "seeAll": true },
+      { "id": "thriller",         "component": "carousel",   "title": "🔪 Thriller",           "accent": "#4A148C",                                   "seeAll": true },
+      { "id": "science_fiction",  "component": "carousel",   "title": "🚀 Science-Fiction",    "accent": "#01579B",                                   "seeAll": true }
+    ]
+  },
+  "browse": {
+    "popular": { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "latest":  { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "search":  { "results": { "component": "grid", "columns": 3 }, "filters": "chips" }
+  },
+  "player": { "mode": "standard" }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "My Local Source",
+  "id": "com.local.my-source",
+  "version": "0.1.0",
+  "baseUrl": "https://example.com",
+  "lang": "en",
+  "type": "watch",
+  "isNsfw": false,
+  "requiresAccount": false,
+  "hasCloudflare": false,
+  "appMinVerReq": "1.0.0",
+  "paywall": "free",
+  "videoQualities": ["AUTO", "1080p", "720p", "480p"],
+  "contentSubtype": ["anime"],
+  "networkAccess": {
+    "allowedDomains": ["example.com", "*.example.com"]
+  },
+  "_note": "Remove the _note fields. This is a local-only source — not published to the extension registry."
+}
