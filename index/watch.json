@@ -146,7 +146,7 @@
     "baseUrl": "https://jgzm.iuk9.com",
     "lang": "multi",
     "typeSource": "single",
-    "iconUrl": "https://jgzm.iuk9.com/favicon.ico",
+    "iconUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/assets/moviefr-icon.webp",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,

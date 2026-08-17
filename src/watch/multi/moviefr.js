@@ -3,7 +3,7 @@ const watchtowerSources = [{
     "lang": "multi",
     "baseUrl": "https://jgzm.iuk9.com",
     "apiUrl": "https://jgzm.iuk9.com",
-    "iconUrl": "https://jgzm.iuk9.com/favicon.ico",
+    "iconUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/assets/moviefr-icon.webp",
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
@@ -142,7 +142,7 @@ class DefaultExtension extends MProvider {
         const now = String(Date.now());
         return {
             "Accept": "application/json",
-            "Content-Type": "application/json",
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
             "User-Agent": "Watchtower/1.0 MovieFR",
             "app_id": "moviefr",
             "package_name": "com.mfr.moviefr",
@@ -160,8 +160,17 @@ class DefaultExtension extends MProvider {
         };
     }
 
+    _formBody(body) {
+        const source = body || {};
+        return Object.keys(source).filter(key => source[key] !== undefined && source[key] !== null).map(key => {
+            const value = source[key];
+            const encoded = (typeof value === "object") ? JSON.stringify(value) : String(value);
+            return encodeURIComponent(key) + "=" + encodeURIComponent(encoded);
+        }).join("&");
+    }
+
     async _post(path, body) {
-        const res = await new Client().post(this.baseUrl + path, this._headers(), body || {});
+        const res = await new Client().post(this.baseUrl + path, this._formBody(body), this._headers());
         let json;
         try { json = JSON.parse(res.body || ""); } catch (_) {
             throw new Error("MovieFR returned an invalid response.");
