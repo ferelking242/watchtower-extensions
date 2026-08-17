@@ -3,11 +3,11 @@ const watchtowerSources = [{
     "lang": "multi",
     "baseUrl": "https://jgzm.iuk9.com",
     "apiUrl": "https://jgzm.iuk9.com",
-    "iconUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/assets/moviefr-icon.webp",
+    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/moviefr-icon.webp",
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -173,31 +173,77 @@ class DefaultExtension extends MProvider {
         const res = await new Client().post(this.baseUrl + path, this._formBody(body), this._headers());
         let json;
         try { json = JSON.parse(res.body || ""); } catch (_) {
-            throw new Error("MovieFR returned an invalid response.");
+            const text = String(res.body || "").replace(/\s+/g, " ").trim();
+            throw new Error(text ? "MovieFR API returned a non-JSON response: " + text.slice(0, 120) : "MovieFR API returned an empty response.");
+        }
+        if (res.statusCode && (res.statusCode < 200 || res.statusCode >= 300)) {
+            throw new Error(json.msg || json.message || ("MovieFR API HTTP " + res.statusCode + "."));
         }
         if (json && json.code !== undefined && json.code !== 0 && json.code !== 200) {
             throw new Error(json.msg || json.message || "MovieFR API error.");
         }
-        return json && (json.result || json.data || json);
+        return json;
     }
 
     _list(value) {
         if (Array.isArray(value)) return value;
         if (!value || typeof value !== "object") return [];
-        return value.list || value.vod_list || value.videos || value.rows || value.data || [];
+        const keys = ["list", "vod_list", "videos", "rows", "items", "records", "results", "data", "result"];
+        for (let i = 0; i < keys.length; i++) {
+            const candidate = value[keys[i]];
+            if (Array.isArray(candidate)) return candidate;
+            if (candidate && typeof candidate === "object") {
+                const nested = this._list(candidate);
+                if (nested.length) return nested;
+            }
+        }
+        return [];
+    }
+
+    _object(value, keys) {
+        if (!value || typeof value !== "object") return null;
+        for (let i = 0; i < keys.length; i++) {
+            const candidate = value[keys[i]];
+            if (candidate && typeof candidate === "object" && !Array.isArray(candidate)) return candidate;
+        }
+        const properties = Object.keys(value);
+        for (let i = 0; i < properties.length; i++) {
+            const candidate = value[properties[i]];
+            if (candidate && typeof candidate === "object") {
+                const nested = this._object(candidate, keys);
+                if (nested) return nested;
+            }
+        }
+        return null;
+    }
+
+    _collection(value) {
+        if (Array.isArray(value)) return value;
+        if (!value || typeof value !== "object") return [];
+        const keys = ["vod_collection", "collection", "videos", "episodes", "list", "items", "data", "result"];
+        for (let i = 0; i < keys.length; i++) {
+            const candidate = value[keys[i]];
+            if (Array.isArray(candidate)) return candidate;
+            if (candidate && typeof candidate === "object") {
+                const nested = this._collection(candidate);
+                if (nested.length) return nested;
+            }
+        }
+        return [];
     }
 
     _card(item) {
-        const id = item.videoId || item.vod_id || item.id;
-        const title = item.name || item.vod_name || item.title || "Unknown";
+        const source = item || {};
+        const id = source.videoId || source.video_id || source.vod_id || source.id;
+        const title = source.name || source.vod_name || source.title || source.video_name || "Unknown";
         return {
             name: title,
             link: JSON.stringify({ id: id }),
-            imageUrl: item.coverUrl || item.vod_pic || item.cover || item.pic || "",
-            description: item.simpleDesc || item.videoDesc || item.vod_blurb || item.remarks || "",
-            author: item.vod_year || item.year || "",
-            artist: item.vod_director || item.director || "",
-            genre: this._genres(item)
+            imageUrl: source.coverUrl || source.cover_url || source.vod_pic || source.vod_pic_url || source.posterUrl || source.poster || source.cover || source.pic || "",
+            description: source.simpleDesc || source.simple_desc || source.videoDesc || source.video_desc || source.vod_blurb || source.remarks || source.description || "",
+            author: source.vod_year || source.year || source.release_year || "",
+            artist: source.vod_director || source.director || source.director_name || "",
+            genre: this._genres(source)
         };
     }
 
@@ -216,8 +262,12 @@ class DefaultExtension extends MProvider {
             kw: q,
             pn: page || 1,
             page: page || 1,
+            page_num: page || 1,
+            pageIndex: page || 1,
             type_pid: this._filter(filterList, "type_pid"),
-            limit: MF_PAGE_SIZE
+            limit: MF_PAGE_SIZE,
+            page_size: MF_PAGE_SIZE,
+            pageSize: MF_PAGE_SIZE
         });
         const list = this._items(result);
         return { list: list, hasNextPage: list.length >= MF_PAGE_SIZE };
@@ -244,8 +294,12 @@ class DefaultExtension extends MProvider {
         const result = await this._post("/api/channel/get_list", {
             pn: page || 1,
             page: page || 1,
+            page_num: page || 1,
+            pageIndex: page || 1,
             sort: sort,
-            limit: MF_PAGE_SIZE
+            limit: MF_PAGE_SIZE,
+            page_size: MF_PAGE_SIZE,
+            pageSize: MF_PAGE_SIZE
         });
         const list = this._items(result);
         return { list: list, hasNextPage: list.length >= MF_PAGE_SIZE };
@@ -260,10 +314,10 @@ class DefaultExtension extends MProvider {
         let payload = {};
         try { payload = JSON.parse(url); } catch (_) { payload = { id: url }; }
         const result = await this._post("/api/vod/info_new", { vod_id: payload.id || payload.vod_id });
-        const item = result && (result.vod_info || result.info || result.video || result);
+        const item = this._object(result, ["vod_info", "info", "video"]) || result || {};
         const card = this._card(item || {});
         const chapters = [];
-        const videos = (item && (item.vod_collection || item.collection || item.videos)) || [];
+        const videos = this._collection(item);
         if (videos.length) {
             for (let i = 0; i < videos.length; i++) {
                 const video = videos[i] || {};
@@ -298,8 +352,8 @@ class DefaultExtension extends MProvider {
             vod_id: payload.id || payload.vod_id,
             vod_from_id: payload.source || ""
         });
-        const item = result && (result.vod_info || result.info || result.video || result);
-        const videos = (item && (item.vod_collection || item.collection || item.videos)) || [];
+        const item = this._object(result, ["vod_info", "info", "video"]) || result || {};
+        const videos = this._collection(item);
         const out = [];
         for (let i = 0; i < videos.length; i++) {
             const video = videos[i] || {};
@@ -321,7 +375,7 @@ class DefaultExtension extends MProvider {
         let payload = {};
         try { payload = JSON.parse(url); } catch (_) { payload = { id: url }; }
         const result = await this._post("/api/vod/info_new", { vod_id: payload.id || payload.vod_id });
-        const related = result && (result.recommend || result.recommend_list || result.more || result.vod_more);
+        const related = result && (result.recommend || result.recommend_list || result.more || result.vod_more || this._object(result, ["recommend", "recommend_list", "more", "vod_more"]));
         return this._items(related);
     }
 
@@ -354,7 +408,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getHome() {
-        const result = await this._post("/api/channel/get_list", { pn: 1, page: 1, limit: MF_PAGE_SIZE });
+        const result = await this._post("/api/channel/get_list", { pn: 1, page: 1, page_num: 1, pageIndex: 1, limit: MF_PAGE_SIZE, page_size: MF_PAGE_SIZE, pageSize: MF_PAGE_SIZE });
         const items = this._items(result);
         return [{ id: "moviefr", title: "MovieFR", list: items }];
     }
