@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.2",
+    "version": "1.0.3",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -160,10 +160,22 @@ class DefaultExtension extends MProvider {
         };
     }
 
+    _formFields(body) {
+        const source = body || {};
+        const fields = {};
+        Object.keys(source).forEach(key => {
+            const value = source[key];
+            if (value !== undefined && value !== null) {
+                fields[key] = typeof value === "object" ? JSON.stringify(value) : String(value);
+            }
+        });
+        return fields;
+    }
+
     async _post(path, body) {
         // Watchtower's native Client signature is post(url, headers, body).
-        // Keep the body as a Map so the Dart bridge can encode it correctly.
-        const res = await new Client().post(this.baseUrl + path, this._headers(), body || {});
+        // Form fields must all be strings for Dart's http package.
+        const res = await new Client().post(this.baseUrl + path, this._headers(), this._formFields(body));
         let json;
         try { json = JSON.parse(res.body || ""); } catch (_) {
             const text = String(res.body || "").replace(/\s+/g, " ").trim();
