@@ -914,7 +914,7 @@
     "baseUrl": "https://9animetv.to",
     "lang": "en",
     "typeSource": "single",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower/main/extensions/watch/icon/en.9anime.png",
+    "iconUrl": "https://9animetv.to/favicon.ico",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
