@@ -1,11 +1,14 @@
-*.iml
-.gradle
-/local.properties
-/.idea/
+# OS / editor
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
-local.properties
+*.iml
+/.idea/
 node_modules/
+
+# Never re-add local clones of other repos or legacy code
+/watchtower/
+/watchtower-extensions/
+/legacy_dart/
+
+# Scratch files
+*.bak
+PLAN.md
