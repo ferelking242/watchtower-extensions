@@ -7,5 +7,6 @@
   "gameJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/game.json",
   "musicJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/music.json",
   "pluginsJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/plugins.json",
+  "subtitlesJsonUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/subtitles.json",
   "localSourcesPath": "local_sources/"
 }
