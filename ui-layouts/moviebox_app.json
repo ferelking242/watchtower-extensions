@@ -3,6 +3,8 @@
   "home": {
     "sections": [
       { "id": "carousel",      "component": "banner",        "title": null,               "accent": "#1CB7FF" },
+      { "id": "foryou",        "component": "spotlight",     "title": "Pour vous",        "accent": "#FF6F00" },
+      { "id": "history",       "component": "historyRow",    "title": "Reprendre",        "accent": null },
       { "id": "cat_all",       "component": "categoryPills", "title": "All",              "accent": "#2C3E50" },
       { "id": "cat_action",    "component": "categoryPills", "title": "Action",           "accent": "#C0392B" },
       { "id": "cat_comedy",    "component": "categoryPills", "title": "Comédie",          "accent": "#D4AC0D" },

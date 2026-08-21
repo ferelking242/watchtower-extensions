@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.4.0",
+    "version": "3.5.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,11 +19,11 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox App v3.4.0 — supportsComments; author=releaseYear, artist=director+cast, country in genre list."
+    "notes": "MovieBox App v3.5.0 — supportsComments + section For You sur le home; author=releaseYear, artist=director+cast, country in genre list."
 }];
 
 // ══════════════════════════════════════════════════════════════
-//  MovieBox App  v2.0.0
+//  MovieBox App  v3.5.0
 //  Nouveautés vs v1.6.0 :
 //   - Headers natifs complets : X-Language, X-Family-Mode,
 //     Accept-Country (bypass géo), Accept-Timezone
@@ -173,6 +173,7 @@ function mbHeaders(lang, detailPath, familyMode, country, timezone, authToken) {
 // sont présents ici car ils ne dépendent pas de l'operatingList serveur.
 var MB_HOME_SECTIONS = [
     { id: "carousel",      name: "\uD83C\uDFAC \u00C0 la une", layout: "banner",   color: "#1CB7FF" },
+    { id: "foryou",        name: "Pour vous",                    layout: "spotlight", color: "#FF6F00" },
     { id: "cat_all",       name: "All",                          layout: "category", color: "#2C3E50" },
     { id: "cat_action",    name: "Action",                       layout: "category", color: "#C0392B" },
     { id: "cat_comedy",    name: "Com\u00E9die",                 layout: "category", color: "#D4AC0D" },
@@ -591,6 +592,7 @@ class DefaultExtension extends MProvider {
             { id: "__tab_2", name: "TV Shows",  layout: "__tab__" },
             { id: "__tab_3", name: "Popular",   layout: "__tab__" },
             { id: "carousel",      name: "\uD83C\uDFAC \u00C0 la une", layout: "banner",   color: "#1CB7FF" },
+            { id: "foryou",        name: "Pour vous",                    layout: "spotlight", color: "#FF6F00" },
             { id: "cat_all",       name: "All",                          layout: "category", color: "#2C3E50" },
             { id: "cat_action",    name: "Action",                       layout: "category", color: "#C0392B" },
             { id: "cat_comedy",    name: "Com\u00E9die",                 layout: "category", color: "#D4AC0D" },
@@ -630,6 +632,47 @@ class DefaultExtension extends MProvider {
         // ── Carousel : bannerList de l'API, fallback operatingList[0] ─
         // L'API H5 ne retourne pas toujours bannerList — on utilise
         // la première section de operatingList comme fallback banner.
+        // ── Pour vous : feed personnalisé de l'app native ──────────
+        // Endpoints candidats du mobile BFF (géo-dépendants) avec
+        // repli automatique sur le catalogue populaire → section
+        // toujours remplie, jamais vide.
+        if (listId === "foryou") {
+            var langFy = this._prefLang();
+            var FY_ENDPOINTS = [
+                "/wefeed-mobile-bff/subject-api/for-you",
+                "/wefeed-mobile-bff/feed-api/for-you",
+                "/wefeed-mobile-bff/subject-api/recommend",
+                "/wefeed-mobile-bff/for-you"
+            ];
+            var fyItems = [];
+            for (var fe = 0; fe < MB_MOBILE_SERVERS.length && !fyItems.length; fe++) {
+                for (var fp = 0; fp < FY_ENDPOINTS.length && !fyItems.length; fp++) {
+                    try {
+                        var fyRes = await new Client().get(
+                            MB_MOBILE_SERVERS[fe] + FY_ENDPOINTS[fp]
+                                + "?pageNum=" + page + "&pageSize=24",
+                            this._h(langFy)
+                        );
+                        var fyJ; try { fyJ = JSON.parse(fyRes.body); } catch (_) { continue; }
+                        if (!fyJ || fyJ.code !== 0 || !fyJ.data) continue;
+                        var raw = fyJ.data.subjects || fyJ.data.list
+                               || fyJ.data.feedList || fyJ.data.items || [];
+                        for (var fi = 0; fi < raw.length; fi++) {
+                            var fs = raw[fi].subject || raw[fi];
+                            if (fs && typeof fs === "object" && fs.subjectId != null) {
+                                fyItems.push(this._toItem(fs));
+                            }
+                        }
+                    } catch (_) {}
+                }
+            }
+            if (fyItems.length) return { list: fyItems, hasNextPage: false };
+            // Repli : catalogue populaire (jamais de section vide)
+            var fbRes = await this._apiCatalog(page, "", "0", "", "", langFy);
+            if (fbRes !== null) return fbRes;
+            return this._page(await this._fetchHome(), page);
+        }
+
         if (listId === "carousel") {
             var banners = (data && data.bannerList && data.bannerList.length > 0)
                 ? data.bannerList : [];
@@ -1034,14 +1077,23 @@ class DefaultExtension extends MProvider {
         // Essai sur chaque serveur natif
         for (var si = 0; si < MB_MOBILE_SERVERS.length; si++) {
             try {
-                var res = await new Client().get(
-                    MB_MOBILE_SERVERS[si] + "/wefeed-mobile-bff/comment/list?" + qp,
-                    this._h(this._prefLang(), detailPath)
-                );
-                var parsed; try { parsed = JSON.parse(res.body); } catch (_) {}
-                if (parsed && parsed.code === 0 && parsed.data) {
-                    j = parsed.data; break;
+                // Variantes d'endpoint selon la version de l'app native
+                var CMT_EPS = [
+                    "/wefeed-mobile-bff/comment/list",
+                    "/wefeed-mobile-bff/comment-api/comment/list",
+                    "/wefeed-mobile-bff/subject-api/comment/list"
+                ];
+                for (var ce = 0; ce < CMT_EPS.length; ce++) {
+                    var res = await new Client().get(
+                        MB_MOBILE_SERVERS[si] + CMT_EPS[ce] + "?" + qp,
+                        this._h(this._prefLang(), detailPath)
+                    );
+                    var parsed; try { parsed = JSON.parse(res.body); } catch (_) { continue; }
+                    if (parsed && parsed.code === 0 && parsed.data) {
+                        j = parsed.data; break;
+                    }
                 }
+                if (j) break;
             } catch (_) {}
         }
 
