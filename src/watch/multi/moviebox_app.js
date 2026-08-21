@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.5.0",
+    "version": "3.6.0",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -19,11 +19,11 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "MovieBox App v3.5.0 — supportsComments + section For You sur le home; author=releaseYear, artist=director+cast, country in genre list."
+    "notes": "MovieBox App v3.6.0 — supportsComments + section For You sur le home; author=releaseYear, artist=director+cast, country in genre list."
 }];
 
 // ══════════════════════════════════════════════════════════════
-//  MovieBox App  v3.5.0
+//  MovieBox App  v3.6.0
 //  Nouveautés vs v1.6.0 :
 //   - Headers natifs complets : X-Language, X-Family-Mode,
 //     Accept-Country (bypass géo), Accept-Timezone
@@ -174,12 +174,17 @@ function mbHeaders(lang, detailPath, familyMode, country, timezone, authToken) {
 var MB_HOME_SECTIONS = [
     { id: "carousel",      name: "\uD83C\uDFAC \u00C0 la une", layout: "banner",   color: "#1CB7FF" },
     { id: "foryou",        name: "Pour vous",                    layout: "spotlight", color: "#FF6F00" },
+    // ── Onglets v4 (extraits de assets/appTab.json du APK 4.0.01) ──
+    // tabIds officiels : Trending=1, Movie=2, TV=5, Anime=8, ShortTV=13,
+    // Kids=23, Nollywood=28, Football=33, FightZone/Wrestling=37
     { id: "cat_all",       name: "All",                          layout: "category", color: "#2C3E50" },
     { id: "cat_action",    name: "Action",                       layout: "category", color: "#C0392B" },
     { id: "cat_comedy",    name: "Com\u00E9die",                 layout: "category", color: "#D4AC0D" },
-    { id: "cat_animation", name: "Animation",                    layout: "category", color: "#8E44AD" },
+    { id: "cat_animation", name: "Animation / Anime",            layout: "category", color: "#8E44AD", tabCode: "Animation" },
     { id: "cat_adventure", name: "Aventure",                     layout: "category", color: "#1E8449" },
     { id: "cat_romance",   name: "Romance",                      layout: "category", color: "#E91E63" },
+    { id: "cat_shorttv",   name: "ShortTV / R\u00E9els",         layout: "category", color: "#00BCD4", tabId: 13, tabCode: "ShortTV_Discover" },
+    { id: "cat_nollywood", name: "Nollywood",                    layout: "category", color: "#E53935", tabId: 28, tabCode: "Nollywood" },
     { id: "catalogue",     name: "Catalogue",                    layout: "catalogue",color: "#7C4DFF" }
 ];
 
