@@ -7,10 +7,12 @@ https://google.com
   **Le dépôt officiel d'extensions pour [Watchtower](https://github.com/ferelking242/watchtower)**
   *Regarder · Lire · Écouter · Jouer — tout en un*
 
-  [![Extensions Watch](https://img.shields.io/badge/Watch-60%20sources-blue?style=flat-square&logo=youtube)](https://github.com/ferelking242/watchtower-extensions/blob/main/index/watch.json)
-  [![Extensions Manga](https://img.shields.io/badge/Manga-15%20sources-orange?style=flat-square&logo=bookstack)](https://github.com/ferelking242/watchtower-extensions/blob/main/index/manga.json)
-  [![Extensions Novel](https://img.shields.io/badge/Novel-10%20sources-purple?style=flat-square)](https://github.com/ferelking242/watchtower-extensions/blob/main/index/novel.json)
-  [![Extensions Music](https://img.shields.io/badge/Music-4%20sources-green?style=flat-square&logo=spotify)](https://github.com/ferelking242/watchtower-extensions/blob/main/index/music.json)
+  [![Extensions Watch](https://img.shields.io/badge/Watch-234%20sources-blue?style=flat-square&logo=youtube)](https://github.com/ferelking242/watchtower-extensions/blob/main/index/watch.json)
+  [![Extensions Manga](https://img.shields.io/badge/Manga-157%20sources-orange?style=flat-square&logo=bookstack)](https://github.com/ferelking242/watchtower-extensions/blob/main/index/manga.json)
+  [![Extensions Novel](https://img.shields.io/badge/Novel-256%20sources-purple?style=flat-square)](https://github.com/ferelking242/watchtower-extensions/blob/main/index/novel.json)
+  [![Extensions Music](https://img.shields.io/badge/Music-9%20sources-green?style=flat-square&logo=spotify)](https://github.com/ferelking242/watchtower-extensions/blob/main/index/music.json)
+  [![Extensions Game](https://img.shields.io/badge/Game-1%20source-red?style=flat-square)](https://github.com/ferelking242/watchtower-extensions/blob/main/index/game.json)
+  [![Extensions Subtitles](https://img.shields.io/badge/Subtitles-5%20sources-yellow?style=flat-square)](https://github.com/ferelking242/watchtower-extensions/blob/main/index/subtitles.json)
   [![License](https://img.shields.io/badge/license-MIT-lightgrey?style=flat-square)](LICENSE)
 
   </div>

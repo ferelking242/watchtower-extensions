@@ -1,104 +1,13 @@
-const watchtowerSources = [{
-    "name": "AnimeHeaven",
-    "langs": ["en"],
-    "ids": { "en": 319842056 },
-    "baseUrl": "https://animeheaven.ru",
-    "apiUrl": "https://animeheaven.ru",
-    "iconUrl": "https://animeheaven.ru/favicon.ico",
-    "typeSource": "single",
-    "itemType": 1,
-    "version": "0.1.3",
-    "pkgPath": "anime/src/en/animeheaven.js"
-}];
-
-const BASE_URL = "https://animeheaven.ru";
-
+const watchtowerSources = [{"name":"AnimeHeaven","lang":"en","baseUrl":"https://animeheaven.me","iconUrl":"https://animeheaven.me/favicon.ico","typeSource":"single","itemType":1,"version":"1.0.0","pkgPath":"anime/src/en/animeheaven.js","notes":"AnimeHeaven — anime HD gratuit sub/dub"}];
+const BASE_URL = "https://animeheaven.me";
 class DefaultExtension extends MProvider {
-    constructor() {
-        super();
-    }
-
-    getHeaders() {
-        return {
-            "Referer": `${BASE_URL}/`,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        };
-    }
-
-    _parseList(html) {
-        const list = [];
-        const re = /<div[^>]+class="[^"]*item[^"]*"[^>]*>[\s\S]*?<a[^>]+href="([^"]+\.html)"[^>]*>[\s\S]*?<img[^>]+(?:src|data-src)="([^"]+)"[^>]*>[\s\S]*?<div[^>]+class="[^"]*name[^"]*"[^>]*>([^<]+)</g;
-        let m;
-        while ((m = re.exec(html)) !== null) {
-            const url = m[1].startsWith("/") ? m[1] : `/${m[1]}`;
-            list.push({ link: url, imageUrl: m[2], name: m[3].trim() });
-        }
-        return list;
-    }
-
-    async getPopular(page) {
-        const res = await new Client().get(`${BASE_URL}/c/anime/?page=${page}&sort=rate`, this.getHeaders());
-        return { list: this._parseList(res.body), hasNextPage: res.body.includes(`page=${page + 1}`) };
-    }
-
-    async getLatestUpdates(page) {
-        const res = await new Client().get(`${BASE_URL}/c/anime/?page=${page}`, this.getHeaders());
-        return { list: this._parseList(res.body), hasNextPage: res.body.includes(`page=${page + 1}`) };
-    }
-
-    async search(query, page, filterList) {
-        const res = await new Client().get(
-            `${BASE_URL}/c/?q=${encodeURIComponent(query)}&page=${page}`,
-            this.getHeaders()
-        );
-        return { list: this._parseList(res.body), hasNextPage: false };
-    }
-
-    async getDetail(url) {
-        const res = await new Client().get(`${BASE_URL}${url}`, this.getHeaders());
-        const html = res.body;
-
-        const nameM = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
-        const name = nameM ? nameM[1].replace(/<[^>]+>/g, "").trim() : "";
-
-        const descM = html.match(/class="[^"]*description[^"]*"[^>]*>([\s\S]*?)<\/div>/);
-        const description = descM ? descM[1].replace(/<[^>]+>/g, "").trim() : "";
-
-        const imgM = html.match(/<img[^>]+class="[^"]*poster[^"]*"[^>]+src="([^"]+)"/);
-        const imageUrl = imgM ? imgM[1] : "";
-
-        const episodes = [];
-        const epRe = /href="([^"]+ep-\d+[^"]*\.html)"[^>]*>([^<]+)</g;
-        let em;
-        while ((em = epRe.exec(html)) !== null) {
-            const epUrl = em[1].startsWith("/") ? em[1] : `/${em[1]}`;
-            episodes.push({ name: em[2].trim(), url: epUrl, dateUpload: "" });
-        }
-
-        return { name, description, imageUrl, genres: [], status: 0, chapters: episodes.reverse() };
-    }
-
-    async getVideoList(url) {
-        const res = await new Client().get(`${BASE_URL}${url}`, this.getHeaders());
-        const html = res.body;
-        const videos = [];
-
-        const m3u8Re = /["'](https?:\/\/[^"']+\.m3u8[^"']*)["']/g;
-        let m;
-        while ((m = m3u8Re.exec(html)) !== null) {
-            videos.push({ url: m[1], quality: "HLS", originalUrl: m[1] });
-        }
-
-        const mp4Re = /["'](https?:\/\/[^"']+\.mp4[^"']*)["']/g;
-        while ((m = mp4Re.exec(html)) !== null) {
-            if (!videos.find(v => v.url === m[1])) {
-                videos.push({ url: m[1], quality: "MP4", originalUrl: m[1] });
-            }
-        }
-
-        return videos;
-    }
-
-    getFilterList() { return []; }
-    getSourcePreferences() { return []; }
+    constructor() { super(); }
+    getHeaders() { return {"User-Agent":"Mozilla/5.0","Referer":`${BASE_URL}/`}; }
+    parseList(h) { const l=[];const re=/<a[^>]+href="([^"]+)"[\s\S]*?<img[^>]+(?:src|data-src)="([^"]+)"[\s\S]*?<\/a>[\s\S]*?<h2[^>]*>([^<]+)<\/h2>/g;let m;const s={};while((m=re.exec(h))!==null){if(!s[m[1]]){s[m[1]]=1;l.push({link:m[1],imageUrl:m[2],name:m[3].trim()});}}if(l.length===0){const r2=/href="([^"]+)"[\s\S]*?src="([^"]+)"[\s\S]*?alt="([^"]*)"/g;while((m=r2.exec(h))!==null){if(!s[m[1]]&&m[3].trim()&&!m[3].toLowerCase().includes("logo")){s[m[1]]=1;l.push({link:m[1],imageUrl:m[2],name:m[3].trim()});}}}return l; }
+    async getPopular(p) { const r=await new Client().get(`${BASE_URL}/anime/popular?page=${p}`,this.getHeaders());return{list:this.parseList(r.body),hasNextPage:r.body.includes('page=')}; }
+    async getLatestUpdates(p) { const r=await new Client().get(`${BASE_URL}/anime/recent?page=${p}`,this.getHeaders());return{list:this.parseList(r.body),hasNextPage:r.body.includes('page=')}; }
+    async search(q,p) { if(!q)return this.getPopular(p);const r=await new Client().get(`${BASE_URL}/search?q=${encodeURIComponent(q)}&page=${p}`,this.getHeaders());return{list:this.parseList(r.body),hasNextPage:false}; }
+    async getDetail(url) { const u=url.startsWith("http")?url:`${BASE_URL}${url}`;const r=await new Client().get(u,this.getHeaders());const h=r.body;const nm=h.match(/<h1[^>]*>([^<]+)<\/h1>/);const n=nm?nm[1].trim():"";const dm=h.match(/<div[^>]*class="[^"]*description[^"]*"[^>]*>([\s\S]*?)<\/div>/);const d=dm?dm[1].replace(/<[^>]+>/g,"").trim():"";const im=h.match(/<img[^>]+src="([^"]+)"[^>]*(?:poster|cover)/i);const img=im?im[1]:"";const ep=[];const er=/href="([^"]*episode[^"]*)"[^>]*>([^<]+)<\/a>/g;let em;while((em=er.exec(h))!==null){ep.push({name:em[2].trim(),url:em[1]});}return{name:n,description:d,imageUrl:img,genres:[],status:0,chapters:ep}; }
+    async getVideoList(url) { const u=url.startsWith("http")?url:`${BASE_URL}${url}`;const r=await new Client().get(u,this.getHeaders());const h=r.body;const v=[];const re=/(?:data-src|src)="(https?:\/\/[^"]+(?:embed|player|stream|m3u8)[^"]*)"/g;let m;while((m=re.exec(h))!==null){v.push({url:m[1],quality:"Auto",originalUrl:m[1]});}return v; }
+    getFilterList() { return []; } getSourcePreferences() { return []; }
 }

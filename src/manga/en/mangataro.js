@@ -1,0 +1,13 @@
+const watchtowerSources = [{"name":"MangaTaro","lang":"en","baseUrl":"https://mangataro.com","iconUrl":"https://mangataro.com/favicon.ico","typeSource":"single","itemType":0,"version":"1.0.0","pkgPath":"manga/src/en/mangataro.js"}];
+const BASE_URL = "https://mangataro.com";
+class DefaultExtension extends MProvider {
+    constructor() { super(); }
+    getHeaders() { return {"User-Agent":"Mozilla/5.0","Referer":`${BASE_URL}/`}; }
+    mangaListParse(h) { const l=[];const re=/<a[^>]+href="([^"]+)"[\s\S]*?<img[^>]+(?:src|data-src)="([^"]+)"[\s\S]*?<\/a>[\s\S]*?<h2[^>]*>([^<]+)<\/h2>/g;let m;const s={};while((m=re.exec(h))!==null){if(!s[m[1]]){s[m[1]]=1;l.push({link:m[1],imageUrl:m[2],name:m[3].trim()});}}if(l.length===0){const r2=/href="([^"]+)"[\s\S]*?src="([^"]+)"[\s\S]*?alt="([^"]*)"/g;while((m=r2.exec(h))!==null){if(!s[m[1]]&&m[3].trim()&&!m[3].toLowerCase().includes("logo")){s[m[1]]=1;l.push({link:m[1],imageUrl:m[2],name:m[3].trim()});}}}return l; }
+    async getPopular(p) { const r=await new Client().get(`${BASE_URL}/manga_list?type=topview&category=all&page=${p}`,this.getHeaders());return{list:this.mangaListParse(r.body),hasNextPage:r.body.includes('page=')}; }
+    async getLatestUpdates(p) { const r=await new Client().get(`${BASE_URL}/manga_list?type=latest&category=all&page=${p}`,this.getHeaders());return{list:this.mangaListParse(r.body),hasNextPage:r.body.includes('page=')}; }
+    async search(q,p) { if(!q)return this.getPopular(p);const r=await new Client().get(`${BASE_URL}/search/${encodeURIComponent(q)}?page=${p}`,this.getHeaders());return{list:this.mangaListParse(r.body),hasNextPage:false}; }
+    async getDetail(url) { const u=url.startsWith("http")?url:`${BASE_URL}${url}`;const r=await new Client().get(u,this.getHeaders());const h=r.body;const nm=h.match(/<h1[^>]*>([^<]+)<\/h1>/);const n=nm?nm[1].trim():"";const dm=h.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/);const d=dm?dm[1]:"";const im=h.match(/<img[^>]+src="([^"]+)"[^>]*(?:cover|manga)/i);const img=im?im[1]:"";const ch=[];const cr=/href="([^"]+)"[\s\S]*?(?:chapter|ch\.?)\s*([\d.]+)/gi;let cm;while((cm=cr.exec(h))!==null){ch.push({name:`Ch. ${cm[2]}`,url:cm[1]});}return{name:n,description:d,imageUrl:img,genre:[],status:0,chapters:ch}; }
+    async getPageList(url) { const u=url.startsWith("http")?url:`${BASE_URL}${url}`;const r=await new Client().get(u,this.getHeaders());const p=[];const re=/src="([^"]+\.(?:jpg|jpeg|png|webp)[^"]*)"/gi;let m;const h=r.body;while((m=re.exec(h))!==null){if(!m[1].includes("logo")&&!m[1].includes("icon"))p.push(m[1]);}return p.map(x=>({url:x,headers:this.getHeaders()})); }
+    getFilterList() { return []; } getSourcePreferences() { return []; }
+}
