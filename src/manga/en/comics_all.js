@@ -9,7 +9,7 @@ const watchtowerSources = [
     "typeSource": "single",
     "itemType": 0,
     "isManga": true,
-    "version": "0.1.4",
+    "version": "0.1.5",
     "pkgPath": "manga/en/comics_all.js",
     "isNsfw": false,
     "appMinVerReq": "0.5.0",
@@ -26,10 +26,19 @@ class DefaultExtension extends MProvider {
 
   // ─── Helpers ─────────────────────────────────────────────────────────────
 
+  // Base éditable (miroir / changement de domaine)
+  _base() {
+    try {
+      const v = new SharedPreferences().get("base_url");
+      if (v) return v;
+    } catch (_) {}
+    return BASE_URL;
+  }
+
   getHeaders() {
     return {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0",
-      "Referer": "https://comics-all.com/"
+      "Referer": this._base() + "/"
     };
   }
 
@@ -41,8 +50,8 @@ class DefaultExtension extends MProvider {
     if (!url) return "";
     if (url.startsWith("http")) return url;
     if (url.startsWith("//")) return "https:" + url;
-    if (url.startsWith("/")) return BASE_URL + url;
-    return BASE_URL + "/" + url;
+    if (url.startsWith("/")) return this._base() + url;
+    return this._base() + "/" + url;
   }
 
   parseList(html) {
@@ -66,11 +75,11 @@ class DefaultExtension extends MProvider {
 
   publisherUrl(slug, page) {
     if (!slug) {
-      return page <= 1 ? BASE_URL + "/" : `${BASE_URL}/page/${page}/`;
+      return page <= 1 ? this._base() + "/" : `${this._base()}/page/${page}/`;
     }
     return page <= 1
-      ? `${BASE_URL}/${slug}`
-      : `${BASE_URL}/${slug}/page/${page}/`;
+      ? `${this._base()}/${slug}`
+      : `${this._base()}/${slug}/page/${page}/`;
   }
 
   // ─── Core Methods ─────────────────────────────────────────────────────────
@@ -407,5 +416,20 @@ async getCustomList(listId, page) {
       return this.getPopular(page);
     }
     return this.getLatestUpdates(page);
+  }
+
+  getSourcePreferences() {
+    return [
+      {
+        key: "base_url",
+        editTextPreference: {
+          title: "URL du site",
+          summary: "Adresse de ComicsAll. Changez si le domaine est migré.",
+          value: BASE_URL,
+          dialogTitle: "URL du site",
+          dialogMessage: `URL actuelle : ${BASE_URL}`
+        }
+      }
+    ];
   }
 }

@@ -17,7 +17,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 7,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "baseUrl": "https://subdl.com",
     "apiUrl": "https://api.subdl.com",
     "iconUrl": "https://subdl.com/favicon.ico",
@@ -61,16 +61,23 @@ class DefaultExtension extends MProvider {
 
     _pref(key, fallback) {
         try {
-            if (this.source && this.source.prefs) {
-                for (var i = 0; i < this.source.prefs.length; i++) {
-                    if (this.source.prefs[i].key === key) {
-                        var v = this.source.prefs[i].value;
-                        return (v !== undefined && v !== null && v !== "") ? String(v) : fallback;
-                    }
-                }
-            }
+            var v = new SharedPreferences().get(key);
+            return (v !== undefined && v !== null && v !== "") ? String(v) : fallback;
         } catch (_) {}
         return fallback;
+    }
+
+    getSourcePreferences() {
+        return [{
+            key: "subdl_api_key",
+            editTextPreference: {
+                title: "Clé API SubDL",
+                summary: "Clé optionnelle qui augmente les quotas et débloque les téléchargements premium sur subdl.com. Laissez vide pour l'usage gratuit de base.",
+                value: "",
+                dialogTitle: "Clé API SubDL",
+                dialogMessage: "Collez votre clé API (subdl.com — compte gratuit)."
+            }
+        }];
     }
 
     _h() {

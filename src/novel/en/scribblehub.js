@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 2,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "isNsfw": false,
     "hasCloudflare": false,
     "pkgPath": "novel/src/en/scribblehub.js",
@@ -81,7 +81,7 @@ class DefaultExtension extends MProvider {
         const genre = doc.select("a.fic_genre, .fic_genre_h a").map(a => a.text.trim()).filter(Boolean);
 
         // Chapters via TOC endpoint
-        const ficId = url.match(//series/(d+)//)?.[1] || "";
+        const ficId = url.match(/\/series\/(\d+)\//)?.[1] || "";
         const chapters = [];
         if (ficId) {
             try {

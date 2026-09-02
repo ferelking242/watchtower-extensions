@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://mlp-france.com/source/lyra16.png",
     "typeSource": "single",
     "itemType": 3,
-    "version": "1.1.0",
+    "version": "1.1.1",
     "pkgPath": "music/fr/mlpfrancechansons.js",
     "editableBaseUrl": false,
     "hasCloudflare": false,
@@ -63,8 +63,16 @@ const watchtowerSources = [{
       };
     }
 
+    _pageSize() {
+      try {
+        const v = parseInt(new SharedPreferences().get("page_size"), 10);
+        if (v && v > 0) return v;
+      } catch (_) {}
+      return 20;
+    }
+
     async getPopular(page) {
-      const pp = 20, s = (page - 1) * pp;
+      const pp = this._pageSize(), s = (page - 1) * pp;
       return {
         list: SONGS_CATALOG.slice(s, s + pp).map(c => ({ link: c.u, imageUrl: c.i, name: c.n })),
         hasNextPage: s + pp < SONGS_CATALOG.length
@@ -77,7 +85,7 @@ const watchtowerSources = [{
     async search(query, page) {
       const q = (query || "").toLowerCase();
       const res = SONGS_CATALOG.filter(c => c.n.toLowerCase().includes(q));
-      return { list: res.map(c => ({ link: c.u, imageUrl: c.i, name: c.n })), hasNextPage: false };
+      return { list: res.slice(0, this._pageSize()).map(c => ({ link: c.u, imageUrl: c.i, name: c.n })), hasNextPage: false };
     }
 
     // ── getDetail : extraire la playlist MP3 depuis le player JS ──────────────
@@ -141,4 +149,19 @@ const watchtowerSources = [{
     }
 
     getComments(url, page) { return Promise.resolve([]); }
+
+    getSourcePreferences() {
+      return [
+        {
+          key: "page_size",
+          listPreference: {
+            title: "Résultats par page",
+            summary: "Nombre de chansons affichées par liste (accueil, recherche)",
+            valueIndex: 1,
+            entries: ["10", "20 (recommandé)", "50"],
+            entryValues: ["10", "20", "50"]
+          }
+        }
+      ];
+    }
   }

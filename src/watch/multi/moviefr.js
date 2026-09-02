@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.5",
+    "version": "1.0.6",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -373,8 +373,31 @@ if (!out.length && item) {
 var videoUrl2 = item.play_url || item.vod_url || item.url || item.orginal_url || item.down_url;
 if (videoUrl2) out.push({ url: videoUrl2, quality: "AUTO", headers: this._headers() });
 }
-return out;
+return this._pickQuality(out);
 }
+
+_pickQuality(videos) {
+if (!videos || !videos.length) return videos;
+var pref = "AUTO";
+var fb = "lower";
+try { pref = new SharedPreferences().get("default_quality") || "AUTO"; } catch (_) {}
+try { fb = new SharedPreferences().get("quality_fallback") || "lower"; } catch (_) {}
+if (pref === "AUTO") return videos;
+var idx = -1;
+for (var i = 0; i < videos.length; i++) {
+if (String(videos[i].quality || "").indexOf(pref) >= 0) { idx = i; break; }
+}
+if (idx >= 0) { var m = videos.splice(idx, 1)[0]; videos.unshift(m); return videos; }
+var nums = videos.map(function(v) { return parseInt(String(v.quality || "").replace(/\D/g, ""), 10) || 0; });
+var prefNum = parseInt(pref, 10) || 0;
+if (fb === "higher") {
+for (var h = 0; h < nums.length; h++) { if (nums[h] >= prefNum && nums[h] > 0) { var hm = videos.splice(h, 1)[0]; videos.unshift(hm); return videos; } }
+} else {
+for (var l = nums.length - 1; l >= 0; l--) { if (nums[l] <= prefNum && nums[l] > 0) { var lm = videos.splice(l, 1)[0]; videos.unshift(lm); return videos; } }
+}
+return videos;
+}
+
 async getRecommendations(url) {
 var payload = {};
 try { payload = JSON.parse(url); } catch (_) { payload = { id: url }; }
@@ -415,14 +438,39 @@ var result = await this._post("/api/channel/get_list", { pn: 1, page: 1, page_nu
 var items = this._items(result);
 return [{ id: "moviefr", title: "MovieFR", list: items }];
 }
-setupPreferences() {
-return [{
+getSourcePreferences() {
+return [
+{
 key: "base_url",
-label: "MovieFR API URL",
-type: "text",
-defaultValue: MF_DEFAULT_API,
-summary: "Override the API domain if the default server changes."
-}];
+editTextPreference: {
+title: "URL de l'API",
+summary: "Adresse de l'API MovieFR. À modifier uniquement si le serveur change.",
+value: MF_DEFAULT_API,
+dialogTitle: "URL de l'API",
+dialogMessage: "URL actuelle : " + MF_DEFAULT_API
+}
+},
+{
+key: "default_quality",
+listPreference: {
+title: "Qualité vidéo par défaut",
+summary: "La qualité sélectionnée est prioritaire. Si elle n'est pas disponible, la qualité la plus proche est choisie automatiquement.",
+valueIndex: 0,
+entries: ["Auto (recommandé)", "1080p — Full HD", "720p — HD", "480p — SD", "360p — Faible"],
+entryValues: ["AUTO", "1080", "720", "480", "360"]
+}
+},
+{
+key: "quality_fallback",
+listPreference: {
+title: "Si la qualité n'est pas disponible",
+summary: "Choisir la qualité la plus proche si celle demandée n'existe pas",
+valueIndex: 1,
+entries: ["Prendre la qualité supérieure", "Prendre la qualité inférieure (recommandé)"],
+entryValues: ["higher", "lower"]
+}
+}
+];
 }
 }
 new DefaultExtension();

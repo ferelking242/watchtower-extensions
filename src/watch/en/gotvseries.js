@@ -26,7 +26,7 @@ const watchtowerSources = [{
     "iconUrl": "https://gotvseries.top/images/favicon.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.5",
+    "version": "0.1.6",
     "pkgPath": "watch/en/gotvseries.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -330,34 +330,39 @@ class DefaultExtension extends MProvider {
         if (!tmdbId) return [];
 
         var videos = [];
+        var pref = "auto";
+        try { pref = new SharedPreferences().get("server_preference") || "auto"; } catch (_) {}
 
-        // Source 1 — VidBox → vidsrc-embed.ru (site's native player)
-        var vidbox = "https://vidbox.casa/player.php?play=https://vidsrc-embed.ru/embed/tv?tmdb="
-            + tmdbId + "&season=" + season + "&episode=" + episode;
-        await this._resolveVideoUrl(vidbox, "EN", videos, "VidBox");
+        // Sources d'embed disponibles, dans l'ordre de préférence
+        var sources = [
+            { id: "vidbox",    label: "VidBox",    build: function() {
+                return "https://vidbox.casa/player.php?play=https://vidsrc-embed.ru/embed/tv?tmdb=" + tmdbId + "&season=" + season + "&episode=" + episode;
+            }},
+            { id: "vidsrc",    label: "VidSrc",    build: function() {
+                return "https://vidsrc.to/embed/tv/" + tmdbId + "/" + season + "/" + episode;
+            }},
+            { id: "vidsrc.me", label: "VidSrc.me", build: function() {
+                return "https://vidsrc.me/embed/tv?tmdb=" + tmdbId + "&season=" + season + "&episode=" + episode;
+            }},
+            { id: "2embed",    label: "2Embed",    build: function() {
+                return "https://www.2embed.cc/embedtv/" + tmdbId + "&s=" + season + "&e=" + episode;
+            }}
+        ];
 
-        // Source 2 — vidsrc.to direct embed
-        if (videos.length === 0) {
-            await this._resolveVideoUrl(
-                "https://vidsrc.to/embed/tv/" + tmdbId + "/" + season + "/" + episode,
-                "EN", videos, "VidSrc"
-            );
+        // Réordonne selon la préférence utilisateur : le serveur choisi passe en premier
+        if (pref !== "auto") {
+            for (var si = 0; si < sources.length; si++) {
+                if (sources[si].id === pref) {
+                    var picked = sources.splice(si, 1)[0];
+                    sources.unshift(picked);
+                    break;
+                }
+            }
         }
 
-        // Source 3 — vidsrc.me
-        if (videos.length === 0) {
-            await this._resolveVideoUrl(
-                "https://vidsrc.me/embed/tv?tmdb=" + tmdbId + "&season=" + season + "&episode=" + episode,
-                "EN", videos, "VidSrc.me"
-            );
-        }
-
-        // Source 4 — 2embed
-        if (videos.length === 0) {
-            await this._resolveVideoUrl(
-                "https://www.2embed.cc/embedtv/" + tmdbId + "&s=" + season + "&e=" + episode,
-                "EN", videos, "2Embed"
-            );
+        for (var sri = 0; sri < sources.length; sri++) {
+            if (videos.length > 0) break;
+            await this._resolveVideoUrl(sources[sri].build(), "EN", videos, sources[sri].label);
         }
 
         return videos;
@@ -424,5 +429,20 @@ class DefaultExtension extends MProvider {
 
         // Last resort: push embed URL for WebView playback
         videos.push({ quality: label, url: src, originalUrl: src, isM3U8: false });
+    }
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "server_preference",
+                listPreference: {
+                    title: "Serveur prioritaire",
+                    summary: "Le serveur d'embed chargé en premier. Les autres sont essayés en secours si celui-ci échoue.",
+                    valueIndex: 0,
+                    entries: ["Auto (ordre par défaut)", "VidBox (natif du site)", "VidSrc", "VidSrc.me", "2Embed"],
+                    entryValues: ["auto", "vidbox", "vidsrc", "vidsrc.me", "2embed"]
+                }
+            }
+        ];
     }
 }

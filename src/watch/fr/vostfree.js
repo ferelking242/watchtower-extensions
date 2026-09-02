@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://ipv4.vostfree.ws/templates/Animix/images/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.11",
+    "version": "0.1.12",
     "pkgPath": "watch/fr/vostfree.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -20,10 +20,7 @@ const BASE_URL = "https://ipv4.vostfree.ws";
 class DefaultExtension extends MProvider {
     constructor() { super();}
 
-    get baseUrl() {
-        const p = this.source.prefs?.find(x => x.key === "base_url");
-        return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL.replace(/\/$/, "");
-    }
+    get baseUrl() { return new SharedPreferences().get("base_url") || BASE_URL.replace(/\/$/, ""); }
 
     _hdrs(ref) {
         return {

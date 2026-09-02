@@ -76,9 +76,7 @@ class DefaultExtension extends MProvider {
   // ── Prefs helpers ──────────────────────────────────────────────────────
 
   _pref(key, fallback) {
-    const p = this.source && this.source.prefs
-      ? this.source.prefs.find(function(x) { return x.key === key; })
-      : null;
+    const p = new SharedPreferences().get(key);
     return (p && p.value !== undefined && p.value !== "") ? p.value : fallback;
   }
 

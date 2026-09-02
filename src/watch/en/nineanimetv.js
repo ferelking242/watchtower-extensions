@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "iconUrl": "https://9animetv.to/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.5",
+      "version": "0.1.6",
       "pkgPath": "watch/en/nineanimetv.js",
       "notes": "9AnimeTv — Anime streaming (restored)",
       "isNsfw": false
@@ -92,6 +92,16 @@ const watchtowerSources = [{
           return { name, imageUrl: cover, description: desc, chapters: episodes };
       }
 
+      _sortServers(servers) {
+          try {
+              const pref = new SharedPreferences().get("server_preference") || "auto";
+              if (pref === "auto" || !servers || servers.length < 2) return servers;
+              const idx = servers.findIndex(s => (s.quality || "").toLowerCase().includes(pref));
+              if (idx > 0) { const [m] = servers.splice(idx, 1); servers.unshift(m); }
+          } catch (_) {}
+          return servers;
+      }
+
       async getVideoList(url) {
           const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
@@ -101,6 +111,21 @@ const watchtowerSources = [{
               const eid = item.attr("data-id") || "";
               if (eid) servers.push({ quality: name, url: `https://9animetv.to/ajax/episode/servers?episodeId=${eid}` });
           });
-          return servers.length > 0 ? servers : [{ quality: "Default", url }];
+          return servers.length > 0 ? this._sortServers(servers) : [{ quality: "Default", url }];
+      }
+
+      getSourcePreferences() {
+          return [
+              {
+                  key: "server_preference",
+                  listPreference: {
+                      title: "Serveur prioritaire",
+                      summary: "Le serveur choisi est chargé en premier. Les autres serveurs servent de secours si celui-ci échoue.",
+                      valueIndex: 0,
+                      entries: ["Auto (tous les serveurs)", "VidCloud", "VidStreaming", "StreamTape", "Mp4Upload"],
+                      entryValues: ["auto", "vidcloud", "vidstreaming", "streamtape", "mp4upload"]
+                  }
+              }
+          ];
       }
   }

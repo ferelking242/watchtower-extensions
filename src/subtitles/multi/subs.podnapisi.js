@@ -15,7 +15,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 7,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "baseUrl": "https://podnapisi.net",
     "apiUrl": "https://podnapisi.net/subtitles/search/ppds3",
     "iconUrl": "https://podnapisi.net/static/ico/favicon.ico",
@@ -52,7 +52,7 @@ const _PN_LANG = {
 class DefaultExtension extends MProvider {
 
     _langsToPn(langs) {
-        var list = Array.isArray(langs) ? langs : String(langs || "fr,en").split(",");
+        var list = Array.isArray(langs) && langs.length ? langs : this._prefLangs();
         var out = [];
         for (var i = 0; i < list.length; i++) {
             var c = _PN_LANG[String(list[i]).trim().toLowerCase()];
@@ -148,7 +148,23 @@ class DefaultExtension extends MProvider {
                 }
             } catch (_) {}
         }
-        return out;
+        return out.slice(0, this._maxResults());
+    }
+
+    _prefLangs() {
+        try {
+            var v = new SharedPreferences().get("preferred_langs");
+            if (Array.isArray(v) && v.length) return v.map(function (l) { return String(l).toLowerCase(); });
+        } catch (_) {}
+        return ["fr", "en"];
+    }
+
+    _maxResults() {
+        try {
+            var v = parseInt(new SharedPreferences().get("max_results"), 10);
+            if (v && v > 0) return v;
+        } catch (_) {}
+        return 25;
     }
 
     /**
@@ -160,5 +176,30 @@ class DefaultExtension extends MProvider {
         if (!pid) throw new Error("Podnapisi: id invalide");
         if (pid.indexOf("http") === 0) return { url: pid, archive: true };
         return { url: "https://podnapisi.net/subtitles/" + pid + "/download", archive: true };
+    }
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "preferred_langs",
+                multiSelectListPreference: {
+                    title: "Langues préférées",
+                    summary: "Langues de sous-titres à rechercher par défaut quand l'application n'en impose aucune.",
+                    entries: ["Français", "Anglais", "Espagnol", "Allemand", "Italien", "Portugais", "Russe", "Néerlandais", "Polonais", "Turc", "Japonais", "Coréen", "Chinois"],
+                    entryValues: ["fr", "en", "es", "de", "it", "pt", "ru", "nl", "pl", "tr", "ja", "ko", "zh"],
+                    values: ["fr", "en"]
+                }
+            },
+            {
+                key: "max_results",
+                listPreference: {
+                    title: "Résultats maximum",
+                    summary: "Nombre maximal de sous-titres retournés par recherche",
+                    valueIndex: 1,
+                    entries: ["10", "25 (recommandé)", "50", "100"],
+                    entryValues: ["10", "25", "50", "100"]
+                }
+            }
+        ];
     }
 }

@@ -50,7 +50,7 @@ const watchtowerSources = [
         "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.comick.png",
         "typeSource": "single",
         "itemType": 0,
-        "version": "0.1.4",
+        "version": "0.1.5",
         "pkgPath": "manga/src/all/comick.js"
     }];
 
@@ -68,19 +68,28 @@ class DefaultExtension extends MProvider {
         };
     }
 
+    // URL de l'API, éditable via les préférences (miroirs / changement de domaine)
+    _api() {
+        try {
+            var v = new SharedPreferences().get("api_url");
+            if (v) return v;
+        } catch (_) {}
+        return this.source.apiUrl;
+    }
+
     async getPopular(page) {
-        const url = `${this.source.apiUrl}/v1.0/search?sort=follow&page=${page}&tachiyomi=true`;
+        const url = `${this._api()}/v1.0/search?sort=follow&page=${page}&tachiyomi=true`;
         const res = await new Client().get(url, this.getHeaders());
         return this.mangaRes(res.body);
     }
 
     async getLatestUpdates(page) {
-        const url = `${this.source.apiUrl}/v1.0/search?sort=uploaded&page=${page}&tachiyomi=true`;
+        const url = `${this._api()}/v1.0/search?sort=uploaded&page=${page}&tachiyomi=true`;
         const res = await new Client().get(url, this.getHeaders());
         return this.mangaRes(res.body);
     }
     async search(query, page, filterList) {
-        let url = `${this.source.apiUrl}/v1.0/search`;
+        let url = `${this._api()}/v1.0/search`;
 
         if (query) {
             url += `?q=${encodeURIComponent(query)}&tachiyomi=true`;
@@ -123,15 +132,21 @@ class DefaultExtension extends MProvider {
     }
 
     async getDetail(url) {
-        const apiUrl = `${this.source.apiUrl}${url.replace("#", "")}?tachiyomi=true`;
+        const apiUrl = `${this._api()}${url.replace("#", "")}?tachiyomi=true`;
         const res = await new Client().get(apiUrl, this.getHeaders());
         const data = JSON.parse(res.body);
         const lang = this.source.lang != "all" ? `&lang=${this.source.lang}` : "";
+        let excl = "";
+        try {
+            if (new SharedPreferences().get("exclude_hentai") === true) excl += "&exclude_hentai=true";
+            if (new SharedPreferences().get("exclude_hiatus") === true) excl += "&exclude_hiatus=true";
+            if (new SharedPreferences().get("exclude_licensed") === true) excl += "&exclude_licensed=true";
+        } catch (_) {}
         const chapUrlReq =
-            `${this.source.apiUrl}${url.replaceAll("#", '')}chapters?${lang}&tachiyomi=true&page=1`;
+            `${this._api()}${url.replaceAll("#", '')}chapters?${lang}&tachiyomi=true&page=1${excl}`;
         const total = JSON.parse((await new Client().get(chapUrlReq, this.getHeaders())).body).total;
         const newChapUrlReq =
-            `${this.source.apiUrl}${url.replaceAll("#", '')}chapters?limit=${parseInt(total, 10)}${lang}&tachiyomi=true&page=1`;
+            `${this._api()}${url.replaceAll("#", '')}chapters?limit=${parseInt(total, 10)}${lang}&tachiyomi=true&page=1${excl}`;
         const newRes = await new Client().get(newChapUrlReq, this.getHeaders());
         const chapters = JSON.parse(newRes.body).chapters.map(chapter => {
             let title = "";
@@ -172,7 +187,7 @@ class DefaultExtension extends MProvider {
     }
 
     async getPageList(url) {
-        const apiUrl = `${this.source.apiUrl}/chapter/${url}?tachiyomi=true`;
+        const apiUrl = `${this._api()}/chapter/${url}?tachiyomi=true`;
         const res = await new Client().get(apiUrl, this.getHeaders());
         const data = JSON.parse(res.body);
         return data.chapter.images.map(image => ({
@@ -424,16 +439,54 @@ class DefaultExtension extends MProvider {
     }
 async getCustomList(listId, page) {
           if (listId === "new_titles") {
-              const url = `${this.source.apiUrl}/v1.0/search?sort=new&page=${page}&tachiyomi=true`;
+              const url = `${this._api()}/v1.0/search?sort=new&page=${page}&tachiyomi=true`;
               const res = await new Client().get(url, this.getHeaders());
               return this.mangaRes(res.body);
           }
           if (listId === "trending") {
-              const url = `${this.source.apiUrl}/v1.0/search?sort=hot&page=${page}&tachiyomi=true`;
+              const url = `${this._api()}/v1.0/search?sort=hot&page=${page}&tachiyomi=true`;
               const res = await new Client().get(url, this.getHeaders());
               return this.mangaRes(res.body);
           }
           return this.getPopular(page);
       }
-  
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "api_url",
+                editTextPreference: {
+                    title: "URL de l'API",
+                    summary: "Adresse de l'API Comick. Changez uniquement si le domaine principal est migré.",
+                    value: "https://api.comick.fun",
+                    dialogTitle: "URL de l'API",
+                    dialogMessage: "URL actuelle : https://api.comick.fun"
+                }
+            },
+            {
+                key: "exclude_hentai",
+                switchPreferenceCompat: {
+                    title: "Masquer le contenu hentai",
+                    summary: "Exclut les chapitres hentai des résultats et des listes de chapitres.",
+                    value: false
+                }
+            },
+            {
+                key: "exclude_hiatus",
+                switchPreferenceCompat: {
+                    title: "Masquer les séries en pause",
+                    summary: "Exclut les séries marquées en hiatus de la liste des chapitres.",
+                    value: false
+                }
+            },
+            {
+                key: "exclude_licensed",
+                switchPreferenceCompat: {
+                    title: "Masquer les séries licenciées",
+                    summary: "Exclut les séries sous licence officielle (moins de scanlations à jour).",
+                    value: false
+                }
+            }
+        ];
+    }
 }

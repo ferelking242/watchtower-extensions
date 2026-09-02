@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "5.3.1",
+    "version": "5.3.2",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -205,15 +205,12 @@ class DefaultExtension extends MProvider {
 
     // ── Préférences ───────────────────────────────────────────
     _pref(key, fallback) {
+        // Lit les préférences via le pont SharedPreferences de Watchtower.
+        // (L'ancien code lisait this.source.prefs, jamais injecté par l'app :
+        //  toutes les préférences restaient donc à leur valeur par défaut.)
         try {
-            if (this.source && this.source.prefs) {
-                for (var i = 0; i < this.source.prefs.length; i++) {
-                    if (this.source.prefs[i].key === key) {
-                        var v = this.source.prefs[i].value;
-                        return (v !== undefined && v !== null && v !== "") ? String(v) : fallback;
-                    }
-                }
-            }
+            var v = new SharedPreferences().get(key);
+            return (v !== undefined && v !== null && v !== "") ? String(v) : fallback;
         } catch (_) {}
         return fallback;
     }
@@ -987,7 +984,7 @@ _buildDynamicSections(data) {
         ];
     }
 
-    setupPreferences() {
+    getSourcePreferences() {
         return [
             {
                 key: "mb_content_lang",
@@ -1021,7 +1018,7 @@ _buildDynamicSections(data) {
             },
             {
                 key: "mb_bilingual",
-                switchPreference: {
+                switchPreferenceCompat: {
                     title:   "Sous-titres bilingues",
                     summary: "Affiche 2 langues de sous-titres sur une seule piste",
                     value:   false

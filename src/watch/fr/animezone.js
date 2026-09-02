@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.animezone.ch/favicon-32x32.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.4",
+    "version": "0.2.4",
     "pkgPath": "watch/fr/animezone.js",
     "editableBaseUrl": true,
     "customUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -22,11 +22,7 @@ class DefaultExtension extends MProvider {
         super();
     }
 
-    get baseUrl() {
-        const p = this.source.prefs?.find(x => x.key === "base_url");
-        return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL.replace(/\/$/, "");
-    }
-
+    get baseUrl() { return new SharedPreferences().get("base_url") || BASE_URL.replace(/\/$/, ""); }
     _hdrs(ref) {
         return {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -195,5 +191,50 @@ class DefaultExtension extends MProvider {
             videos.push({ url, quality: 'Page', originalUrl: url, headers: this._hdrs(url) });
         }
         return videos;
+    }
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site. Changez si le domaine est migré.",
+                    value: "https://www.animezone.ch",
+                    dialogTitle: "URL du site",
+                    dialogMessage: "URL actuelle : https://www.animezone.ch"
+                }
+            },
+            {
+                key: "default_quality",
+                listPreference: {
+                    title: "Qualité vidéo par défaut",
+                    summary: "La qualité sélectionnée est prioritaire. Si indisponible, la plus proche est choisie automatiquement.",
+                    valueIndex: 0,
+                    entries: ["Auto (recommandé)","1080p — Full HD","720p — HD","480p — SD","360p — Faible"],
+                    entryValues: ["AUTO","1080","720","480","360"]
+                }
+            },
+            {
+                key: "quality_fallback",
+                listPreference: {
+                    title: "Si la qualité n'est pas disponible",
+                    summary: "Choisir la qualité la plus proche si celle demandée n'existe pas",
+                    valueIndex: 1,
+                    entries: ["Prendre la qualité supérieure", "Prendre la qualité inférieure (recommandé)"],
+                    entryValues: ["higher", "lower"]
+                }
+            },
+            {
+                key: "sub_or_dub",
+                listPreference: {
+                    title: "Préférence audio",
+                    summary: "Choisir entre version sous-titrée (Sub) ou doublée (Dub)",
+                    valueIndex: 0,
+                    entries: ["Sous-titré (Sub) — recommandé", "Doublé (Dub)", "Les deux (Sub puis Dub)"],
+                    entryValues: ["sub", "dub", "both"]
+                }
+            }
+        ];
     }
 }

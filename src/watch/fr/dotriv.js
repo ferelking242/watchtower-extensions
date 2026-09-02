@@ -20,16 +20,12 @@ const BASE_URL = "https://dospiv.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }
 
-    get baseUrl() {
-        const p = this.source.prefs?.find(x => x.key === "base_url");
-        return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL.replace(/\/$/, "");
-    }
-
+    get baseUrl() { return new SharedPreferences().get("base_url") || BASE_URL.replace(/\/$/, ""); }
     get cmsBase() { return `${this.baseUrl}/fed960f`; }
 
-    get logEnabled() { const p = this.source.prefs?.find(x => x.key === "log_enabled"); return p && p.value === "true"; }
-    get logTopic() { const p = this.source.prefs?.find(x => x.key === "log_topic"); return (p && p.value) ? p.value : "wtfr-dospiv"; }
-    get pref_quality() { const p = this.source.prefs?.find(x => x.key === "preferred_quality"); return (p && p.value) ? p.value : "AUTO"; }
+    get logEnabled() { const p = new SharedPreferences().get("log_enabled"); return p && p.value === "true"; }
+    get logTopic() { const p = new SharedPreferences().get("log_topic"); return (p && p.value) ? p.value : "wtfr-dospiv"; }
+    get pref_quality() { const p = new SharedPreferences().get("preferred_quality"); return (p && p.value) ? p.value : "AUTO"; }
 
     _hdrs(ref) {
         return {

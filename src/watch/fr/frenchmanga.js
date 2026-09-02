@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "iconUrl": "https://w16.french-manga.net/favicon.ico",
     "typeSource": "single",
     "itemType": 2,
-    "version": "1.0.1",
+    "version": "1.1.1",
     "pkgPath": "watch/fr/frenchmanga.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -41,8 +41,7 @@ class DefaultExtension extends MProvider {
     constructor() { super(); }
 
     get baseUrl() {
-        const p = this.source.prefs ? this.source.prefs.find(x => x.key === "base_url") : null;
-        return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL.replace(/\/$/, "");
+        return new SharedPreferences().get("base_url") || BASE_URL.replace(/\/$/, "");
     }
 
     _hdrs(ref) {
@@ -494,5 +493,50 @@ async getCustomList(listId, page) {
         }
 
         return videos.length > 0 ? videos : [{ url: url, quality: "AUTO", headers: this._hdrs(url) }];
+    }
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site. Changez si le domaine est migré.",
+                    value: "https://w16.french-manga.net",
+                    dialogTitle: "URL du site",
+                    dialogMessage: "URL actuelle : https://w16.french-manga.net"
+                }
+            },
+            {
+                key: "default_quality",
+                listPreference: {
+                    title: "Qualité vidéo par défaut",
+                    summary: "La qualité sélectionnée est prioritaire. Si indisponible, la plus proche est choisie automatiquement.",
+                    valueIndex: 0,
+                    entries: ["Auto (recommandé)","1080p — Full HD","720p — HD","480p — SD","360p — Faible"],
+                    entryValues: ["AUTO","1080","720","480","360"]
+                }
+            },
+            {
+                key: "quality_fallback",
+                listPreference: {
+                    title: "Si la qualité n'est pas disponible",
+                    summary: "Choisir la qualité la plus proche si celle demandée n'existe pas",
+                    valueIndex: 1,
+                    entries: ["Prendre la qualité supérieure", "Prendre la qualité inférieure (recommandé)"],
+                    entryValues: ["higher", "lower"]
+                }
+            },
+            {
+                key: "sub_or_dub",
+                listPreference: {
+                    title: "Préférence audio",
+                    summary: "Choisir entre version sous-titrée (Sub) ou doublée (Dub)",
+                    valueIndex: 0,
+                    entries: ["Sous-titré (Sub) — recommandé", "Doublé (Dub)", "Les deux (Sub puis Dub)"],
+                    entryValues: ["sub", "dub", "both"]
+                }
+            }
+        ];
     }
 }

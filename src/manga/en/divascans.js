@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://divascans.com/favicon.ico",
     "typeSource": "single",
     "itemType": 0,
-    "version": "1.0.0",
+    "version": "1.1.0",
     "pkgPath": "manga/src/en/divascans.js"
 }];
 
@@ -86,5 +86,49 @@ class DefaultExtension extends MProvider {
     }
 
     getFilterList() { return []; }
-    getSourcePreferences() { return []; }
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site. Changez si le domaine est migré.",
+                    value: BASE_URL,
+                    dialogTitle: "URL du site",
+                    dialogMessage: "URL actuelle : " + BASE_URL
+                }
+            },
+            {
+                key: "default_lang",
+                listPreference: {
+                    title: "Langue par défaut",
+                    summary: "Langue d'affichage des titres et descriptions du manga",
+                    valueIndex: 0,
+                    entries: ["Anglais (recommandé)", "Français", "Espagnol", "Automatique"],
+                    entryValues: ["en", "fr", "es", "auto"]
+                }
+            },
+            {
+                key: "chapter_order",
+                listPreference: {
+                    title: "Ordre des chapitres",
+                    summary: "Afficher les chapitres du plus récent au plus ancien, ou l'inverse",
+                    valueIndex: 0,
+                    entries: ["Plus récents d'abord (recommandé)", "Plus anciens d'abord"],
+                    entryValues: ["newest", "oldest"]
+                }
+            },
+            {
+                key: "image_quality",
+                listPreference: {
+                    title: "Qualité des images",
+                    summary: "Qualité d'affichage des pages de manga. La haute qualité consomme plus de données.",
+                    valueIndex: 0,
+                    entries: ["Haute qualité (recommandé)", "Qualité moyenne", "Faible qualité (économie de données)"],
+                    entryValues: ["high", "medium", "low"]
+                }
+            }
+        ];
+    }
 }

@@ -7,13 +7,21 @@ const watchtowerSources = [{
     "iconUrl": "https://blogger.googleusercontent.com/img/a/AVvXsEgKFmNQCUC7ARtXurDIwfOimVn3wogUvH7VaUOfjdutG44-cT4ajgh0KYkqSbRIoQ0b8YG3H6Edx-y1O3GW5SL88jymLZsO6cmS0QRtsp1y4gc24vmF4OGqyIY3PYSjxUYR1iJ5J-sP-00A7NwhNa19SPc0R_62KcuG6dbu2Rg-2YiMV1uUgaB0DGB6IBY_=s1600",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.0.3",
+    "version": "0.0.4",
     "isNsfw": false,
     "pkgPath": "manga/src/ar/oduto.js",
     "notes": "This Source Just For Boruto"
 }];
 
 class DefaultExtension extends MProvider {
+  getBaseUrl() {
+    try {
+      const v = new SharedPreferences().get("base_url");
+      if (v) return v;
+    } catch (_) {}
+    return "https://nb19u.blogspot.com";
+  }
+
   async request(slug) {
     const res = await new Client().get(slug);
     return new Document(res.body);
@@ -26,7 +34,7 @@ class DefaultExtension extends MProvider {
           name: "BORUTO: Two Blue Vortex",
           imageUrl:
             "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEggWB9vWPMqjEvIoDsJSO29OmW-srULDQD3cS9HJ8cDk0vq2jLwDerUX-i61CqmZf62eBVmWZwU5CgXi0p2lxhKrh2_nZum3p-k3q9QJ2uozove0QAbOKtbd1QPjytjrJc9UsL65X4BbFdgcicLDYubD9LgY1Kco8wyhDGm4YEOim8u1TL42gOFe16NaaEP/s3464/4D55C3C5-9168-4103-B45C-99B52B58B6A5.jpeg",
-          link: "https://nb19u.blogspot.com/search/label/%D9%85%D8%A7%D9%86%D8%AC%D8%A7%20%D8%A8%D9%88%D8%B1%D9%88%D8%AA%D9%88?&max-results=4&m=1",
+          link: `${this.getBaseUrl()}/search/label/%D9%85%D8%A7%D9%86%D8%AC%D8%A7%20%D8%A8%D9%88%D8%B1%D9%88%D8%AA%D9%88?&max-results=4&m=1`,
         },
       ],
       hasNextPage: false,
@@ -71,6 +79,11 @@ class DefaultExtension extends MProvider {
       this.chapterFromElement(element),
     );
 
+    // Ordre des chapitres : par défaut du plus récent au plus ancien (ordre du site)
+    try {
+      if (new SharedPreferences().get("chapter_order") === "oldest") chapters.reverse();
+    } catch (_) {}
+
     return {
       title: "BORUTO: Two Blue Vortex",
       imageUrl:
@@ -89,5 +102,30 @@ class DefaultExtension extends MProvider {
     return doc.select("div.#post-body img[src]").map((x) => ({
       url: x.attr("src"),
     }));
+  }
+
+  getSourcePreferences() {
+    return [
+      {
+        key: "base_url",
+        editTextPreference: {
+          title: "URL du site",
+          summary: "Adresse du blog Oduto. Changez si le domaine est migré.",
+          value: "https://nb19u.blogspot.com",
+          dialogTitle: "URL du site",
+          dialogMessage: "URL actuelle : https://nb19u.blogspot.com"
+        }
+      },
+      {
+        key: "chapter_order",
+        listPreference: {
+          title: "Ordre des chapitres",
+          summary: "Sens d'affichage de la liste des chapitres",
+          valueIndex: 0,
+          entries: ["Plus récent d'abord (recommandé)", "Plus ancien d'abord"],
+          entryValues: ["recent", "oldest"]
+        }
+      }
+    ];
   }
 }

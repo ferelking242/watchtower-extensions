@@ -20,10 +20,10 @@ const BASE_URL = "https://echodumarteau.fr";
 class DefaultExtension extends MProvider {
     constructor() { super();}
 
-    get baseUrl() { const p = this.source.prefs?.find(x => x.key === "base_url"); return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL.replace(/\/$/, ""); }
-    get logEnabled() { const p = this.source.prefs?.find(x => x.key === "log_enabled"); return p && p.value === "true"; }
-    get logTopic() { const p = this.source.prefs?.find(x => x.key === "log_topic"); return (p && p.value) ? p.value : "wtfr-echodumarteau"; }
-    get pref_quality() { const p = this.source.prefs?.find(x => x.key === "preferred_quality"); return (p && p.value) ? p.value : "AUTO"; }
+    get baseUrl() { return new SharedPreferences().get("base_url") || BASE_URL.replace(/\/$/, ""); }
+    get logEnabled() { const p = new SharedPreferences().get("log_enabled"); return p && p.value === "true"; }
+    get logTopic() { const p = new SharedPreferences().get("log_topic"); return (p && p.value) ? p.value : "wtfr-echodumarteau"; }
+    get pref_quality() { const p = new SharedPreferences().get("preferred_quality"); return (p && p.value) ? p.value : "AUTO"; }
 
     _hdrs(ref) { return { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36", "Referer": ref || `${this.baseUrl}/`, "Accept-Language": "fr-FR,fr;q=0.9", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" }; }
 

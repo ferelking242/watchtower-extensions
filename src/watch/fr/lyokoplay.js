@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.lyokoplay.fr/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.1.1",
     "pkgPath": "watch/fr/lyokoplay.js",
     "editableBaseUrl": false,
     "hasCloudflare": false,
@@ -172,5 +172,50 @@ class DefaultExtension extends MProvider {
 
     getComments(url, page) {
         return Promise.resolve([]);
+    }
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site. Changez si le domaine est migré.",
+                    value: "https://www.lyokoplay.fr",
+                    dialogTitle: "URL du site",
+                    dialogMessage: "URL actuelle : https://www.lyokoplay.fr"
+                }
+            },
+            {
+                key: "default_quality",
+                listPreference: {
+                    title: "Qualité vidéo par défaut",
+                    summary: "La qualité sélectionnée est prioritaire. Si indisponible, la plus proche est choisie automatiquement.",
+                    valueIndex: 0,
+                    entries: ["Auto (recommandé)","1080p — Full HD","720p — HD","480p — SD","360p — Faible"],
+                    entryValues: ["AUTO","1080","720","480","360"]
+                }
+            },
+            {
+                key: "quality_fallback",
+                listPreference: {
+                    title: "Si la qualité n'est pas disponible",
+                    summary: "Choisir la qualité la plus proche si celle demandée n'existe pas",
+                    valueIndex: 1,
+                    entries: ["Prendre la qualité supérieure", "Prendre la qualité inférieure (recommandé)"],
+                    entryValues: ["higher", "lower"]
+                }
+            },
+            {
+                key: "sub_or_dub",
+                listPreference: {
+                    title: "Préférence audio",
+                    summary: "Choisir entre version sous-titrée (Sub) ou doublée (Dub)",
+                    valueIndex: 0,
+                    entries: ["Sous-titré (Sub) — recommandé", "Doublé (Dub)", "Les deux (Sub puis Dub)"],
+                    entryValues: ["sub", "dub", "both"]
+                }
+            }
+        ];
     }
 }

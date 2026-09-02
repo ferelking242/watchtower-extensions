@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "iconUrl": "https://soundcloud.com/favicon.ico",
       "typeSource": "single",
       "itemType": 3,
-      "version": "1.0.2",
+      "version": "1.0.3",
       "pkgPath": "music/en/soundcloud.js",
       "notes": "SoundCloud — Free music streaming",
       "isNsfw": false
@@ -57,7 +57,7 @@ const watchtowerSources = [{
               const cover = img?.attr("src") || "";
               if (name && href) items.push({ name, imageUrl: cover, link: "https://soundcloud.com" + href });
           });
-          return { list: items, hasNextPage: false };
+          return { list: items.slice(0, this._limit()), hasNextPage: false };
       }
 
       async getSearchList(query, page, filters) {
@@ -75,7 +75,7 @@ const watchtowerSources = [{
               if (name && href) items.push({ name, imageUrl: cover, link: "https://soundcloud.com" + href });
           });
           const hasNext = !!doc.selectFirst(".pagerNext, [rel='next']");
-          return { list: items, hasNextPage: hasNext };
+          return { list: items.slice(0, this._limit()), hasNextPage: hasNext };
       }
 
       async getDetail(url) {
@@ -90,7 +90,30 @@ const watchtowerSources = [{
           };
       }
 
+      _limit() {
+          try {
+              const v = parseInt(new SharedPreferences().get("page_size"), 10);
+              if (v && v > 0) return v;
+          } catch (_) {}
+          return 20;
+      }
+
       async getVideoList(url) {
           return [{ quality: "Stream", url }];
+      }
+
+      getSourcePreferences() {
+          return [
+              {
+                  key: "page_size",
+                  listPreference: {
+                      title: "Résultats par page",
+                      summary: "Nombre de titres affichés par liste (recherche, top, nouveautés)",
+                      valueIndex: 1,
+                      entries: ["10", "20 (recommandé)", "30", "50"],
+                      entryValues: ["10", "20", "30", "50"]
+                  }
+              }
+          ];
       }
   }

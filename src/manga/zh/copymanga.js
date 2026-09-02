@@ -1,11 +1,4 @@
-
-async getCustomList(listId, page) {
-          if (listId === "popular") {
-              return await this.getManga(`/api/v3/comics?free_type=1&limit=16&offset=${(page-1)*16}&ordering=-popular&_update=true`);
-          }
-          return this.getLatestUpdates(page);
-      }
-  const mangayomiSources = [{
+const mangayomiSources = [{
     "name": "拷贝漫画",
     "lang": "zh",
     "baseUrl": "https://www.mangacopy.com",
@@ -14,7 +7,7 @@ async getCustomList(listId, page) {
     "typeSource": "single",
     "itemType": 0,
     "isNsfw": false,
-    "version": "0.0.27",
+    "version": "0.0.28",
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/zh/copymanga.js"
@@ -228,6 +221,13 @@ async getCustomList(listId, page) {
       const img_text = res.body.match(/contentKey="(.*)"/)[1];
       const results = JSON.parse(this.decode(img_text));
       return results.map(e => e["url"]);
+    }
+  
+    getCustomList(listId, page) {
+      if (listId === "popular") {
+          return this.getManga(`/api/v3/comics?free_type=1&limit=16&offset=${(page-1)*16}&ordering=-popular&_update=true`);
+      }
+      return this.getLatestUpdates(page);
     }
   
     getFilterList() {

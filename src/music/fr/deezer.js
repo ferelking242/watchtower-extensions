@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.deezer.com/favicon.ico",
       "typeSource": "single",
       "itemType": 3,
-      "version": "1.0.2",
+      "version": "1.0.3",
       "pkgPath": "music/fr/deezer.js",
       "notes": "Deezer — Catalogue mondial de musique (previews 30s)",
       "isNsfw": false
@@ -35,7 +35,7 @@ const watchtowerSources = [{
               imageUrl: t.album?.cover_medium || t.album?.cover || "",
               link: t.link || ("https://www.deezer.com/track/" + t.id)
           }));
-          return { list: items, hasNextPage: tracks.length === 50 };
+          return { list: items.slice(0, this._limit()), hasNextPage: tracks.length === 50 };
       }
 
       async getLatestList(page) {
@@ -49,7 +49,7 @@ const watchtowerSources = [{
               imageUrl: a.cover_medium || a.cover || "",
               link: a.link || ("https://www.deezer.com/album/" + a.id)
           }));
-          return { list: items, hasNextPage: albums.length === 50 };
+          return { list: items.slice(0, this._limit()), hasNextPage: albums.length === 50 };
       }
 
       async getSearchList(query, page, filters) {
@@ -63,7 +63,7 @@ const watchtowerSources = [{
               imageUrl: t.album?.cover_medium || "",
               link: t.link || ("https://www.deezer.com/track/" + t.id)
           }));
-          return { list: items, hasNextPage: data.next != null };
+          return { list: items.slice(0, this._limit()), hasNextPage: data.next != null };
       }
 
       async getDetail(url) {
@@ -82,6 +82,14 @@ const watchtowerSources = [{
           return { name, imageUrl: cover, description: desc, chapters: chapters.length ? chapters : [{ name: "Play", url }] };
       }
 
+      _limit() {
+          try {
+              const v = parseInt(new SharedPreferences().get("page_size"), 10);
+              if (v && v > 0) return v;
+          } catch (_) {}
+          return 20;
+      }
+
       async getVideoList(url) {
           const id = url.match(/\/track\/(\d+)/)?.[1];
           if (!id) return [{ quality: "Stream", url }];
@@ -91,5 +99,20 @@ const watchtowerSources = [{
           try { data = JSON.parse(res.body); } catch(e) { data = {}; }
           const preview = data.preview;
           return preview ? [{ quality: "Preview 30s (MP3)", url: preview }] : [{ quality: "Stream", url }];
+      }
+
+      getSourcePreferences() {
+          return [
+              {
+                  key: "page_size",
+                  listPreference: {
+                      title: "Résultats par page",
+                      summary: "Nombre de titres affichés par liste (classement, nouveautés, recherche)",
+                      valueIndex: 1,
+                      entries: ["10", "20 (recommandé)", "30", "50"],
+                      entryValues: ["10", "20", "30", "50"]
+                  }
+              }
+          ];
       }
   }

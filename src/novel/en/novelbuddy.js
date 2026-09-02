@@ -13,7 +13,7 @@ const watchtowerSources = [
     "hasCloudflare": false,
     "sourceCodeUrl": "",
     "apiUrl": "",
-    "version": "0.0.11",
+    "version": "0.0.12",
     "isManga": false,
     "itemType": 2,
     "isFullData": false,
@@ -434,6 +434,6 @@ class DefaultExtension extends MProvider {
   }
 
   getSourcePreferences() {
-    throw new Error("getSourcePreferences not implemented");
+    return [];
   }
 }

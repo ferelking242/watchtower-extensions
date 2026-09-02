@@ -8,7 +8,7 @@ const watchtowerSources = [{
     "iconUrl": "https://donghuastream.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.1.0",
     "pkgPath": "anime/src/multi/donghuastream.js",
     "notes": "DonghuaStream — streaming donghua (anime chinois)"
 }];
@@ -91,5 +91,59 @@ class DefaultExtension extends MProvider {
     }
 
     getFilterList() { return []; }
-    getSourcePreferences() { return []; }
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site. Changez si le domaine est migré.",
+                    value: BASE_URL,
+                    dialogTitle: "URL du site",
+                    dialogMessage: "URL actuelle : " + BASE_URL
+                }
+            },
+            {
+                key: "default_quality",
+                listPreference: {
+                    title: "Qualité vidéo par défaut",
+                    summary: "La qualité sélectionnée est prioritaire. Si indisponible, la plus proche est choisie automatiquement.",
+                    valueIndex: 0,
+                    entries: ["Auto (recommandé)", "1080p — Full HD", "720p — HD", "480p — SD", "360p — Faible"],
+                    entryValues: ["AUTO", "1080", "720", "480", "360"]
+                }
+            },
+            {
+                key: "quality_fallback",
+                listPreference: {
+                    title: "Si la qualité n'est pas disponible",
+                    summary: "Choisir la qualité la plus proche si celle demandée n'existe pas",
+                    valueIndex: 1,
+                    entries: ["Prendre la qualité supérieure", "Prendre la qualité inférieure (recommandé)"],
+                    entryValues: ["higher", "lower"]
+                }
+            },
+            {
+                key: "sub_or_dub",
+                listPreference: {
+                    title: "Préférence audio",
+                    summary: "Choisir entre version sous-titrée (Sub) ou doublée (Dub) quand les deux sont disponibles",
+                    valueIndex: 0,
+                    entries: ["Sous-titré (Sub) — recommandé", "Doublé (Dub)", "Les deux (Sub puis Dub)"],
+                    entryValues: ["sub", "dub", "both"]
+                }
+            },
+            {
+                key: "server_preference",
+                listPreference: {
+                    title: "Serveur prioritaire",
+                    summary: "Le serveur choisi est chargé en premier. Les autres serveurs sont utilisés en fallback si celui-ci échoue.",
+                    valueIndex: 0,
+                    entries: ["Auto (tous les serveurs)", "VidStreaming", "MegaCloud", "Meownstream", "StreamTape"],
+                    entryValues: ["auto", "vidstreaming", "megacloud", "meownstream", "streamtape"]
+                }
+            }
+        ];
+    }
 }

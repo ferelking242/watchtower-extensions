@@ -17,7 +17,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 7,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "baseUrl": "https://kitsunekko.net",
     "apiUrl": "",
     "iconUrl": "https://kitsunekko.net/favicon.ico",
@@ -94,7 +94,7 @@ class DefaultExtension extends MProvider {
         ];
         var wantedLangs = Array.isArray(opts.langs) && opts.langs.length
             ? opts.langs.map(function (l) { return String(l).toLowerCase(); })
-            : ["ja", "en"];
+            : this._prefLangs();
 
         var out = [];
         for (var r = 0; r < roots.length; r++) {
@@ -144,9 +144,32 @@ class DefaultExtension extends MProvider {
      * @param {string} id "kitsunekko|<url encodée>"
      * @returns {Promise<object>} { url } — fichier individuel
      */
+    _prefLangs() {
+        try {
+            var v = new SharedPreferences().get("preferred_langs");
+            if (Array.isArray(v) && v.length) return v.map(function (l) { return String(l).toLowerCase(); });
+        } catch (_) {}
+        return ["ja", "en"];
+    }
+
     async downloadSub(id) {
         var url = decodeURIComponent(String(id || "").replace(/^kitsunekko\|/, ""));
         if (!url || url.indexOf("http") !== 0) throw new Error("Kitsunekko: id invalide");
         return { url: url };
+    }
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "preferred_langs",
+                multiSelectListPreference: {
+                    title: "Langues préférées",
+                    summary: "Langues de sous-titres à rechercher par défaut quand l'application n'en impose aucune.",
+                    entries: ["Japonais", "Anglais", "Français", "Espagnol", "Allemand", "Italien", "Portugais", "Russe", "Coréen", "Chinois"],
+                    entryValues: ["ja", "en", "fr", "es", "de", "it", "pt", "ru", "ko", "zh"],
+                    values: ["ja", "en"]
+                }
+            }
+        ];
     }
 }

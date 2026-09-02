@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://rocksmanga.com/favicon.ico",
     "typeSource": "single",
     "itemType": 0,
-    "version": "1.0.0",
+    "version": "1.1.0",
     "pkgPath": "manga/src/ar/rocks_manga.js"
 }];
 
@@ -27,5 +27,49 @@ class DefaultExtension extends MProvider {
     async getDetail(url) { const fullUrl = url.startsWith("http") ? url : `${BASE_URL}${url}`; const res = await new Client().get(fullUrl, this.getHeaders()); const html = res.body; const nameM = html.match(/<h1[^>]*>([^<]+)<\/h1>/); const name = nameM ? nameM[1].trim() : ""; const descM = html.match(/<div[^>]*class="[^"]*description[^"]*"[^>]*>([\s\S]*?)<\/div>/); const description = descM ? descM[1].replace(/<[^>]+>/g, "").trim() : ""; const imgM = html.match(/<img[^>]+src="([^"]+)"[^>]*(?:cover|manga)/i); const imageUrl = imgM ? imgM[1] : ""; const genre = []; const chapters = []; const chRe = /href="([^"]+)"[\s\S]*?(\d+)[\s\S]*?<\/a>/g; let cm; while ((cm = chRe.exec(html)) !== null) { if (cm[1].includes("chapter")) chapters.push({ name: `الفصل ${cm[2]}`, url: cm[1] }); } return { name, description, imageUrl, genre, status: 0, chapters }; }
     async getPageList(url) { const fullUrl = url.startsWith("http") ? url : `${BASE_URL}${url}`; const res = await new Client().get(fullUrl, this.getHeaders()); const pages = []; const re = /src="([^"]+\.(?:jpg|jpeg|png|webp)[^"]*)"/gi; let m; const html = res.body; while ((m = re.exec(html)) !== null) { if (!m[1].includes("logo") && !m[1].includes("icon")) pages.push(m[1]); } return pages.map(p => ({ url: p, headers: this.getHeaders() })); }
     getFilterList() { return []; }
-    getSourcePreferences() { return []; }
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site. Changez si le domaine est migré.",
+                    value: BASE_URL,
+                    dialogTitle: "URL du site",
+                    dialogMessage: "URL actuelle : " + BASE_URL
+                }
+            },
+            {
+                key: "default_lang",
+                listPreference: {
+                    title: "Langue par défaut",
+                    summary: "Langue d'affichage des titres et descriptions du manga",
+                    valueIndex: 0,
+                    entries: ["Arabe (recommandé)", "Anglais", "Français", "Automatique"],
+                    entryValues: ["ar", "en", "fr", "auto"]
+                }
+            },
+            {
+                key: "chapter_order",
+                listPreference: {
+                    title: "Ordre des chapitres",
+                    summary: "Afficher les chapitres du plus récent au plus ancien, ou l'inverse",
+                    valueIndex: 0,
+                    entries: ["Plus récents d'abord (recommandé)", "Plus anciens d'abord"],
+                    entryValues: ["newest", "oldest"]
+                }
+            },
+            {
+                key: "image_quality",
+                listPreference: {
+                    title: "Qualité des images",
+                    summary: "Qualité d'affichage des pages de manga. La haute qualité consomme plus de données.",
+                    valueIndex: 0,
+                    entries: ["Haute qualité (recommandé)", "Qualité moyenne", "Faible qualité (économie de données)"],
+                    entryValues: ["high", "medium", "low"]
+                }
+            }
+        ];
+    }
 }

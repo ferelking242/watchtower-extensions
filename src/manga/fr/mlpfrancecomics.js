@@ -8,7 +8,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": true,
     "itemType": 0,
-    "version": "1.2.0",
+    "version": "1.2.1",
     "pkgPath": "manga/fr/mlpfrancecomics.js",
     "editableBaseUrl": false,
     "hasCloudflare": false,
@@ -37,10 +37,18 @@ const watchtowerSources = [{
   class DefaultExtension extends MProvider {
     constructor() { super(); }
 
+    _base() {
+      try {
+        const v = new SharedPreferences().get("base_url");
+        if (v) return v;
+      } catch (_) {}
+      return BASE;
+    }
+
     _h(ref) {
       return {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36",
-        "Referer": ref || `${BASE}/`,
+        "Referer": ref || `${this._base()}/`,
         "Accept-Language": "fr-FR,fr;q=0.9"
       };
     }
@@ -48,7 +56,7 @@ const watchtowerSources = [{
     _abs(href, base) {
       if (!href) return "";
       if (href.startsWith("http")) return href;
-      if (href.startsWith("/")) return `${BASE}${href}`;
+      if (href.startsWith("/")) return `${this._base()}${href}`;
       const dir = base.split("/").slice(0, -1).join("/");
       return `${dir}/${href}`;
     }
@@ -60,8 +68,16 @@ const watchtowerSources = [{
         .replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
     }
 
+    _pageSize() {
+      try {
+        const v = parseInt(new SharedPreferences().get("page_size"), 10);
+        if (v && v > 0) return v;
+      } catch (_) {}
+      return 20;
+    }
+
     async getPopular(page) {
-      const pp = 20, s = (page - 1) * pp;
+      const pp = this._pageSize(), s = (page - 1) * pp;
       return {
         list: COMIC_CATALOG.slice(s, s + pp).map(c => ({ link: c.u, imageUrl: c.i, name: c.n })),
         hasNextPage: s + pp < COMIC_CATALOG.length
@@ -157,4 +173,29 @@ const watchtowerSources = [{
     }
 
     getComments(url, page) { return Promise.resolve([]); }
+
+    getSourcePreferences() {
+      return [
+        {
+          key: "base_url",
+          editTextPreference: {
+            title: "URL du site",
+            summary: "Adresse de MLP-France. Changez si le domaine est migré.",
+            value: BASE,
+            dialogTitle: "URL du site",
+            dialogMessage: `URL actuelle : ${BASE}`
+          }
+        },
+        {
+          key: "page_size",
+          listPreference: {
+            title: "Résultats par page",
+            summary: "Nombre de comics affichés par page dans les listes",
+            valueIndex: 1,
+            entries: ["10", "20 (recommandé)", "50"],
+            entryValues: ["10", "20", "50"]
+          }
+        }
+      ];
+    }
   }

@@ -103,7 +103,7 @@ class DefaultExtension extends MProvider {
     }
 
     _pref(k, d) {
-        var p = this.source && this.source.prefs ? this.source.prefs.find(function(x) { return x.key === k; }) : null;
+        var p = new SharedPreferences().get(k);
         return (p && p.value) ? p.value : (d || "");
     }
 
@@ -938,5 +938,50 @@ class DefaultExtension extends MProvider {
             quality:     "WebView",
             originalUrl: finalUrl
         }];
+    }
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site TropiStream. Changez si le domaine est migré.",
+                    value: BASE_URL,
+                    dialogTitle: "URL du site",
+                    dialogMessage: `URL actuelle : ${BASE_URL}`
+                }
+            },
+            {
+                key: "default_quality",
+                listPreference: {
+                    title: "Qualité vidéo par défaut",
+                    summary: "La qualité sélectionnée est prioritaire. Si indisponible, la plus proche est choisie automatiquement.",
+                    valueIndex: 0,
+                    entries: ["Auto (recommandé)", "1080p — Full HD", "720p — HD", "480p — SD"],
+                    entryValues: ["AUTO", "1080", "720", "480"]
+                }
+            },
+            {
+                key: "preferred_lang",
+                listPreference: {
+                    title: "Langue préférée",
+                    summary: "Langue prioritaire quand plusieurs versions sont disponibles",
+                    valueIndex: 0,
+                    entries: ["VF — Français (recommandé)", "VOSTFR — VOST en Français", "VO — Version Originale", "Auto (toutes les langues)"],
+                    entryValues: ["VF", "VOSTFR", "VO", "AUTO"]
+                }
+            },
+            {
+                key: "content_filter",
+                listPreference: {
+                    title: "Type de contenu",
+                    summary: "Filtrer les listes par type de contenu",
+                    valueIndex: 0,
+                    entries: ["Tout (films + séries)", "Films uniquement", "Séries uniquement", "Animes uniquement"],
+                    entryValues: ["all", "film", "serie", "anime"]
+                }
+            }
+        ];
     }
 }

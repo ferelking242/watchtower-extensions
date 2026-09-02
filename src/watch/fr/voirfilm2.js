@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://voirfilm.cz/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.2",
+    "version": "1.1.2",
     "pkgPath": "watch/fr/voirfilm2.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -31,11 +31,7 @@ const BASE_URL = "https://voirfilm.cz";
 class DefaultExtension extends MProvider {
     constructor() { super(); }
 
-    get baseUrl() {
-        const p = this.source.prefs?.find(x => x.key === "base_url");
-        return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL;
-    }
-
+    get baseUrl() { return new SharedPreferences().get("base_url") || BASE_URL; }
     _hdrs(ref) {
         return {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -108,4 +104,39 @@ class DefaultExtension extends MProvider {
     }
 
     async getForYou(page) { return this.getPopular(page); }
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site. Changez si le domaine est migré.",
+                    value: "https://voirfilm.cz",
+                    dialogTitle: "URL du site",
+                    dialogMessage: "URL actuelle : https://voirfilm.cz"
+                }
+            },
+            {
+                key: "default_quality",
+                listPreference: {
+                    title: "Qualité vidéo par défaut",
+                    summary: "La qualité sélectionnée est prioritaire. Si indisponible, la plus proche est choisie automatiquement.",
+                    valueIndex: 0,
+                    entries: ["Auto (recommandé)","1080p — Full HD","720p — HD","480p — SD","360p — Faible"],
+                    entryValues: ["AUTO","1080","720","480","360"]
+                }
+            },
+            {
+                key: "quality_fallback",
+                listPreference: {
+                    title: "Si la qualité n'est pas disponible",
+                    summary: "Choisir la qualité la plus proche si celle demandée n'existe pas",
+                    valueIndex: 1,
+                    entries: ["Prendre la qualité supérieure", "Prendre la qualité inférieure (recommandé)"],
+                    entryValues: ["higher", "lower"]
+                }
+            }
+        ];
+    }
 }

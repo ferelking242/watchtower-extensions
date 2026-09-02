@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.google.com/s2/favicons?sz=128&domain=https://weebcentral.com",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.1.2",
+    "version": "0.1.3",
     "pkgPath": "manga/src/en/weebcentral.js"
 }];
 
@@ -17,12 +17,20 @@ class DefaultExtension extends MProvider {
     constructor() {
         super();
     }
+    // Base éditable (miroir / changement de domaine)
+    _base() {
+        try {
+            const v = new SharedPreferences().get("base_url");
+            if (v) return v;
+        } catch (_) {}
+        return BASE_URL;
+    }
     getHeaders(url) {
-        return { "Referer": `${BASE_URL}/` };
+        return { "Referer": `${this._base()}/` };
     }
 
     async request(slug) {
-        var url = `${BASE_URL}${slug}`
+        var url = `${this._base()}${slug}`
         var res = await new Client().get(url);
         return new Document(res.body);
     }
@@ -47,6 +55,10 @@ class DefaultExtension extends MProvider {
         var sort = filters[0].values[filters[0].state].value
         var order = filters[1].values[filters[1].state].value
         var translation = filters[2].values[filters[2].state].value
+        try {
+            var prefTr = new SharedPreferences().get("translation");
+            if (prefTr && prefTr !== "auto") translation = prefTr;
+        } catch (_) {}
         var status = ""
         for (var filter of filters[3].state) {
             if (filter.state == true)
@@ -236,5 +248,29 @@ async getCustomList(listId, page) {
           }
           return this.getLatestUpdates(page);
       }
-  
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse de Weeb Central. Changez si le domaine est migré.",
+                    value: BASE_URL,
+                    dialogTitle: "URL du site",
+                    dialogMessage: `URL actuelle : ${BASE_URL}`
+                }
+            },
+            {
+                key: "translation",
+                listPreference: {
+                    title: "Type de traduction",
+                    summary: "Préférer les traductions officielles ou les fansubs dans les résultats de recherche.",
+                    valueIndex: 0,
+                    entries: ["Laisser le filtre par défaut", "Traductions officielles uniquement", "Fansubs uniquement"],
+                    entryValues: ["auto", "true", "false"]
+                }
+            }
+        ];
+    }
 }

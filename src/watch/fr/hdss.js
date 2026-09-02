@@ -23,19 +23,19 @@ class DefaultExtension extends MProvider {
     }
 
     get baseUrl() {
-        const pref = this.source.prefs?.find(p => p.key === "base_url");
+        const pref = new SharedPreferences().get("base_url");
         return (pref && pref.value) ? pref.value.replace(/\/$/, "") : BASE_URL.replace(/\/$/, "");
     }
 
     get userAgent() {
-        const pref = this.source.prefs?.find(p => p.key === "user_agent");
+        const pref = new SharedPreferences().get("user_agent");
         return (pref && pref.value) ? pref.value : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
     }
 
     _decode(s) { return String(s||"").replace(/&#0?39;/g,"'").replace(/&quot;/g,'"').replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&nbsp;/g," "); }
 
     get preferredQuality() {
-        const pref = this.source.prefs?.find(p => p.key === "preferred_quality");
+        const pref = new SharedPreferences().get("preferred_quality");
         return (pref && pref.value) ? pref.value : "AUTO";
     }
 

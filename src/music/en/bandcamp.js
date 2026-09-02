@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "iconUrl": "https://s4.bcbits.com/img/favicon/favicon-32x32.png",
       "typeSource": "single",
       "itemType": 3,
-      "version": "1.0.2",
+      "version": "1.0.3",
       "pkgPath": "music/en/bandcamp.js",
       "notes": "Bandcamp — Independent artists & albums",
       "isNsfw": false
@@ -29,7 +29,7 @@ const watchtowerSources = [{
               if (!nameEl || !link) return;
               items.push({ name: nameEl.text?.trim() || "", imageUrl: img?.attr("data-src") || img?.attr("src") || "", link: link.attr("href") || "" });
           });
-          return { list: items, hasNextPage: false };
+          return { list: items.slice(0, this._limit()), hasNextPage: false };
       }
 
       async getLatestList(page) { return this.getPopularList(page); }
@@ -46,7 +46,7 @@ const watchtowerSources = [{
               items.push({ name: nameEl.text?.trim() || "", imageUrl: img?.attr("src") || "", link: nameEl.attr("href") || "" });
           });
           const hasNext = !!doc.selectFirst(".next");
-          return { list: items, hasNextPage: hasNext };
+          return { list: items.slice(0, this._limit()), hasNextPage: hasNext };
       }
 
       async getDetail(url) {
@@ -65,5 +65,28 @@ const watchtowerSources = [{
           return { name, imageUrl: cover, description: desc, chapters: tracks.length ? tracks : [{ name: "Play", url }] };
       }
 
+      _limit() {
+          try {
+              const v = parseInt(new SharedPreferences().get("page_size"), 10);
+              if (v && v > 0) return v;
+          } catch (_) {}
+          return 20;
+      }
+
       async getVideoList(url) { return [{ quality: "Stream", url }]; }
+
+      getSourcePreferences() {
+          return [
+              {
+                  key: "page_size",
+                  listPreference: {
+                      title: "Résultats par page",
+                      summary: "Nombre de titres affichés par liste (découvertes, recherche)",
+                      valueIndex: 1,
+                      entries: ["10", "20 (recommandé)", "30", "50"],
+                      entryValues: ["10", "20", "30", "50"]
+                  }
+              }
+          ];
+      }
   }

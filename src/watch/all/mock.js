@@ -15,7 +15,7 @@ const watchtowerSources = [{
   "typeSource": "single",
   "isManga": false,
   "itemType": 1,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "dateFormat": "",
   "dateFormatLocale": "",
   "isNsfw": false,
@@ -147,9 +147,9 @@ async getCustomList(listId, page) {
     if (listId === "top15") {
       return { list: MOCK_RANKED.map(m => this._item(m)), hasNextPage: false };
     }
-    // Catalogue paginé (8 items / page)
+    // Catalogue paginé (items / page)
     if (listId === "catalogue") {
-      const perPage = 8;
+      const perPage = this._pageSize();
       const start = (page - 1) * perPage;
       const slice = MOCK_CATALOGUE.slice(start, start + perPage);
       return { list: slice.map(m => this._item(m)), hasNextPage: start + perPage < MOCK_CATALOGUE.length };
@@ -157,8 +157,16 @@ async getCustomList(listId, page) {
     return { list: [], hasNextPage: false };
   }
 
+  _pageSize() {
+    try {
+      const v = parseInt(new SharedPreferences().get("page_size"), 10);
+      if (v && v > 0) return v;
+    } catch (_) {}
+    return 10;
+  }
+
   async getPopular(page) {
-    const perPage = 10;
+    const perPage = this._pageSize();
     const all = [...MOCK_BANNERS, ...MOCK_TRENDING];
     const start = (page - 1) * perPage;
     return {
@@ -177,7 +185,7 @@ async getCustomList(listId, page) {
     const results = q
       ? all.filter(m => m.name.toLowerCase().includes(q))
       : all;
-    return { list: results.map(m => this._item(m)), hasNextPage: false };
+    return { list: results.slice(0, this._pageSize()).map(m => this._item(m)), hasNextPage: false };
   }
 
   async getDetail(url) {
@@ -215,6 +223,21 @@ async getCustomList(listId, page) {
       artist:      "",
       status:      1,
     };
+  }
+
+  getSourcePreferences() {
+    return [
+      {
+        key: "page_size",
+        listPreference: {
+          title: "Résultats par page",
+          summary: "Nombre d'éléments mock affichés par liste (catalogue, populaire, recherche)",
+          valueIndex: 1,
+          entries: ["5", "10 (recommandé)", "20", "30"],
+          entryValues: ["5", "10", "20", "30"]
+        }
+      }
+    ];
   }
 }
 

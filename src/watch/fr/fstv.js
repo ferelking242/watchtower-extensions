@@ -24,7 +24,7 @@ const watchtowerSources = [{
     "iconUrl": "https://fstv.rest/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.1.1",
     "pkgPath": "watch/fr/fstv.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -42,8 +42,7 @@ class DefaultExtension extends MProvider {
     constructor() { super(); }
 
     get baseUrl() {
-        const p = this.source.prefs ? this.source.prefs.find(x => x.key === "base_url") : null;
-        return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL.replace(/\/$/, "");
+        return new SharedPreferences().get("base_url") || BASE_URL.replace(/\/$/, "");
     }
 
     _hdrs(ref) {
@@ -434,5 +433,40 @@ async getCustomList(listId, page) {
         }
 
         return videos.length > 0 ? videos : [{ url: url, quality: "AUTO", headers: this._hdrs(url) }];
+    }
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site. Changez si le domaine est migré.",
+                    value: "https://fstv.rest",
+                    dialogTitle: "URL du site",
+                    dialogMessage: "URL actuelle : https://fstv.rest"
+                }
+            },
+            {
+                key: "default_quality",
+                listPreference: {
+                    title: "Qualité vidéo par défaut",
+                    summary: "La qualité sélectionnée est prioritaire. Si indisponible, la plus proche est choisie automatiquement.",
+                    valueIndex: 0,
+                    entries: ["Auto (recommandé)","1080p — Full HD","720p — HD","480p — SD","360p — Faible"],
+                    entryValues: ["AUTO","1080","720","480","360"]
+                }
+            },
+            {
+                key: "quality_fallback",
+                listPreference: {
+                    title: "Si la qualité n'est pas disponible",
+                    summary: "Choisir la qualité la plus proche si celle demandée n'existe pas",
+                    valueIndex: 1,
+                    entries: ["Prendre la qualité supérieure", "Prendre la qualité inférieure (recommandé)"],
+                    entryValues: ["higher", "lower"]
+                }
+            }
+        ];
     }
 }

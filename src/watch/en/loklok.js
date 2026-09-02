@@ -23,7 +23,7 @@ const watchtowerSources = [{
 class DefaultExtension extends MProvider {
 
     _pref(key, def) {
-        const p = this.source && this.source.prefs && this.source.prefs.find(x => x.key === key);
+        const p = new SharedPreferences().get(key);
         return (p && p.value !== undefined && p.value !== null && p.value !== "") ? p.value : def;
     }
     get prefQuality() { return this._pref("loklok_quality", "auto"); }

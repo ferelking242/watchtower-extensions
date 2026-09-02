@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.fyndfilms.com/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.1.3",
+      "version": "0.2.3",
       "pkgPath": "watch/fr/fyndfilms.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,
@@ -21,7 +21,7 @@ const watchtowerSources = [{
   const BASE_URL = "https://www.fyndfilms.com";
   class DefaultExtension extends MProvider {
       constructor(){super();}
-      get baseUrl(){const p=this.source.prefs?.find(x=>x.key==="base_url");return(p&&p.value)?p.value.replace(/\/$/,""):BASE_URL;}
+      get baseUrl() { return new SharedPreferences().get("base_url") || BASE_URL; }
       _hdrs(ref){return{"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36","Referer":ref||this.baseUrl+"/","Accept-Language":"fr-FR,fr;q=0.9"};}
       _decode(s){return String(s||"").replace(/&amp;/g,"&").replace(/&quot;/g,'"').replace(/&#039;/g,"'");}
       _parse(html){
@@ -60,4 +60,39 @@ const watchtowerSources = [{
       }
       getForYou(page){return this.getPopular(page);}
       getComments(url,page){return Promise.resolve([]);}
-  }
+  
+    getSourcePreferences() {
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site. Changez si le domaine est migré.",
+                    value: "https://www.fyndfilms.com",
+                    dialogTitle: "URL du site",
+                    dialogMessage: "URL actuelle : https://www.fyndfilms.com"
+                }
+            },
+            {
+                key: "default_quality",
+                listPreference: {
+                    title: "Qualité vidéo par défaut",
+                    summary: "La qualité sélectionnée est prioritaire. Si indisponible, la plus proche est choisie automatiquement.",
+                    valueIndex: 0,
+                    entries: ["Auto (recommandé)","1080p — Full HD","720p — HD","480p — SD","360p — Faible"],
+                    entryValues: ["AUTO","1080","720","480","360"]
+                }
+            },
+            {
+                key: "quality_fallback",
+                listPreference: {
+                    title: "Si la qualité n'est pas disponible",
+                    summary: "Choisir la qualité la plus proche si celle demandée n'existe pas",
+                    valueIndex: 1,
+                    entries: ["Prendre la qualité supérieure", "Prendre la qualité inférieure (recommandé)"],
+                    entryValues: ["higher", "lower"]
+                }
+            }
+        ];
+    }
+}

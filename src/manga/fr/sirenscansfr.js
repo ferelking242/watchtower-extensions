@@ -20,7 +20,20 @@ const watchtowerSources = [{
     const BASE_URL = "https://sirenscans.fr";
     class DefaultExtension extends MProvider {
         constructor(){super();}
-        get baseUrl(){const p=this.source.prefs?.find(x=>x.key==="base_url");return(p&&p.value)?p.value.replace(/\/$/,""):BASE_URL;}
+        get baseUrl() { return new SharedPreferences().get("base_url") || BASE_URL; }
+
+        getSourcePreferences() {
+            return [{
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site Siren Scans FR. Modifiez-la uniquement si le domaine a changé (migration ou miroir).",
+                    value: BASE_URL,
+                    dialogTitle: "URL du site",
+                    dialogMessage: "URL actuelle : " + BASE_URL
+                }
+            }];
+        }
         _hdrs(ref){return{"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36","Referer":ref||this.baseUrl+"/","Accept":"application/json"};}
         _map(c){return{link:this.baseUrl+"/series/"+(c.slug||c.id),imageUrl:c.cover||c.thumbnail||"",name:c.title||c.name||""};}
         async getPopular(page){const r=await new Client().get(this.baseUrl+"/api/query?page="+page+"&perPage=18&sort=popularity",this._hdrs());let list=[];try{const j=JSON.parse(r.body);list=(j.data||j.series||[]).map(c=>this._map(c));}catch(_){}return{list,hasNextPage:list.length>0};}

@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.neko-sama.fr/favicon.ico",
       "typeSource": "single",
       "itemType": 2,
-      "version": "0.1.3",
+      "version": "0.2.3",
       "pkgPath": "watch/fr/nekosama.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,
@@ -25,7 +25,7 @@ const watchtowerSources = [{
   class DefaultExtension extends MProvider {
       constructor() { super(); }
 
-      get baseUrl() { const p = this.source.prefs?.find(x => x.key === "base_url"); return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL; }
+      get baseUrl() { return new SharedPreferences().get("base_url") || BASE_URL; }
       _hdrs(ref) { return { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36", "Referer": ref || this.baseUrl + "/", "Accept-Language": "fr-FR,fr;q=0.9" }; }
       _decode(s) { return String(s||"").replace(/&amp;/g,"&").replace(/&quot;/g,'"').replace(/&#039;/g,"'"); }
 
@@ -83,12 +83,12 @@ const watchtowerSources = [{
       async getDetail(url) {
           const res = await new Client().get(url, this._hdrs(url));
           const html = res.body;
-          const nameM = html.match(/<h1[^>]*>([sS]*?)</h1>/);
+          const nameM = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
           const name  = nameM ? nameM[1].replace(/<[^>]+>/g,"").trim() : "";
           const imgM  = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i);
           const descM = html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i);
           const eps = []; const eSeen = {};
-          const eRe = /<a[^>]+href="([^"]+/episode/[^"]+)"[^>]*>([sS]{1,80}?)</a>/gi;
+          const eRe = /<a[^>]+href="([^"]+\/episode[^"]+)"[^>]*>([\s\S]{1,80}?)<\/a>/gi;
           let em;
           while ((em = eRe.exec(html)) !== null) {
               const epUrl = em[1].startsWith("http") ? em[1] : this.baseUrl + em[1];
@@ -118,5 +118,50 @@ const watchtowerSources = [{
 
       getForYou(page) { return this.getPopular(page); }
       getComments(url, page) { return Promise.resolve([]); }
-  }
+  
+    getSourcePreferences() {
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site. Changez si le domaine est migré.",
+                    value: "https://www.neko-sama.fr",
+                    dialogTitle: "URL du site",
+                    dialogMessage: "URL actuelle : https://www.neko-sama.fr"
+                }
+            },
+            {
+                key: "default_quality",
+                listPreference: {
+                    title: "Qualité vidéo par défaut",
+                    summary: "La qualité sélectionnée est prioritaire. Si indisponible, la plus proche est choisie automatiquement.",
+                    valueIndex: 0,
+                    entries: ["Auto (recommandé)","1080p — Full HD","720p — HD","480p — SD","360p — Faible"],
+                    entryValues: ["AUTO","1080","720","480","360"]
+                }
+            },
+            {
+                key: "quality_fallback",
+                listPreference: {
+                    title: "Si la qualité n'est pas disponible",
+                    summary: "Choisir la qualité la plus proche si celle demandée n'existe pas",
+                    valueIndex: 1,
+                    entries: ["Prendre la qualité supérieure", "Prendre la qualité inférieure (recommandé)"],
+                    entryValues: ["higher", "lower"]
+                }
+            },
+            {
+                key: "sub_or_dub",
+                listPreference: {
+                    title: "Préférence audio",
+                    summary: "Choisir entre version sous-titrée (Sub) ou doublée (Dub)",
+                    valueIndex: 0,
+                    entries: ["Sous-titré (Sub) — recommandé", "Doublé (Dub)", "Les deux (Sub puis Dub)"],
+                    entryValues: ["sub", "dub", "both"]
+                }
+            }
+        ];
+    }
+}
   

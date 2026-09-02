@@ -17,7 +17,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 7,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "baseUrl": "https://opensubtitles.com",
     "apiUrl": "https://api.opensubtitles.com/api/v1",
     "iconUrl": "https://www.opensubtitles.com/favicon.ico",
@@ -53,16 +53,23 @@ class DefaultExtension extends MProvider {
 
     _pref(key, fallback) {
         try {
-            if (this.source && this.source.prefs) {
-                for (var i = 0; i < this.source.prefs.length; i++) {
-                    if (this.source.prefs[i].key === key) {
-                        var v = this.source.prefs[i].value;
-                        return (v !== undefined && v !== null && v !== "") ? String(v) : fallback;
-                    }
-                }
-            }
+            var v = new SharedPreferences().get(key);
+            return (v !== undefined && v !== null && v !== "") ? String(v) : fallback;
         } catch (_) {}
         return fallback;
+    }
+
+    getSourcePreferences() {
+        return [{
+            key: "os_api_key",
+            editTextPreference: {
+                title: "Clé API OpenSubtitles",
+                summary: "Clé gratuite à créer sur opensubtitles.com (section dev). Requise pour la recherche et le téléchargement des sous-titres (5 téléchargements/jour en gratuit).",
+                value: "",
+                dialogTitle: "Clé API OpenSubtitles",
+                dialogMessage: "Collez votre clé API (api.opensubtitles.com — compte gratuit requis)."
+            }
+        }];
     }
 
     _h(extra) {

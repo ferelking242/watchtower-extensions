@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.6.0",
+    "version": "3.6.1",
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,
@@ -269,15 +269,12 @@ class DefaultExtension extends MProvider {
 
     // ── Préférences ───────────────────────────────────────────────
     _pref(key, fallback) {
+        // Lit les préférences via le pont SharedPreferences de Watchtower.
+        // (L'ancien code lisait this.source.prefs, jamais injecté par l'app :
+        //  toutes les préférences restaient donc à leur valeur par défaut.)
         try {
-            if (this.source && this.source.prefs) {
-                for (var i = 0; i < this.source.prefs.length; i++) {
-                    if (this.source.prefs[i].key === key) {
-                        var v = this.source.prefs[i].value;
-                        return (v !== undefined && v !== null && v !== "") ? String(v) : fallback;
-                    }
-                }
-            }
+            var v = new SharedPreferences().get(key);
+            return (v !== undefined && v !== null && v !== "") ? String(v) : fallback;
         } catch (_) {}
         return fallback;
     }
@@ -1589,7 +1586,7 @@ class DefaultExtension extends MProvider {
     }
 
     // ── Paramètres utilisateur ─────────────────────────────────────
-    setupPreferences() {
+    getSourcePreferences() {
         return [
             // ── COMPTE MOVIEBOX ────────────────────────────────────────
             // Note : mb_account_header supprimé — editTextPreference vide
@@ -1652,7 +1649,7 @@ class DefaultExtension extends MProvider {
             // ── FAMILY MODE ────────────────────────────────────────────
             {
                 key: "mb_family_mode",
-                switchPreference: {
+                switchPreferenceCompat: {
                     title:   "Family Mode (contr\u00F4le parental)",
                     summary: "Envoie X-Family-Mode: 1 — le serveur filtre le contenu 18+ et adulte.",
                     value:   false
@@ -1751,7 +1748,7 @@ class DefaultExtension extends MProvider {
             // ── SOUS-TITRES BILINGUES ──────────────────────────────────
             {
                 key: "mb_bilingual",
-                switchPreference: {
+                switchPreferenceCompat: {
                     title:   "Sous-titres bilingues",
                     summary: "Affiche 2 langues de sous-titres superpos\u00E9es sur une seule piste",
                     value:   false

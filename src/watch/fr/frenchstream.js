@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "iconUrl": "https://french-stream.one/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.6.1",
+    "version": "1.0.0",
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -43,14 +43,10 @@ class DefaultExtension extends MProvider {
     constructor() { super(); }
 
     get baseUrl() {
-        const p = this.source.prefs ? this.source.prefs.find(x => x.key === "base_url") : null;
-        return (p && p.value) ? p.value.replace(/\/$/, "") : BASE_URL.replace(/\/$/, "");
+        return new SharedPreferences().get("base_url") || BASE_URL.replace(/\/$/, "");
     }
 
-    _getPref(key) {
-        const p = this.source.prefs ? this.source.prefs.find(x => x.key === key) : null;
-        return (p && p.value) ? p.value : null;
-    }
+    _getPref(key) { return new SharedPreferences().get(key) || null; }
 
     async _ensureLogin() {
         const username = this._getPref("username");
@@ -744,5 +740,80 @@ async getCustomList(listId, page) {
         }
 
         return videos.length > 0 ? videos : [{ url: url, quality: "AUTO", headers: this._hdrs(url) }];
+    }
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site French-Stream. Changez si le domaine est migré.",
+                    value: BASE_URL,
+                    dialogTitle: "URL du site",
+                    dialogMessage: `URL actuelle : ${BASE_URL}`
+                }
+            },
+            {
+                key: "preferred_lang",
+                listPreference: {
+                    title: "Langue préférée",
+                    summary: "Langue prioritaire quand plusieurs versions sont disponibles (VF, VOSTFR, VO). La langue choisie est affichée en premier.",
+                    valueIndex: 0,
+                    entries: ["VF — Français (recommandé)", "VOSTFR — VOST en Français", "VO — Version Originale", "VFQ — Français de qualité", "TrueFrench — Doublage français officiel", "Auto (toutes les langues)"],
+                    entryValues: ["VF", "VOSTFR", "VO", "VFQ", "TrueFrench", "AUTO"]
+                }
+            },
+            {
+                key: "default_quality",
+                listPreference: {
+                    title: "Qualité vidéo par défaut",
+                    summary: "La qualité sélectionnée est prioritaire. Si elle n'est pas disponible, la qualité la plus proche est choisie automatiquement.",
+                    valueIndex: 0,
+                    entries: ["Auto (recommandé)", "1080p — Full HD", "720p — HD", "480p — SD", "360p — Faible"],
+                    entryValues: ["AUTO", "1080", "720", "480", "360"]
+                }
+            },
+            {
+                key: "content_filter",
+                listPreference: {
+                    title: "Type de contenu",
+                    summary: "Filtrer l'accueil et les listes par type de contenu",
+                    valueIndex: 0,
+                    entries: ["Tout (films + séries)", "Films uniquement", "Séries uniquement", "Animes uniquement"],
+                    entryValues: ["all", "film", "serie", "anime"]
+                }
+            },
+            {
+                key: "username",
+                editTextPreference: {
+                    title: "Nom d'utilisateur",
+                    summary: "Identifiant de votre compte French-Stream. Laisser vide si pas de compte.",
+                    value: "",
+                    dialogTitle: "Identifiant French-Stream",
+                    dialogMessage: "Saisissez votre nom d'utilisateur"
+                }
+            },
+            {
+                key: "password",
+                editTextPreference: {
+                    title: "Mot de passe",
+                    summary: "Mot de passe de votre compte French-Stream. Laisser vide si pas de compte.",
+                    value: "",
+                    dialogTitle: "Mot de passe French-Stream",
+                    dialogMessage: "Saisissez votre mot de passe"
+                }
+            },
+            {
+                key: "auto_login",
+                listPreference: {
+                    title: "Connexion automatique",
+                    summary: "Se connecter automatiquement au démarrage si vos identifiants sont renseignés",
+                    valueIndex: 0,
+                    entries: ["Activé (recommandé)", "Désactivé"],
+                    entryValues: ["true", "false"]
+                }
+            }
+        ];
     }
 }

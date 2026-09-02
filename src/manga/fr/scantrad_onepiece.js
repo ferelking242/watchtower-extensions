@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Scantrad One Piece","lang":"fr","baseUrl":"https://scan-op.com","iconUrl":"https://scan-op.com/favicon.ico","typeSource":"single","itemType":0,"version":"1.0.0","pkgPath":"manga/src/fr/scantrad_onepiece.js","notes":"Scantrad One Piece — scanlation officieuse One Piece FR"}];
+const watchtowerSources = [{"name":"Scantrad One Piece","lang":"fr","baseUrl":"https://scan-op.com","iconUrl":"https://scan-op.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/fr/scantrad_onepiece.js","notes":"Scantrad One Piece — scanlation officieuse One Piece FR"}];
 const BASE_URL = "https://scan-op.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }
@@ -9,5 +9,50 @@ class DefaultExtension extends MProvider {
     async search(q,p) { return this.getPopular(p); }
     async getDetail(url) { const u=url.startsWith("http")?url:`${BASE_URL}${url}`;const r=await new Client().get(u,this.getHeaders());const h=r.body;const nm=h.match(/<h1[^>]*>([^<]+)<\/h1>/);const n=nm?nm[1].trim():"";const ch=[];const cr=/href="([^"]+)"[\s\S]*?chapter[\s\S]*?([\d.]+)/gi;let cm;while((cm=cr.exec(h))!==null){ch.push({name:`Chapitre ${cm[2]}`,url:cm[1]});}return{name:n,description:"",imageUrl:"",genre:["One Piece","Shounen"],status:0,chapters:ch}; }
     async getPageList(url) { const u=url.startsWith("http")?url:`${BASE_URL}${url}`;const r=await new Client().get(u,this.getHeaders());const p=[];const re=/src="([^"]+\.(?:jpg|jpeg|png|webp)[^"]*)"/gi;let m;const h=r.body;while((m=re.exec(h))!==null){if(!m[1].includes("logo")&&!m[1].includes("icon"))p.push(m[1]);}return p.map(x=>({url:x,headers:this.getHeaders()})); }
-    getFilterList() { return []; } getSourcePreferences() { return []; }
+    getFilterList() { return []; }
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site de scanlation. Changez si le domaine est migré.",
+                    value: BASE_URL,
+                    dialogTitle: "URL du site",
+                    dialogMessage: "URL actuelle : " + BASE_URL
+                }
+            },
+            {
+                key: "preferred_lang",
+                listPreference: {
+                    title: "Langue préférée des chapitres",
+                    summary: "Quand des traductions en plusieurs langues sont disponibles, afficher prioritairement celle-ci",
+                    valueIndex: 0,
+                    entries: ["Français (recommandé)", "Anglais", "Espagnol", "Automatique (toutes les langues)"],
+                    entryValues: ["fr", "en", "es", "auto"]
+                }
+            },
+            {
+                key: "chapter_order",
+                listPreference: {
+                    title: "Ordre des chapitres",
+                    summary: "Afficher les chapitres du plus récent au plus ancien, ou l'inverse",
+                    valueIndex: 0,
+                    entries: ["Plus récents d'abord (recommandé)", "Plus anciens d'abord"],
+                    entryValues: ["newest", "oldest"]
+                }
+            },
+            {
+                key: "image_quality",
+                listPreference: {
+                    title: "Qualité des images",
+                    summary: "Qualité d'affichage des pages de manga. La haute qualité consomme plus de données.",
+                    valueIndex: 0,
+                    entries: ["Haute qualité (recommandé)", "Qualité moyenne", "Faible qualité"],
+                    entryValues: ["high", "medium", "low"]
+                }
+            }
+        ];
+    }
 }

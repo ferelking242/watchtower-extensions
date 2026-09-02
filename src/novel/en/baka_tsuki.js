@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.baka-tsuki.org/favicon.ico",
     "typeSource": "single",
     "itemType": 2,
-    "version": "1.0.0",
+    "version": "1.1.0",
     "pkgPath": "novel/src/en/baka_tsuki.js",
     "notes": "Baka-Tsuki — plus grande source TL communautaire light novel"
 }];
@@ -84,5 +84,39 @@ class DefaultExtension extends MProvider {
     }
 
     getFilterList() { return []; }
-    getSourcePreferences() { return []; }
+
+    getSourcePreferences() {
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site. Changez si le domaine est migré.",
+                    value: BASE_URL,
+                    dialogTitle: "URL du site",
+                    dialogMessage: "URL actuelle : " + BASE_URL
+                }
+            },
+            {
+                key: "chapter_order",
+                listPreference: {
+                    title: "Ordre des chapitres",
+                    summary: "Afficher les chapitres du plus récent au plus ancien, ou l'inverse",
+                    valueIndex: 0,
+                    entries: ["Plus récents d'abord (recommandé)", "Plus anciens d'abord"],
+                    entryValues: ["newest", "oldest"]
+                }
+            },
+            {
+                key: "image_quality",
+                listPreference: {
+                    title: "Qualité des images",
+                    summary: "Qualité d'affichage des pages de manga. La haute qualité consomme plus de données.",
+                    valueIndex: 0,
+                    entries: ["Haute qualité (recommandé)", "Qualité moyenne", "Faible qualité (économie de données)"],
+                    entryValues: ["high", "medium", "low"]
+                }
+            }
+        ];
+    }
 }

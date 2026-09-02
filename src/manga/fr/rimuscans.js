@@ -20,7 +20,20 @@ const watchtowerSources = [{
     const BASE_URL = "https://rimuscan.fr";
     class DefaultExtension extends MProvider {
         constructor(){super();}
-        get baseUrl(){const p=this.source.prefs?.find(x=>x.key==="base_url");return(p&&p.value)?p.value.replace(/\/$/,""):BASE_URL;}
+        get baseUrl() { return new SharedPreferences().get("base_url") || BASE_URL; }
+
+        getSourcePreferences() {
+            return [{
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site Rimu Scans. Modifiez-la uniquement si le domaine a changé (migration ou miroir).",
+                    value: BASE_URL,
+                    dialogTitle: "URL du site",
+                    dialogMessage: "URL actuelle : " + BASE_URL
+                }
+            }];
+        }
         _hdrs(ref){return{"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124 Safari/537.36","Referer":ref||this.baseUrl+"/","Accept":"application/json"};}
         _map(s){return{link:this.baseUrl+"/series/"+s.slug,imageUrl:s.cover_url?(s.cover_url.startsWith("http")?s.cover_url:this.baseUrl+s.cover_url):"",name:s.title||""};}
         async getPopular(page){const r=await new Client().get(this.baseUrl+"/api/series?page="+page+"&sort=views",this._hdrs());let list=[];try{list=(JSON.parse(r.body).series||[]).map(s=>this._map(s));}catch(_){}return{list,hasNextPage:list.length>0};}

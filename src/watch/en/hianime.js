@@ -6,9 +6,12 @@ const watchtowerSources = [{
     "iconUrl": "https://hianime.to/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.1.0",
     "pkgPath": "anime/src/en/hianime.js",
-    "notes": "HiAnime — successeur d'AniWave, grand catalogue anime"
+    "notes": "HiAnime — successeur d'AniWave, grand catalogue anime",
+    "editableBaseUrl": true,
+    "videoQualities": ["AUTO", "1080p", "720p", "480p", "360p"],
+    "subCategories": ["sub", "dub"]
 }];
 
 const BASE_URL = "https://hianime.to";
@@ -16,16 +19,52 @@ const BASE_URL = "https://hianime.to";
 class DefaultExtension extends MProvider {
     constructor() { super(); }
 
+    get _pref() {
+        return {
+            baseUrl:    new SharedPreferences().get("base_url") || BASE_URL,
+            quality:    new SharedPreferences().get("default_quality") || "AUTO",
+            subOrDub:   new SharedPreferences().get("sub_or_dub") || "sub",
+            server:     new SharedPreferences().get("server_preference") || "vidstreaming",
+            fallback:   new SharedPreferences().get("quality_fallback") || "lower",
+        };
+    }
+
     getBaseUrl() {
-        return new SharedPreferences().get("hianime_base_url") || BASE_URL;
+        return this._pref.baseUrl;
     }
 
     getHeaders() {
         return {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
             "Referer": `${this.getBaseUrl()}/`,
             "X-Requested-With": "XMLHttpRequest"
         };
+    }
+
+    _pickQuality(videos) {
+        const pref = this._pref.quality;
+        const fb   = this._pref.fallback;
+        if (pref === "AUTO" || videos.length === 0) return videos;
+        const idx = videos.findIndex(v => (v.quality || "").includes(pref));
+        if (idx >= 0) { const [match] = videos.splice(idx, 1); return [match, ...videos]; }
+        const nums = videos.map(v => parseInt((v.quality || "0")) || 0);
+        const prefNum = parseInt(pref) || 0;
+        if (fb === "higher") {
+            const hi = nums.findIndex(n => n >= prefNum);
+            if (hi >= 0) { const [m] = videos.splice(hi, 1); return [m, ...videos]; }
+        } else {
+            for (let i = nums.length - 1; i >= 0; i--) {
+                if (nums[i] <= prefNum && nums[i] > 0) { const [m] = videos.splice(i, 1); return [m, ...videos]; }
+            }
+        }
+        return videos;
+    }
+
+    _sortServers(servers) {
+        const pref = this._pref.server;
+        const idx = servers.findIndex(s => (s.name || "").toLowerCase().includes(pref));
+        if (idx > 0) { const [m] = servers.splice(idx, 1); servers.unshift(m); }
+        return servers;
     }
 
     parseAnimeList(html) {
@@ -104,21 +143,22 @@ class DefaultExtension extends MProvider {
         const epIdM = url.match(/ep=(\d+)/);
         if (!epIdM) return [];
         const epId = epIdM[1];
-
+        const pref = this._pref;
         const videos = [];
         try {
             const serverRes = await new Client().get(`${this.getBaseUrl()}/ajax/v2/episode/servers?episodeId=${epId}`, this.getHeaders());
             const serverData = JSON.parse(serverRes.body);
             const serverHtml = serverData.html || "";
 
-            const servers = [];
+            let servers = [];
             const sRe = /data-id="(\d+)"[\s\S]*?>([^<]+)<\/li>/g;
             let sm;
             while ((sm = sRe.exec(serverHtml)) !== null) {
                 servers.push({ id: sm[1], name: sm[2].trim() });
             }
+            servers = this._sortServers(servers);
 
-            for (const server of servers.slice(0, 4)) {
+            for (const server of servers.slice(0, 5)) {
                 try {
                     const srcRes = await new Client().get(`${this.getBaseUrl()}/ajax/v2/episode/sources?id=${server.id}`, this.getHeaders());
                     const srcData = JSON.parse(srcRes.body);
@@ -129,21 +169,63 @@ class DefaultExtension extends MProvider {
             }
         } catch (e) {}
 
-        return videos;
+        return this._pickQuality(videos);
     }
 
     getFilterList() { return []; }
 
     getSourcePreferences() {
-        return [{
-            key: "hianime_base_url",
-            editTextPreference: {
-                title: "Override Base URL",
-                summary: "Change si le domaine change",
-                value: BASE_URL,
-                dialogTitle: "Override Base URL",
-                dialogMessage: `Défaut: ${BASE_URL}`
+        return [
+            {
+                key: "base_url",
+                editTextPreference: {
+                    title: "URL du site",
+                    summary: "Adresse du site HiAnime. Change automatiquement si le domaine est migré.",
+                    value: BASE_URL,
+                    dialogTitle: "URL du site",
+                    dialogMessage: `URL actuelle : ${BASE_URL}`
+                }
+            },
+            {
+                key: "default_quality",
+                listPreference: {
+                    title: "Qualité vidéo par défaut",
+                    summary: "La qualité sélectionnée est prioritaire. Si elle n'est pas disponible, la qualité la plus proche est choisie automatiquement.",
+                    valueIndex: 0,
+                    entries: ["Auto (recommandé)", "1080p — Full HD", "720p — HD", "480p — SD", "360p — Faible"],
+                    entryValues: ["AUTO", "1080", "720", "480", "360"]
+                }
+            },
+            {
+                key: "quality_fallback",
+                listPreference: {
+                    title: "Si la qualité n'est pas disponible",
+                    summary: "Choisir la qualité la plus proche si la qualité demandée n'existe pas",
+                    valueIndex: 1,
+                    entries: ["Prendre la qualité supérieure", "Prendre la qualité inférieure (recommandé)"],
+                    entryValues: ["higher", "lower"]
+                }
+            },
+            {
+                key: "sub_or_dub",
+                listPreference: {
+                    title: "Préférence audio",
+                    summary: "Choisir entre version sous-titrée (sub) ou doublée (dub) quand les deux sont disponibles",
+                    valueIndex: 0,
+                    entries: ["Sous-titré (Sub) — recommandé", "Doublé (Dub)", "Les deux (Sub puis Dub)"],
+                    entryValues: ["sub", "dub", "both"]
+                }
+            },
+            {
+                key: "server_preference",
+                listPreference: {
+                    title: "Serveur prioritaire",
+                    summary: "Le serveur choisi est chargé en premier. Les autres serveurs sont utilisés en fallback si celui-ci échoue.",
+                    valueIndex: 0,
+                    entries: ["VidStreaming (recommandé)", "MegaCloud", "Meownstream", "StreamTape", "Auto (tous les serveurs)"],
+                    entryValues: ["vidstreaming", "megacloud", "meownstream", "streamtape", "auto"]
+                }
             }
-        }];
+        ];
     }
 }
