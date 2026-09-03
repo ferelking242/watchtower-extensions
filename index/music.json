@@ -196,5 +196,123 @@
     "notes": "YouTube Music — Stream music via YouTube",
     "requiresAccount": false,
     "hasDRM": false
+  },
+  {
+    "id": 3001,
+    "name": "Spotify",
+    "iconUrl": "https://cdn.simpleicons.org/spotify",
+    "lang": "all",
+    "version": "0.2.2",
+    "itemType": 3,
+    "sourceCodeLanguage": 1,
+    "requiresAccount": true,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "supportsComments": false,
+    "subCategories": [
+      "Metadata Provider",
+      "Audio Provider"
+    ],
+    "description": "Métadonnées complètes (titres, albums, artistes, playlists) et lecture audio via l'API Spotify.",
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/spotify.smplug"
+  },
+  {
+    "id": 3002,
+    "name": "FLAC Music",
+    "iconUrl": "https://cdn.simpleicons.org/flac",
+    "lang": "all",
+    "version": "1.0.0",
+    "itemType": 3,
+    "sourceCodeLanguage": 1,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "supportsComments": false,
+    "subCategories": [
+      "Audio Provider"
+    ],
+    "description": "Lecture de fichiers locaux et distants en qualité lossless FLAC. Aucun compte requis.",
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/flac.smplug"
+  },
+  {
+    "id": 3003,
+    "name": "Apple Music",
+    "iconUrl": "https://cdn.simpleicons.org/applemusic",
+    "lang": "all",
+    "version": "0.1.3",
+    "itemType": 3,
+    "sourceCodeLanguage": 1,
+    "requiresAccount": true,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "supportsComments": false,
+    "subCategories": [
+      "Metadata Provider",
+      "Audio Provider"
+    ],
+    "description": "Catalogue complet via l'API MusicKit. Métadonnées et lecture audio pour les abonnés Apple Music.",
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/applemusic.smplug"
+  },
+  {
+    "id": 3004,
+    "name": "Deezer",
+    "iconUrl": "https://cdn.simpleicons.org/deezer",
+    "lang": "all",
+    "version": "0.1.3",
+    "itemType": 3,
+    "sourceCodeLanguage": 1,
+    "requiresAccount": true,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "supportsComments": false,
+    "subCategories": [
+      "Metadata Provider",
+      "Audio Provider"
+    ],
+    "description": "Accès au catalogue mondial via l'API Deezer. Métadonnées complètes et streaming haute qualité.",
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/deezer.smplug"
+  },
+  {
+    "id": 3005,
+    "name": "YouTube Music",
+    "iconUrl": "https://cdn.simpleicons.org/youtubemusic",
+    "lang": "all",
+    "version": "0.1.0",
+    "itemType": 3,
+    "sourceCodeLanguage": 1,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "supportsComments": false,
+    "subCategories": [
+      "Metadata Provider",
+      "Audio Provider"
+    ],
+    "description": "Accès gratuit au catalogue YouTube Music. Aucun compte requis pour la plupart des fonctionnalités.",
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/youtubemusic.smplug"
+  },
+  {
+    "id": 3006,
+    "name": "MusicBrainz",
+    "iconUrl": "https://cdn.simpleicons.org/musicbrainz",
+    "lang": "all",
+    "version": "1.0.0",
+    "itemType": 3,
+    "sourceCodeLanguage": 1,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "isAggregator": false,
+    "paywall": "free",
+    "supportsComments": false,
+    "subCategories": [
+      "Metadata Provider"
+    ],
+    "description": "Base de données musicale open source. Métadonnées enrichies, ISRC, et scrobbling via ListenBrainz.",
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/musicbrainz.smplug"
   }
 ]
