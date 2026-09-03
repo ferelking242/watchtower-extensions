@@ -1,0 +1,12 @@
+{
+  "name": "watchtower-extensions",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Watchtower extensions repository — CI validation scripts",
+  "scripts": {
+    "validate": "node tools/validate-extensions.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
