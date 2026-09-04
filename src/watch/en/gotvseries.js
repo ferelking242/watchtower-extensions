@@ -26,7 +26,7 @@ const watchtowerSources = [{
     "iconUrl": "https://gotvseries.top/images/favicon.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.6",
+    "version": "0.1.7",
     "pkgPath": "watch/en/gotvseries.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -91,7 +91,7 @@ class DefaultExtension extends MProvider {
     _parseCards(html) {
         var items = [];
         var seen = {};
-        // Two regex patterns to handle both attribute orders in <a>
+        // Legacy anchor-based cards
         var patterns = [
             /<a\s[^>]*href="(\/tv\/(\d+)-[^"\/]*)"[^>]*class="poster-item"[^>]*>[\s\S]*?<img[^>]+src="([^"]+)"[^>]*alt="([^"]*)"[^>]*>/gi,
             /<a\s[^>]*class="poster-item"[^>]*href="(\/tv\/(\d+)-[^"\/]*)"[^>]*>[\s\S]*?<img[^>]+src="([^"]+)"[^>]*alt="([^"]*)"[^>]*>/gi
@@ -106,6 +106,32 @@ class DefaultExtension extends MProvider {
                 items.push({
                     name: this._decode(m[4]) || "Unknown",
                     imageUrl: m[3],
+                    link: link,
+                    description: "",
+                    genre: [],
+                    author: "",
+                    artist: "",
+                    status: 0,
+                    isHentai: false
+                });
+            }
+        }
+        // Current HDToday-style cards: <div class="card-inner" onclick="window.location.href='/tv/...'">
+        if (items.length === 0) {
+            var parts = html.split('<div class="card">');
+            for (var k = 1; k < parts.length; k++) {
+                var seg = parts[k];
+                var hrefM = seg.match(/window\.location\.href='([^']+)'/);
+                if (!hrefM) continue;
+                var imgM = seg.match(/<img[^>]+src="([^"]+)"[^>]*alt="([^"]*)"/);
+                var titleM = seg.match(/class="[^"]*static-title[^"]*"[^>]*>([^<]+)</);
+                var rawLink = hrefM[1];
+                var link = rawLink.indexOf("http") === 0 ? rawLink : this.baseUrl + rawLink;
+                if (seen[link]) continue;
+                seen[link] = true;
+                items.push({
+                    name: this._decode((titleM ? titleM[1] : (imgM ? imgM[2] : "")) || "Unknown"),
+                    imageUrl: imgM ? imgM[1] : "",
                     link: link,
                     description: "",
                     genre: [],
@@ -192,6 +218,8 @@ class DefaultExtension extends MProvider {
                   || /<h1[^>]*>([^<]+)<\/h1>/i.exec(html)
                   || /<title>([^<|–\-]+)/.exec(html);
         var title = titleM ? this._decode(titleM[1]) : this._decode(slug);
+        // Title tag looks like "<Name> on HDToday, Stream Now" — strip the trailer
+        title = title.replace(/\s+on\s+HDToday.*$/i, "").trim();
 
         // ── Poster — prefer w500, fallback w342 ───────────────────────────────
         var imgM = /src="(https:\/\/image\.tmdb\.org\/t\/p\/(?:w500|w342)\/[^"]+)"/.exec(html);

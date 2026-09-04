@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.github.com/Swakshan/mangayomi-swak-extensions/main/javascript/icon/all.kisskh.jpg",
     "typeSource": "multi",
     "itemType": 1,
-    "version": "0.1.8",
+    "version": "0.1.9",
     "pkgPath": "anime/src/all/kisskh.js"
 }];
 
@@ -30,7 +30,7 @@ class DefaultExtension extends MProvider {
     }
 
     getBaseUrl() {
-        return this.getPreference("kisskh_base_url");
+        return this.getPreference("kisskh_base_url") || BASE_URL;
     }
 
     async request(url) {
