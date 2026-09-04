@@ -1,0 +1,2740 @@
+{
+ "type": "watch",
+ "filter": "SFW",
+ "results": [
+  {
+   "name": "Watch Mock",
+   "baseUrl": "https://image.tmdb.org",
+   "isNsfw": false,
+   "file": "src/watch/all/mock.js",
+   "steps": {},
+   "loadError": "construct: Cannot set properties of undefined (setting 'headers')"
+  },
+  {
+   "name": "AniWorld",
+   "baseUrl": "https://aniworld.to",
+   "isNsfw": false,
+   "file": "src/watch/de/aniworld.js",
+   "steps": {},
+   "loadError": "streamWishExtractor is not defined"
+  },
+  {
+   "name": "SerienStream",
+   "baseUrl": "https://s.to",
+   "isNsfw": false,
+   "file": "src/watch/de/serienstream.js",
+   "steps": {},
+   "loadError": "streamWishExtractor is not defined"
+  },
+  {
+   "name": "Google",
+   "baseUrl": "https://www.google.com",
+   "isNsfw": false,
+   "file": "src/watch/all/google.js",
+   "steps": {
+    "popular": {
+     "count": 1,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Ouvrir Google",
+       "u": "https://www.google.com"
+      }
+     ]
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "AniChan",
+   "baseUrl": "https://anichin.one",
+   "isNsfw": false,
+   "file": "src/watch/en/anichan.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Anikoto",
+   "baseUrl": "https://anikoto.to",
+   "isNsfw": false,
+   "file": "src/watch/en/anikoto.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "AnimeFlix",
+   "baseUrl": "https://animeflix.dev",
+   "isNsfw": false,
+   "file": "src/watch/en/animeflix.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "AllAnime",
+   "baseUrl": "https://allmanga.to",
+   "isNsfw": false,
+   "file": "src/watch/en/allanime.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "AnimeKai",
+   "baseUrl": "https://animekai.to",
+   "isNsfw": false,
+   "file": "src/watch/en/animekai.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "AnimeHeaven",
+   "baseUrl": "https://animeheaven.me",
+   "isNsfw": false,
+   "file": "src/watch/en/animeheaven.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "AnimeSuge",
+   "baseUrl": "https://animesuge.to",
+   "isNsfw": false,
+   "file": "src/watch/en/animesuge.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "NetflixMirror",
+   "baseUrl": "https://www.netflixmirror.com",
+   "isNsfw": false,
+   "file": "src/watch/all/netflixmirror.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "CrunchyList (CR Mirror)",
+   "baseUrl": "https://crunchy.metaoe.live",
+   "isNsfw": false,
+   "file": "src/watch/en/crunchyrollmirror.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Torrentio",
+   "baseUrl": "https://torrentio.strem.fun",
+   "isNsfw": false,
+   "file": "src/watch/all/torrentio.js",
+   "steps": {
+    "popular": {
+     "count": 50,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "The Whisper Man",
+       "u": "meta:movie:tt11561116"
+      },
+      {
+       "n": "Obsession",
+       "u": "meta:movie:tt37287335"
+      }
+     ]
+    },
+    "latest": {
+     "count": 49,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "The Secret Woman",
+       "u": "meta:movie:tt37275992"
+      },
+      {
+       "n": "Tom & Cherry",
+       "u": "meta:movie:tt43718175"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "AnimeZZ",
+   "baseUrl": "https://animeyy.com",
+   "isNsfw": false,
+   "file": "src/watch/en/animezz.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "AnimeGG",
+   "baseUrl": "https://www.animegg.org",
+   "isNsfw": false,
+   "file": "src/watch/en/animegg.js",
+   "steps": {
+    "popular": {
+     "count": 55,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "One Piece"
+      },
+      {
+       "n": "Naruto Shippuden"
+      }
+     ]
+    },
+    "latest": {
+     "count": 25,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Suterare Seijo no Isekai Gohan Tabi: Kakure Skill de Camping Car wo Shoukan shimashita"
+      },
+      {
+       "n": "Black Torch"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "GoGoAnime",
+   "baseUrl": "https://gogoanimehd.io",
+   "isNsfw": false,
+   "file": "src/watch/en/gogoanime_en.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "AnimePahe",
+   "baseUrl": "https://animepahe.ru",
+   "isNsfw": false,
+   "file": "src/watch/en/animepahe.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "AnimeParadise",
+   "baseUrl": "https://animeparadise.moe",
+   "isNsfw": false,
+   "file": "src/watch/en/animeparadise.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "KickAssAnime",
+   "baseUrl": "https://kaa.lt",
+   "isNsfw": false,
+   "file": "src/watch/en/kickassanime.js",
+   "steps": {
+    "popular": {
+     "error": "Failed to parse URL from null/api/show/popular?page=1"
+    },
+    "latest": {
+     "error": "Failed to parse URL from null/api/show/recent?type=all&page=1"
+    }
+   }
+  },
+  {
+   "name": "FlixGaze",
+   "baseUrl": "https://www.flixgaze.com",
+   "isNsfw": false,
+   "file": "src/watch/en/flixgaze.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "GoTVSeries",
+   "baseUrl": "https://gotvseries.top",
+   "isNsfw": false,
+   "file": "src/watch/en/gotvseries.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Gogoanime",
+   "baseUrl": "https://gogoanime.fi",
+   "isNsfw": false,
+   "file": "src/watch/en/gogoanime.js",
+   "steps": {
+    "popular": {
+     "count": 30,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Kaiju Girl Caramelise",
+       "u": "https://gogoanime.fi/series/kaiju-girl-caramelise/"
+      },
+      {
+       "n": "The Exiled Heavy Knight Knows How to Game the System",
+       "u": "https://gogoanime.fi/series/the-exiled-heavy-knight-knows-how-to-game-the-system/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 30,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Kaiju Girl Caramelise",
+       "u": "https://gogoanime.fi/series/kaiju-girl-caramelise/"
+      },
+      {
+       "n": "The Exiled Heavy Knight Knows How to Game the System",
+       "u": "https://gogoanime.fi/series/the-exiled-heavy-knight-knows-how-to-game-the-system/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "LokLok / MovieBox",
+   "baseUrl": "https://lok-lok.cc",
+   "isNsfw": false,
+   "file": "src/watch/en/loklok.js",
+   "steps": {
+    "popular": {
+     "count": 24,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Beauty in Black",
+       "u": "{\"id\":\"5904172458474619680\",\"dp\":\"beauty-in-black-E6NEe5Ha927\"}"
+      },
+      {
+       "n": "Reacher",
+       "u": "{\"id\":\"3620534210064175096\",\"dp\":\"reacher-e1nw56h5sj4\"}"
+      }
+     ]
+    },
+    "latest": {
+     "count": 24,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "The Mongoose",
+       "u": "{\"id\":\"553873435005440912\",\"dp\":\"the-mongoose-EW7unqgKUE\"}"
+      },
+      {
+       "n": "Doctor X",
+       "u": "{\"id\":\"8175590432395742648\",\"dp\":\"doctor-x-QkR7Hh2iWJ9\"}"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "SubsPlease",
+   "baseUrl": "https://subsplease.org",
+   "isNsfw": false,
+   "file": "src/watch/en/subsplease.js",
+   "steps": {
+    "popular": {
+     "count": 20,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Bai Ri Cheng Wang",
+       "u": "bai-ri-cheng-wang"
+      },
+      {
+       "n": "Link Click S3",
+       "u": "link-click-s3"
+      }
+     ]
+    },
+    "latest": {
+     "count": 20,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Bai Ri Cheng Wang",
+       "u": "bai-ri-cheng-wang"
+      },
+      {
+       "n": "Link Click S3",
+       "u": "link-click-s3"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Zoro / Aniwatch",
+   "baseUrl": "https://aniwatch.or.at",
+   "isNsfw": false,
+   "file": "src/watch/en/zoro.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "AnimeFénix",
+   "baseUrl": "https://www3.animefenix.tv",
+   "isNsfw": false,
+   "file": "src/watch/es/animef_nix.js",
+   "steps": {},
+   "loadError": "streamWishExtractor is not defined"
+  },
+  {
+   "name": "AnimeFLV",
+   "baseUrl": "https://www3.animeflv.net",
+   "isNsfw": false,
+   "file": "src/watch/es/animeflv.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "JKAnime",
+   "baseUrl": "https://jkanime.net",
+   "isNsfw": false,
+   "file": "src/watch/es/jkanime.js",
+   "steps": {},
+   "loadError": "streamWishExtractor is not defined"
+  },
+  {
+   "name": "TioAnime",
+   "baseUrl": "https://tioanime.com",
+   "isNsfw": false,
+   "file": "src/watch/es/tioanime.js",
+   "steps": {},
+   "loadError": "streamWishExtractor is not defined"
+  },
+  {
+   "name": "Adkami",
+   "baseUrl": "https://www.adkami.com",
+   "isNsfw": false,
+   "file": "src/watch/fr/adkami.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": true,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "ADN",
+   "baseUrl": "https://animationdigitalnetwork.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/adn.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": true,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "HiAnime",
+   "baseUrl": "https://hianime.to",
+   "isNsfw": false,
+   "file": "src/watch/en/hianime.js",
+   "steps": {
+    "popular": {
+     "error": "This operation was aborted"
+    },
+    "latest": {
+     "error": "This operation was aborted"
+    }
+   }
+  },
+  {
+   "name": "Kaido",
+   "baseUrl": "https://kaido.to",
+   "isNsfw": false,
+   "file": "src/watch/en/kaido.js",
+   "steps": {
+    "popular": {
+     "error": "This operation was aborted"
+    },
+    "latest": {
+     "error": "This operation was aborted"
+    }
+   }
+  },
+  {
+   "name": "9anime",
+   "baseUrl": "https://9animetv.to",
+   "isNsfw": false,
+   "file": "src/watch/en/nineanime.js",
+   "steps": {
+    "popular": {
+     "error": "This operation was aborted"
+    },
+    "latest": {
+     "error": "This operation was aborted"
+    }
+   }
+  },
+  {
+   "name": "9AnimeTv",
+   "baseUrl": "https://9animetv.to",
+   "isNsfw": false,
+   "file": "src/watch/en/nineanimetv.js",
+   "steps": {
+    "popular": {
+     "error": "This operation was aborted"
+    },
+    "latest": {
+     "error": "This operation was aborted"
+    }
+   }
+  },
+  {
+   "name": "Anime-Kami",
+   "baseUrl": "https://anime-kami.com",
+   "isNsfw": false,
+   "file": "src/watch/fr/animekami.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Anime-Sama",
+   "baseUrl": "https://anime-sama.to",
+   "isNsfw": false,
+   "file": "src/watch/fr/animesama.js",
+   "steps": {
+    "popular": {
+     "count": 7,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "100 Jours Avant Ta Mort",
+       "u": "https://anime-sama.to/catalogue/100-jours-avant-ta-mort/"
+      },
+      {
+       "n": "2.43 Seiin Koukou Danshi Volley-bu",
+       "u": "https://anime-sama.to/catalogue/2.43-seiin-koukou-danshi-volley-bu/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 203,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "VOSTFR",
+       "u": "https://anime-sama.to/catalogue/black-torch/saison1/vostfr/"
+      },
+      {
+       "n": "VF",
+       "u": "https://anime-sama.to/catalogue/black-torch/saison1/vf/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Sudatchi",
+   "baseUrl": "https://sudatchi.com",
+   "isNsfw": false,
+   "file": "src/watch/en/sudatchi.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Anime-Ultime",
+   "baseUrl": "https://www.anime-ultime.net",
+   "isNsfw": false,
+   "file": "src/watch/fr/animeultime.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": true,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "AnimeVostFR",
+   "baseUrl": "https://animevostfr.tv",
+   "isNsfw": false,
+   "file": "src/watch/fr/animevostfr.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Anime-Sama (FR)",
+   "baseUrl": "https://animes-sama.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/animesama2.js",
+   "steps": {
+    "popular": {
+     "count": 20,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "07 ghost",
+       "u": "https://animes-sama.fr/catalogue/07-ghost/"
+      },
+      {
+       "n": "100 jours avant ta mort",
+       "u": "https://animes-sama.fr/catalogue/100-jours-avant-ta-mort/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "AnimeZone",
+   "baseUrl": "https://www.animezone.ch",
+   "isNsfw": false,
+   "file": "src/watch/fr/animezone.js",
+   "steps": {
+    "popular": {
+     "count": 40,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "7 Jours",
+       "u": "https://www.animezone.ch/voir-anime/7-jours-vostfr"
+      },
+      {
+       "n": "A Rank Party wo Ridatsu Shita Ore wa, Moto Oshiego Tachi to Meikyuu Shinbu wo Mezasu Saison 4",
+       "u": "https://www.animezone.ch/voir-anime/a-rank-party-wo-ridatsu-shita-ore-wa-moto-oshiego-tachi-to-meikyuu-shinbu-wo-mezasu-saison-4-vostfr"
+      }
+     ]
+    },
+    "latest": {
+     "count": 40,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "7 Jours",
+       "u": "https://www.animezone.ch/voir-anime/7-jours-vostfr"
+      },
+      {
+       "n": "A Rank Party wo Ridatsu Shita Ore wa, Moto Oshiego Tachi to Meikyuu Shinbu wo Mezasu Saison 4",
+       "u": "https://www.animezone.ch/voir-anime/a-rank-party-wo-ridatsu-shita-ore-wa-moto-oshiego-tachi-to-meikyuu-shinbu-wo-mezasu-saison-4-vostfr"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "AnimesUltra",
+   "baseUrl": "https://animesultra.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/animesultra.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Cinego",
+   "baseUrl": "https://cinego.xyz",
+   "isNsfw": false,
+   "file": "src/watch/fr/cinego.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "CinePulse",
+   "baseUrl": "https://cinepulse.top",
+   "isNsfw": false,
+   "file": "src/watch/fr/cinepulse.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Cinestream",
+   "baseUrl": "https://cinestream.io",
+   "isNsfw": false,
+   "file": "src/watch/fr/cinestream.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "AnimeSite",
+   "baseUrl": "https://animesite.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/animesite.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Allostreaming",
+   "baseUrl": "https://allostreaming.one",
+   "isNsfw": false,
+   "file": "src/watch/fr/allostreaming.js",
+   "steps": {
+    "popular": {
+     "error": "This operation was aborted"
+    },
+    "latest": {
+     "error": "This operation was aborted"
+    }
+   }
+  },
+  {
+   "name": "CpasMal",
+   "baseUrl": "https://cpasmal.ac",
+   "isNsfw": false,
+   "file": "src/watch/fr/cpasmal.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Cpasbien",
+   "baseUrl": "https://cpasbien.gl",
+   "isNsfw": false,
+   "file": "src/watch/fr/cpasbien.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Darkino",
+   "baseUrl": "https://darkino.one",
+   "isNsfw": false,
+   "file": "src/watch/fr/darkino.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Vobma",
+   "baseUrl": "https://vobma.com",
+   "isNsfw": false,
+   "file": "src/watch/fr/dotriv.js",
+   "steps": {
+    "popular": {
+     "count": 20,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Toy Story 5",
+       "u": "https://vobma.com/48f0556/b/vobma/8199730"
+      },
+      {
+       "n": "Des Minions et des monstres",
+       "u": "https://vobma.com/48f0556/b/vobma/8191396"
+      }
+     ]
+    },
+    "latest": {
+     "count": 8,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Finding Emily",
+       "u": "https://vobma.com/48f0556/b/vobma/8220565"
+      },
+      {
+       "n": "Le Choc des Thunderman",
+       "u": "https://vobma.com/48f0556/b/vobma/8219639"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Echo du Marteau",
+   "baseUrl": "https://echodumarteau.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/echodumarteau.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Coflix",
+   "baseUrl": "https://coflix.re",
+   "isNsfw": false,
+   "file": "src/watch/fr/coflix.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Filmoflix",
+   "baseUrl": "https://filmoflix.co",
+   "isNsfw": false,
+   "file": "src/watch/fr/filmoflix.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Enma",
+   "baseUrl": "https://enma.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/enma.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "French-Anime",
+   "baseUrl": "https://french-anime.com",
+   "isNsfw": false,
+   "file": "src/watch/fr/frenchanime.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Franime",
+   "baseUrl": "https://franime.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/franime.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": true,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Empire-Streaming",
+   "baseUrl": "https://empire-streaming.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/empirestreaming.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "French-Manga",
+   "baseUrl": "https://w16.french-manga.net",
+   "isNsfw": false,
+   "file": "src/watch/fr/frenchmanga.js",
+   "steps": {
+    "popular": {
+     "count": 18,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Chainsmoker Cat - Saison 1",
+       "u": "https://w16.french-manga.net/index.php?newsid=1498898"
+      },
+      {
+       "n": "Crowned in a Hundred Days - Saison 1",
+       "u": "https://w16.french-manga.net/index.php?newsid=1498901"
+      }
+     ]
+    },
+    "latest": {
+     "count": 35,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Chainsmoker Cat - Saison 1",
+       "u": "https://w16.french-manga.net/index.php?newsid=1498898"
+      },
+      {
+       "n": "Crowned in a Hundred Days - Saison 1",
+       "u": "https://w16.french-manga.net/index.php?newsid=1498901"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "FrFlix",
+   "baseUrl": "https://frflix.mov",
+   "isNsfw": false,
+   "file": "src/watch/fr/frflix.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "French-Stream",
+   "baseUrl": "https://french-stream.one",
+   "isNsfw": false,
+   "file": "src/watch/fr/frenchstream.js",
+   "steps": {
+    "popular": {
+     "count": 18,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Mayday",
+       "u": "https://french-stream.one/index.php?newsid=15136690"
+      },
+      {
+       "n": "Oradour",
+       "u": "https://french-stream.one/index.php?newsid=15136691"
+      }
+     ]
+    },
+    "latest": {
+     "count": 36,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Mayday",
+       "u": "https://french-stream.one/index.php?newsid=15136690"
+      },
+      {
+       "n": "Oradour",
+       "u": "https://french-stream.one/index.php?newsid=15136691"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Fynd Films",
+   "baseUrl": "https://www.fyndfilms.com",
+   "isNsfw": false,
+   "file": "src/watch/fr/fyndfilms.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "JetAnimes",
+   "baseUrl": "https://jetanimes.co",
+   "isNsfw": false,
+   "file": "src/watch/fr/jetanimes.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "FStream TV",
+   "baseUrl": "https://fstv.rest",
+   "isNsfw": false,
+   "file": "src/watch/fr/fstv.js",
+   "steps": {
+    "popular": {
+     "count": 83,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "RTL9",
+       "u": "https://fstv.rest/index.php?newsid=64"
+      },
+      {
+       "n": "AB1",
+       "u": "https://fstv.rest/index.php?newsid=101"
+      }
+     ]
+    },
+    "latest": {
+     "count": 83,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "RTL9",
+       "u": "https://fstv.rest/index.php?newsid=64"
+      },
+      {
+       "n": "AB1",
+       "u": "https://fstv.rest/index.php?newsid=101"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "LibertyLand",
+   "baseUrl": "https://libertyland.tv",
+   "isNsfw": false,
+   "file": "src/watch/fr/libertyland.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "LyokoPlay",
+   "baseUrl": "https://www.lyokoplay.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/lyokoplay.js",
+   "steps": {
+    "popular": {
+     "count": 6,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Code Lyoko - Genèse",
+       "u": "https://www.lyokoplay.fr/code-lyoko/genese/"
+      },
+      {
+       "n": "Code Lyoko - Saison 1",
+       "u": "https://www.lyokoplay.fr/code-lyoko/saison-1/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 6,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Code Lyoko - Genèse",
+       "u": "https://www.lyokoplay.fr/code-lyoko/genese/"
+      },
+      {
+       "n": "Code Lyoko - Saison 1",
+       "u": "https://www.lyokoplay.fr/code-lyoko/saison-1/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Mangas.io",
+   "baseUrl": "https://www.mangas.io",
+   "isNsfw": false,
+   "file": "src/watch/fr/mangasio.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": true,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Leizy",
+   "baseUrl": "https://leizy.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/leizy.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "MavAnimes (Alt)",
+   "baseUrl": "https://mavanimes.cc",
+   "isNsfw": false,
+   "file": "src/watch/fr/mavanimes2.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Mavanimes",
+   "baseUrl": "https://mavanimes.co",
+   "isNsfw": false,
+   "file": "src/watch/fr/mavanimes.js",
+   "steps": {
+    "popular": {
+     "count": 9,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Policy Allows",
+       "u": "https://mavanimes.co/you-wont-believe-what-this-new-policy-allows-now/"
+      },
+      {
+       "n": "Saddest Anime",
+       "u": "https://mavanimes.co/saddest-anime/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 10,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "A New Chapter Begins with The River Opus at Valley Point",
+       "u": "https://mavanimes.co/a-new-chapter-begins-with-the-river-opus-at-valley-point/"
+      },
+      {
+       "n": "From Anime Merch to Everyday Style: How Fan Culture Is Influencing Modern Fashion",
+       "u": "https://mavanimes.co/from-anime-merch-to-everyday-style-how-fan-culture-is-influencing-modern-fashion/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Movix",
+   "baseUrl": "https://movix.chat",
+   "isNsfw": false,
+   "file": "src/watch/fr/movix.js",
+   "steps": {
+    "popular": {
+     "count": 20,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "The Runner",
+       "u": "https://movix.chat/movie/1386315"
+      },
+      {
+       "n": "Silo",
+       "u": "https://movix.chat/tv/125988"
+      }
+     ]
+    },
+    "latest": {
+     "count": 20,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Spider-Man : Brand New Day",
+       "u": "https://movix.chat/movie/969681"
+      },
+      {
+       "n": "L'Odyssée",
+       "u": "https://movix.chat/movie/1368337"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "HDSS",
+   "baseUrl": "https://www.hdss.to",
+   "isNsfw": false,
+   "file": "src/watch/fr/hdss.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Neko-san",
+   "baseUrl": "https://neko-san.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/nekosan.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "MonStream",
+   "baseUrl": "https://monstream.org",
+   "isNsfw": false,
+   "file": "src/watch/fr/monstream.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Noctaflix",
+   "baseUrl": "https://noctaflix.lol",
+   "isNsfw": false,
+   "file": "src/watch/fr/noctaflix.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Nova-Stream",
+   "baseUrl": "https://novastream.top",
+   "isNsfw": false,
+   "file": "src/watch/fr/novastream.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "AnimeKo",
+   "baseUrl": "https://animeko.co",
+   "isNsfw": false,
+   "file": "src/watch/fr/animeko.js",
+   "steps": {
+    "popular": {
+     "error": "This operation was aborted"
+    },
+    "latest": {
+     "error": "This operation was aborted"
+    }
+   }
+  },
+  {
+   "name": "PapaduStream",
+   "baseUrl": "https://papadustream.college",
+   "isNsfw": false,
+   "file": "src/watch/fr/papadustream2.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Papystreaming",
+   "baseUrl": "https://papystreaming.sh",
+   "isNsfw": false,
+   "file": "src/watch/fr/papystreaming.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Plutonflix",
+   "baseUrl": "https://plutonflix.org",
+   "isNsfw": false,
+   "file": "src/watch/fr/plutonflix.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Pstream",
+   "baseUrl": "https://pstream.net",
+   "isNsfw": false,
+   "file": "src/watch/fr/pstream.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "SadisFlixs",
+   "baseUrl": "https://sadisflixs.pro",
+   "isNsfw": false,
+   "file": "src/watch/fr/sadisflix.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Seko-Stream",
+   "baseUrl": "https://seko-stream.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/sekostream.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Streamay",
+   "baseUrl": "https://streamay.net",
+   "isNsfw": false,
+   "file": "src/watch/fr/streamay.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "StreamComplet",
+   "baseUrl": "https://www.streamcomplet.blue",
+   "isNsfw": false,
+   "file": "src/watch/fr/streamcomplet.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Nunflix",
+   "baseUrl": "https://nunflix.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/nunflix.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "VF24",
+   "baseUrl": "https://vf24.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/papadustream.js",
+   "steps": {
+    "popular": {
+     "count": 24,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Ready, Jet, Go! Space Camp",
+       "u": "https://vf24.fr/category-films/ready-jet-go-space-camp.html"
+      },
+      {
+       "n": "Carolina Caroline",
+       "u": "https://vf24.fr/category-films/carolina-caroline.html"
+      }
+     ]
+    },
+    "latest": {
+     "count": 24,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Breaking Bad",
+       "u": "https://vf24.fr/category-series/breaking-bad.html"
+      },
+      {
+       "n": "The Rookie : FBI",
+       "u": "https://vf24.fr/category-series/the-rookie-fbi.html"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Streamvf",
+   "baseUrl": "https://streamvf.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/streamvf.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "SushiAnime",
+   "baseUrl": "https://sushianime.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/sushianime.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "TAnime",
+   "baseUrl": "https://tanime.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/tanime.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "StreamFlix",
+   "baseUrl": "https://streamflix.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/streamflix.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "StreamingDivX",
+   "baseUrl": "https://www.streamingdivx.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/streamingdivx.js",
+   "steps": {
+    "popular": {
+     "count": 1,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "MaListe",
+       "u": "https://www.maliste.fr?UTM_source=gpy"
+      }
+     ]
+    },
+    "latest": {
+     "count": 1,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "MaListe",
+       "u": "https://www.maliste.fr?UTM_source=gpy"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Toonix",
+   "baseUrl": "https://toonix.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/toonix.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "VFStream",
+   "baseUrl": "https://films.vfstream.eu",
+   "isNsfw": false,
+   "file": "src/watch/fr/vfstream.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "AniStream",
+   "baseUrl": "https://anistream.xyz",
+   "isNsfw": false,
+   "file": "src/watch/fr/anistream.js",
+   "steps": {
+    "popular": {
+     "error": "This operation was aborted"
+    },
+    "latest": {
+     "error": "This operation was aborted"
+    }
+   }
+  },
+  {
+   "name": "VoirAnime",
+   "baseUrl": "https://www.voiranime.io",
+   "isNsfw": false,
+   "file": "src/watch/fr/voiranime.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "VoirAnime HD",
+   "baseUrl": "https://v6.voiranime.com",
+   "isNsfw": false,
+   "file": "src/watch/fr/voiranime3.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Neko-Sama",
+   "baseUrl": "https://www.neko-sama.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/nekosama.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "TenshiTV",
+   "baseUrl": "https://tenshi.tv",
+   "isNsfw": false,
+   "file": "src/watch/fr/tenshitv.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "VoirFilm",
+   "baseUrl": "https://voirfilm.pe",
+   "isNsfw": false,
+   "file": "src/watch/fr/voirfilm.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "VoirAnime.sh",
+   "baseUrl": "https://voiranime.sh",
+   "isNsfw": false,
+   "file": "src/watch/fr/voiranime2.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "VoirFilm HD",
+   "baseUrl": "https://voirfilm.cz",
+   "isNsfw": false,
+   "file": "src/watch/fr/voirfilm2.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "VOSTAnimey",
+   "baseUrl": "https://vostanimey.su",
+   "isNsfw": false,
+   "file": "src/watch/fr/vostanimey.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Cinefuse",
+   "baseUrl": "https://cinefuse.fr",
+   "isNsfw": false,
+   "file": "src/watch/fr/cinefuse.js",
+   "steps": {
+    "popular": {
+     "error": "This operation was aborted"
+    },
+    "latest": {
+     "error": "This operation was aborted"
+    }
+   }
+  },
+  {
+   "name": "Vostfree",
+   "baseUrl": "https://ipv4.vostfree.ws",
+   "isNsfw": false,
+   "file": "src/watch/fr/vostfree.js",
+   "steps": {
+    "popular": {
+     "count": 5,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "One Piece VOSTFR",
+       "u": "https://ipv4.vostfree.ws/265-anime-one-piece-1014-vostfr-telecharger-streaming.html"
+      },
+      {
+       "n": "Black Clover VOSTFR",
+       "u": "https://ipv4.vostfree.ws/275-black-clover-vostfr-ddl-streaming-1fichier-uptobox.html"
+      }
+     ]
+    },
+    "latest": {
+     "count": 16,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Peace Maker Kurogane Belief &amp; Friend VOSTFR",
+       "u": "https://ipv4.vostfree.ws/602-peace-maker-kurogane-belief-friend-vostfr-ddl-streaming.html"
+      },
+      {
+       "n": "BNA: Brand New Animal VOSTFR",
+       "u": "https://ipv4.vostfree.ws/815-bna-brand-new-animal-vostfr-ddl-streaming.html"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Wooflix",
+   "baseUrl": "https://wooflix.io",
+   "isNsfw": false,
+   "file": "src/watch/fr/wooflix.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Wiflix",
+   "baseUrl": "https://www.wiflix.bond",
+   "isNsfw": false,
+   "file": "src/watch/fr/wiflix.js",
+   "steps": {
+    "popular": {
+     "count": 20,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Skate to Hell",
+       "u": "https://www.wiflix.bond/74045-skate-to-hell.html"
+      },
+      {
+       "n": "Slanted",
+       "u": "https://www.wiflix.bond/74043-slanted.html"
+      }
+     ]
+    },
+    "latest": {
+     "count": 20,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Chicago Fire",
+       "u": "https://www.wiflix.bond/63630-chicago-fire-X5IB1Z.html"
+      },
+      {
+       "n": "Plus belle la vie, encore plus belle",
+       "u": "https://www.wiflix.bond/71060-plus-belle-la-vie-encore-plus-belle.html"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "VoirDrama",
+   "baseUrl": "https://voirdrama.to",
+   "isNsfw": false,
+   "file": "src/watch/fr/voirdramato.js",
+   "steps": {
+    "popular": {
+     "count": 20,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "&#8230;ing",
+       "u": "https://voirdrama.to/drama/ing/"
+      },
+      {
+       "n": "#Alive",
+       "u": "https://voirdrama.to/drama/alive/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 14,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Bloodhounds 2",
+       "u": "https://voirdrama.to/drama/bloodhounds-2/"
+      },
+      {
+       "n": "Bloodhounds 2 (VF)",
+       "u": "https://voirdrama.to/drama/bloodhounds-2-vf/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "AnimeWorld",
+   "baseUrl": "https://www.animeworld.so",
+   "isNsfw": false,
+   "file": "src/watch/it/animeworld.js",
+   "steps": {},
+   "loadError": "streamWishExtractor is not defined"
+  },
+  {
+   "name": "YassFlix",
+   "baseUrl": "https://yassflix.cc",
+   "isNsfw": false,
+   "file": "src/watch/fr/yassflix.js",
+   "steps": {
+    "popular": {
+     "count": 79,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Spider-Man: Brand New Day",
+       "u": "https://yassflix.cc/movie/spider-man-brand-new-day-969681"
+      },
+      {
+       "n": "The Odyssey",
+       "u": "https://yassflix.cc/movie/the-odyssey-1368337"
+      }
+     ]
+    },
+    "latest": {
+     "count": 86,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Beauty in Black",
+       "u": "https://yassflix.cc/tv/beauty-in-black-246246"
+      },
+      {
+       "n": "Outer Banks",
+       "u": "https://yassflix.cc/tv/outer-banks-100757"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "VoirDrama.cc",
+   "baseUrl": "https://voirdrama.site",
+   "isNsfw": false,
+   "file": "src/watch/fr/voirdramacc.js",
+   "steps": {
+    "popular": {
+     "count": 10,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "A Barefoot Dream",
+       "u": "https://voirdrama.site/series/a-barefoot-dream/"
+      },
+      {
+       "n": "A Battle of Wits",
+       "u": "https://voirdrama.site/series/a-battle-of-wits/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "VoirSeries",
+   "baseUrl": "https://voirseries.io",
+   "isNsfw": false,
+   "file": "src/watch/fr/voirseries.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": true,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "AnimeKhor",
+   "baseUrl": "https://animekhor.org",
+   "isNsfw": false,
+   "file": "src/watch/multi/animekhor.js",
+   "steps": {
+    "popular": {
+     "count": 10,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "God of Martial Arts (Peerless Martial God)",
+       "u": "https://animekhor.org/"
+      },
+      {
+       "n": "Battle Through The Heavens 5th Season",
+       "u": "https://animekhor.org/anime/renegade-immortal/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 10,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Crowned in a Hundred Days",
+       "u": "https://animekhor.org/"
+      },
+      {
+       "n": "Lingwu Continent",
+       "u": "https://animekhor.org/anime/supreme-god-emperor-2nd-season/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Free IPTV",
+   "baseUrl": "https://iptv-org.github.io",
+   "isNsfw": false,
+   "file": "src/watch/multi/freeiptv.js",
+   "steps": {
+    "popular": {
+     "count": 20,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "🌍 All Channels",
+       "u": "https://iptv-org.github.io/iptv/index.m3u"
+      },
+      {
+       "n": "📰 News",
+       "u": "https://iptv-org.github.io/iptv/categories/news.m3u"
+      }
+     ]
+    },
+    "latest": {
+     "count": 20,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "🌍 All Channels",
+       "u": "https://iptv-org.github.io/iptv/index.m3u"
+      },
+      {
+       "n": "📰 News",
+       "u": "https://iptv-org.github.io/iptv/categories/news.m3u"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "DonghuaStream",
+   "baseUrl": "https://donghuastream.com",
+   "isNsfw": false,
+   "file": "src/watch/multi/donghuastream.js",
+   "steps": {
+    "popular": {
+     "count": 15,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "The Demon Hunter Season 3 Episode 24[93] Multiple Subtitles",
+       "u": "https://donghuastream.org/"
+      },
+      {
+       "n": "Jade Dynasty Season 4 Episode 5 Multiple Subtitles",
+       "u": "https://donghuastream.org/the-great-ruler-season-2-episode-37-89-multiple-subtitles/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 15,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "The Demon Hunter Season 3 Episode 24[93] Multiple Subtitles",
+       "u": "https://donghuastream.org/"
+      },
+      {
+       "n": "Jade Dynasty Season 4 Episode 5 Multiple Subtitles",
+       "u": "https://donghuastream.org/the-great-ruler-season-2-episode-37-89-multiple-subtitles/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "KissKH",
+   "baseUrl": "https://kisskh.ovh",
+   "isNsfw": false,
+   "file": "src/watch/multi/kisskh.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "KissKH Drama",
+   "baseUrl": "https://kisskh.co",
+   "isNsfw": false,
+   "file": "src/watch/multi/kisskh_drama.js",
+   "steps": {
+    "popular": {
+     "count": 1,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "kisskh",
+       "u": "https://fonts.gstatic.com"
+      }
+     ]
+    },
+    "latest": {
+     "count": 1,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "kisskh",
+       "u": "https://fonts.gstatic.com"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Miraculum",
+   "baseUrl": "https://miraculum.ml",
+   "isNsfw": false,
+   "file": "src/watch/multi/miraculum.js",
+   "steps": {
+    "popular": {
+     "count": 10,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Saison 1",
+       "u": "https://miraculum.ml/en/episodes?s=1"
+      },
+      {
+       "n": "Saison 2",
+       "u": "https://miraculum.ml/en/episodes?s=2"
+      }
+     ]
+    },
+    "latest": {
+     "count": 10,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Saison 1",
+       "u": "https://miraculum.ml/en/episodes?s=1"
+      },
+      {
+       "n": "Saison 2",
+       "u": "https://miraculum.ml/en/episodes?s=2"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Zone-Telechargement",
+   "baseUrl": "https://www.zone-telechargement.com",
+   "isNsfw": false,
+   "file": "src/watch/fr/zonetelechargement.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": true,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "DonghuaWorld",
+   "baseUrl": "https://donghuaworld.com",
+   "isNsfw": false,
+   "file": "src/watch/multi/donghuaworld.js",
+   "steps": {
+    "popular": {
+     "count": 1,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Donghua World &#8211; Watch All Chinese Donghua/Anime - Donghua World &#8211; Watch All Chinese Donghua/Anime",
+       "u": "https://fonts.gstatic.com/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 1,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Donghua World &#8211; Watch All Chinese Donghua/Anime - Donghua World &#8211; Watch All Chinese Donghua/Anime",
+       "u": "https://fonts.gstatic.com/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Internet Archive Films",
+   "baseUrl": "https://archive.org",
+   "isNsfw": false,
+   "file": "src/watch/multi/internetarchive.js",
+   "steps": {
+    "popular": {
+     "count": 24,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Twins Getting Naked Outside Video (2018)",
+       "u": "https://archive.org/details/twins-getting-naked-outside-video"
+      },
+      {
+       "n": "Biker Twins Getting Naked Video (2018)",
+       "u": "https://archive.org/details/biker-twins-getting-naked-video"
+      }
+     ]
+    },
+    "latest": {
+     "count": 24,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "-",
+       "u": "https://archive.org/details/202904_20204_0947"
+      },
+      {
+       "n": "San Francisco Public Utilities Commission Meeting - September 24, 2024 (2024)",
+       "u": "https://archive.org/details/openpublica-san_francisco-california-4ada96e0-78bf-41a7-8ee7-6db9c58ac115"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Short of the Week",
+   "baseUrl": "https://www.shortoftheweek.com",
+   "isNsfw": false,
+   "file": "src/watch/multi/shortoftheweek.js",
+   "steps": {
+    "popular": {
+     "count": 13,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "🎬 All Shorts",
+       "u": "https://www.shortoftheweek.com/short-films/"
+      },
+      {
+       "n": "🎭 Drama",
+       "u": "https://www.shortoftheweek.com/channels/drama/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Torrentio Anime (Torrent)",
+   "baseUrl": "https://torrentio.strem.fun",
+   "isNsfw": false,
+   "file": "src/watch/multi/torrentio_anime_torrent.js",
+   "steps": {
+    "popular": {
+     "error": "Headers.append: \"query ($page: Int, $perPage: Int, $sort: [MediaSort], $search: String) {\n                Page(page: $page, perPage: $perPage) {\n                    pageInfo {\n                        currentPage\n        "
+    },
+    "latest": {
+     "error": "Headers.append: \"query ($page: Int, $perPage: Int, $sort: [AiringSort]) {\n              Page(page: $page, perPage: $perPage) {\n                pageInfo {\n                  currentPage\n                  hasNextPage\n      "
+    }
+   }
+  },
+  {
+   "name": "MovieBox App",
+   "baseUrl": "https://themoviebox.xyz",
+   "isNsfw": false,
+   "file": "src/watch/multi/moviebox_app.js",
+   "steps": {
+    "popular": {
+     "count": 30,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Beauty in Black",
+       "u": "{\"subjectId\":\"5904172458474619680\",\"detailPath\":\"beauty-in-black-E6NEe5Ha927\",\"subjectType\":2}"
+      },
+      {
+       "n": "Reacher",
+       "u": "{\"subjectId\":\"3620534210064175096\",\"detailPath\":\"reacher-e1nw56h5sj4\",\"subjectType\":2}"
+      }
+     ]
+    },
+    "latest": {
+     "count": 30,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "The Mongoose",
+       "u": "{\"subjectId\":\"553873435005440912\",\"detailPath\":\"the-mongoose-EW7unqgKUE\",\"subjectType\":1}"
+      },
+      {
+       "n": "Doctor X",
+       "u": "{\"subjectId\":\"8175590432395742648\",\"detailPath\":\"doctor-x-QkR7Hh2iWJ9\",\"subjectType\":2}"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "MovieBox",
+   "baseUrl": "https://themoviebox.xyz",
+   "isNsfw": false,
+   "file": "src/watch/multi/moviebox.js",
+   "steps": {
+    "popular": {
+     "count": 30,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Beauty in Black",
+       "u": "{\"subjectId\":\"5904172458474619680\",\"detailPath\":\"beauty-in-black-E6NEe5Ha927\",\"subjectType\":2}"
+      },
+      {
+       "n": "Reacher",
+       "u": "{\"subjectId\":\"3620534210064175096\",\"detailPath\":\"reacher-e1nw56h5sj4\",\"subjectType\":2}"
+      }
+     ]
+    },
+    "latest": {
+     "count": 30,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "The Mongoose",
+       "u": "{\"subjectId\":\"553873435005440912\",\"detailPath\":\"the-mongoose-EW7unqgKUE\",\"subjectType\":1}"
+      },
+      {
+       "n": "Doctor X: Age of the White Mafia",
+       "u": "{\"subjectId\":\"8175590432395742648\",\"detailPath\":\"doctor-x-QkR7Hh2iWJ9\",\"subjectType\":2}"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Moviesda",
+   "baseUrl": "https://moviesda14.net",
+   "isNsfw": false,
+   "file": "src/watch/ta/moviesda.js",
+   "steps": {
+    "popular": {
+     "error": "Failed to parse URL from null/tamil-2026-movies/?page=1"
+    },
+    "latest": {
+     "error": "Failed to parse URL from null/tamil-2026-movies/?page=1"
+    }
+   }
+  },
+  {
+   "name": "360资源",
+   "baseUrl": "https://360zy.com",
+   "isNsfw": false,
+   "file": "src/watch/zh/360.js",
+   "steps": {
+    "popular": {
+     "error": "Failed to parse URL from null/api.php/provide/vod?ac=detail&pg=1"
+    },
+    "latest": {
+     "error": "Failed to parse URL from null/api.php/provide/vod?ac=detail&pg=1&h=18"
+    }
+   }
+  },
+  {
+   "name": "Rakuten Viki",
+   "baseUrl": "https://www.viki.com",
+   "isNsfw": false,
+   "file": "src/watch/multi/viki.js",
+   "steps": {
+    "popular": {
+     "count": 3,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Rakuten Viki",
+       "u": "/opensearch.xml"
+      },
+      {
+       "n": "Rakuten Viki",
+       "u": "https://contribute.viki.com"
+      }
+     ]
+    },
+    "latest": {
+     "count": 3,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Rakuten Viki",
+       "u": "/opensearch.xml"
+      },
+      {
+       "n": "Rakuten Viki",
+       "u": "https://contribute.viki.com"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "小米UC资源站",
+   "baseUrl": "http://www.mucpan.cc",
+   "isNsfw": false,
+   "file": "src/watch/zh/uc.js",
+   "steps": {
+    "popular": {
+     "error": "Failed to parse URL from null"
+    },
+    "latest": {
+     "error": "Failed to parse URL from null/index.php/vod/show/id/20/page/1.html"
+    }
+   }
+  },
+  {
+   "name": "樱花动漫 (YHDM)",
+   "baseUrl": "https://www.yhdmp.cc",
+   "isNsfw": false,
+   "file": "src/watch/zh/yhdm.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "TV5Monde+",
+   "baseUrl": "https://www.tv5mondeplus.com",
+   "isNsfw": false,
+   "file": "src/watch/multi/tv5monde.js",
+   "steps": {
+    "popular": {
+     "count": 9,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "🎬 Courts métrages",
+       "u": "https://www.tv5mondeplus.com/en/films/court-metrage"
+      },
+      {
+       "n": "🎥 Films",
+       "u": "https://www.tv5mondeplus.com/en/films"
+      }
+     ]
+    },
+    "latest": {
+     "count": 9,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "🎬 Courts métrages",
+       "u": "https://www.tv5mondeplus.com/en/films/court-metrage"
+      },
+      {
+       "n": "🎥 Films",
+       "u": "https://www.tv5mondeplus.com/en/films"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "MovieFR",
+   "baseUrl": "https://jgzm.iuk9.com",
+   "isNsfw": false,
+   "file": "src/watch/multi/moviefr.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "ToonAnime",
+   "baseUrl": "https://v8.toonanime.co",
+   "isNsfw": false,
+   "file": "src/watch/fr/toonanime.js",
+   "steps": {
+    "popular": {
+     "error": "This operation was aborted"
+    },
+    "latest": {
+     "error": "This operation was aborted"
+    }
+   }
+  },
+  {
+   "name": "蜜柑计划 (Mikan Project)",
+   "baseUrl": "https://mikanani.me",
+   "isNsfw": false,
+   "file": "src/watch/zh/mikan.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Autoembed",
+   "baseUrl": "https://watch.autoembed.cc",
+   "isNsfw": false,
+   "file": "src/watch/multi/autoembed.js",
+   "steps": {
+    "popular": {
+     "error": "This operation was aborted"
+    },
+    "latest": {
+     "error": "This operation was aborted"
+    }
+   }
+  }
+ ]
+}

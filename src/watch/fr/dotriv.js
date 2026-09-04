@@ -1,13 +1,13 @@
 const watchtowerSources = [{
-    "name": "Dospiv",
+    "name": "Vobma",
     "langs": ["fr"],
     "ids": { "fr": 334859201 },
-    "baseUrl": "https://dospiv.com",
-    "apiUrl": "https://dospiv.com",
-    "iconUrl": "https://dospiv.com/favicon.png",
+    "baseUrl": "https://vobma.com",
+    "apiUrl": "https://vobma.com",
+    "iconUrl": "https://vobma.com/favicon.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.12",
+    "version": "0.2.0",
     "pkgPath": "watch/fr/dotriv.js",
     "editableBaseUrl": true,
     "customUserAgent": "",
@@ -15,13 +15,13 @@ const watchtowerSources = [{
     "contentSubtype": ["film", "serie"]
 }];
 
-const BASE_URL = "https://dospiv.com";
+const BASE_URL = "https://vobma.com";
 
 class DefaultExtension extends MProvider {
     constructor() { super(); }
 
     get baseUrl() { return new SharedPreferences().get("base_url") || BASE_URL.replace(/\/$/, ""); }
-    get cmsBase() { return `${this.baseUrl}/fed960f`; }
+    get cmsBase() { return `${this.baseUrl}/48f0556`; }
 
     get logEnabled() { const p = new SharedPreferences().get("log_enabled"); return p && p.value === "true"; }
     get logTopic() { const p = new SharedPreferences().get("log_topic"); return (p && p.value) ? p.value : "wtfr-dospiv"; }
@@ -38,7 +38,7 @@ class DefaultExtension extends MProvider {
 
     async _log(msg) {
         if (!this.logEnabled) return;
-        try { await new Client().post(`https://ntfy.sh/${this.logTopic}`, `[Dospiv] ${msg}`, { "Title": "Dospiv", "Content-Type": "text/plain" }); } catch(e) {}
+        try { await new Client().post(`https://ntfy.sh/${this.logTopic}`, `[Vobma] ${msg}`, { "Title": "Vobma", "Content-Type": "text/plain" }); } catch(e) {}
     }
 
     // ── Parser ─────────────────────────────────────────────────────────────
@@ -48,7 +48,7 @@ class DefaultExtension extends MProvider {
         const seen = {};
         const list = [];
 
-        const srcName = (this.source && this.source.name) ? this.source.name.toLowerCase() : "dospiv";
+        const srcName = (this.source && this.source.name) ? this.source.name.toLowerCase() : "vobma";
 
         const add = (url, imgUrl, name) => {
             if (!url || !name) return;
@@ -61,16 +61,16 @@ class DefaultExtension extends MProvider {
 
         // PRIMARY: <a class="…trend-card…|…film-card…"> contains href + img inside
         // This avoids nav links and banner images that share class names
-        const cardRe = /<a[^>]*class="[^"]*(?:trend|film)-card(?!-arrow)[^"]*"[^>]*href="(\/fed960f\/b\/dospiv\/\d+)"[^>]*>[\s\S]{0,500}?<img[^>]*src="([^"]+)"[^>]*alt="([^"]+)"/gi;
+        const cardRe = /<a[^>]*class="[^"]*(?:trend|film)-card(?!-arrow)[^"]*"[^>]*href="(\/48f0556\/b\/vobma\/\d+)"[^>]*>[\s\S]{0,500}?<img[^>]*src="([^"]+)"[^>]*alt="([^"]+)"/gi;
         let m;
         while ((m = cardRe.exec(html)) !== null) {
             add(`${this.baseUrl}${m[1]}`, m[2], m[3].trim());
         }
 
-        // FALLBACK: href="/fed960f/b/dospiv/ID" then img with alt within 300 chars
+        // FALLBACK: href="/48f0556/b/vobma/ID" then img with alt within 300 chars
         // Only runs if primary got < 3 results (category pages with different structure)
         if (list.length < 3) {
-            const fallRe = /href="(\/fed960f\/b\/dospiv\/\d+)"[\s\S]{0,300}?<img[^>]+src="([^"]+)"[^>]+alt="([^"]+)"/gi;
+            const fallRe = /href="(\/48f0556\/b\/vobma\/\d+)"[\s\S]{0,300}?<img[^>]+src="([^"]+)"[^>]+alt="([^"]+)"/gi;
             while ((m = fallRe.exec(html)) !== null) {
                 add(`${this.baseUrl}${m[1]}`, m[2], m[3].trim());
             }
@@ -85,7 +85,7 @@ class DefaultExtension extends MProvider {
         if (this._homeCache && (now - (this._homeCacheAt || 0)) < 300000) {
             return this._homeCache;
         }
-        const res = await new Client().get(`${this.cmsBase}/home/dospiv`, this._hdrs());
+        const res = await new Client().get(`${this.cmsBase}/home/vobma`, this._hdrs());
         this._homeCache = res.body || "";
         this._homeCacheAt = now;
         return this._homeCache;
@@ -103,7 +103,7 @@ class DefaultExtension extends MProvider {
 
     // Popular = À l'affiche (category 29)
     async getPopular(page) {
-        const res = await new Client().get(`${this.cmsBase}/c/dospiv/29/${page - 1}`, this._hdrs());
+        const res = await new Client().get(`${this.cmsBase}/c/vobma/29/${page - 1}`, this._hdrs());
         await this._log(`popular p${page}: ${res.body.length}b`);
         const list = this._parse(res.body);
         await this._log(`popular: ${list.length} items`);
@@ -125,7 +125,7 @@ class DefaultExtension extends MProvider {
             } catch(e) {}
         }
         // Fallback: paginate category 29
-        const res = await new Client().get(`${this.cmsBase}/c/dospiv/29/${page - 1}`, this._hdrs());
+        const res = await new Client().get(`${this.cmsBase}/c/vobma/29/${page - 1}`, this._hdrs());
         const list = this._parse(res.body);
         await this._log(`latest/pop p${page}: ${list.length}`);
         return { list, hasNextPage: list.length >= 10 };
@@ -137,21 +137,21 @@ class DefaultExtension extends MProvider {
 
         // Empty query → return popular page as-is
         if (!q) {
-            const res = await new Client().get(`${this.cmsBase}/c/dospiv/29/${page - 1}`, this._hdrs());
+            const res = await new Client().get(`${this.cmsBase}/c/vobma/29/${page - 1}`, this._hdrs());
             const list = this._parse(res.body);
             return { list, hasNextPage: list.length >= 10 };
         }
 
-        // ── Real site search via POST /home/dospiv (searchword param) ──
+        // ── Real site search via POST /home/vobma (searchword param) ──
         // The site returns all matching results in a single response (no pagination).
         if (page > 1) return { list: [], hasNextPage: false };
 
         try {
-            const hdrs = Object.assign({}, this._hdrs(`${this.cmsBase}/home/dospiv`), {
+            const hdrs = Object.assign({}, this._hdrs(`${this.cmsBase}/home/vobma`), {
                 "Content-Type": "application/x-www-form-urlencoded"
             });
             const postBody = "searchword=" + encodeURIComponent(q);
-            const res = await new Client().post(`${this.cmsBase}/home/dospiv`, postBody, hdrs);
+            const res = await new Client().post(`${this.cmsBase}/home/vobma`, postBody, hdrs);
             const list = this._parse(res.body);
             await this._log(`search result: ${list.length} for "${q}" via POST`);
             return { list, hasNextPage: false };
@@ -195,7 +195,7 @@ async getCustomList(listId, page) {
 
         if (listId === "animations") {
             // Category page, supports pagination
-            const res = await new Client().get(`${this.cmsBase}/c/dospiv/2/${page - 1}`, this._hdrs());
+            const res = await new Client().get(`${this.cmsBase}/c/vobma/2/${page - 1}`, this._hdrs());
             const list = this._parse(res.body);
             await this._log(`animations p${page}: ${list.length}`);
             return { list, hasNextPage: list.length >= 10 };
@@ -224,12 +224,38 @@ async getCustomList(listId, page) {
         const res = await this._safeGet(url);
         const html = res.body || "";
 
-        const nameM = html.match(/<h1[^>]*>([^<]+)<\/h1>/i) || html.match(/<title>([^|<\-]+)/i);
-        const name = nameM ? nameM[1].trim() : "";
+        const nameM = html.match(/<h1[^>]*>([^<]+)<\/h1>/i);
+        let name = nameM ? nameM[1].trim() : "";
+        if (!name) {
+            const tM = html.match(/<title>([^<]+)<\/title>/i);
+            name = tM ? tM[1].trim() : "";
+            // Titles look like "Vobma - Finding Emily (2026)" — drop the site prefix.
+            if (name) {
+                const dash = name.indexOf(" - ");
+                if (dash > 0 && name.slice(dash + 3).trim()) name = name.slice(dash + 3).trim();
+            }
+        }
 
-        const imgM = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) ||
-                     html.match(/<img[^>]+class="[^"]*(?:poster|cover|detail-img)[^"]*"[^>]+src="([^"]+)"/i);
-        const imageUrl = imgM ? imgM[1] : "";
+        let imageUrl = "";
+        const metaImg = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i) ||
+                         html.match(/<img[^>]+class="[^"]*(?:poster|cover|detail-img)[^"]*"[^>]+src="([^"]+)"/i);
+        if (metaImg) {
+            imageUrl = metaImg[1];
+        } else {
+            // Poster container used by the site (class "film-detail-poster")
+            const poster = html.match(/<div[^>]*class="[^"]*film-detail-poster[^"]*"[^>]*>[\s\S]{0,600}?<img[^>]+src="([^"]+)"/i);
+            if (poster) {
+                imageUrl = poster[1];
+            } else if (name) {
+                // …otherwise the first image whose alt text contains the title.
+                const imgRe = /<img[^>]+src="([^"]+)"[^>]*alt="([^"]*)"/gi;
+                const needle = name.slice(0, 40).toLowerCase();
+                let im;
+                while ((im = imgRe.exec(html)) !== null) {
+                    if (im[2] && im[2].toLowerCase().includes(needle)) { imageUrl = im[1]; break; }
+                }
+            }
+        }
 
         const descM = html.match(/<meta[^>]+property="og:description"[^>]+content="([^"]+)"/i) ||
                       html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i);

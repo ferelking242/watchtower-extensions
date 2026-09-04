@@ -74,17 +74,33 @@ class DefaultExtension extends MProvider {
     const res = await new Client().get(url, this.getHeaders(url));
     const html = res.body;
     const videos = [];
-    const m3u8Re = /["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/gi;
-    let m;
-    while ((m = m3u8Re.exec(html)) !== null)
-      videos.push({ url: m[1], quality: "HLS", originalUrl: m[1], headers: this.getHeaders(url) });
-    if (videos.length === 0) {
+    const seen = new Set();
+    const push = (src, quality) => {
+      if (!src || seen.has(src)) return;
+      seen.add(src);
+      videos.push({ url: src, quality, originalUrl: src, headers: this.getHeaders(url) });
+    };
+    // Embed page carries <video><source src=... title=1080p/720p/...>
+    const grabSources = (h) => {
+      const srcRe = /<source[^>]+src="([^"]+)"[^>]*title="([^"]*)"[^>]*>/gi;
+      let m;
+      while ((m = srcRe.exec(h)) !== null) push(m[1], (m[2] || "MP4").replace("p", "p"));
       const mp4Re = /["'](https?:\/\/[^"']+\.mp4[^"']*)['"]/gi;
-      while ((m = mp4Re.exec(html)) !== null) {
-        videos.push({ url: m[1], quality: "MP4", originalUrl: m[1], headers: this.getHeaders(url) });
-        if (videos.length >= 3) break;
+      while ((m = mp4Re.exec(h)) !== null) {
+        push(m[1], "MP4");
+        if (videos.length >= 6) break;
       }
+    };
+    const iframeM = html.match(/<iframe[^>]+src="([^"]+)"/i);
+    if (iframeM) {
+      let src = iframeM[1];
+      if (!src.startsWith("http")) src = "https://haho.moe" + (src.startsWith("/") ? "" : "/") + src;
+      try {
+        const iRes = await new Client().get(src, { ...this.getHeaders(src), Referer: url });
+        grabSources(iRes.body);
+      } catch (_) {}
     }
+    if (videos.length === 0) grabSources(html);
     return videos;
   }
 

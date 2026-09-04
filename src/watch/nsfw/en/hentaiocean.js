@@ -27,34 +27,38 @@ class DefaultExtension extends MProvider {
     const doc = new Document(html);
     const items = [];
     const seen = new Set();
-    for (const card of doc.select("article,.video-item,.item,.anime-item")) {
-      const a = card.selectFirst("a[href]");
-      if (!a) continue;
-      let link = a.attr("href") || "";
+    // Real structure (Bulma grid): <a class="cell card" href="/watch/<slug>">
+    //   <div class="card-image"><div class="image cover-ratio"><img src="..." alt="TITLE"></div></div>
+    //   <div class="card-content"><p class="subtitle is-6 ...">TITLE</p></div></a>
+    for (const card of doc.select("a.cell.card[href*='/watch/']")) {
+      const link = card.attr("href") || "";
       if (!link || link === "#") continue;
-      if (!link.startsWith("http")) link = BASE + link;
-      if (seen.has(link)) continue;
-      seen.add(link);
+      const full = link.startsWith("http") ? link : BASE + link;
+      if (seen.has(full)) continue;
+      seen.add(full);
       const img = card.selectFirst("img");
       const thumb = img?.attr("data-src") || img?.attr("src") || "";
-      const name = card.selectFirst("h1,h2,h3,.title")?.text?.trim() || a.attr("title") || "Hentai";
-      items.push({ name, imageUrl: thumb, link });
+      const name = card.selectFirst(".subtitle")?.text?.trim() ||
+                   img?.attr("alt") || "Hentai";
+      items.push({ name, imageUrl: thumb, link: full });
     }
-    return { list: items, hasNextPage: !!doc.selectFirst("a.next,[rel=next]") };
+    return { list: items, hasNextPage: false };
   }
 
   async getPopular(page) {
-    const res = await new Client().get(`${BASE}/popular/?page=${page}`, this.getHeaders());
+    // No dedicated "popular" view — newly added is the fullest listing
+    const res = await new Client().get(`${BASE}/view/newly-added${page > 1 ? `?page=${page}` : ""}`, this.getHeaders());
     return this._parse(res.body);
   }
 
   async getLatestUpdates(page) {
-    const res = await new Client().get(`${BASE}/?page=${page}`, this.getHeaders());
+    const res = await new Client().get(`${BASE}/view/recent-releases${page > 1 ? `?page=${page}` : ""}`, this.getHeaders());
     return this._parse(res.body);
   }
 
   async search(query, page, filters) {
-    const res = await new Client().get(`${BASE}/?s=${encodeURIComponent(query)}&page=${page}`, this.getHeaders());
+    const q = encodeURIComponent(query.trim());
+    const res = await new Client().get(`${BASE}/search?q=${q}${page > 1 ? `&page=${page}` : ""}`, this.getHeaders());
     return this._parse(res.body);
   }
 
@@ -81,13 +85,33 @@ class DefaultExtension extends MProvider {
     const res = await new Client().get(url, this.getHeaders(url));
     const html = res.body;
     const videos = [];
-    const m3u8Re = /["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/gi;
-    const mp4Re  = /["'](https?:\/\/[^"']+\.mp4[^"']*)['"]/gi;
-    let m;
-    while ((m = m3u8Re.exec(html)) !== null)
-      videos.push({ url: m[1], quality: "HLS", originalUrl: m[1], headers: this.getHeaders(url) });
-    while (videos.length < 3 && (m = mp4Re.exec(html)) !== null)
-      videos.push({ url: m[1], quality: "MP4", originalUrl: m[1], headers: this.getHeaders(url) });
+    // Watch pages embed: jsondata = { "info": [...], "mirrors": [{ "mirrorurl":
+    // "https:\/\/w2.hentaiocean.com\/play?vid=<encoded file name>" }], "genres": [...] }
+    const jm = html.match(/jsondata\s*=\s*(\{[\s\S]*?\})\s*<\/script>/);
+    if (jm) {
+      try {
+        const data = JSON.parse(jm[1]);
+        for (const m of data?.mirrors || []) {
+          const mu = String(m.mirrorurl || "").replace(/\\\//g, "/");
+          const vm = mu.match(/\/play\?vid=([^&]+)/);
+          if (!vm) continue;
+          let raw = vm[1];
+          try { raw = decodeURIComponent(raw); } catch (_) {}
+          const host = (mu.match(/^https?:\/\/[^/]+/) || ["https://w2.hentaiocean.com"])[0];
+          const direct = host + "/video/" + encodeURIComponent(raw);
+          videos.push({ url: direct, quality: "MP4", originalUrl: direct, headers: { ...this.getHeaders(url), Referer: host + "/" } });
+        }
+      } catch (_) {}
+    }
+    if (videos.length === 0) {
+      const m3u8Re = /["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/gi;
+      const mp4Re  = /["'](https?:\/\/[^"']+\.mp4[^"']*)['"]/gi;
+      let m;
+      while ((m = m3u8Re.exec(html)) !== null)
+        videos.push({ url: m[1], quality: "HLS", originalUrl: m[1], headers: this.getHeaders(url) });
+      while (videos.length < 3 && (m = mp4Re.exec(html)) !== null)
+        videos.push({ url: m[1], quality: "MP4", originalUrl: m[1], headers: this.getHeaders(url) });
+    }
     return videos;
   }
 

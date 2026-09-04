@@ -61,14 +61,33 @@ const watchtowerSources = [{
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
       const html = res.body;
       const videos = [];
-      const qualityRx = /"quality"\s*:\s*"(\d+)"[^}]+"videoUrl"\s*:\s*"([^"]+)"/g;
-      let m;
-      while ((m = qualityRx.exec(html)) !== null) {
-        videos.push({ url: m[2].replace(/\\/g, ""), quality: `${m[1]}p · ZeusDL`, originalUrl: m[2].replace(/\\/g, ""), headers: this.getHeaders(url) });
+      const seen = {};
+      // Watch pages embed: mediaDefinition: [{format:"hls",videoUrl:"\/media\/hls?s=<token>"},
+      //                                      {format:"mp4",videoUrl:"\/media\/mp4?s=<token>"}]
+      const md = html.match(/mediaDefinition:\s*(\[[\s\S]*?\])\s*,?\s*[}\]"\n]/);
+      if (md) {
+        try {
+          const arr = JSON.parse(md[1].replace(/\\n/g, ""));
+          for (const def of arr) {
+            const vu = (def.videoUrl || "").replace(/\\\//g, "/");
+            if (!vu || seen[vu]) continue;
+            seen[vu] = 1;
+            const abs = vu.startsWith("http") ? vu : "https://www.youporn.com" + vu;
+            const qual = String(def.format || "Auto").toUpperCase();
+            videos.push({ url: abs, quality: qual, originalUrl: abs, headers: this.getHeaders(url) });
+          }
+        } catch (_) {}
+      }
+      if (videos.length === 0) {
+        const qualityRx = /"quality"\s*:\s*"(\d+)"[^}]+"videoUrl"\s*:\s*"([^"]+)"/g;
+        let m;
+        while ((m = qualityRx.exec(html)) !== null) {
+          videos.push({ url: m[2].replace(/\\/g, ""), quality: `${m[1]}p`, originalUrl: m[2].replace(/\\/g, ""), headers: this.getHeaders(url) });
+        }
       }
       if (videos.length === 0) {
         const hlsMatch = html.match(/['"](https?:\/\/[^'"]+\.m3u8[^'"]*)['"]/);
-        if (hlsMatch) videos.push({ url: hlsMatch[1], quality: "HLS · ZeusDL", originalUrl: hlsMatch[1], headers: this.getHeaders(url) });
+        if (hlsMatch) videos.push({ url: hlsMatch[1], quality: "HLS", originalUrl: hlsMatch[1], headers: this.getHeaders(url) });
       }
       return videos;
     }

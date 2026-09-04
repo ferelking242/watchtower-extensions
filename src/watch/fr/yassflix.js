@@ -47,42 +47,64 @@ class DefaultExtension extends MProvider {
 
     _parseCards(html) {
         const items = []; const seen = {};
-        const re = /<a[^>]+href="((?:https?:\/\/[^"]+)?\/(?:film|serie|movie|streaming)[^"]+)"[^>]*>[\s\S]{0,500}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,100})"/gi;
+        // Next.js listing: <a ... href="/movie/<slug>-<id>"></a>...<img alt="Title" src="..."/>
+        const re = /<a[^>]+href="([^"]*\/(?:movie|tv|watch|film|serie)\/[^"]+)"[^>]*><\/a>([\s\S]{0,1200}?)(?:<\/picture>|<\/a>|<\/div>)/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
-            const url = m[1].startsWith("http") ? m[1] : this.baseUrl + m[1];
-            if (url in seen) continue; seen[url] = 1;
-            const img = m[2].startsWith("//") ? "https:" + m[2] : m[2].startsWith("/") ? this.baseUrl + m[2] : m[2];
-            items.push({ link: url, imageUrl: img, name: this._decode(m[3]) });
+            const seg = m[2];
+            const imgM = /<img[^>]+src="([^"]+)"[^>]*>/.exec(seg);
+            const altM = /alt="([^"]{2,120})"/.exec(seg);
+            if (!imgM || !altM) continue;
+            this._addCard(items, seen, m[1], imgM[1], altM[1]);
         }
         return items;
     }
 
+    _addCard(items, seen, href, imgSrc, alt) {
+        const url = href.startsWith("http") ? href : this.baseUrl + href;
+        if (url in seen) return;
+        if (!/\d+$/.test(url)) return;
+        seen[url] = 1;
+        const img = imgSrc.startsWith("//") ? "https:" + imgSrc : imgSrc.startsWith("/") ? this.baseUrl + imgSrc : imgSrc;
+        items.push({ link: url, imageUrl: img, name: this._decode(alt) });
+    }
+
     async getPopular(page) {
-        const url = page <= 1 ? this.baseUrl + "/films/" : `${this.baseUrl}/films/page/${page}/`;
+        const url = this.baseUrl + (page > 1 ? `/movies?page=${page}` : "/movies");
         const res = await new Client().get(url, this._hdrs());
         const items = this._parseCards(res.body);
-        return { list: items, hasNextPage: items.length >= 8 };
+        return { list: items, hasNextPage: items.length >= 12 };
     }
 
     async getLatestUpdates(page) {
-        const url = page <= 1 ? this.baseUrl + "/" : `${this.baseUrl}/page/${page}/`;
+        const url = this.baseUrl + (page > 1 ? `/tv-shows?page=${page}` : "/tv-shows");
         const res = await new Client().get(url, this._hdrs());
         const items = this._parseCards(res.body);
-        return { list: items, hasNextPage: items.length >= 8 };
+        return { list: items, hasNextPage: items.length >= 12 };
     }
 
     async search(query, page, filterList) {
-        const url = `${this.baseUrl}/?s=${encodeURIComponent(query)}`;
+        const url = `${this.baseUrl}/search?q=${encodeURIComponent(query)}`;
         const res = await new Client().get(url, this._hdrs());
         return { list: this._parseCards(res.body), hasNextPage: false };
     }
 
     async getDetail(url) {
-        const res = await new Client().get(url, this._hdrs(url));
-        const html = res.body;
-        const nameM = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
-        const name = nameM ? this._decode(nameM[1]) : "";
+        let res = await new Client().get(url, this._hdrs(url));
+        let html = res.body;
+        let watchUrl = url;
+        // /movie/<slug>-<id> and /tv/<slug>-<id> are client-side routes that 404 when
+        // fetched server-side; fall back to the SSR watch page /watch/<kind>/<id>
+        if (res.statusCode >= 400 || /404: This page could not be found/.test(html)) {
+            const m = url.match(/\/(movie|tv)\/(?:[^/]*-)?(\d+)(?:\/)?$/);
+            if (m) {
+                const alt = `https://yassflix.cc/watch/${m[1]}/${m[2]}`;
+                const r2 = await new Client().get(alt, this._hdrs(alt));
+                if (r2.statusCode < 400) { res = r2; html = r2.body; watchUrl = alt; }
+            }
+        }
+        const nameM = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/) || html.match(/<title>([^<]*)<\/title>/);
+        const name = nameM ? this._decode(nameM[1]).replace(/^Yassflix\s*-\s*Watching\s*/i, "").trim() : "";
         const ogImg = html.match(/property="og:image"[^>]*content="([^"]+)"/i) || html.match(/content="([^"]+)"[^>]*property="og:image"/i);
         const imageUrl = ogImg ? ogImg[1] : "";
         const descM = html.match(/property="og:description"[^>]*content="([^"]+)"/i) || html.match(/name="description"[^>]*content="([^"]+)"/i);
@@ -97,7 +119,7 @@ class DefaultExtension extends MProvider {
             if (epName.length < 2) continue;
             chapters.push({ name: epName, url: epUrl });
         }
-        if (chapters.length === 0) chapters.push({ name: name || "Regarder", url });
+        if (chapters.length === 0) chapters.push({ name: name || "Regarder", url: watchUrl });
         return { name, imageUrl, description, chapters };
     }
 

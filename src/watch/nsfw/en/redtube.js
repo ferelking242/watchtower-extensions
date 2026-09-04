@@ -35,19 +35,25 @@ const watchtowerSources = [{
     _parse(html) {
       const doc = new Document(html);
       const items = [];
-      const cards = doc.select(".videoBox, .pcVideoListItem");
-      for (const card of cards) {
-        const a = card.selectFirst("a[href]");
-        if (!a) continue;
+      const seen = {};
+      // Real markup: <div class="js-pop thumbnail-card videoblock_list" data-video-id="...">
+      //   <span class="video_thumb_wrap"><a class="video_link" href="/<id>">
+      //     <picture>...<img class="lazy" alt="TITLE" data-src="THUMB"></picture>
+      //     <div class="duration">...</div></a></span>
+      for (const a of doc.select("span.video_thumb_wrap a.video_link[href]")) {
         const href = a.attr("href") || "";
-        if (!href) continue;
-        const title = a.attr("title") || card.selectFirst(".videoTitle")?.text || "Unknown";
-        const img = card.selectFirst("img");
-        const thumb = img?.attr("data-src") || img?.attr("src") || "";
-        const dur = card.selectFirst(".duration, .videoDuration")?.text?.trim() || "";
-        items.push({ name: title.trim(), imageUrl: thumb, link: href.startsWith("http") ? href : "https://www.redtube.com" + href, description: dur ? `Duration: ${dur}` : "" });
+        if (!href || !/^\/\d+/.test(href)) continue;
+        const link = href.startsWith("http") ? href : "https://www.redtube.com" + href;
+        if (seen[link]) continue;
+        seen[link] = 1;
+        const img = a.selectFirst("img");
+        const title = (img?.attr("alt") || a.attr("title") || "").trim();
+        const thumb = img?.attr("data-src") || img?.attr("data-o_thumb") || img?.attr("src") || "";
+        const dur = a.selectFirst(".duration")?.text?.trim() || "";
+        if (!title || !title.length) continue;
+        items.push({ name: title, imageUrl: thumb, link, description: dur ? `Duration: ${dur}` : "" });
       }
-      return { list: items, hasNextPage: !!doc.selectFirst(".next, a[rel='next']") };
+      return { list: items, hasNextPage: !!doc.selectFirst(".next, a[rel='next'], a[href*='page=']") };
     }
     async getDetail(url) {
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
@@ -61,14 +67,33 @@ const watchtowerSources = [{
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
       const html = res.body;
       const videos = [];
-      const qualityRx = /"quality"\s*:\s*"(\d+)"[^}]+"videoUrl"\s*:\s*"([^"]+)"/g;
-      let m;
-      while ((m = qualityRx.exec(html)) !== null) {
-        videos.push({ url: m[2].replace(/\\/g, ""), quality: `${m[1]}p · ZeusDL`, originalUrl: m[2].replace(/\\/g, ""), headers: this.getHeaders(url) });
+      const seen = {};
+      // Watch pages embed: mediaDefinition: [{format:"hls",videoUrl:"\/media\/hls?s=<token>"},
+      //                                      {format:"mp4",videoUrl:"\/media\/mp4?s=<token>"}]
+      const md = html.match(/mediaDefinition:\s*(\[[\s\S]*?\])\s*,?\s*[}\]"\n]/);
+      if (md) {
+        try {
+          const arr = JSON.parse(md[1].replace(/\\n/g, ""));
+          for (const def of arr) {
+            const vu = (def.videoUrl || "").replace(/\\\//g, "/");
+            if (!vu || seen[vu]) continue;
+            seen[vu] = 1;
+            const abs = vu.startsWith("http") ? vu : "https://www.redtube.com" + vu;
+            const qual = String(def.format || "Auto").toUpperCase();
+            videos.push({ url: abs, quality: qual, originalUrl: abs, headers: this.getHeaders(url) });
+          }
+        } catch (_) {}
+      }
+      if (videos.length === 0) {
+        const qualityRx = /"quality"\s*:\s*"(\d+)"[^}]+"videoUrl"\s*:\s*"([^"]+)"/g;
+        let m;
+        while ((m = qualityRx.exec(html)) !== null) {
+          videos.push({ url: m[2].replace(/\\/g, ""), quality: `${m[1]}p`, originalUrl: m[2].replace(/\\/g, ""), headers: this.getHeaders(url) });
+        }
       }
       if (videos.length === 0) {
         const hlsMatch = html.match(/['"](https?:\/\/[^'"]+\.m3u8[^'"]*)['"]/);
-        if (hlsMatch) videos.push({ url: hlsMatch[1], quality: "HLS · ZeusDL", originalUrl: hlsMatch[1], headers: this.getHeaders(url) });
+        if (hlsMatch) videos.push({ url: hlsMatch[1], quality: "HLS", originalUrl: hlsMatch[1], headers: this.getHeaders(url) });
       }
       return videos;
     }

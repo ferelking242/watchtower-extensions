@@ -61,14 +61,38 @@ const watchtowerSources = [{
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
       const html = res.body;
       const videos = [];
-      const hlsMatch = html.match(/['"]([^'"]+\.m3u8[^'"]*)['"]/);
-      if (hlsMatch) videos.push({ url: hlsMatch[1], quality: "HLS · ZeusDL", originalUrl: hlsMatch[1], headers: this.getHeaders(url) });
-      const mp4Rx = /['"]([^'"]+\.mp4[^'"]*)['"]/g;
-      let m;
-      while ((m = mp4Rx.exec(html)) !== null) {
-        if (!m[1].includes("ad") && !m[1].includes("banner")) {
-          videos.push({ url: m[1], quality: "MP4 · ZeusDL", originalUrl: m[1], headers: this.getHeaders(url) });
-          if (videos.length >= 4) break;
+      // Watch pages embed: EP.video.player.vid = '<vid>'; EP.video.player.hash = '<32-hex>';
+      const vidM = html.match(/EP\.video\.player\.vid\s*=\s*'([^']+)'/);
+      const hashM = html.match(/EP\.video\.player\.hash\s*=\s*'([0-9a-f]{32})'/);
+      if (vidM && hashM) {
+        try {
+          const vid = vidM[1];
+          const hashed = hashM[1].match(/.{1,8}/g).map((h) => parseInt(h, 16).toString(36)).join("");
+          const apiUrl = `https://www.eporner.com/xhr/video/${vid}?hash=${hashed}&domain=www.eporner.com&playerWidth=1280&playerHeight=720&fallback=0&embed=0&supportedFormats=hls,mp4&_=${Date.now()}`;
+          const apiRes = await new Client().get(apiUrl, { ...this.getHeaders(url), "X-Requested-With": "XMLHttpRequest", Accept: "application/json, text/javascript, */*; q=0.01" });
+          const data = JSON.parse(apiRes.body);
+          const sources = data?.sources || {};
+          for (const fmt of ["mp4", "hls"]) {
+            const group = sources[fmt];
+            if (!group) continue;
+            for (const [label, entry] of Object.entries(group)) {
+              const src = entry?.src || "";
+              if (!src || videos.find(v => v.url === src)) continue;
+              videos.push({ url: src, quality: String(label).trim() || fmt.toUpperCase(), originalUrl: src, headers: this.getHeaders(url) });
+            }
+          }
+        } catch (_) {}
+      }
+      if (videos.length === 0) {
+        const hlsMatch = html.match(/['"]([^'"]+\.m3u8[^'"]*)['"]/);
+        if (hlsMatch) videos.push({ url: hlsMatch[1], quality: "HLS", originalUrl: hlsMatch[1], headers: this.getHeaders(url) });
+        const mp4Rx = /['"](https?:[^'"]+\.mp4[^'"]*)['"]/g;
+        let m;
+        while ((m = mp4Rx.exec(html)) !== null) {
+          if (!m[1].includes("ad") && !m[1].includes("banner") && !videos.find(v => v.url === m[1])) {
+            videos.push({ url: m[1], quality: "MP4", originalUrl: m[1], headers: this.getHeaders(url) });
+            if (videos.length >= 4) break;
+          }
         }
       }
       return videos;

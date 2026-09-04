@@ -685,6 +685,8 @@ async getCustomList(listId, page) {
         const r    = await new Client().get(url, this._hdrs(url));
         const html = r.body;
         const videos = [];
+        const epM    = /[?&]ep=(\d+)/.exec(url);
+        const sIdM   = /[?&]s=(\d+)/.exec(url);
 
         // Strategy 1 — Embedded player data JSON
         const playerM = /(?:var|let|const)\s+(?:playerData|videoData|streamData)\s*=\s*(\{[\s\S]*?\});/.exec(html)
@@ -705,6 +707,34 @@ async getCustomList(listId, page) {
             if (!videos.find(v => v.url === streamUrl)) videos.push({ url: streamUrl, quality: "AUTO", headers: this._hdrs(url) });
         }
 
+        // Strategy 2b — films: fetch player list from film_api.php
+        if (videos.length === 0 && !epM && !sIdM) {
+            const newsId = this._extractNewsId(url, html);
+            if (newsId) {
+                try {
+                    const apiR  = await new Client().get(this.baseUrl + "/engine/ajax/film_api.php?id=" + newsId, this._ajaxHdrs(url));
+                    const api   = JSON.parse(apiR.body);
+                    const seen  = {};
+                    const pushV = (src, label) => {
+                        if (!src || seen[src] || !/^https?:\/\//.test(src)) return;
+                        seen[src] = true;
+                        videos.push({ url: src, quality: label || "AUTO", headers: this._hdrs(url) });
+                    };
+                    const players = (api && api.players) ? api.players : (api.meta && api.meta.players) ? api.meta.players : null;
+                    if (players) {
+                        for (const hoster of Object.keys(players)) {
+                            const p = players[hoster];
+                            if (p && typeof p === "object") {
+                                for (const lng of Object.keys(p)) pushV(p[lng], String(lng).toUpperCase());
+                            } else if (typeof p === "string") {
+                                pushV(p, hoster.toUpperCase());
+                            }
+                        }
+                    }
+                } catch (_) {}
+            }
+        }
+
         // Strategy 3 — iframes (external players)
         if (videos.length === 0) {
             const iRe = /<iframe[^>]+src="([^"]+)"/gi;
@@ -718,8 +748,6 @@ async getCustomList(listId, page) {
         }
 
         // Strategy 4 — episode language variants from URL params
-        const epM    = /[?&]ep=(\d+)/.exec(url);
-        const sIdM   = /[?&]s=(\d+)/.exec(url);
         if (epM && sIdM && videos.length === 0) {
             const newsId = this._extractNewsId(url, html);
             if (newsId) {

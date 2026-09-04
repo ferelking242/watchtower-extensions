@@ -27,34 +27,37 @@ class DefaultExtension extends MProvider {
     const doc = new Document(html);
     const items = [];
     const seen = new Set();
-    for (const card of doc.select("article,.video-item,.item,[class*=video],[class*=episode]")) {
-      const a = card.selectFirst("a[href]");
-      if (!a) continue;
-      let link = a.attr("href") || "";
+    // Real structure: <a class="video-card" href="/video/<slug>">
+    //   <div class="video-thumb"><img src="https://edge1.hentai.sh/v/<slug>/thumb.jpg" alt="TITLE"></div>
+    //   <div class="video-body"><h3>TITLE</h3>...</div></a>
+    for (const card of doc.select("a.video-card[href*='/video/']")) {
+      const link = card.attr("href") || "";
       if (!link || link === "#") continue;
-      if (!link.startsWith("http")) link = BASE + link;
-      if (seen.has(link)) continue;
-      seen.add(link);
+      const full = link.startsWith("http") ? link : BASE + link;
+      if (seen.has(full)) continue;
+      seen.add(full);
       const img = card.selectFirst("img");
       const thumb = img?.attr("data-src") || img?.attr("src") || "";
-      const name = card.selectFirst("h1,h2,h3,.title")?.text?.trim() || a.attr("title") || "Hentai";
-      items.push({ name, imageUrl: thumb, link });
+      const name = card.selectFirst("h3")?.text?.trim() ||
+                   img?.attr("alt") || "Hentai";
+      items.push({ name, imageUrl: thumb, link: full });
     }
-    return { list: items, hasNextPage: !!doc.selectFirst("a.next,[rel=next]") };
+    return { list: items, hasNextPage: false };
   }
 
   async getPopular(page) {
-    const res = await new Client().get(`${BASE}/videos/popular?page=${page}`, this.getHeaders());
+    const res = await new Client().get(`${BASE}/trending${page > 1 ? `?page=${page}` : ""}`, this.getHeaders());
     return this._parse(res.body);
   }
 
   async getLatestUpdates(page) {
-    const res = await new Client().get(`${BASE}/videos?page=${page}`, this.getHeaders());
+    // Home page is the “Recent Aired” grid
+    const res = await new Client().get(`${BASE}/${page > 1 ? `?page=${page}` : ""}`, this.getHeaders());
     return this._parse(res.body);
   }
 
   async search(query, page, filters) {
-    const res = await new Client().get(`${BASE}/search?q=${encodeURIComponent(query)}&page=${page}`, this.getHeaders());
+    const res = await new Client().get(`${BASE}/video?q=${encodeURIComponent(query.trim())}`, this.getHeaders());
     return this._parse(res.body);
   }
 
@@ -72,13 +75,14 @@ class DefaultExtension extends MProvider {
     const res = await new Client().get(url, this.getHeaders(url));
     const html = res.body;
     const videos = [];
+    const clean = (s) => String(s).replace(/["'\\]+$/, "");
     const m3u8Re = /["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/gi;
     const mp4Re  = /["'](https?:\/\/[^"']+\.mp4[^"']*)['"]/gi;
     let m;
     while ((m = m3u8Re.exec(html)) !== null)
-      videos.push({ url: m[1], quality: "HLS", originalUrl: m[1], headers: this.getHeaders(url) });
+      videos.push({ url: clean(m[1]), quality: "HLS", originalUrl: clean(m[1]), headers: this.getHeaders(url) });
     while (videos.length < 3 && (m = mp4Re.exec(html)) !== null)
-      videos.push({ url: m[1], quality: "MP4", originalUrl: m[1], headers: this.getHeaders(url) });
+      videos.push({ url: clean(m[1]), quality: "MP4", originalUrl: clean(m[1]), headers: this.getHeaders(url) });
     return videos;
   }
 

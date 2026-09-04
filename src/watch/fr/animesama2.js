@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://animes-sama.fr/img/autres/logo_icon.png",
     "typeSource": "single",
     "itemType": 2,
-    "version": "1.1.1",
+    "version": "1.1.2",
     "pkgPath": "watch/fr/animesama2.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -48,8 +48,8 @@ class DefaultExtension extends MProvider {
 
     _parseCards(html) {
         const items = []; const seen = {};
-        // anime-sama: /catalogue/SLUG/ links with img
-        const re = /<a[^>]+href="((?:https?:\/\/[^"]+)?\/catalogue\/[^"\/]+\/)"[^>]*>[\s\S]{0,500}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,100})"/gi;
+        // anime-sama: /catalogue/SLUG/... links with img (no trailing slash on recent builds)
+        const re = /<a[^>]+href="((?:https?:\/\/[^"]+)?\/catalogue\/[^"?]+)"[^>]*>[\s\S]{0,600}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]+alt="([^"]{2,120})"/gi;
         let m;
         while ((m = re.exec(html)) !== null) {
             const url = m[1].startsWith("http") ? m[1] : this.baseUrl + m[1];
@@ -97,7 +97,12 @@ class DefaultExtension extends MProvider {
         const res = await new Client().get(url, this._hdrs(url));
         const html = res.body;
         const nameM = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
-        const name = nameM ? this._decode(nameM[1]) : "";
+        let name = nameM ? this._decode(nameM[1]) : "";
+        if (!name) {
+            // Fallback: <title>07 ghost | Anime-Sama - Streaming…</title>
+            const tM = html.match(/<title>([^<|]+)/i);
+            name = tM ? this._decode(tM[1]).replace(/\|.*$/, "").trim() : "";
+        }
         const ogImg = html.match(/property="og:image"[^>]*content="([^"]+)"/i) ||
                       html.match(/content="([^"]+)"[^>]*property="og:image"/i);
         const imageUrl = ogImg ? ogImg[1] : (html.match(/\/img\/[^"']{5,80}(?:poster|cover|affiche)[^"']{0,40}/i)?.[0] || "");

@@ -13,7 +13,7 @@ const watchtowerSources = [{
   }];
   class DefaultExtension extends MProvider {
     getHeaders(url) {
-      return { "Referer": "https://xhamster.com/", "User-Agent": "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36" };
+      return { "Referer": "https://xhamster.com/", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36", "Accept-Language": "en-US,en;q=0.9", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8" };
     }
     async getPopular(page) {
       const url = `https://xhamster.com/videos/best?page=${page}`;
@@ -35,19 +35,24 @@ const watchtowerSources = [{
     _parse(html) {
       const doc = new Document(html);
       const items = [];
-      const cards = doc.select(".entities article, .video-thumb-wrap, [data-video-url]");
-      for (const card of cards) {
-        const a = card.selectFirst("a[href*='/videos/']") || card.selectFirst("a.video-thumb-img");
-        if (!a) continue;
+      const seen = {};
+      // Real markup: <a class="video-thumb__image-container" href="/videos/<slug>-xhXX" aria-label="TITLE">
+      //   <img class="thumb-image-container__image" src="THUMB" alt="TITLE"/>
+      //   ... <div class="thumb-image-container__duration">...</div></a>
+      for (const a of doc.select("a.video-thumb__image-container[href*='/videos/']")) {
         const href = a.attr("href") || "";
         if (!href) continue;
-        const title = a.attr("title") || card.selectFirst(".video-thumb-title-label")?.text || "Unknown";
-        const img = card.selectFirst("img");
+        const link = href.startsWith("http") ? href : "https://xhamster.com" + href;
+        if (seen[link]) continue;
+        seen[link] = 1;
+        const img = a.selectFirst("img");
+        const title = (img?.attr("alt") || a.attr("aria-label") || a.attr("title") || "").trim();
         const thumb = img?.attr("data-src") || img?.attr("src") || "";
-        const dur = card.selectFirst(".thumb-image-container__duration, .video-thumb-info__duration")?.text?.trim() || "";
-        items.push({ name: title.trim(), imageUrl: thumb, link: href.startsWith("http") ? href : "https://xhamster.com" + href, description: dur ? `Duration: ${dur}` : "" });
+        const dur = a.selectFirst("[data-role='video-duration'], .thumb-image-container__duration")?.text?.replace(/\s+/g, " ").trim() || "";
+        if (!title || !title.length) continue;
+        items.push({ name: title, imageUrl: thumb, link, description: dur ? `Duration: ${dur}` : "" });
       }
-      return { list: items, hasNextPage: !!doc.selectFirst(".pager-block__item-next, a.pager-next") };
+      return { list: items, hasNextPage: !!doc.selectFirst("a[rel='next'], .pager-next, a[href*='page=']") };
     }
     async getDetail(url) {
       const res = await new Client().get(url, { headers: this.getHeaders(url) });

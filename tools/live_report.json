@@ -1,0 +1,2308 @@
+{
+ "type": "watch",
+ "filter": "NSFW",
+ "results": [
+  {
+   "name": "SexTB",
+   "baseUrl": "https://sextb.net",
+   "isNsfw": true,
+   "file": "src/watch/ko/ko.sextb.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "1PornTV",
+   "baseUrl": "https://www.1porn.tv",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/1porntv.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "JuicyAsians",
+   "baseUrl": "https://www.juicyasians.com",
+   "isNsfw": true,
+   "file": "src/watch/en/juicyasians.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "AsiansGoneWild",
+   "baseUrl": "https://www.asiansgonewild.com",
+   "isNsfw": true,
+   "file": "src/watch/en/asiansgonewild.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Beeg",
+   "baseUrl": "https://beeg.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/beeg.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Eporner",
+   "baseUrl": "https://www.eporner.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/eporner.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Aki-H",
+   "baseUrl": "https://aki-h.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/akih.js",
+   "steps": {
+    "popular": {
+     "count": 3,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Hentai",
+       "u": "https://discord.gg/"
+      },
+      {
+       "n": "Hentai",
+       "u": "https://twitter.com/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 3,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Hentai",
+       "u": "https://discord.gg/"
+      },
+      {
+       "n": "Hentai",
+       "u": "https://twitter.com/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Hanime1.me",
+   "baseUrl": "https://hanime1.me",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hanime1me.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Hanime.tv",
+   "baseUrl": "https://hanime.tv",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hanimedottv.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Hentai0",
+   "baseUrl": "https://hentai0.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentai0.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Hentai2W",
+   "baseUrl": "https://hentai2w.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentai2w.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": true,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": true,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Hentaibros",
+   "baseUrl": "https://hentaibros.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaibros.js",
+   "steps": {
+    "popular": {
+     "count": 30,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Kanojo Saimin episode 2",
+       "u": "https://hentaibros.net/kanojo-saimin-episode-2/"
+      },
+      {
+       "n": "Kanojo Saimin episode 1",
+       "u": "https://hentaibros.net/kanojo-saimin-episode-1/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 30,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Kanojo Saimin episode 2",
+       "u": "https://hentaibros.net/kanojo-saimin-episode-2/"
+      },
+      {
+       "n": "Kanojo Saimin episode 1",
+       "u": "https://hentaibros.net/kanojo-saimin-episode-1/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "SexKBJ",
+   "baseUrl": "https://sexkbj.com",
+   "isNsfw": true,
+   "file": "src/watch/ko/ko.sexkbj.js",
+   "steps": {
+    "popular": {
+     "count": 69,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Home",
+       "u": "http://sexkbj.com"
+      },
+      {
+       "n": "KOREAN BJ",
+       "u": "https://sexkbj.com/category/korean-bj/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 42,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Home",
+       "u": "http://sexkbj.com"
+      },
+      {
+       "n": "KOREAN BJ",
+       "u": "https://sexkbj.com/category/korean-bj/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "HentaiCity",
+   "baseUrl": "https://hentaicity.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaicity.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "FreePornVideos",
+   "baseUrl": "https://www.freepornvideos.xxx",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/freepornvideos.js",
+   "steps": {
+    "popular": {
+     "count": 36,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Big Tit MILF BBC Anal",
+       "u": "https://www.freepornvideos.xxx/videos/93818105/big-tit-milf-bbc-anal/"
+      },
+      {
+       "n": "Busty Sinatra In Red",
+       "u": "https://www.freepornvideos.xxx/videos/93815347/busty-sinatra-in-red/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 12,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Hotel Vixen Season 3 Episode 6: Code Pink",
+       "u": "https://www.freepornvideos.xxx/videos/93818069/hotel-vixen-season-3-episode-6-code-pink/"
+      },
+      {
+       "n": "Prove You Can Behave, and We'll Let You Cum",
+       "u": "https://www.freepornvideos.xxx/videos/93818090/prove-you-can-behave-and-well-let-you-cum/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "HentaiFox.tv",
+   "baseUrl": "https://hentaifox.tv",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaifoxtv.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "ESHentai",
+   "baseUrl": "https://eshentai.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/eshentai.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "haho.moe",
+   "baseUrl": "https://haho.moe",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hahomoe.js",
+   "steps": {
+    "popular": {
+     "count": 22,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Kanojo Face The Animation",
+       "u": "https://haho.moe/anime/1kixcpgb/2"
+      },
+      {
+       "n": "Kanojo Face The Animation",
+       "u": "https://haho.moe/anime/1kixcpgb/1"
+      }
+     ]
+    },
+    "latest": {
+     "count": 22,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Kanojo Face The Animation",
+       "u": "https://haho.moe/anime/1kixcpgb/2"
+      },
+      {
+       "n": "Kanojo Face The Animation",
+       "u": "https://haho.moe/anime/1kixcpgb/1"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "HentaiCloud",
+   "baseUrl": "https://hentaicloud.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaicloud.js",
+   "steps": {
+    "popular": {
+     "count": 13,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Eroriman 2",
+       "u": "https://hentaicloud.com/video/3774/eroriman-2/episode1/english"
+      },
+      {
+       "n": "Boku ni Sefure ga Dekita Riyuu",
+       "u": "https://hentaicloud.com/video/3743/boku-ni-sefure-ga-dekita-riyuu/episode1/english"
+      }
+     ]
+    },
+    "latest": {
+     "count": 13,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Eroriman 2",
+       "u": "https://hentaicloud.com/video/3774/eroriman-2/episode1/english"
+      },
+      {
+       "n": "Boku ni Sefure ga Dekita Riyuu",
+       "u": "https://hentaicloud.com/video/3743/boku-ni-sefure-ga-dekita-riyuu/episode1/english"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "HentaiMoon",
+   "baseUrl": "https://hentaimoon.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaimoon.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Hentaigasm",
+   "baseUrl": "https://hentaigasm.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaigasm.js",
+   "steps": {
+    "popular": {
+     "count": 91,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Muramata-San No Aijou 3 Subbed",
+       "u": "https://hentaigasm.com/muramata-san-no-aijou-3-subbed/"
+      },
+      {
+       "n": "Uncensored 6 Subbed",
+       "u": "https://s.zlinkp.com/d.php?z=5442922"
+      }
+     ]
+    },
+    "latest": {
+     "count": 91,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Muramata-San No Aijou 3 Subbed",
+       "u": "https://hentaigasm.com/muramata-san-no-aijou-3-subbed/"
+      },
+      {
+       "n": "Uncensored 6 Subbed",
+       "u": "https://s.zlinkp.com/d.php?z=5442922"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Hentaini",
+   "baseUrl": "https://hentaini.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaini.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "HentaiMama",
+   "baseUrl": "https://hentaimama.io",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaimama.js",
+   "steps": {
+    "popular": {
+     "count": 24,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Kanojo Saimin",
+       "u": "https://hentaimama.io/episodes/kanojo-saimin-episode-2/"
+      },
+      {
+       "n": "Kanojo Saimin",
+       "u": "https://hentaimama.io/episodes/kanojo-saimin-episode-1/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 24,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Kanojo Saimin",
+       "u": "https://hentaimama.io/episodes/kanojo-saimin-episode-2/"
+      },
+      {
+       "n": "Kanojo Saimin",
+       "u": "https://hentaimama.io/episodes/kanojo-saimin-episode-1/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Hentai Ocean",
+   "baseUrl": "https://hentaiocean.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaiocean.js",
+   "steps": {
+    "popular": {
+     "count": 681,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "L'amour fou de l'automate 2",
+       "u": "https://hentaiocean.com/watch/lamour-fou-de-lautomate-2"
+      },
+      {
+       "n": "Onaji Zemi no Someya-san ga Sexy Joyuu Datta Hanashi 7",
+       "u": "https://hentaiocean.com/watch/onaji-zemi-no-someya-san-ga-sexy-joyuu-datta-hanashi-7"
+      }
+     ]
+    },
+    "latest": {
+     "count": 224,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "L'amour fou de l'automate 2",
+       "u": "https://hentaiocean.com/watch/lamour-fou-de-lautomate-2"
+      },
+      {
+       "n": "Onaji Zemi no Someya-san ga Sexy Joyuu Datta Hanashi 7",
+       "u": "https://hentaiocean.com/watch/onaji-zemi-no-someya-san-ga-sexy-joyuu-datta-hanashi-7"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Hentaisea",
+   "baseUrl": "https://hentaisea.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaisea.js",
+   "steps": {
+    "popular": {
+     "count": 82,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Fragrance Boku Ga Deatta Niku Benki Sono Kaori Nitsuite No Kioku",
+       "u": "https://hentaisea.com/watch/fragrance-boku-ga-deatta-niku-benki-sono-kaori-nitsuite-no-kioku/"
+      },
+      {
+       "n": "Super Gal Saves The Day With Her Super Twat",
+       "u": "https://hentaisea.com/watch/super-gal-saves-the-day-with-her-super-twat/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 82,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "H Ecchi",
+       "u": "https://hentaisea.com/watch/h-ecchi/"
+      },
+      {
+       "n": "Love",
+       "u": "https://hentaisea.com/watch/love/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Hentaiser",
+   "baseUrl": "https://hentaiser.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaiser.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Hentai.SH",
+   "baseUrl": "https://hentai.sh",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaish.js",
+   "steps": {
+    "popular": {
+     "count": 60,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Juurin Oukoku: Elf Oukoku wa Kyodai Naedoko ni Episode 1",
+       "u": "https://hentai.sh/video/juurin-oukoku-elf-oukoku-wa-kyodai-naedoko-ni-episode-01"
+      },
+      {
+       "n": "Phantom Alchemia: Sylvia no Dokidoki Sakusei Toshi Keikaku Episode 2",
+       "u": "https://hentai.sh/video/phantom-alchemia-silvia-no-dokidoki-sakusei-toshi-keikaku-episode-02"
+      }
+     ]
+    },
+    "latest": {
+     "count": 39,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Harem-jima e Youkoso! Episode 1",
+       "u": "https://hentai.sh/video/harem-jima-e-youkoso-episode-1"
+      },
+      {
+       "n": "So Low Futago Shimai to Katei Kyoshi Episode 3",
+       "u": "https://hentai.sh/video/so_low-episode-3"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "HentaiVideoWorld",
+   "baseUrl": "https://hentaivideoworld.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaivideoworld.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "hentai.tv",
+   "baseUrl": "https://hentai.tv",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaitv.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "HentaiFreak",
+   "baseUrl": "https://hentaifreak.org",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaifreakorg.js",
+   "steps": {
+    "popular": {
+     "count": 27,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Himekishi Lilia Episode 2",
+       "u": "https://hentaifreak.org/himekishi-lilia-episode-2-hentai-video/"
+      },
+      {
+       "n": "Soshite Watashi wa Ojisan ni Episode 4",
+       "u": "https://hentaifreak.org/soshite-watashi-wa-ojisan-ni-episode-4-hentai-video/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 27,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Darling Dubbed Episode 2",
+       "u": "https://hentaifreak.org/darling-dubbed-episode-2-hentai-video/"
+      },
+      {
+       "n": "Bible Black Episode 1",
+       "u": "https://hentaifreak.org/bible-black-episode-1-hentai-video/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "HentaiPlay",
+   "baseUrl": "https://hentaiplay.net",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaiplay.js",
+   "steps": {
+    "popular": {
+     "count": 8,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Muramata-san no Aijou Episode 3 Preview",
+       "u": "https://hentaiplay.net/hentai/episodes/"
+      },
+      {
+       "n": "JK Bitch ni Shiboraretai Episode 1 English",
+       "u": "https://hentaiplay.net/hentai/episodes/hentai-english-subbed/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 8,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Muramata-san no Aijou Episode 3 Preview",
+       "u": "https://hentaiplay.net/hentai/episodes/"
+      },
+      {
+       "n": "JK Bitch ni Shiboraretai Episode 1 English",
+       "u": "https://hentaiplay.net/hentai/episodes/hentai-english-subbed/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Hentaverse",
+   "baseUrl": "https://hentaverse.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaverse.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "Iwara",
+   "baseUrl": "https://www.iwara.tv",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/iwara.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "HStream.moe",
+   "baseUrl": "https://hstream.moe",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hstreammoe.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "MuchoHentai",
+   "baseUrl": "https://muchohentai.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/muchohentai.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "XKorean",
+   "baseUrl": "https://xkorean.com",
+   "isNsfw": true,
+   "file": "src/watch/ko/ko.xkorean.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "This operation was aborted"
+    }
+   }
+  },
+  {
+   "name": "OceanVeil",
+   "baseUrl": "https://oceanveil.org",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/oceanveil.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "MyHentaiMovie",
+   "baseUrl": "https://myhentaimovie.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/myhentaimovie.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "OnlyHentaiStuff",
+   "baseUrl": "https://onlyhentaistuff.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/onlyhentaistuff.js",
+   "steps": {
+    "popular": {
+     "count": 24,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Saimin Seishidou 催眠性指導 ep4",
+       "u": "https://www.onlyhentaistuff.com/videos/9053/saimin-seishidou-ep4/"
+      },
+      {
+       "n": "Takarasagashi no Natsuyasumi ep2",
+       "u": "https://www.onlyhentaistuff.com/videos/9802/takarasagashi-no-natsuyasumi-ep2/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 24,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Saimin Seishidou 催眠性指導 ep4",
+       "u": "https://www.onlyhentaistuff.com/videos/9053/saimin-seishidou-ep4/"
+      },
+      {
+       "n": "Takarasagashi no Natsuyasumi ep2",
+       "u": "https://www.onlyhentaistuff.com/videos/9802/takarasagashi-no-natsuyasumi-ep2/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "oppai.stream",
+   "baseUrl": "https://oppai.stream",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/oppaistream.js",
+   "steps": {
+    "popular": {
+     "count": 3,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Hentai",
+       "u": "https://oppai.streamread.oppai.stream"
+      },
+      {
+       "n": "Hentai",
+       "u": "https://oppai.stream/search"
+      }
+     ]
+    },
+    "latest": {
+     "count": 3,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Hentai",
+       "u": "https://oppai.streamread.oppai.stream"
+      },
+      {
+       "n": "Hentai",
+       "u": "https://oppai.stream/search"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "PornDos",
+   "baseUrl": "https://www.porndos.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/porndos.js",
+   "steps": {
+    "popular": {
+     "count": 96,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Russian Virgin Studying Has Sex With Stepmom",
+       "u": "https://www.porndos.com/video/russian-virgin-studying-has-sex-with-stepmom_v1/"
+      },
+      {
+       "n": "Russian Virgin Studying Has Sex With Stepmom",
+       "u": "https://www.porndos.com/video/russian-virgin-studying-has-sex-with-stepmom_v1/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 96,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Russian Virgin Studying Has Sex With Stepmom",
+       "u": "https://www.porndos.com/video/russian-virgin-studying-has-sex-with-stepmom_v1/"
+      },
+      {
+       "n": "Russian Virgin Studying Has Sex With Stepmom",
+       "u": "https://www.porndos.com/video/russian-virgin-studying-has-sex-with-stepmom_v1/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "KissHentaiz",
+   "baseUrl": "https://kisshentaiz.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/kisshentaiz.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "PornHub",
+   "baseUrl": "https://www.pornhub.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/pornhub.js",
+   "steps": {
+    "popular": {
+     "count": 30,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Jade Venus: From Small-Town Montana to Trans 🌽 Powerhouse",
+       "u": "https://www.pornhub.com/view_video.php?viewkey=6a114296d9c06"
+      },
+      {
+       "n": "How To Safely Shoot Your Own Content",
+       "u": "https://www.pornhub.com/view_video.php?viewkey=67195717523b3"
+      }
+     ]
+    },
+    "latest": {
+     "count": 30,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "ASA AKIRA & ALEX KEKESI (PORNHUB'S TOP BOSS) UNFILTERED INTERVIEW",
+       "u": "https://www.pornhub.com/view_video.php?viewkey=6837561ac07c2"
+      },
+      {
+       "n": "Going Deep with Aria - Alien Searches",
+       "u": "https://www.pornhub.com/view_video.php?viewkey=ph5d84d9d2be911"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "RedTube",
+   "baseUrl": "https://www.redtube.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/redtube.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "RexPorn",
+   "baseUrl": "https://www.rexporn.st",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/rexporn.js",
+   "steps": {
+    "popular": {
+     "count": 24,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "I Lost My Wife in a Bet and Now My Best Friend Is Going to Fuck Her",
+       "u": "https://www.rexporn.st/watch/12825"
+      },
+      {
+       "n": "My Yoga Sensei Showed Us New Asanas and Positions",
+       "u": "https://www.rexporn.st/watch/12826"
+      }
+     ]
+    },
+    "latest": {
+     "count": 24,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "I Lost My Wife in a Bet and Now My Best Friend Is Going to Fuck Her",
+       "u": "https://www.rexporn.st/watch/12825"
+      },
+      {
+       "n": "My Yoga Sensei Showed Us New Asanas and Positions",
+       "u": "https://www.rexporn.st/watch/12826"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "SpankBang",
+   "baseUrl": "https://spankbang.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/spankbang.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "TNAFlix",
+   "baseUrl": "https://www.tnaflix.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/tnaflix.js",
+   "steps": {
+    "popular": {
+     "count": 60,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Changing room amateur loses off cloths and shows boobs",
+       "u": "https://www.tnaflix.com/amateur-porn/Changing-room-amateur-loses-off-cloths-and-shows-boobs/video9024038"
+      },
+      {
+       "n": "Stepsis Kelly Kline Hungers For Stebro'S Big Cock",
+       "u": "https://www.tnaflix.com/amateur-porn/Stepsis-Kelly-Kline-Hungers-For-Stebro%27S-Big-Cock/video25721887"
+      }
+     ]
+    },
+    "latest": {
+     "count": 60,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Changing room amateur loses off cloths and shows boobs",
+       "u": "https://www.tnaflix.com/amateur-porn/Changing-room-amateur-loses-off-cloths-and-shows-boobs/video9024038"
+      },
+      {
+       "n": "Stepsis Kelly Kline Hungers For Stebro'S Big Cock",
+       "u": "https://www.tnaflix.com/amateur-porn/Stepsis-Kelly-Kline-Hungers-For-Stebro%27S-Big-Cock/video25721887"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "TXXX",
+   "baseUrl": "https://txxx.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/txxx.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "VidHentai",
+   "baseUrl": "https://vidhentai.net",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/vidhentai.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "WatchHentai",
+   "baseUrl": "https://watch-hentai.net",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/watchhentai.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Tube8",
+   "baseUrl": "https://www.tube8.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/tube8.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "UnderHentai",
+   "baseUrl": "https://underhentai.net",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/underhentai.js",
+   "steps": {
+    "popular": {
+     "count": 21,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Kanojo Saimin",
+       "u": "https://underhentai.netkanojo-saimin/"
+      },
+      {
+       "n": "Sei Brunehilde Gakuen Shoujo Kishidan to Junpaku no Panty The Animation",
+       "u": "https://underhentai.netsei-brunehilde-gakuen-shoujo-kishidan-to-junpaku-no-panty-the-animation/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 21,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Kanojo Saimin",
+       "u": "https://underhentai.netkanojo-saimin/"
+      },
+      {
+       "n": "Heatstroke Classroom",
+       "u": "https://landing.hentaipros.com/?ats=eyJhIjo2OTg4NywiYyI6NjkyNjE3LCJuIjoyNSwicyI6NTM3LCJlIjo4OTk0LCJwIjo1N30%3D&atc=NPC_HTP_DSC_4D7EE0A8"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "Xanimeporn",
+   "baseUrl": "https://xanimeporn.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/xanimeporn.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "xHamster",
+   "baseUrl": "https://xhamster.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/xhamster.js",
+   "steps": {
+    "popular": {
+     "count": 30,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "This Gilf has a hot sex date in a hotel room - my older pussy gets filled!",
+       "u": "https://xhamster.com/videos/xh2LSiG"
+      },
+      {
+       "n": "Horny milf gets banged by stepson",
+       "u": "https://xhamster.com/videos/xhqyE0A"
+      }
+     ]
+    },
+    "latest": {
+     "count": 30,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "This Gilf has a hot sex date in a hotel room - my older pussy gets filled!",
+       "u": "https://xhamster.com/videos/xh2LSiG"
+      },
+      {
+       "n": "Horny milf gets banged by stepson",
+       "u": "https://xhamster.com/videos/xhqyE0A"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "XNXX",
+   "baseUrl": "https://www.xnxx.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/xnxx.js",
+   "steps": {
+    "popular": {
+     "count": 35,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Stepdad picked me up from and fucked me in the garage at home",
+       "u": "https://www.xnxx.com/video-wmsv972/stepdad_picked_me_up_from_and_fucked_me_in_the_garage_at_home"
+      },
+      {
+       "n": "Jordi fucked Reagan Foxx in the bathroom",
+       "u": "https://www.xnxx.com/video-gxo7r3f/jordi_fucked_reagan_foxx_in_the_bathroom"
+      }
+     ]
+    },
+    "latest": {
+     "count": 35,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Stepdad picked me up from and fucked me in the garage at home",
+       "u": "https://www.xnxx.com/video-wmsv972/stepdad_picked_me_up_from_and_fucked_me_in_the_garage_at_home"
+      },
+      {
+       "n": "Jordi fucked Reagan Foxx in the bathroom",
+       "u": "https://www.xnxx.com/video-gxo7r3f/jordi_fucked_reagan_foxx_in_the_bathroom"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "WowXXX",
+   "baseUrl": "https://www.wow.xxx",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/wowxxx.js",
+   "steps": {
+    "popular": {
+     "count": 36,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Kayley Gunner Fucks Yoga Teacher David Lee",
+       "u": "https://www.wowxxx.to/videos/kayley-gunner-fucks-yoga-teacher-david-lee/"
+      },
+      {
+       "n": "Booty Bonus for the Boss",
+       "u": "https://www.wowxxx.to/videos/booty-bonus-for-the-boss/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 12,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "More Games: Interracial Fun with Lingerie, Titty Fuck, and Face Sitting",
+       "u": "https://www.wowxxx.to/videos/more-games-interracial-fun-with-lingerie-titty-fuck-and-face-sitting/"
+      },
+      {
+       "n": "Bad Girl Shows Daddy Royal Treatment With Full Mouth Service",
+       "u": "https://www.wowxxx.to/videos/bad-girl-shows-daddy-royal-treatment-with-full-mouth-service/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "YouPorn",
+   "baseUrl": "https://www.youporn.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/youporn.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "XVideos",
+   "baseUrl": "https://www.xvideos.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/xvideos.js",
+   "steps": {
+    "popular": {
+     "count": 48,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Stepbrother Imagines Hard Sex with his Stepsister and Jerks off to her Photo 15 min",
+       "u": "https://www.xvideos.com/video.otidouk9852/hsf-straight/0/stepbrother_imagines_hard_sex_with_his_stepsister_and_jerks_off_to_her_photo"
+      },
+      {
+       "n": "Plomero muy cachondo se folla a una ama de casa desesperada 14 min",
+       "u": "https://www.xvideos.com/video.ueoppkkb8e9/hsf-straight/0/plomero_muy_cachondo_se_folla_a_una_ama_de_casa_desesperada"
+      }
+     ]
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "YouPerv",
+   "baseUrl": "https://youperv.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/youperv.js",
+   "steps": {
+    "popular": {
+     "count": 19,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "My Dirty Maid - Princess Emily - Big Booty Maid Polishes My Knob (  03.09.2026 )",
+       "u": "https://youperv.com/big-dick/1972058266-my-dirty-maid-princess-emily-big-booty-maid-polishes-my-knob.html"
+      },
+      {
+       "n": "Public Agent - Sandra Sugar - Just Five Minutes (  03.09.2026 )",
+       "u": "https://youperv.com/pov/1972058265-public-agent-sandra-sugar-just-five-minutes.html"
+      }
+     ]
+    },
+    "latest": {
+     "count": 19,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "My Dirty Maid - Princess Emily - Big Booty Maid Polishes My Knob (  03.09.2026 )",
+       "u": "https://youperv.com/big-dick/1972058266-my-dirty-maid-princess-emily-big-booty-maid-polishes-my-knob.html"
+      },
+      {
+       "n": "Public Agent - Sandra Sugar - Just Five Minutes (  03.09.2026 )",
+       "u": "https://youperv.com/pov/1972058265-public-agent-sandra-sugar-just-five-minutes.html"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "7MMTV",
+   "baseUrl": "https://www.7mmtv.sx",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/7mmtv.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": true,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": true,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "ABJav",
+   "baseUrl": "https://abjav.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/abjav.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "BestJapanesePornTV",
+   "baseUrl": "https://bestjapaneseporntv.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/bestjapaneseporntv.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "BestJavPorn",
+   "baseUrl": "https://bestjavporn.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/bestjavporn.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "JapanWhores",
+   "baseUrl": "https://www.japanwhores.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/japanwhores.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "JAVBestTV",
+   "baseUrl": "https://javbesttv.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/javbesttv.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "HentaiStream",
+   "baseUrl": "https://hentaistream.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaistream.js",
+   "steps": {
+    "popular": {
+     "error": "This operation was aborted"
+    },
+    "latest": {
+     "error": "This operation was aborted"
+    }
+   }
+  },
+  {
+   "name": "JAVComCo",
+   "baseUrl": "https://javcom.co",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/javcomco.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "Zhentube",
+   "baseUrl": "https://zhentube.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/zhentube.js",
+   "steps": {
+    "popular": {
+     "count": 40,
+     "hasNext": false,
+     "sample": [
+      {
+       "n": "Houkago no Yuutousei Episode 2",
+       "u": "https://zhentube.com/houkago-no-yuutousei-episode-2/"
+      },
+      {
+       "n": "Rural visit 3",
+       "u": "https://zhentube.com/rural-visit-3/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 40,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Kanojo Saimin Episode 2",
+       "u": "https://zhentube.com/kanojo-saimin-episode-2/"
+      },
+      {
+       "n": "Kanojo Saimin Episode 1",
+       "u": "https://zhentube.com/kanojo-saimin-episode-1/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "JAVBraze",
+   "baseUrl": "https://javbraze.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/javbraze.js",
+   "steps": {
+    "popular": {
+     "count": 20,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "DOA-117 Doujin AV Big-breasted G-girl Cosplayer Successfully Filmed In Erotic Photo Shoot!!",
+       "u": "https://javbraze.com/225475/doa-117-doujin-av-big-breasted-g-girl-cosplayer-successfully-filmed-in-erotic-photo-shoot/"
+      },
+      {
+       "n": "English Sub ABF-212 Made From Natural Ingredients Nanami Nakamori Juice 120% 87",
+       "u": "https://javbraze.com/225474/english-sub-abf-212-made-from-natural-ingredients-nanami-nakamori-juice-120-87/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "JAVFun",
+   "baseUrl": "https://javfun.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/javfun.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "JAVDoe",
+   "baseUrl": "https://javdoe.sh",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/javdoe.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "JAVGiga",
+   "baseUrl": "https://javgiga.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/javgiga.js",
+   "steps": {
+    "popular": {
+     "count": 42,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "KAM-221 True Stories Of Dirty Domestic Family Incest Forbidden Sexual Acts With A Beautiful And",
+       "u": "https://javgiga.com/kam-221/"
+      },
+      {
+       "n": "SCD-233 Father-in-law And Son How To Eat Delicious Oyakodon Yu Kawakami",
+       "u": "https://javgiga.com/scd-233/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 44,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "FC2PPV-4553439 Sayaka 18 2nd time I brushed my teeth with the semen I had creampied",
+       "u": "https://javgiga.com/fc2ppv-4553439/"
+      },
+      {
+       "n": "FC2PPV-4705059 A High-speed Titjob With A Plump Boob Wearing A Small Bra, Resulting In Two",
+       "u": "https://javgiga.com/fc2ppv-4705059/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "JAVKing",
+   "baseUrl": "https://javking.net",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/javking.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "JAV.guru",
+   "baseUrl": "https://jav.guru",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/javguru.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": true,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": true,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "HentaiWorld",
+   "baseUrl": "https://hentaiworld.tv",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hentaiworld.js",
+   "steps": {
+    "popular": {
+     "error": "This operation was aborted"
+    },
+    "latest": {
+     "error": "This operation was aborted"
+    }
+   }
+  },
+  {
+   "name": "AVPorner",
+   "baseUrl": "https://avporner.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/avporner.js",
+   "steps": {
+    "popular": {
+     "count": 288,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "[JUFE-063] Busty Mako Odas Wild Creampie Orgy Spree",
+       "u": "https://avporner.com/watch/jufe-063-busty-mako-odas-wild-creampie-orgy-spree_28398852.html"
+      },
+      {
+       "n": "[JUFE-063] Busty Mako Odas Wild Creampie Orgy Spree",
+       "u": "https://avporner.com/watch/jufe-063-busty-mako-odas-wild-creampie-orgy-spree_28398852.html"
+      }
+     ]
+    },
+    "latest": {
+     "count": 288,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "[JUFE-063] Busty Mako Odas Wild Creampie Orgy Spree",
+       "u": "https://avporner.com/watch/jufe-063-busty-mako-odas-wild-creampie-orgy-spree_28398852.html"
+      },
+      {
+       "n": "[JUFE-063] Busty Mako Odas Wild Creampie Orgy Spree",
+       "u": "https://avporner.com/watch/jufe-063-busty-mako-odas-wild-creampie-orgy-spree_28398852.html"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "JAVTasty",
+   "baseUrl": "https://javtasty.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/javtasty.js",
+   "steps": {
+    "popular": {
+     "error": "fetch failed"
+    },
+    "latest": {
+     "error": "fetch failed"
+    }
+   }
+  },
+  {
+   "name": "JAVMost",
+   "baseUrl": "https://javmost.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/javmost.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "JAVHDToday",
+   "baseUrl": "https://javhd.today",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/javhdtoday.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 17,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "10musume 10-090426-01 Treasured Pussy Selection: Shiori Yamaoka — A Collection of Hidden Pussies Please Take a Look at Shiori Yamaoka's Pussy",
+       "u": "https://javhd.today/362536/10musume-10-090426-01-treasured-pussy-selection-shiori-yamaoka-a-collection-of-hidden-pussies-please-take-a-look-at-shiori-yamaoka-s-pussy/"
+      },
+      {
+       "n": "10musume 10-090426-01 Treasured Pussy Selection: Shiori Yamaoka — A Collection of Hidden Pussies Please Take a Look at Shiori Yamaoka's Pussy",
+       "u": "https://javhd.today/362536/10musume-10-090426-01-treasured-pussy-selection-shiori-yamaoka-a-collection-of-hidden-pussies-please-take-a-look-at-shiori-yamaoka-s-pussy/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "MaxJav",
+   "baseUrl": "https://maxjav.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/maxjav.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "JAVsb",
+   "baseUrl": "https://javsb.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/javsb.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "MissAV",
+   "baseUrl": "https://missav.ws",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/missav.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "HMV Mania",
+   "baseUrl": "https://hmvmania.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/en/hmvmania.js",
+   "steps": {
+    "popular": {
+     "error": "This operation was aborted"
+    },
+    "latest": {
+     "error": "This operation was aborted"
+    }
+   }
+  },
+  {
+   "name": "JAVWine",
+   "baseUrl": "https://javwine.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/javwine.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "SupJav",
+   "baseUrl": "https://supjav.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/supjav.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "RJAV",
+   "baseUrl": "https://rjav.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/rjav.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "TokyoMotion",
+   "baseUrl": "https://www.tokyomotion.net",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/tokyomotion.js",
+   "steps": {
+    "popular": {
+     "count": 24,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "【無】こんな可愛い女子◯生にこんな事言われて帰す奴いる？可愛すぎて汚したくなる様な未◯年の女子生徒",
+       "u": "https://www.tokyomotion.net/video/4156596/無-こんな可愛い女子-生にこんな事言われて帰す奴いる-可愛すぎて汚したくなる様な未-年の女子生徒"
+      },
+      {
+       "n": "巨乳",
+       "u": "https://www.tokyomotion.net/video/5484260/巨乳"
+      }
+     ]
+    },
+    "latest": {
+     "count": 20,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Office Lady Aya Trampling and OTK Spanking",
+       "u": "https://www.tokyomotion.net/video/6900050/office-lady-aya-trampling-and-otk-spanking"
+      },
+      {
+       "n": "Fucking my Hot Japanese Girlfriend",
+       "u": "https://www.tokyomotion.net/video/6899929/fucking-my-hot-japanese-girlfriend"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "NJAV",
+   "baseUrl": "https://njav.tv",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/njav.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "123AV",
+   "baseUrl": "https://123av.com/en",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/multi/123av.js",
+   "steps": {
+    "popular": {
+     "error": "Failed to parse URL from null/null/dm5/trending?page=1"
+    },
+    "latest": {
+     "error": "Failed to parse URL from null/null/dm5/new-release?page=1"
+    }
+   }
+  },
+  {
+   "name": "RedGIFs",
+   "baseUrl": "https://www.redgifs.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/multi/redgifs.js",
+   "steps": {
+    "popular": {
+     "count": 16,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "leahbeaveheart",
+       "u": "{\"type\":\"reel\",\"listId\":\"trending\",\"gifId\":\"jollycreepyworm\",\"hd\":\"https://media.redgifs.com/JollyCreepyWorm.mp4\",\"sd\":\"https://media.redgifs.com/JollyCreepyWorm-mobile.mp4\",\"poster\":\"https://media.redgifs.com/JollyCreepyWorm-mobile.jpg\",\"hasAudio\":true,\"duration\":60.026,\"width\":1080,\"height\":1904,\"likes\":96,\"views\":6795,\"creator\":\"leahbeaveheart\",\"creatorAvatar\":\"\",\"verified\":true,\"tags\":[\"Amateur\",\"Ass\",\"Babe\",\"Boobs\",\"Bra\",\"Homemade\",\"Masturbating\",\"Pussy\"],\"title\":\"Amateur · Ass · Babe\"}"
+      },
+      {
+       "n": "cinemajuggs",
+       "u": "{\"type\":\"reel\",\"listId\":\"trending\",\"gifId\":\"repulsiveinfantileflycatcher\",\"hd\":\"https://media.redgifs.com/RepulsiveInfantileFlycatcher.mp4\",\"sd\":\"https://media.redgifs.com/RepulsiveInfantileFlycatcher-mobile.mp4\",\"poster\":\"https://media.redgifs.com/RepulsiveInfantileFlycatcher-mobile.jpg\",\"hasAudio\":true,\"duration\":60.018,\"width\":1080,\"height\":1920,\"likes\":73,\"views\":11184,\"creator\":\"cinemajuggs\",\"creatorAvatar\":\"\",\"verified\":false,\"tags\":[\"Big Tits\",\"Huge Tits\",\"Tits\"],\"title\":\"Big Tits · Huge Tits · Tits\"}"
+      }
+     ]
+    },
+    "latest": {
+     "count": 20,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "miavoid",
+       "u": "{\"type\":\"reel\",\"listId\":\"new\",\"gifId\":\"buoyantmediumpurpletapaculo\",\"hd\":\"https://media.redgifs.com/BuoyantMediumpurpleTapaculo.mp4\",\"sd\":\"https://media.redgifs.com/BuoyantMediumpurpleTapaculo-mobile.mp4\",\"poster\":\"https://media.redgifs.com/BuoyantMediumpurpleTapaculo-mobile.jpg\",\"hasAudio\":true,\"duration\":10.566,\"width\":1920,\"height\":1080,\"likes\":0,\"views\":0,\"creator\":\"miavoid\",\"creatorAvatar\":\"\",\"verified\":true,\"tags\":[\"Amateur\",\"Boobs\",\"Brunette\",\"Cute\",\"Homemade\",\"MILF\",\"Natural\",\"Natural Tits\"],\"title\":\"Amateur · Boobs · Brunette\"}"
+      },
+      {
+       "n": "silksin",
+       "u": "{\"type\":\"reel\",\"listId\":\"new\",\"gifId\":\"glossyfakepike\",\"hd\":\"https://media.redgifs.com/GlossyFakePike.mp4\",\"sd\":\"https://media.redgifs.com/GlossyFakePike-mobile.mp4\",\"poster\":\"https://media.redgifs.com/GlossyFakePike-mobile.jpg\",\"hasAudio\":true,\"duration\":14.973,\"width\":1080,\"height\":1870,\"likes\":0,\"views\":6,\"creator\":\"silksin\",\"creatorAvatar\":\"\",\"verified\":true,\"tags\":[\"Anal\",\"Anime\",\"Boobs\",\"Booty\",\"Cumshot\",\"Cute\",\"Handjob\",\"Hentai\"],\"title\":\"Anal · Anime · Boobs\"}"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "MyThav",
+   "baseUrl": "https://mythav.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/mythav.js",
+   "steps": {
+    "popular": {
+     "count": 40,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "[kaad-087] Beautiful Mother-in-Law Kinue Izumi - Izumi Kinue",
+       "u": "https://mythav.org/update/"
+      },
+      {
+       "n": "[kaad-087] Beautiful Mother-in-Law Kinue Izumi - Izumi Kinue",
+       "u": "https://mythav.org/video/494951/code-kaad-087/beautiful-mother-in-law-kinue-izumi-izumi-kinue"
+      }
+     ]
+    },
+    "latest": {
+     "count": 42,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "[ii-102] Butyrate The Cock To The Back Of The Throat Naho Asakura Minaki Saotome",
+       "u": "https://mythav.org/video/1111/code-ii-102/butyrate-the-cock-to-the-back-of-the-throat-naho-asakura-minaki-"
+      },
+      {
+       "n": "[ii-102] Butyrate The Cock To The Back Of The Throat Naho Asakura Minaki Saotome",
+       "u": "https://mythav.org/video/1111/code-ii-102/butyrate-the-cock-to-the-back-of-the-throat-naho-asakura-minaki-"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "VJav",
+   "baseUrl": "https://vjav.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/vjav.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "VIVAMAXph",
+   "baseUrl": "https://vivamaxph.com/",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/multi/vivamaxph.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": true,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": true,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "91Porn",
+   "baseUrl": "https://91porn.com",
+   "isNsfw": true,
+   "file": "src/watch/zh/91porn.js",
+   "steps": {
+    "popular": {
+     "count": 42,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "“昨天我多了出去你也别瞎说啊你射里面吧”美甲店肥臀老板娘后续…",
+       "u": "https://91porn.com/view_video.php?viewkey=79c3b76ca795b22eccf2&page=1&c=azdbgj&viewtype=basic&category=top"
+      },
+      {
+       "n": "顶着38度天气做爱胸上全部都是汗水！鸡巴臭的要死口了几次都没忍住，只",
+       "u": "https://91porn.com/view_video.php?viewkey=64674ee067a45e845924&page=1&c=zdbgj&viewtype=basic&category=top"
+      }
+     ]
+    },
+    "latest": {
+     "count": 46,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "“昨天我多了出去你也别瞎说啊你射里面吧”美甲店肥臀老板娘后续…",
+       "u": "https://91porn.com/view_video.php?viewkey=79c3b76ca795b22eccf2&page=1&c=azdbgj&viewtype=basic&category=top"
+      },
+      {
+       "n": "顶着38度天气做爱胸上全部都是汗水！鸡巴臭的要死口了几次都没忍住，只",
+       "u": "https://91porn.com/view_video.php?viewkey=64674ee067a45e845924&page=1&c=zdbgj&viewtype=basic&category=top"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "ZeroJav",
+   "baseUrl": "https://zerojav.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/zerojav.js",
+   "steps": {
+    "popular": {
+     "count": 20,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Permalink to [Young King Bull Photobook] Sayaka Nitori 似鳥沙也加 – The Forbidden 1 Millimeter 禁断の1ミリ",
+       "u": "https://zerojav.com/young-king-bull-photobook-sayaka-nitori-%e4%bc%bc%e9%b3%a5%e6%b2%99%e4%b9%9f%e5%8a%a0-the-forbidden-1-millimeter-%e7%a6%81%e6%96%ad%e3%81%ae1%e3%83%9f%e3%83%aa/"
+      },
+      {
+       "n": "Permalink to [Photobook] Min 민 – V Line Hot Body",
+       "u": "https://zerojav.com/photobook-min-%eb%af%bc-v-line-hot-body/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 20,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "Permalink to [Young King Bull Photobook] Sayaka Nitori 似鳥沙也加 – The Forbidden 1 Millimeter 禁断の1ミリ",
+       "u": "https://zerojav.com/young-king-bull-photobook-sayaka-nitori-%e4%bc%bc%e9%b3%a5%e6%b2%99%e4%b9%9f%e5%8a%a0-the-forbidden-1-millimeter-%e7%a6%81%e6%96%ad%e3%81%ae1%e3%83%9f%e3%83%aa/"
+      },
+      {
+       "n": "Permalink to [Photobook] Min 민 – V Line Hot Body",
+       "u": "https://zerojav.com/photobook-min-%eb%af%bc-v-line-hot-body/"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "name": "JAVLeak",
+   "baseUrl": "https://javleak.com",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/javleak.js",
+   "steps": {
+    "popular": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  },
+  {
+   "name": "KissJAV",
+   "baseUrl": "https://kissjav.li",
+   "isNsfw": true,
+   "file": "src/watch/nsfw/ja/kissjav.js",
+   "steps": {
+    "popular": {
+     "count": 31,
+     "hasNext": true,
+     "sample": [
+      {
+       "n": "약빨다 나락간 과즙세연 마지막 리액션 1탄 korean porn vip 04-09-2026",
+       "u": "https://kissjav.li/video/811934/약빨다-나락간-과즙세연-마지막-리액션-1탄-korean-porn-vip-04-09-2026/"
+      },
+      {
+       "n": "약빨다 나락간 과즙세연 마지막 리액션 1탄 korean porn vip 04-09-2026",
+       "u": "https://kissjav.li/video/811934/약빨다-나락간-과즙세연-마지막-리액션-1탄-korean-porn-vip-04-09-2026/"
+      }
+     ]
+    },
+    "latest": {
+     "count": 0,
+     "hasNext": false,
+     "sample": []
+    }
+   }
+  }
+ ]
+}
