@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      { "id": "history",   "component": "carousel", "title": "History",    "accent": "#7C4DFF", "icon": "history", "seeAll": true },
+      { "id": "hits",      "component": "ranked",   "title": "Hits",       "accent": "#FF3D71", "icon": "trending_up", "seeAll": true },
+      { "id": "pornstars", "component": "grid",     "title": "Pornstars",  "accent": "#FFB300", "icon": "star", "seeAll": true },
+      { "id": "tags",      "component": "masonry",   "title": "Tags",      "accent": "#00B8D4", "icon": "local_offer", "columns": 2, "cardStyle": "tag", "seeAll": true },
+      { "id": "catalogue", "component": "grid",     "title": "Catalogue", "paginated": true }
+    ]
+  },
+  "browse": {
+    "popular": { "component": "grid", "columns": 3, "cardStyle": "thumbnail" },
+    "latest":  { "component": "grid", "columns": 3, "cardStyle": "thumbnail" },
+    "search":  {
+      "results": { "component": "grid", "columns": 3, "cardStyle": "thumbnail" },
+      "filters": "chips"
+    }
+  },
+  "detail": {
+    "hero": "poster",
+    "episodeList": "compact",
+    "showRecommendations": false
+  },
+  "player": { "mode": "standard" }
+}

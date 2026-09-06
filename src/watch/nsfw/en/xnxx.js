@@ -6,296 +6,326 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.1.2",
+  "version": "1.2.0",
   "pkgPath": "watch/nsfw/en/xnxx.js",
-  "notes": "Adult content (18+)",
+  "notes": "Adult content (18+) — free XNXX catalog only",
   "isNsfw": true
 }];
 
 class DefaultExtension extends MProvider {
+  static get BASE_URL() { return "https://www.xnxx.com"; }
+  get supportsLatest() { return true; }
 
-  // ── Preferences ───────────────────────────────────────────────────────────
-  _pref(key, def) {
-    const p = this.source && this.source.prefs && this.source.prefs.find(x => x.key === key);
-    return (p && p.value !== undefined && p.value !== null && p.value !== "") ? p.value : def;
+  static get CATEGORIES() {
+    return [
+      ["All", ""], ["Amateur", "amateur"], ["Anal", "anal"],
+      ["Asian", "asian"], ["BBW", "bbw"], ["Big Ass", "big ass"],
+      ["Big Tits", "big tits"], ["Blonde", "blonde"], ["Blowjob", "blowjob"],
+      ["Brunette", "brunette"], ["Casting", "casting"],
+      ["Creampie", "creampie"], ["Cumshot", "cumshot"], ["Ebony", "ebony"],
+      ["Facial", "facial"], ["Gangbang", "gangbang"], ["Hardcore", "hardcore"],
+      ["Interracial", "interracial"], ["Latina", "latina"], ["Lesbian", "lesbian"],
+      ["MILF", "milf"], ["POV", "pov"], ["Rough Sex", "rough sex"],
+      ["Solo", "solo female"], ["Teen", "teen"], ["Threesome", "threesome"],
+    ];
   }
+
+  _pref(key, fallback) {
+    const prefs = this.source && this.source.prefs;
+    const found = Array.isArray(prefs) && prefs.find(p => p.key === key);
+    return found && found.value !== undefined && found.value !== null &&
+      found.value !== "" ? found.value : fallback;
+  }
+
   get prefQuality() { return this._pref("preferred_quality", "auto"); }
 
   getHeaders(url) {
     return {
-      "Referer":         "https://www.xnxx.com/",
-      "User-Agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-      "Accept":          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+      "Referer": `${DefaultExtension.BASE_URL}/`,
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,*/*;q=0.8",
       "Accept-Language": "en,en-US;q=0.8"
     };
   }
 
-  // ── Category definitions ──────────────────────────────────────────────────
-  // Categories browsable via /search/{keyword}/{page}
-  static get CATEGORIES() {
-    return [
-      ["All",           ""],
-      ["Amateur",       "amateur"],
-      ["Anal",          "anal"],
-      ["Asian",         "asian"],
-      ["BBW",           "bbw"],
-      ["Big Ass",       "big ass"],
-      ["Big Tits",      "big tits"],
-      ["Blonde",        "blonde"],
-      ["Blowjob",       "blowjob"],
-      ["Brunette",      "brunette"],
-      ["Casting",       "casting"],
-      ["Creampie",      "creampie"],
-      ["Cumshot",       "cumshot"],
-      ["Ebony",         "ebony"],
-      ["Facial",        "facial"],
-      ["Gangbang",      "gangbang"],
-      ["Hardcore",      "hardcore"],
-      ["Interracial",   "interracial"],
-      ["Latina",        "latina"],
-      ["Lesbian",       "lesbian"],
-      ["MILF",          "milf"],
-      ["POV",           "pov"],
-      ["Rough Sex",     "rough sex"],
-      ["Solo",          "solo female"],
-      ["Teen",          "teen"],
-      ["Threesome",     "threesome"],
-    ];
+  _absolute(href) {
+    if (!href) return "";
+    return href.startsWith("http") ? href : `${DefaultExtension.BASE_URL}${href}`;
   }
 
-  // ── Date-offset helper (popular /best/ endpoint) ──────────────────────────
-  // XNXX /best/ uses month-based URLs (/best/YYYY-MM).
-  // page=1 → current month, page=2 → last month, etc.
-  _monthSlug(page) {
-    const now       = new Date(Date.now());
-    const baseYear  = now.getFullYear();
-    const baseMonth = now.getMonth() + 1;
-    let total = (baseYear * 12 + baseMonth - 1) - (page - 1);
-    const year  = Math.floor(total / 12);
-    const month = (total % 12) + 1;
-    return `${year}-${String(month).padStart(2, "0")}`;
+  _text(el) { return (el && el.text ? el.text : "").replace(/\s+/g, " ").trim(); }
+
+  _image(el) {
+    if (!el) return "";
+    return el.attr("data-src") || el.attr("data-original") ||
+      el.attr("src") || el.attr("data-image") || "";
   }
 
-  // ── Filter helpers ────────────────────────────────────────────────────────
-  _filterMode(filters)     { return (filters && filters[0]) ? (filters[0].state || 0) : 0; }
-  _filterSort(filters)     { return (filters && filters[1]) ? (filters[1].state || 0) : 0; }
-  _filterCategory(filters) {
-    const idx = (filters && filters[2]) ? (filters[2].state || 0) : 0;
-    return DefaultExtension.CATEGORIES[idx] ? DefaultExtension.CATEGORIES[idx][1] : "";
+  _hasPremiumMarker(el) {
+    const classes = (el.attr("class") || "").toLowerCase();
+    return classes.includes("premium") || classes.includes("gold");
   }
 
-  // ── Listings ──────────────────────────────────────────────────────────────
-  async getPopular(page) {
-    const filters = this._currentFilters || [];
-    const mode = this._filterMode(filters);
-    const cat  = this._filterCategory(filters);
-
-    // Category filter: browse by keyword
-    if (cat) {
-      const q   = encodeURIComponent(cat).replace(/%20/g, "+");
-      const url = `https://www.xnxx.com/search/${q}/${page}`;
-      extLog('info', `XNXX.getPopular[cat=${cat}] page=${page} → ${url}`);
-      const res = await new Client().get(url, this.getHeaders(url));
-      return this._parseVideoList(res.body, page, "search");
+  _pageHasNext(doc, page, pathPrefix, items) {
+    if (page >= 50) return false;
+    const next = `${pathPrefix}/${page + 1}`;
+    for (const anchor of doc.select("a")) {
+      const href = anchor.attr("href") || "";
+      if (href === next || href === `${next}?top`) return true;
     }
-
-    let url, res;
-    if (mode === 1) {
-      // Best of Month
-      const slug = this._monthSlug(page);
-      url  = `https://www.xnxx.com/best/${slug}`;
-      extLog('info', `XNXX.getPopular[bestOf] page=${page} → ${url}`);
-      res  = await new Client().get(url, this.getHeaders(url));
-      return this._parseVideoList(res.body, page, "best");
-    }
-    // Most Hits (all-time)
-    url = `https://www.xnxx.com/hits/${page}`;
-    extLog('info', `XNXX.getPopular[hits] page=${page} → ${url}`);
-    res  = await new Client().get(url, this.getHeaders(url));
-    return this._parseVideoList(res.body, page, "hits");
+    return items.length >= 30;
   }
 
-  get supportsLatest() { return true; }
-
-  async getLatestUpdates(page) {
-    const url = `https://www.xnxx.com/hits/${page}`;
-    const res = await new Client().get(url, this.getHeaders(url));
-    return this._parseVideoList(res.body, page, "hits");
-  }
-
-  async search(query, page, filters) {
-    this._currentFilters = filters;
-    const cat  = this._filterCategory(filters);
-    const sort = this._filterSort(filters);
-    const q    = (query || "").trim();
-
-    // No query → use popular with current filters
-    if (!q) {
-      return this.getPopular(page);
-    }
-
-    const top    = sort === 1; // Sort: 0=Recent, 1=Top Rated
-    // encodeURIComponent then replace %20 with + (XNXX expects + as word separator in path)
-    const keyword = cat
-      ? (q + " " + cat).trim()
-      : q;
-    const search = encodeURIComponent(keyword).replace(/%20/g, "+");
-
-    const url = top
-      ? `https://www.xnxx.com/search/${search}/${page}?top`
-      : `https://www.xnxx.com/search/${search}/${page}`;
-    extLog('info', `XNXX.search page=${page} top=${top} cat=${cat} → ${url}`);
-    const res = await new Client().get(url, this.getHeaders(url));
-    return this._parseVideoList(res.body, page, "search");
-  }
-
-  // ── List parser ───────────────────────────────────────────────────────────
   _parseVideoList(html, page, mode) {
-    const doc   = new Document(html);
+    const doc = new Document(html);
     const items = [];
-    const seen  = {};
-
-    // Selector: .thumb-block.video
-    const cards = doc.select(".thumb-block.video");
-    extLog('info', `XNXX._parseVideoList[${mode}]: page=${page} cards=${cards.length}`);
+    const seen = {};
+    const cards = doc.select(".thumb-block.video, .thumb-block.with-uploader");
 
     for (const card of cards) {
-      // Title: prefer <a title="..."> inside .thumb-under
-      let title = "";
-      const aTitle = card.selectFirst(".thumb-under a[title]") || card.selectFirst("a[title]");
-      if (aTitle) title = (aTitle.attr("title") || aTitle.text || "").trim();
-      if (!title) {
-        const u = card.selectFirst(".thumb-under p a") || card.selectFirst(".thumb-under a");
-        if (u) title = (u.text || "").trim();
-      }
-
-      // Link: must contain /video-
-      const anchor = card.selectFirst("a[href*='/video-']") || card.selectFirst("a");
+      if (this._hasPremiumMarker(card)) continue;
+      const anchor = card.selectFirst("a[href*='/video-']");
       if (!anchor) continue;
-      const href = anchor.attr("href") || "";
-      if (!href || href === "#") continue;
-      const link = href.startsWith("http") ? href : `https://www.xnxx.com${href}`;
-      if (seen[link]) continue;
-      seen[link] = 1;
+      const link = this._absolute(anchor.attr("href"));
+      if (!link || seen[link]) continue;
+      seen[link] = true;
 
-      // Thumbnail: lazy-loaded
-      const imgEl = card.selectFirst("img");
-      const thumb = imgEl
-        ? (imgEl.attr("data-src") || imgEl.attr("data-original") || imgEl.attr("src") || "")
-        : "";
-
-      // Duration
-      const durEl = card.selectFirst(".thumb-under .metadata") || card.selectFirst(".duration");
-      let duration = "";
-      if (durEl) {
-        const t = (durEl.text || "").replace(/\s+/g, " ").trim();
-        const m = t.match(/(\d+\s*(?:min|sec|h))/i);
-        if (m) duration = m[1];
-      }
+      const titleAnchor = card.selectFirst(".thumb-under a[title]") ||
+        card.selectFirst("a[title]") ||
+        card.selectFirst(".thumb-under p a") ||
+        card.selectFirst(".thumb-under a");
+      const image = this._image(card.selectFirst("img"));
+      const metadata = this._text(
+        card.selectFirst(".thumb-under .metadata") ||
+        card.selectFirst(".duration")
+      );
+      const duration = metadata.match(/(\d+\s*(?:min|sec|h))/i);
 
       items.push({
-        name:        title || "Untitled",
-        imageUrl:    thumb,
+        name: this._text(titleAnchor) || "Untitled",
+        imageUrl: image,
         link,
-        description: duration ? `Duration: ${duration}` : ""
+        description: duration ? `Duration: ${duration[1]}` : ""
       });
     }
-    extLog('info', `XNXX._parseVideoList: items=${items.length}`);
 
-    // ── hasNextPage ───────────────────────────────────────────────────────
-    const MAX_PAGE = 50;
-    let hasNext = false;
-
-    if (page >= MAX_PAGE) {
-      hasNext = false;
-    } else if (mode === "best") {
-      // Date-based: up to 24 months back
-      hasNext = items.length > 0 && page < 24;
-    } else if (mode === "hits") {
-      // /hits/N — look for a scoped next-page anchor href="/hits/{N+1}" or "https://www.xnxx.com/hits/{N+1}"
-      const nextHits = `/hits/${page + 1}`;
-      // Only match if it appears as a link target (href attribute), not as arbitrary text
-      hasNext = html.includes(`href="${nextHits}"`) || html.includes(`href="https://www.xnxx.com${nextHits}"`);
-      // Fallback: item count (guard against sites that don't emit pagination anchors)
-      if (!hasNext && items.length >= 30) hasNext = true;
-    } else {
-      // search: look for next-page anchor in pagination container
-      // XNXX pagination uses href="/search/{q}/{N}" links
-      const doc2 = new Document(html);
-      const pagerLinks = doc2.select(".pagination a, .pager a, nav a, .browse-content a");
-      const nextPat = `/${page + 1}`;
-      let foundPager = false;
-      for (const a of pagerLinks) {
-        const h = a.attr("href") || "";
-        if (h.endsWith(nextPat) || h.endsWith(nextPat + "?top")) { foundPager = true; break; }
-      }
-      hasNext = foundPager;
-      // Fallback: item count with reasonable threshold + cap
-      if (!hasNext && items.length >= 30) hasNext = true;
-    }
+    const prefix = mode === "hits" ? "/hits" :
+      mode === "history" ? "/history" : `/search/${mode || ""}`;
+    let hasNext = mode === "hits"
+      ? this._pageHasNext(doc, page, "/hits", items)
+      : mode === "history"
+        ? false
+        : this._pageHasNext(doc, page, prefix.replace(/\/$/, ""), items);
 
     return { list: items, hasNextPage: hasNext };
   }
 
-  // ── Detail page ───────────────────────────────────────────────────────────
+  _parsePornstars(html, page) {
+    const doc = new Document(html);
+    const items = [];
+    const seen = {};
+    for (const card of doc.select(".thumb-block.thumb-cat")) {
+      if (this._hasPremiumMarker(card) && !card.selectFirst("a[href*='/pornstar/']")) {
+        continue;
+      }
+      const anchor = card.selectFirst("a[href*='/pornstar/']");
+      if (!anchor) continue;
+      const link = this._absolute(anchor.attr("href"));
+      if (seen[link]) continue;
+      seen[link] = true;
+      const title = card.selectFirst(".title a") || anchor;
+      const count = this._text(card.selectFirst(".uploader"));
+      items.push({
+        name: this._text(title) || "Pornstar",
+        imageUrl: this._image(card.selectFirst("img")),
+        link,
+        description: count ? `${count} free videos` : "Free videos"
+      });
+    }
+    return {
+      list: items,
+      hasNextPage: this._pageHasNext(doc, page, "/pornstars", items)
+    };
+  }
+
+  _parseTags(html) {
+    const doc = new Document(html);
+    const items = [];
+    for (const row of doc.select("#tags li")) {
+      const anchor = row.selectFirst("a[href]");
+      if (!anchor) continue;
+      const href = anchor.attr("href") || "";
+      if (!href.startsWith("/search/")) continue;
+      const count = this._text(row.selectFirst("strong"));
+      const name = this._text(anchor);
+      if (!name) continue;
+      items.push({
+        name,
+        imageUrl: "",
+        link: this._absolute(href),
+        description: count ? `${count} videos` : "Browse videos",
+        // The layout renderer may use this to create a staggered card.
+        metadata: { masonryKey: name.length + (count ? count.length : 0) }
+      });
+    }
+    return { list: items, hasNextPage: false };
+  }
+
+  _monthSlug(page) {
+    const now = new Date(Date.now());
+    const total = now.getFullYear() * 12 + now.getMonth() - (page - 1);
+    return `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, "0")}`;
+  }
+
+  _filterState(filters, index) {
+    return filters && filters[index] ? (filters[index].state || 0) : 0;
+  }
+
+  _filterCategory(filters) {
+    const entry = DefaultExtension.CATEGORIES[this._filterState(filters, 2)];
+    return entry ? entry[1] : "";
+  }
+
+  async _get(path) {
+    const url = this._absolute(path);
+    const res = await new Client().get(url, this.getHeaders(url));
+    return { url, body: res.body };
+  }
+
+  async getPopular(page) {
+    const filters = this._currentFilters || [];
+    const mode = this._filterState(filters, 0);
+    const category = this._filterCategory(filters);
+    if (category) {
+      const query = encodeURIComponent(category).replace(/%20/g, "+");
+      const { body } = await this._get(`/search/${query}/${page}`);
+      return this._parseVideoList(body, page, query);
+    }
+    if (mode === 1) {
+      const { body } = await this._get(`/best/${this._monthSlug(page)}`);
+      const result = this._parseVideoList(body, page, "best");
+      result.hasNextPage = result.list.length > 0 && page < 24;
+      return result;
+    }
+    const { body } = await this._get(`/hits/${page}`);
+    return this._parseVideoList(body, page, "hits");
+  }
+
+  async getLatestUpdates(page) {
+    // XNXX does not expose a stable public "latest" route. Its /hits feed is
+    // the same free, paginated catalog used by the legacy source contract.
+    const { body } = await this._get(`/hits/${page}`);
+    return this._parseVideoList(body, page, "hits");
+  }
+
+  async search(query, page, filters) {
+    this._currentFilters = filters || [];
+    const category = this._filterCategory(this._currentFilters);
+    const rawQuery = (query || "").trim();
+    if (!rawQuery) return this.getPopular(page);
+    const q = encodeURIComponent(
+      category ? `${rawQuery} ${category}` : rawQuery
+    ).replace(/%20/g, "+");
+    const sortState = this._filterState(filters, 1);
+    const sort = sortState === 1
+      ? "?top"
+      : sortState === 2
+        ? "?order=order-az-asc"
+        : "";
+    const { body } = await this._get(`/search/${q}/${page}${sort}`);
+    return this._parseVideoList(body, page, q);
+  }
+
+  async getCustomList(listId, page) {
+    if (listId === "history") {
+      const { body } = await this._get("/history");
+      return this._parseVideoList(body, 1, "history");
+    }
+    if (listId === "pornstars") {
+      const { body } = await this._get(`/pornstars/${page}`);
+      return this._parsePornstars(body, page);
+    }
+    if (listId === "tags") {
+      const path = page <= 1 ? "/tags" : `/tags/${page}`;
+      const { body } = await this._get(path);
+      return this._parseTags(body);
+    }
+    if (listId === "hits") {
+      const { body } = await this._get(`/hits/${page}`);
+      return this._parseVideoList(body, page, "hits");
+    }
+    return this.getPopular(page);
+  }
+
   async getDetail(url) {
-    const res   = await new Client().get(url, this.getHeaders(url));
-    const doc   = new Document(res.body);
-    const title = (
+    const { body } = await this._get(url.replace(DefaultExtension.BASE_URL, ""));
+    const doc = new Document(body);
+    const title = this._text(
       doc.selectFirst("h1.page-title") ||
       doc.selectFirst("h2.page-title") ||
       doc.selectFirst("h1.content-title")
-    )?.text?.trim()
-      || doc.selectFirst('meta[property="og:title"]')?.attr("content")?.trim()
-      || "Unknown";
-    const thumb = doc.selectFirst('meta[property="og:image"]')?.attr("content") || "";
-    const tagEls = doc.select(".video-tags a, .tags a");
-    const tags = [];
-    for (const el of tagEls) {
-      const n = (el.text || "").trim();
-      if (n) tags.push({ name: n });
+    ) || this._text(doc.selectFirst('meta[property="og:title"]')?.attr("content"))
+      || "XNXX";
+    const cover = doc.selectFirst('meta[property="og:image"]')?.attr("content") || "";
+
+    if (url.includes("/pornstar/") || url.includes("/search/")) {
+      const videos = this._parseVideoList(body, 1, "detail").list;
+      return {
+        name: title,
+        imageUrl: cover || videos[0]?.imageUrl || "",
+        description: url.includes("/pornstar/")
+          ? "Free videos from this porn star"
+          : "Videos for this tag",
+        genre: [],
+        episodes: videos.map(video => ({ name: video.name, url: video.link }))
+      };
     }
-    return { name: title, imageUrl: thumb, description: "", genre: tags,
-      episodes: [{ name: title, url }] };
+
+    const tags = [];
+    for (const tag of doc.select(".video-tags a, .tags a")) {
+      const name = this._text(tag);
+      if (name) tags.push({ name });
+    }
+    return {
+      name: title,
+      imageUrl: cover,
+      description: "",
+      genre: tags,
+      episodes: [{ name: title, url }]
+    };
   }
 
-  // ── Video sources ─────────────────────────────────────────────────────────
   async getVideoList(url) {
-    const res    = await new Client().get(url, this.getHeaders(url));
-    const html   = res.body;
+    const { body } = await this._get(url.replace(DefaultExtension.BASE_URL, ""));
+    const headers = { ...this.getHeaders(url), "Referer": url };
     const videos = [];
-    const headers = {
-      "Referer":    url,
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+    const add = (match, quality) => {
+      if (match && match[1]) {
+        videos.push({
+          url: match[1],
+          quality,
+          originalUrl: match[1],
+          headers
+        });
+      }
     };
+    add(body.match(/html5player\.setVideoHLS\('([^']+)'\)/), "Auto (HLS)");
+    add(body.match(/html5player\.setVideoUrlHigh\('([^']+)'\)/), "720p");
+    add(body.match(/html5player\.setVideoUrlLow\('([^']+)'\)/), "360p");
 
-    const hlsMatch = html.match(/html5player\.setVideoHLS\('([^']+)'\)/);
-    const mp4High  = html.match(/html5player\.setVideoUrlHigh\('([^']+)'\)/);
-    const mp4Low   = html.match(/html5player\.setVideoUrlLow\('([^']+)'\)/);
-
-    if (hlsMatch) videos.push({ url: hlsMatch[1], quality: "Auto (HLS)", originalUrl: hlsMatch[1], headers });
-    if (mp4High)  videos.push({ url: mp4High[1],  quality: "720p",       originalUrl: mp4High[1],  headers });
-    if (mp4Low)   videos.push({ url: mp4Low[1],   quality: "360p",       originalUrl: mp4Low[1],   headers });
-
-    // Sort preferred quality first
-    const want = (this.prefQuality || "auto").toLowerCase();
+    const preferred = String(this.prefQuality || "auto").toLowerCase();
     videos.sort((a, b) => {
-      const score = q => {
-        const ql = q.toLowerCase();
-        if (want === "auto" && ql.includes("auto")) return 0;
-        if (want === "720p" && ql.includes("720"))  return 0;
-        if (want === "360p" && ql.includes("360"))  return 0;
-        return 1;
-      };
+      const score = quality => preferred === "auto"
+        ? (quality.includes("HLS") ? 0 : 1)
+        : (quality.toLowerCase().includes(preferred) ? 0 : 1);
       return score(a.quality) - score(b.quality);
     });
-    extLog('info', `XNXX.getVideoList: ${videos.length} sources`);
+    extLog("info", `XNXX.getVideoList: ${videos.length} free sources`);
     return videos;
   }
 
   async getPageList(url) { return []; }
 
-  // ── Filters ───────────────────────────────────────────────────────────────
   getFilterList() {
     return [
       {
@@ -303,8 +333,8 @@ class DefaultExtension extends MProvider {
         name: "Popular mode",
         state: 0,
         values: [
-          { type_name: "SelectOption", name: "Most Hits (all time)", value: "hits" },
-          { type_name: "SelectOption", name: "Best of Month",        value: "best" },
+          { type_name: "SelectOption", name: "Most Hits", value: "hits" },
+          { type_name: "SelectOption", name: "Best of Month", value: "best" }
         ]
       },
       {
@@ -312,8 +342,9 @@ class DefaultExtension extends MProvider {
         name: "Search sort",
         state: 0,
         values: [
-          { type_name: "SelectOption", name: "Most Recent", value: "recent" },
-          { type_name: "SelectOption", name: "Top Rated",   value: "top"    },
+          { type_name: "SelectOption", name: "Recent", value: "recent" },
+          { type_name: "SelectOption", name: "Top", value: "top" },
+          { type_name: "SelectOption", name: "A-Z", value: "az" }
         ]
       },
       {
@@ -327,19 +358,16 @@ class DefaultExtension extends MProvider {
     ];
   }
 
-  // ── Preferences ───────────────────────────────────────────────────────────
   getSourcePreferences() {
-    return [
-      {
-        key: "preferred_quality",
-        list_preference: {
-          title: "Preferred quality",
-          summary: "Default video quality picked first in the player.",
-          valueIndex: 0,
-          entries:      ["Auto (HLS)", "720p", "360p"],
-          entryValues:  ["auto",       "720p", "360p"]
-        }
+    return [{
+      key: "preferred_quality",
+      list_preference: {
+        title: "Preferred quality",
+        summary: "Default free video quality picked first in the player.",
+        valueIndex: 0,
+        entries: ["Auto (HLS)", "720p", "360p"],
+        entryValues: ["auto", "720p", "360p"]
       }
-    ];
+    }];
   }
 }
