@@ -225,6 +225,25 @@ https://google.com
   async function getPageList(url) { /* … */ }    // pour manga
   ```
 
+  ### Métadonnées du catalogue
+
+  Les index sont affichés comme un catalogue mobile. Pour obtenir une fiche
+  complète dans Watchtower, chaque entrée peut aussi fournir les champs
+  suivants :
+
+  | Champ | Type | Utilisation |
+  |------|------|-------------|
+  | `notes` ou `description` | string | Résumé court affiché sous le nom |
+  | `sizeBytes` | number | Poids du fichier JavaScript téléchargé |
+  | `rating` | number | Note entre `0` et `5` |
+  | `reviewCount` | number | Nombre d'avis associés à la note |
+
+  Ces champs sont optionnels pour rester compatibles avec les dépôts existants.
+  Watchtower conserve une description et une taille lisibles lorsqu'un index
+  ancien ne les renseigne pas. Les notes doivent rester basées sur la qualité
+  réelle de la source : disponibilité, stabilité, couverture et qualité des
+  résultats, pas sur le nombre de téléchargements.
+
   ### Types de contenu (`itemType`)
 
   | Valeur | Type |
