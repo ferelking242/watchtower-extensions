@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      {
+        "id": "trending",
+        "component": "carousel",
+        "title": "Trending",
+        "accent": "#ff9900",
+        "icon": "trending_up",
+        "seeAll": true
+      },
+      {
+        "id": "new",
+        "component": "carousel",
+        "title": "New videos",
+        "accent": "#ff4081",
+        "icon": "fiber_new",
+        "seeAll": true
+      },
+      {
+        "id": "catalogue",
+        "component": "grid",
+        "title": "Catalogue",
+        "paginated": true,
+        "columns": 3,
+        "cardStyle": "thumbnail"
+      }
+    ]
+  },
+  "browse": {
+    "popular": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 3,
+        "cardStyle": "thumbnail"
+      },
+      "filters": "chips"
+    }
+  },
+  "detail": {
+    "hero": "poster",
+    "episodeList": "compact",
+    "showRecommendations": false
+  },
+  "player": {
+    "mode": "standard"
+  }
+}

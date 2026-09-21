@@ -3765,16 +3765,18 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000178.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.2",
+    "version": "1.0.3",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/watch/nsfw/en/pornhub.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) — ZeusDL powered streaming",
+    "notes": "Adult content (18+) — native HLS/MP4 quality extraction",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "uiLayout": "ui-layouts/pornhub.json",
+    "uiLayoutVersion": "1.0.0"
   },
   {
     "name": "RedTube",
