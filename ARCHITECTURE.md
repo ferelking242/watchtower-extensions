@@ -37,7 +37,7 @@ watchtower-extensions/
 │   └── feed/{lang}/*.js           # 📰 NOUVEAU — fils d'actus/RSS pour le home
 │   │
 │   └── nsfw/{media}/{lang}/*.js   # 🔞 Contenu NSFW (isolé, opt-in app)
-│                                   #    ex: nsfw/watch/en/... — migration depuis */nsfw
+│                                   #    ex: nsfw/watch/en/... — ancien emplacement migré
 │
 ├── ui-layouts/                    # ═══ LAYOUTS DU HOMESCREEN ═══
 │   ├── _schema.json               # NOUVEAU — schéma des composants autorisés
@@ -245,7 +245,7 @@ Exemples : sorties Netflix/semaine, actus anime FR, sorties ROMs.
 1. [ ] Créer `plugins/schema.json` + `plugins/_templates/` (référencés mais absents aujourd'hui)
 2. [ ] Déplacer les icônes vers `icons/` + réécrire tous les `iconUrl` des index
 3. [ ] Extraire `src/_shared/http.js` (retry/backoff déjà codé 3× dans moviefr/moviebox/moviebox_app)
-4. [ ] Déplacer `src/*/nsfw/` → `src/nsfw/*/`
+4. [x] Déplacer les anciennes sources NSFW vers `src/nsfw/<type>/<lang>/`
 5. [ ] Écrire `ui-layouts/_schema.json` + brancher la validation CI
 6. [ ] Premier provider subtitles (LRCLIB-style) puis premier quiz (OpenTDB)
 7. [ ] `tools/gen_index.mjs` : génération partielle des index depuis les en-têtes `watchtowerSources` (anti-désyncro index/code)

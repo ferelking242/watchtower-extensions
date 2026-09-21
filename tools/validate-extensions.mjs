@@ -64,6 +64,51 @@ for (const rel of jsonFiles) {
 }
 console.log(`   ${jsonFiles.length} JSON file(s) valid`);
 
+// ── 2b. Reject the pre-2026 NSFW source layout ───────────────────────────────
+console.log("▶ canonical NSFW source layout");
+const legacyNsfwDirs = ["src/watch/nsfw", "src/manga/nsfw"];
+for (const relDir of legacyNsfwDirs) {
+  if (fs.existsSync(path.join(ROOT, relDir))) {
+    problems.push(`LEGACY: ${relDir} still exists — move sources to src/nsfw/<type>/<lang>/`);
+  }
+}
+for (const rel of jsonFiles.filter((file) => file.startsWith("index/"))) {
+  const raw = fs.readFileSync(path.join(ROOT, rel), "utf8");
+  if (raw.includes("src/watch/nsfw/") || raw.includes("src/manga/nsfw/")) {
+    problems.push(`LEGACY: ${rel} still references the old NSFW source path`);
+  }
+  let entries;
+  try {
+    entries = JSON.parse(raw);
+  } catch {
+    entries = [];
+  }
+  if (Array.isArray(entries)) {
+    for (const entry of entries) {
+      const sourceUrl = typeof entry.sourceCodeUrl === "string" ? entry.sourceCodeUrl : "";
+      const marker = "/watchtower-extensions@main/";
+      const markerIndex = sourceUrl.indexOf(marker);
+      if (markerIndex === -1) continue;
+      const relativeSource = sourceUrl.slice(markerIndex + marker.length).split(/[?#]/)[0];
+      if (
+        relativeSource.startsWith("src/") &&
+        !fs.existsSync(path.join(ROOT, relativeSource))
+      ) {
+        problems.push(
+          `SOURCE: ${rel} / ${entry.name || entry.id} points to missing ${relativeSource}`,
+        );
+      }
+    }
+  }
+}
+for (const file of walkJs(path.join(ROOT, "src"))) {
+  const raw = fs.readFileSync(file, "utf8");
+  if (raw.includes("watch/nsfw/") || raw.includes("manga/nsfw/")) {
+    problems.push(`LEGACY: ${path.relative(ROOT, file)} still references the old NSFW path`);
+  }
+}
+console.log("   no legacy NSFW paths found");
+
 // ── 5. Every marketplace entry must have a local, cacheable icon ─────────────
 console.log("▶ marketplace icon coverage");
 const iconBaseUrl =

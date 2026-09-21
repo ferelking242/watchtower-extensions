@@ -288,8 +288,8 @@ https://google.com
   "isNsfw": true
 
   // Placement dans le repo :
-  src/watch/nsfw/en/masource.js
-  src/manga/nsfw/multi/masource.js
+  src/nsfw/watch/en/masource.js
+  src/nsfw/manga/multi/masource.js
   ```
 
   Le contenu NSFW est masqué par défaut — l'utilisateur doit l'activer dans **Paramètres → Browse**.
@@ -378,7 +378,7 @@ https://google.com
 
   ### Règles
 
-  - ✅ Sources NSFW → `isNsfw: true` + placées dans `src/<type>/nsfw/<lang>/`
+  - ✅ Sources NSFW → `isNsfw: true` + placées dans `src/nsfw/<type>/<lang>/`
   - ✅ Version SemVer : `MAJOR.MINOR.PATCH`
   - ✅ `appMinVerReq` doit correspondre à la version Watchtower minimum requise
   - ❌ Pas de code malveillant ou de tracking utilisateur
