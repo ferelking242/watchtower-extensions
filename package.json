@@ -4,7 +4,8 @@
   "private": true,
   "description": "Watchtower extensions repository — CI validation scripts",
   "scripts": {
-    "validate": "node tools/validate-extensions.mjs"
+    "validate": "node tools/validate-extensions.mjs",
+    "validate:live": "node tools/run_all_tests.mjs --files src/nsfw/watch/en/pornhub.js,src/nsfw/watch/en/xnxx.js,src/nsfw/watch/en/xvideos.js,src/nsfw/watch/en/youporn.js,src/nsfw/watch/en/redtube.js,src/nsfw/watch/en/1porntv.js --deep --strict --concurrency 2 --out tools/live-report.json"
   },
   "engines": {
     "node": ">=18"

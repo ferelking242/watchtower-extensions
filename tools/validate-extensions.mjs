@@ -64,6 +64,46 @@ for (const rel of jsonFiles) {
 }
 console.log(`   ${jsonFiles.length} JSON file(s) valid`);
 
+// ── 2a. Validate the declarative UI contract ─────────────────────────────────
+console.log("▶ UI layout structure");
+const supportedLayoutComponents = new Set([
+  "banner", "spotlight", "categoryPills", "carousel", "historyRow",
+  "posterRow", "continueWatching", "quizCard", "newsTicker", "liveNow", "grid",
+  "ranked", "compactRow", "creatorRow", "masonry",
+]);
+for (const rel of jsonFiles.filter((file) => file.startsWith("ui-layouts/"))) {
+  const layout = JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
+  if (!Number.isInteger(layout.schemaVersion) || layout.schemaVersion < 1) {
+    problems.push(`LAYOUT: ${rel} must declare an integer schemaVersion`);
+  }
+  const sections = layout.home?.sections;
+  if (sections !== undefined && !Array.isArray(sections)) {
+    problems.push(`LAYOUT: ${rel} home.sections must be an array`);
+  }
+  if (!Array.isArray(sections)) continue;
+  const ids = new Set();
+  for (const section of sections) {
+    if (!section || typeof section !== "object") {
+      problems.push(`LAYOUT: ${rel} contains a non-object section`);
+      continue;
+    }
+    if (!section.id || typeof section.id !== "string") {
+      problems.push(`LAYOUT: ${rel} contains a section without a string id`);
+    } else if (ids.has(section.id)) {
+      problems.push(`LAYOUT: ${rel} repeats section id ${section.id}`);
+    } else {
+      ids.add(section.id);
+    }
+    if (!supportedLayoutComponents.has(section.component)) {
+      problems.push(`LAYOUT: ${rel} uses unsupported component ${section.component || "(missing)"}`);
+    }
+    if (section.seeAll !== undefined && typeof section.seeAll !== "boolean") {
+      problems.push(`LAYOUT: ${rel} section ${section.id || "(missing)"} seeAll must be boolean`);
+    }
+  }
+}
+console.log("   layout structure is valid");
+
 // ── 2b. Reject the pre-2026 NSFW source layout ───────────────────────────────
 console.log("▶ canonical NSFW source layout");
 const legacyNsfwDirs = ["src/watch/nsfw", "src/manga/nsfw"];

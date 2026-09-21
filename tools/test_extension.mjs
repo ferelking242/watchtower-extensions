@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
+import { Document } from "./html_document.mjs";
 
 const TIMEOUT_MS = 25000;
 
@@ -47,7 +48,8 @@ class MProvider {
 function loadExtension(filePath) {
   const code = fs.readFileSync(filePath, "utf8");
   const sandbox = {
-    MProvider, Client,
+    MProvider, Client, Document,
+    extLog: () => {},
     console, setTimeout, clearTimeout, setInterval, clearInterval,
     URL, URLSearchParams, TextDecoder, TextEncoder, fetch, Buffer,
     watchtowerSources: undefined,
@@ -67,6 +69,10 @@ function snippet(s, n=200) {
   if (s == null) return String(s);
   const str = typeof s === "string" ? s : JSON.stringify(s);
   return str.length > n ? str.slice(0, n) + "…" : str;
+}
+
+function itemUrl(item) {
+  return item?.url || item?.link || null;
 }
 
 async function withTimeout(promise, ms, label) {
@@ -113,13 +119,13 @@ async function runOne(filePath, opts = {}) {
   await step("getLatest", () => ext.getLatestUpdates(1));
   await step("search", () => ext.search(opts.query || "a", 1, []));
 
-  let detailUrl = popular?.list?.[0]?.url ?? null;
+  let detailUrl = itemUrl(popular?.list?.[0]);
   let detail = null;
   if (detailUrl) {
     detail = await step("getDetail", () => ext.getDetail(detailUrl));
     const hasCover = !!(detail?.imageUrl || popular?.list?.[0]?.imageUrl);
     result.steps.cover = { ok: hasCover, info: hasCover ? popular?.list?.[0]?.imageUrl : null };
-    let epUrl = detail?.chapters?.[0]?.url ?? null;
+    let epUrl = detail?.chapters?.[0]?.url ?? detail?.episodes?.[0]?.url ?? null;
     if (epUrl) {
       const isManga = src.itemType === 0 || src.isManga;
       if (isManga) {
@@ -141,7 +147,7 @@ async function runOne(filePath, opts = {}) {
 function summarize(step, out) {
   if (!out) return null;
   if (["getPopular","search","getLatest","getLatestUpdates"].includes(step)) {
-    return { count: out.list?.length ?? 0, hasNext: !!out.hasNextPage, sample: out.list?.[0] ? { name: out.list[0].name, url: out.list[0].url, imageUrl: out.list[0].imageUrl } : null };
+    return { count: out.list?.length ?? 0, hasNext: !!out.hasNextPage, sample: out.list?.[0] ? { name: out.list[0].name, url: itemUrl(out.list[0]), imageUrl: out.list[0].imageUrl } : null };
   }
   if (step === "getDetail") {
     return { name: snippet(out.name,80), chapters: out.chapters?.length ?? 0, imageUrl: out.imageUrl, sample: out.chapters?.[0] ? { name: out.chapters[0].name, url: out.chapters[0].url } : null };

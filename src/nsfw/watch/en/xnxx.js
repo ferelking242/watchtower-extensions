@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.2",
+  "version": "1.2.3",
   "pkgPath": "nsfw/watch/en/xnxx.js",
   "notes": "Adult content (18+) — free XNXX catalog only",
   "isNsfw": true
@@ -309,9 +309,29 @@ class DefaultExtension extends MProvider {
         });
       }
     };
-    add(body.match(/html5player\.setVideoHLS\('([^']+)'\)/), "Auto (HLS)");
-    add(body.match(/html5player\.setVideoUrlHigh\('([^']+)'\)/), "720p");
-    add(body.match(/html5player\.setVideoUrlLow\('([^']+)'\)/), "360p");
+
+    // XNXX now signs the media URLs behind the player RPC instead of
+    // embedding setVideoHLS/setVideoUrlHigh calls in the page.
+    const encodedId = body.match(/setEncodedIdVideo\(['"]([^'"]+)['"]\)/)?.[1];
+    const cdnId = body.match(/setIdCdnHLS\(['"]?([^'")]+)['"]?\)/)?.[1] ||
+      body.match(/setIdCDN\(['"]?([^'")]+)['"]?\)/)?.[1];
+    if (encodedId && cdnId) {
+      const endpoint = `${DefaultExtension.BASE_URL}/html5player/getvideo/${encodedId}/${cdnId}`;
+      const rpc = await new Client().get(endpoint, headers);
+      try {
+        const data = JSON.parse(rpc.body || "{}");
+        if (data.hls) add([null, data.hls], "Auto (HLS)");
+        if (data.mp4_high) add([null, data.mp4_high], "720p");
+        if (data.mp4_low) add([null, data.mp4_low], "360p");
+      } catch {
+        extLog("warn", "XNXX media RPC returned invalid JSON");
+      }
+    }
+    if (!videos.length) {
+      add(body.match(/html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/), "Auto (HLS)");
+      add(body.match(/html5player\.setVideoUrlHigh\(['"]([^'"]+)['"]\)/), "720p");
+      add(body.match(/html5player\.setVideoUrlLow\(['"]([^'"]+)['"]\)/), "360p");
+    }
 
     const preferred = String(this.prefQuality || "auto").toLowerCase();
     videos.sort((a, b) => {

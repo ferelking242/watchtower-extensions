@@ -17,6 +17,7 @@ import path from "node:path";
 import vm   from "node:vm";
 import { fileURLToPath } from "node:url";
 import { Worker, isMainThread, parentPort, workerData } from "node:worker_threads";
+import { Document } from "./html_document.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT      = path.resolve(__dirname, "..");
@@ -46,21 +47,12 @@ class SharedPreferences {
   set(k,v){ this._d[k]=v; }
 }
 
-// Minimal HTML/Document stub so extensions that use Document() don't crash
-class Document {
-  constructor(html){ this._html = html ?? ""; }
-  select(sel)       { return []; }
-  selectFirst(sel)  { return null; }
-  attr(a)           { return ""; }
-  text()            { return ""; }
-  outerHtml()       { return ""; }
-}
-
 // ── Load & run one extension ────────────────────────────────────
 function loadExtension(filePath) {
   const code    = fs.readFileSync(filePath, "utf8");
   const sandbox = {
     MProvider, Client, SharedPreferences, Document,
+    extLog: () => {},
     console, setTimeout, clearTimeout, setInterval, clearInterval,
     URL, URLSearchParams, TextDecoder, TextEncoder, fetch, Buffer,
     atob: (s) => Buffer.from(s, "base64").toString("utf8"),
@@ -90,7 +82,71 @@ async function raceTimeout(p, ms, label) {
   try { return await Promise.race([p,t]); } finally { clearTimeout(h); }
 }
 
-async function runExtension(relPath) {
+function mediaUrl(url) {
+  try {
+    const parsed = new URL(String(url));
+    return `${parsed.origin}${parsed.pathname}`;
+  } catch {
+    return String(url || "").split("?")[0];
+  }
+}
+
+async function probeMedia(video, pageUrl) {
+  const url = String(video?.url || "").trim();
+  if (!url) return { ok: false, error: "video URL is empty" };
+  const headers = { ...(video?.headers || {}) };
+  headers.Range = "bytes=0-2047";
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
+  try {
+    const response = await fetch(url, {
+      headers,
+      redirect: "follow",
+      signal: controller.signal,
+    });
+    const contentType = response.headers.get("content-type") || "";
+    const body = await response.text();
+    const isHls = /\.m3u8(?:[?#]|$)/i.test(url) || /mpegurl/i.test(contentType);
+    const validBody = isHls
+      ? body.includes("#EXTM3U")
+      : response.status === 200 || response.status === 206
+        ? /video|octet-stream|mp4/i.test(contentType) || /\.(mp4|webm)(?:[?#]|$)/i.test(url)
+        : false;
+    return {
+      ok: response.status >= 200 && response.status < 300 && validBody,
+      status: response.status,
+      kind: isHls ? "hls" : "media",
+      contentType,
+      url: mediaUrl(response.url || url),
+      error: response.status >= 200 && response.status < 300 && validBody ? undefined : "response is not a readable media stream",
+    };
+  } catch (error) {
+    return { ok: false, url: mediaUrl(url), error: error.message };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function uniqueKeys(items) {
+  return new Set((Array.isArray(items) ? items : [])
+    .map((item) => String(item?.url || item?.link || "").trim())
+    .filter(Boolean));
+}
+
+function overlapRatio(first, second) {
+  const a = uniqueKeys(first);
+  const b = uniqueKeys(second);
+  if (!a.size || !b.size) return 0;
+  let overlap = 0;
+  for (const key of a) if (b.has(key)) overlap += 1;
+  return overlap / Math.min(a.size, b.size);
+}
+
+function itemUrl(item) {
+  return item?.url || item?.link || null;
+}
+
+async function runExtension(relPath, options = {}) {
   const filePath = path.join(ROOT, relPath);
   const result   = { file: relPath, name: null, lang: "?", itemType: 1, baseUrl: "", iconUrl: "", steps: {}, ok: true, errors: [], testedAt: Date.now() };
 
@@ -130,34 +186,119 @@ async function runExtension(relPath) {
 
   // 1. getPopular
   const popular = await step("getPopular", () => ext.getPopular(1));
+  if (options.strict && (!popular?.list?.length || !popular.list.every((item) => item?.url || item?.link))) {
+    result.ok = false;
+    result.errors.push("getPopular: empty result or missing item URL");
+  }
+
+  if (options.deep && popular?.hasNextPage) {
+    const pageTwo = await step("getPopularPage2", () => ext.getPopular(2));
+    const ratio = overlapRatio(popular.list, pageTwo?.list);
+    result.steps.pagination = {
+      ok: !!pageTwo?.list?.length && ratio < 0.8,
+      page1Count: popular.list?.length || 0,
+      page2Count: pageTwo?.list?.length || 0,
+      overlapRatio: Number(ratio.toFixed(3)),
+    };
+    if (!result.steps.pagination.ok) {
+      result.ok = false;
+      result.errors.push(
+        `pagination: page 2 is empty or repeats page 1 (${Math.round(ratio * 100)}% overlap)`,
+      );
+    }
+  }
 
   // 2. getLatest
-  await step("getLatest", () => ext.getLatestUpdates(1));
+  const latest = await step("getLatest", () => ext.getLatestUpdates(1));
+  if (options.strict && (!latest?.list?.length || !latest.list.every((item) => item?.url || item?.link))) {
+    result.ok = false;
+    result.errors.push("getLatest: empty result or missing item URL");
+  }
+  if (options.deep && latest?.hasNextPage) {
+    const latestPageTwo = await step("getLatestPage2", () => ext.getLatestUpdates(2));
+    const ratio = overlapRatio(latest.list, latestPageTwo?.list);
+    result.steps.latestPagination = {
+      ok: !!latestPageTwo?.list?.length && ratio < 0.8,
+      page1Count: latest.list?.length || 0,
+      page2Count: latestPageTwo?.list?.length || 0,
+      overlapRatio: Number(ratio.toFixed(3)),
+    };
+    if (!result.steps.latestPagination.ok) {
+      result.ok = false;
+      result.errors.push(`latest pagination: page 2 is empty or repeats page 1 (${Math.round(ratio * 100)}% overlap)`);
+    }
+  }
 
   // 3. search (short query to avoid blank results)
-  await step("search", () => ext.search("a", 1, []));
+  const search = await step("search", () => ext.search("a", 1, []));
+  if (options.strict && (!search?.list?.length || !search.list.every((item) => item?.url || item?.link))) {
+    result.ok = false;
+    result.errors.push("search: empty result or missing item URL");
+  }
+  if (options.deep && search?.hasNextPage) {
+    const searchPageTwo = await step("searchPage2", () => ext.search("a", 2, []));
+    const ratio = overlapRatio(search.list, searchPageTwo?.list);
+    result.steps.searchPagination = {
+      ok: !!searchPageTwo?.list?.length && ratio < 0.8,
+      page1Count: search.list?.length || 0,
+      page2Count: searchPageTwo?.list?.length || 0,
+      overlapRatio: Number(ratio.toFixed(3)),
+    };
+    if (!result.steps.searchPagination.ok) {
+      result.ok = false;
+      result.errors.push(`search pagination: page 2 is empty or repeats page 1 (${Math.round(ratio * 100)}% overlap)`);
+    }
+  }
 
   // 4. getDetail on first popular result
   const firstItem = popular?.list?.[0];
-  if (firstItem?.url) {
-    const detail = await step("getDetail", () => ext.getDetail(firstItem.url));
+  const firstItemUrl = itemUrl(firstItem);
+  if (firstItemUrl) {
+    const detail = await step("getDetail", () => ext.getDetail(firstItemUrl));
 
     // 5. cover check
     const cover = detail?.imageUrl || firstItem?.imageUrl;
     result.steps.cover = { ok: !!cover, info: cover ? snip(cover) : null };
+    if (options.strict && !cover) {
+      result.ok = false;
+      result.errors.push("getDetail: no cover image returned");
+    }
 
     // 6. read (getPageList for manga, getVideoList for watch/novel)
     const isManga = result.itemType === 0 || src.isManga === true;
-    const epUrl   = detail?.chapters?.[0]?.url ?? null;
+    const epUrl   = detail?.chapters?.[0]?.url ?? detail?.episodes?.[0]?.url ?? null;
     if (epUrl) {
       if (isManga) {
-        await step("getPageList",  () => ext.getPageList(epUrl));
+        const pages = await step("getPageList",  () => ext.getPageList(epUrl));
+        if (options.strict && (!Array.isArray(pages) || !pages.length)) {
+          result.ok = false;
+          result.errors.push("getPageList: no readable pages returned");
+        }
       } else {
-        await step("getVideoList", () => ext.getVideoList(epUrl));
+        const videos = await step("getVideoList", () => ext.getVideoList(epUrl));
+        if (options.strict && (!Array.isArray(videos) || !videos.length)) {
+          result.ok = false;
+          result.errors.push("getVideoList: no playable stream returned");
+        }
+        if (options.deep && Array.isArray(videos) && videos.length) {
+          const probes = [];
+          for (const video of videos.slice(0, 3)) probes.push(await probeMedia(video, epUrl));
+          result.steps.videoProbe = {
+            ok: probes.some((probe) => probe.ok),
+            tested: probes.length,
+            passed: probes.filter((probe) => probe.ok).length,
+            probes,
+          };
+          if (!result.steps.videoProbe.ok) {
+            result.ok = false;
+            result.errors.push("videoProbe: no returned stream accepted a readable media response");
+          }
+        }
       }
     } else {
       const readKey = isManga ? "getPageList" : "getVideoList";
       result.steps[readKey] = { ok: false, error: "no chapter/episode URL found in detail" };
+      result.errors.push(`${readKey}: no chapter/episode URL found in detail`);
       result.ok = false;
     }
   } else {
@@ -175,7 +316,7 @@ function summarize(step, out) {
   if (["getPopular","getLatest","getLatestUpdates","search"].includes(step)) {
     const first = out.list?.[0];
     return { count: out.list?.length ?? 0, hasNext: !!out.hasNextPage,
-      sample: first ? { name: snip(first.name,60), url: snip(first.url), imageUrl: snip(first.imageUrl,100) } : null };
+      sample: first ? { name: snip(first.name,60), url: snip(itemUrl(first)), imageUrl: snip(first.imageUrl,100) } : null };
   }
   if (step==="getDetail") {
     return { name: snip(out.name,80), chapters: out.chapters?.length??0, imageUrl: snip(out.imageUrl,100),
@@ -195,7 +336,9 @@ function summarize(step, out) {
 // ── Collect JS files by type ────────────────────────────────────
 function collectFiles(typeFilter) {
   const files = [];
-  const dirs  = typeFilter ? [typeFilter] : ["watch","manga","novel","anime","src"];
+  const dirs  = typeFilter
+    ? [typeFilter.startsWith("src/") ? typeFilter : `src/${typeFilter}`]
+    : ["src"];
   for (const d of dirs) {
     const abs = path.join(ROOT, d);
     if (!fs.existsSync(abs)) continue;
@@ -231,25 +374,30 @@ async function pool(tasks, concurrency, onDone) {
 async function main() {
   const args = process.argv.slice(2);
   let typeFilter   = null;
-  let singleFile   = null;
+  const selectedFiles = [];
   let concurrency  = 8;
   let outputFile   = path.join(__dirname, "report.json");
 
   for (let i=0; i<args.length; i++) {
     if (args[i]==="--type"        && args[i+1]) { typeFilter  = args[++i]; }
-    if (args[i]==="--file"        && args[i+1]) { singleFile  = args[++i]; }
+    if (args[i]==="--file"        && args[i+1]) { selectedFiles.push(args[++i]); }
+    if (args[i]==="--files"       && args[i+1]) {
+      selectedFiles.push(...args[++i].split(",").map((file) => file.trim()).filter(Boolean));
+    }
     if (args[i]==="--concurrency" && args[i+1]) { concurrency = parseInt(args[++i])||8; }
     if (args[i]==="--out"         && args[i+1]) { outputFile  = args[++i]; }
   }
+  const deep = args.includes("--deep");
+  const strict = args.includes("--strict") || deep;
 
-  const files = singleFile ? [singleFile] : collectFiles(typeFilter);
+  const files = selectedFiles.length ? selectedFiles : collectFiles(typeFilter);
   process.stderr.write(`\n🔍 Watchtower Extension Tester\n`);
   process.stderr.write(`   Extensions : ${files.length}\n`);
   process.stderr.write(`   Concurrency: ${concurrency}\n`);
   process.stderr.write(`   Output     : ${outputFile}\n\n`);
 
   const start  = Date.now();
-  const tasks  = files.map(f => () => runExtension(f));
+  const tasks  = files.map(f => () => runExtension(f, { deep, strict }));
   let   passed = 0, failed = 0;
 
   const results = await pool(tasks, concurrency, (r, i, total) => {

@@ -1,0 +1,44 @@
+name: Live Extension Validation
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tools/**"
+      - "ui-layouts/**"
+      - ".github/workflows/live-validation.yml"
+  schedule:
+    - cron: "23 3 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    name: Catalog, pagination and media smoke tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run selected live checks
+        run: |
+          node tools/run_all_tests.mjs \
+            --files "src/nsfw/watch/en/pornhub.js,src/nsfw/watch/en/xnxx.js,src/nsfw/watch/en/xvideos.js,src/nsfw/watch/en/youporn.js,src/nsfw/watch/en/redtube.js,src/nsfw/watch/en/1porntv.js" \
+            --deep \
+            --strict \
+            --concurrency 2 \
+            --out tools/live-report.json
+
+      - name: Upload live report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-extension-report
+          path: tools/live-report.json

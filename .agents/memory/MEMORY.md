@@ -1,0 +1,1 @@
+- [Signed player media validation](player-media-validation.md) — XNXX/XVideos use signed player RPC URLs; PornHub CDN streams can expire with HTTP 410.

@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.xvideos.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.3",
+    "version": "1.0.4",
     "pkgPath": "nsfw/watch/en/xvideos.js",
     "notes": "Adult content (18+) — ZeusDL powered streaming",
     "isNsfw": true
@@ -18,11 +18,13 @@ const watchtowerSources = [{
     async getPopular(page) {
       const url = `https://www.xvideos.com/?p=${page - 1}`;
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
-      return this._parse(res.body);
+      // The current home route ignores `p` and returns the same featured
+      // page. Do not advertise a next page that would duplicate the catalog.
+      return this._parse(res.body, false);
     }
     get supportsLatest() { return true; }
     async getLatestUpdates(page) {
-      const url = `https://www.xvideos.com/new/${page - 1}`;
+      const url = `https://www.xvideos.com/new/${page}`;
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
       return this._parse(res.body);
     }
@@ -32,7 +34,7 @@ const watchtowerSources = [{
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
       return this._parse(res.body);
     }
-    _parse(html) {
+    _parse(html, hasNextOverride) {
       const doc = new Document(html);
       const items = [];
       const cards = doc.select(".thumb-block, .mozaique .thumb-block, #main .thumb-block");
@@ -47,7 +49,12 @@ const watchtowerSources = [{
         const dur = card.selectFirst(".duration")?.text?.trim() || "";
         items.push({ name: title.trim(), imageUrl: thumb, link: href.startsWith("http") ? href : "https://www.xvideos.com" + href, description: dur ? `Duration: ${dur}` : "" });
       }
-      return { list: items, hasNextPage: !!doc.selectFirst(".pagination .next-page, a[rel='next']") };
+      return {
+        list: items,
+        hasNextPage: hasNextOverride === undefined
+          ? !!doc.selectFirst(".pagination .next-page, a[rel='next']")
+          : hasNextOverride,
+      };
     }
     async getDetail(url) {
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
@@ -61,12 +68,27 @@ const watchtowerSources = [{
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
       const html = res.body;
       const videos = [];
+      const encodedId = html.match(/setEncodedIdVideo\(['"]([^'"]+)['"]\)/)?.[1];
+      const cdnId = html.match(/setIdCdnHLS\(['"]?([^'")]+)['"]?\)/)?.[1] ||
+        html.match(/setIdCDN\(['"]?([^'")]+)['"]?\)/)?.[1];
+      if (encodedId && cdnId) {
+        const endpoint = `https://www.xvideos.com/html5player/getvideo/${encodedId}/${cdnId}`;
+        const rpc = await new Client().get(endpoint, { headers: this.getHeaders(url) });
+        try {
+          const data = JSON.parse(rpc.body || "{}");
+          if (data.hls) videos.push({ url: data.hls, quality: "HLS · ZeusDL", originalUrl: data.hls, headers: this.getHeaders(url) });
+          if (data.mp4_high) videos.push({ url: data.mp4_high, quality: "HD · ZeusDL", originalUrl: data.mp4_high, headers: this.getHeaders(url) });
+          if (data.mp4_low) videos.push({ url: data.mp4_low, quality: "SD · ZeusDL", originalUrl: data.mp4_low, headers: this.getHeaders(url) });
+        } catch {
+          // Keep the legacy parser below as a compatibility fallback.
+        }
+      }
       const hlsMatch = html.match(/setVideoHLS\(['"]([^'"]+)['"]\)/);
-      if (hlsMatch) videos.push({ url: hlsMatch[1], quality: "HLS · ZeusDL", originalUrl: hlsMatch[1], headers: this.getHeaders(url) });
+      if (hlsMatch && !videos.length) videos.push({ url: hlsMatch[1], quality: "HLS · ZeusDL", originalUrl: hlsMatch[1], headers: this.getHeaders(url) });
       const hiMatch = html.match(/setVideoUrlHigh\(['"]([^'"]+)['"]\)/);
-      if (hiMatch) videos.push({ url: hiMatch[1], quality: "HD · ZeusDL", originalUrl: hiMatch[1], headers: this.getHeaders(url) });
+      if (hiMatch && !videos.length) videos.push({ url: hiMatch[1], quality: "HD · ZeusDL", originalUrl: hiMatch[1], headers: this.getHeaders(url) });
       const loMatch = html.match(/setVideoUrlLow\(['"]([^'"]+)['"]\)/);
-      if (loMatch) videos.push({ url: loMatch[1], quality: "SD · ZeusDL", originalUrl: loMatch[1], headers: this.getHeaders(url) });
+      if (loMatch && !videos.length) videos.push({ url: loMatch[1], quality: "SD · ZeusDL", originalUrl: loMatch[1], headers: this.getHeaders(url) });
       return videos;
     }
     async getPageList(url) { return []; }
