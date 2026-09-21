@@ -7,6 +7,7 @@
  *   2. Every index/*.json, repo.json and ui-layouts/*.json is valid JSON
  *   3. Every extension declares getSourcePreferences() (settings screen)
  *   4. index versions are in sync with the JS manifests (sync_versions.mjs --dry-run)
+ *   5. Every marketplace extension points to a repository-hosted icon asset
  *
  * Exit code is non-zero when anything fails, so GitHub Actions can gate
  * pushes/PRs on it. Run locally with:  node tools/validate-extensions.mjs
@@ -63,7 +64,36 @@ for (const rel of jsonFiles) {
 }
 console.log(`   ${jsonFiles.length} JSON file(s) valid`);
 
-// ── 3. Every extension must declare getSourcePreferences ────────────────────
+// ── 5. Every marketplace entry must have a local, cacheable icon ─────────────
+console.log("▶ marketplace icon coverage");
+const iconBaseUrl =
+  "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/";
+let iconEntries = 0;
+let missingIcons = 0;
+for (const rel of jsonFiles.filter((file) => file.startsWith("index/"))) {
+  if (rel === "index/plugins.json") continue;
+  const data = JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
+  if (!Array.isArray(data)) continue;
+  for (const entry of data) {
+    iconEntries++;
+    const iconUrl = typeof entry.iconUrl === "string" ? entry.iconUrl : "";
+    if (!iconUrl.startsWith(iconBaseUrl + "assets/icons/")) {
+      missingIcons++;
+      problems.push(
+        `ICON: ${rel} / ${entry.name || entry.id} must use a repository-hosted asset`,
+      );
+      continue;
+    }
+    const assetPath = iconUrl.split(iconBaseUrl)[1].split(/[?#]/)[0];
+    if (!fs.existsSync(path.join(ROOT, assetPath))) {
+      missingIcons++;
+      problems.push(`ICON: ${rel} / ${entry.name || entry.id} asset is missing`);
+    }
+  }
+}
+console.log(`   ${iconEntries - missingIcons}/${iconEntries} entries have local icons`);
+
+// ── 4. Every extension must declare getSourcePreferences ────────────────────
 console.log("▶ getSourcePreferences() presence");
 const jsFiles = walkJs(path.join(ROOT, "src"));
 let noPrefs = 0;

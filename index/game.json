@@ -4,7 +4,7 @@
     "id": 6000000001,
     "lang": "en",
     "baseUrl": "https://romsfun.com",
-    "iconUrl": "https://romsfun.com/favicon.ico",
+    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/game-6000000001.png",
     "typeSource": "single",
     "itemType": 4,
     "version": "1.0.2",
