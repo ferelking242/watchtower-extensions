@@ -6,11 +6,54 @@ const watchtowerSources = [{
   "iconUrl": "https://www.pornhub.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.5",
+  "version": "1.1.0",
   "pkgPath": "nsfw/watch/en/pornhub.js",
   "notes": "Adult content (18+) — native HLS/MP4 quality extraction",
   "isNsfw": true
 }];
+
+const PORNHUB_CATEGORIES = [
+  ["Amateur", "amateur"],
+  ["Anal", "anal"],
+  ["Asian", "asian"],
+  ["BBW", "bbw"],
+  ["Blonde", "blonde"],
+  ["Brunette", "brunette"],
+  ["Couples", "couples"],
+  ["Lesbian", "lesbian"],
+  ["Mature", "mature"],
+  ["MILF", "milf"],
+  ["POV", "pov"],
+  ["Solo", "solo"],
+];
+
+const PORNHUB_TAGS = [
+  ["Trending", "trending"],
+  ["Amateur", "amateur"],
+  ["Public", "public"],
+  ["POV", "pov"],
+  ["Couples", "couples"],
+  ["Mature", "mature"],
+  ["Lesbian", "lesbian"],
+  ["ASMR", "asmr"],
+];
+
+const PORNHUB_LANGUAGES = [
+  ["English", "english"],
+  ["Spanish", "spanish"],
+  ["French", "french"],
+  ["German", "german"],
+  ["Italian", "italian"],
+  ["Portuguese", "portuguese"],
+  ["Japanese", "japanese"],
+  ["Korean", "korean"],
+];
+
+const PORNHUB_PLAYLISTS = [
+  ["Popular playlists", "popular"],
+  ["New playlists", "new"],
+  ["Recommended playlists", "recommended"],
+];
 
 class DefaultExtension extends MProvider {
   static get BASE_URL() {
@@ -80,6 +123,75 @@ class DefaultExtension extends MProvider {
       .trim();
   }
 
+  _decodeHtml(value) {
+    return String(value || "")
+      .replace(/<script[\s\S]*?<\/script>/gi, " ")
+      .replace(/<style[\s\S]*?<\/style>/gi, " ")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&nbsp;/gi, " ")
+      .replace(/&amp;/gi, "&")
+      .replace(/&quot;/gi, "\"")
+      .replace(/&#39;|&apos;/gi, "'")
+      .replace(/&#x2F;|&#47;/gi, "/")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  _htmlAttribute(html, name) {
+    const expression = new RegExp(
+      `${name}\\s*=\\s*["']([^"']+)["']`,
+      "i"
+    );
+    const match = String(html || "").match(expression);
+    return match ? this._cleanUrl(match[1]) : "";
+  }
+
+  _fallbackList(html, page) {
+    const source = String(html || "");
+    const items = [];
+    const seen = {};
+    const cardPatterns = [
+      /<li\b[^>]*class=["'][^"']*pcVideoListItem[^"']*["'][\s\S]*?<\/li>/gi,
+      /<div\b[^>]*class=["'][^"']*videoBox[^"']*["'][\s\S]*?<\/div>/gi
+    ];
+
+    for (const cardPattern of cardPatterns) {
+      let cardMatch;
+      while ((cardMatch = cardPattern.exec(source)) !== null) {
+        const card = cardMatch[0];
+        const hrefMatch = card.match(/href\s*=\s*["']([^"']*\/view_video\.php[^"']*)["']/i);
+        if (!hrefMatch) continue;
+        const link = this._absolute(hrefMatch[1]);
+        if (!link || seen[link]) continue;
+
+        const titleMatch = card.match(/title\s*=\s*["']([^"']+)["']/i);
+        const imageMatch = card.match(
+          /(?:data-image|data-src|data-mediabook|src)\s*=\s*["']([^"']+)["']/i
+        );
+        const durationMatch = card.match(
+          /class=["'][^"']*(?:videoDuration|duration|videoDurationText)[^"']*["'][^>]*>([\s\S]*?)<\//
+        );
+        const title = this._decodeHtml(titleMatch ? titleMatch[1] : "") || "Untitled";
+        const thumbnail = this._cleanUrl(imageMatch ? imageMatch[1] : "");
+        const duration = this._decodeHtml(durationMatch ? durationMatch[1] : "");
+
+        seen[link] = true;
+        items.push({
+          name: title,
+          imageUrl: thumbnail,
+          link,
+          url: link,
+          description: duration ? `Duration: ${duration}` : ""
+        });
+      }
+    }
+
+    return {
+      list: items,
+      hasNextPage: items.length >= 20 && page < 50
+    };
+  }
+
   _hasNextPage(doc, page, items) {
     if (items.length === 0 || page >= 50) return false;
     for (const anchor of doc.select("a[rel='next'], .pagination a, .pagination3 a, .paginationGated a")) {
@@ -132,6 +244,10 @@ class DefaultExtension extends MProvider {
       });
     }
 
+    if (items.length === 0) {
+      return this._fallbackList(html, page);
+    }
+
     return {
       list: items,
       hasNextPage: this._hasNextPage(doc, page, items)
@@ -140,6 +256,12 @@ class DefaultExtension extends MProvider {
 
   async _list(order, page) {
     const url = `${DefaultExtension.BASE_URL}/video?o=${order}&page=${page}`;
+    return this._parseList(await this._get(url), page);
+  }
+
+  async _listPath(path, page) {
+    const separator = path.includes("?") ? "&" : "?";
+    const url = `${DefaultExtension.BASE_URL}${path}${separator}page=${page}`;
     return this._parseList(await this._get(url), page);
   }
 
@@ -163,13 +285,53 @@ class DefaultExtension extends MProvider {
   }
 
   _extractFlashvars(html) {
-    const match = String(html || "").match(/var\s+flashvars_\d+\s*=\s*(\{[\s\S]*?\});/);
-    if (!match) return null;
+    const source = String(html || "");
+    const startMatch = source.match(/var\s+flashvars_\d+\s*=\s*/);
+    if (!startMatch) return null;
+
+    const start = source.indexOf("{", startMatch.index + startMatch[0].length);
+    if (start < 0) return null;
+
+    let depth = 0;
+    let quote = "";
+    let escaped = false;
+    let end = -1;
+    for (let i = start; i < source.length; i += 1) {
+      const char = source[i];
+      if (quote) {
+        if (escaped) {
+          escaped = false;
+        } else if (char === "\\") {
+          escaped = true;
+        } else if (char === quote) {
+          quote = "";
+        }
+        continue;
+      }
+      if (char === "\"" || char === "'") {
+        quote = char;
+      } else if (char === "{") {
+        depth += 1;
+      } else if (char === "}") {
+        depth -= 1;
+        if (depth === 0) {
+          end = i + 1;
+          break;
+        }
+      }
+    }
+    if (end < 0) return null;
+
     try {
-      return JSON.parse(match[1]);
+      return JSON.parse(source.slice(start, end));
     } catch (_) {
       return null;
     }
+  }
+
+  _firstHtmlText(html, pattern) {
+    const match = String(html || "").match(pattern);
+    return match ? this._decodeHtml(match[1]) : "";
   }
 
   async getDetail(url) {
@@ -177,10 +339,22 @@ class DefaultExtension extends MProvider {
     const doc = new Document(html);
     const title = this._meta(doc, "og:title") ||
       this._text(doc.selectFirst("h1.title, h1.page-title")) ||
+      this._firstHtmlText(html, /<h1\b[^>]*class=["'][^"']*\btitle\b[^"']*["'][^>]*>([\s\S]*?)<\/h1>/i) ||
+      this._firstHtmlText(html, /<title[^>]*>([\s\S]*?)<\/title>/i) ||
       "PornHub video";
-    const imageUrl = this._meta(doc, "og:image");
+    const flashvars = this._extractFlashvars(html);
+    const imageUrl = this._meta(doc, "og:image") ||
+      this._cleanUrl(flashvars?.image_url) ||
+      this._firstHtmlText(
+        html,
+        /<meta\b[^>]*(?:property|name)=["'](?:og:image|twitter:image)["'][^>]*content=["']([^"']+)["'][^>]*>/i
+      );
     const description = this._meta(doc, "og:description") ||
-      this._text(doc.selectFirst(".video-description, .description, .infoWrapper"));
+      this._text(doc.selectFirst(".video-description, .description, .infoWrapper")) ||
+      this._firstHtmlText(
+        html,
+        /<meta\b[^>]*(?:property|name)=["'](?:og:description|description)["'][^>]*content=["']([^"']+)["'][^>]*>/i
+      );
     const genre = [];
     const seenTags = {};
 
@@ -189,6 +363,17 @@ class DefaultExtension extends MProvider {
       if (name && !seenTags[name.toLowerCase()]) {
         seenTags[name.toLowerCase()] = true;
         genre.push(name);
+      }
+    }
+    if (genre.length === 0) {
+      const tagPattern = /<a\b[^>]*href=["'][^"']*(?:\/search\/|\/tag\/|\/categories\/)[^"']*["'][^>]*>([\s\S]*?)<\/a>/gi;
+      let tagMatch;
+      while ((tagMatch = tagPattern.exec(html)) !== null) {
+        const name = this._decodeHtml(tagMatch[1]);
+        if (name && !seenTags[name.toLowerCase()] && name.length < 80) {
+          seenTags[name.toLowerCase()] = true;
+          genre.push(name);
+        }
       }
     }
 
@@ -277,10 +462,87 @@ class DefaultExtension extends MProvider {
     return videos;
   }
 
+  _collectionItem(name, path, imageUrl, description) {
+    const link = this._absolute(path);
+    return {
+      name,
+      imageUrl: imageUrl || "",
+      link,
+      url: link,
+      description: description || "",
+      metadata: { collection: true }
+    };
+  }
+
+  async _collectionItems(definitions, page) {
+    const coverSource = await this._list("mv", 1);
+    const covers = coverSource.list || [];
+    return definitions.map(([name, slug], index) => {
+      const cover = covers[index % Math.max(covers.length, 1)]?.imageUrl || "";
+      return this._collectionItem(
+        name,
+        `/video/search?search=${encodeURIComponent(slug)}`,
+        cover,
+        "Browse videos"
+      );
+    });
+  }
+
   async getCustomList(listId, page) {
+    if (listId === "recommended") return this._list("tr", page);
     if (listId === "trending") return this._list("ht", page);
+    if (listId === "top") return this._list("mv", page);
     if (listId === "new") return this._list("n", page);
+    if (listId === "shorts") return this._listPath("/shorties", page);
     if (listId === "catalogue") return this._list("mv", page);
+
+    if (listId === "categories") {
+      return {
+        list: await this._collectionItems(PORNHUB_CATEGORIES, page),
+        hasNextPage: false
+      };
+    }
+    if (listId === "tags") {
+      return {
+        list: await this._collectionItems(PORNHUB_TAGS, page),
+        hasNextPage: false
+      };
+    }
+    if (listId === "languages") {
+      return {
+        list: PORNHUB_LANGUAGES.map(([name, slug]) =>
+          this._collectionItem(
+            name,
+            `/language/${slug}`,
+            "",
+            "Browse videos in this language"
+          )
+        ),
+        hasNextPage: false
+      };
+    }
+    if (listId === "playlists") {
+      return {
+        list: await this._collectionItems(PORNHUB_PLAYLISTS, page),
+        hasNextPage: false
+      };
+    }
+
+    if (listId.startsWith("category_")) {
+      const category = listId.slice("category_".length);
+      return this._listPath(`/video/search?search=${encodeURIComponent(category)}`, page);
+    }
+    if (listId.startsWith("tag_")) {
+      const tag = listId.slice("tag_".length);
+      return this._listPath(`/video/search?search=${encodeURIComponent(tag)}`, page);
+    }
+    if (listId.startsWith("language_")) {
+      return this._listPath(`/language/${listId.slice("language_".length)}`, page);
+    }
+    if (listId.startsWith("playlist_")) {
+      return this._listPath(`/video?o=${listId.slice("playlist_".length)}`, page);
+    }
+
     return this.getPopular(page);
   }
 
