@@ -3805,7 +3805,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000180.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.2.3",
+    "version": "1.2.4",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/nsfw/watch/en/rexporn.js",
     "isManga": false,
     "isNsfw": true,
@@ -3814,7 +3814,9 @@
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — multi-quality MP4 streaming",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "uiLayout": "ui-layouts/rexporn.json",
+    "uiLayoutVersion": "1.0.0"
   },
   {
     "name": "SpankBang",

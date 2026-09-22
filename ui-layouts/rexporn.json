@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      {
+        "id": "latest",
+        "component": "spotlight",
+        "title": "New RexPorn Videos",
+        "accent": "#FF4D8D",
+        "icon": "bolt",
+        "seeAll": true
+      },
+      {
+        "id": "top",
+        "component": "ranked",
+        "title": "Top Rated",
+        "accent": "#FFC857",
+        "icon": "trending_up",
+        "seeAll": true
+      },
+      {
+        "id": "pornstars",
+        "component": "grid",
+        "title": "Pornstars",
+        "accent": "#B388FF",
+        "icon": "star",
+        "columns": 3,
+        "cardStyle": "poster",
+        "seeAll": true
+      },
+      {
+        "id": "categories",
+        "component": "categoryPills",
+        "title": "Categories",
+        "accent": "#26C6DA",
+        "icon": "category",
+        "seeAll": true
+      },
+      {
+        "id": "tags",
+        "component": "masonry",
+        "title": "Tags",
+        "accent": "#64D8CB",
+        "icon": "local_offer",
+        "columns": 2,
+        "cardStyle": "tag",
+        "seeAll": true
+      },
+      {
+        "id": "popular",
+        "component": "carousel",
+        "title": "Most Popular",
+        "accent": "#FF7043",
+        "icon": "whatshot",
+        "seeAll": true
+      },
+      {
+        "id": "category_big-tits",
+        "component": "carousel",
+        "title": "Big Tits",
+        "accent": "#EC407A",
+        "seeAll": true
+      },
+      {
+        "id": "category_mature",
+        "component": "compactRow",
+        "title": "Mature",
+        "accent": "#AB47BC",
+        "seeAll": true
+      },
+      {
+        "id": "category_russian",
+        "component": "grid",
+        "title": "Russian",
+        "accent": "#42A5F5",
+        "columns": 3,
+        "cardStyle": "thumbnail",
+        "seeAll": true
+      }
+    ]
+  },
+  "browse": {
+    "popular": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 3,
+        "cardStyle": "thumbnail"
+      },
+      "filters": "chips"
+    }
+  },
+  "detail": {
+    "hero": "backdrop",
+    "episodeList": "compact",
+    "showRecommendations": true
+  },
+  "player": {
+    "mode": "standard"
+  }
+}

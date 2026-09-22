@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.rexporn.st/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.3",
+  "version": "1.2.4",
   "pkgPath": "nsfw/watch/en/rexporn.js",
   "notes": "Adult content (18+) — multi-quality MP4 streaming",
   "isNsfw": true
@@ -249,6 +249,99 @@ class DefaultExtension extends MProvider {
     return { list: items, hasNextPage: hasNext };
   }
 
+  _parseCollectionList(html, selector, page, style) {
+    const doc = new Document(html);
+    const items = [];
+    const seen = {};
+    const cards = doc.select(selector);
+
+    for (const card of cards) {
+      const a = card.selectFirst("a");
+      if (!a) continue;
+      const href = a.attr("href") || "";
+      if (!href) continue;
+      const link = href.startsWith("http")
+        ? href
+        : "https://www.rexporn.st" + href;
+      if (seen[link]) continue;
+      seen[link] = 1;
+
+      const img = card.selectFirst("img");
+      const titleNode = card.selectFirst(".vname") ||
+        card.selectFirst(".ftitle") ||
+        card.selectFirst(".name");
+      const title = (titleNode ? titleNode.text : (img ? img.attr("alt") : ""))
+        .replace(/^Pornstar$/i, "")
+        .trim();
+      const descriptionNode = card.selectFirst(".vidcount") ||
+        card.selectFirst(".length");
+      const description = descriptionNode ? descriptionNode.text.trim() : "";
+
+      items.push({
+        name: title || "RexPorn",
+        imageUrl: img ? (img.attr("src") || img.attr("data-src") || "") : "",
+        link,
+        url: link,
+        description,
+        metadata: { collection: true, collectionType: style }
+      });
+    }
+
+    const nextPage = page + 1;
+    const nextHref = style === "pornstars"
+      ? `/pornstars-page-${nextPage}.html`
+      : `/page-${nextPage}.html`;
+    const hasNextPage = page < 50 &&
+      doc.select(".pagination a, .pager a, .pages a, nav.pages a")
+        .some(a => (a.attr("href") || "").includes(nextHref));
+
+    return { list: items, hasNextPage };
+  }
+
+  async getCustomList(listId, page) {
+    if (listId === "latest") return this.getLatestUpdates(page);
+    if (listId === "top") {
+      const url = this._sortedUrl(1, page);
+      const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+      return this._parseList(res.body, url, page, "sorted");
+    }
+    if (listId === "popular") {
+      const url = this._sortedUrl(4, page);
+      const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+      return this._parseList(res.body, url, page, "sorted");
+    }
+    if (listId === "pornstars") {
+      const url = page > 1
+        ? `https://www.rexporn.st/pornstars-page-${page}.html`
+        : "https://www.rexporn.st/pornstars";
+      const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+      return this._parseCollectionList(res.body, ".pornstar", page, "pornstars");
+    }
+    if (listId === "categories" || listId === "tags") {
+      const items = DefaultExtension.CATEGORIES
+        .filter(([, slug]) => !!slug)
+        .map(([name, slug]) => {
+          const link = `https://www.rexporn.st/${slug}`;
+          return {
+            name,
+            imageUrl: "",
+            link,
+            url: link,
+            description: "Browse RexPorn videos",
+            metadata: { collection: true, collectionType: listId }
+          };
+        });
+      return { list: items, hasNextPage: false };
+    }
+    if (listId.startsWith("category_")) {
+      const slug = listId.slice("category_".length);
+      const url = this._categoryUrl(slug, page);
+      const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+      return this._parseList(res.body, url, page, "category");
+    }
+    return this.getPopular(page);
+  }
+
   // ── Detail page ───────────────────────────────────────────────────────────
   async getDetail(url) {
     const res   = await new Client().get(url, { headers: this.getPageHeaders(url) });
@@ -259,6 +352,16 @@ class DefaultExtension extends MProvider {
     const ogImg = doc.selectFirst('meta[property="og:image"]');
     const thumbLink = doc.selectFirst('link[itemprop="thumbnailUrl"]');
     const thumb = (thumbLink ? thumbLink.attr("href") : null) || (ogImg ? ogImg.attr("content") : "");
+    if (url.includes("/pornstar/")) {
+      const videos = this._parseList(res.body, url, 1, "pornstar").list;
+      return {
+        name: title,
+        imageUrl: thumb,
+        description: "Videos from this pornstar",
+        genre: [],
+        episodes: videos.map(video => ({ name: video.name, url: video.link }))
+      };
+    }
     const tagEls = doc.select(".video-tags a, .tags a, .category a");
     const tags = [];
     for (const el of tagEls) tags.push({ name: el.text.trim() });
