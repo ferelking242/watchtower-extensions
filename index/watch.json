@@ -3815,8 +3815,10 @@
     "notes": "Adult content (18+) — multi-quality MP4 streaming",
     "requiresAccount": false,
     "hasDRM": false,
+    "subCategories": ["pornstars", "studios", "categories", "tags"],
+    "contentSubtype": ["videos", "pornstars", "studios", "tags"],
     "uiLayout": "ui-layouts/rexporn.json",
-    "uiLayoutVersion": "1.0.0"
+    "uiLayoutVersion": "1.1.0"
   },
   {
     "name": "SpankBang",

@@ -69,7 +69,7 @@ console.log("▶ UI layout structure");
 const supportedLayoutComponents = new Set([
   "banner", "spotlight", "categoryPills", "carousel", "historyRow",
   "posterRow", "continueWatching", "quizCard", "newsTicker", "liveNow", "grid",
-  "ranked", "compactRow", "creatorRow", "masonry",
+  "ranked", "compactRow", "creatorRow", "masonry", "studioExplorer",
 ]);
 for (const rel of jsonFiles.filter((file) => file.startsWith("ui-layouts/"))) {
   const layout = JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));

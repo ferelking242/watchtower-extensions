@@ -317,6 +317,18 @@ class DefaultExtension extends MProvider {
       const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
       return this._parseCollectionList(res.body, ".pornstar", page, "pornstars");
     }
+    if (listId === "studios") {
+      const url = page > 1
+        ? `https://www.rexporn.st/studios-page-${page}.html`
+        : "https://www.rexporn.st/studios";
+      const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+      return this._parseCollectionList(
+        res.body,
+        ".studio, .producer, [class*='studio']",
+        page,
+        "studios"
+      );
+    }
     if (listId === "categories" || listId === "tags") {
       const items = DefaultExtension.CATEGORIES
         .filter(([, slug]) => !!slug)

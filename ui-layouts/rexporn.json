@@ -4,7 +4,7 @@
     "sections": [
       {
         "id": "latest",
-        "component": "spotlight",
+        "component": "banner",
         "title": "New RexPorn Videos",
         "accent": "#FF4D8D",
         "icon": "bolt",
@@ -20,12 +20,18 @@
       },
       {
         "id": "pornstars",
-        "component": "grid",
+        "component": "creatorRow",
         "title": "Pornstars",
         "accent": "#B388FF",
         "icon": "star",
-        "columns": 3,
-        "cardStyle": "poster",
+        "seeAll": true
+      },
+      {
+        "id": "studios",
+        "component": "studioExplorer",
+        "title": "Studios",
+        "accent": "#7C4DFF",
+        "icon": "business",
         "seeAll": true
       },
       {
@@ -38,11 +44,14 @@
       },
       {
         "id": "tags",
-        "component": "masonry",
+        "component": "grid",
         "title": "Tags",
         "accent": "#64D8CB",
         "icon": "local_offer",
-        "columns": 2,
+        "columns": 3,
+        "rows": 3,
+        "gridOrder": "column",
+        "scrollDirection": "horizontal",
         "cardStyle": "tag",
         "seeAll": true
       },
