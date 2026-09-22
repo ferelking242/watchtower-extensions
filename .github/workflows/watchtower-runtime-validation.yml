@@ -1,0 +1,90 @@
+name: Watchtower Runtime Validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: CLI test depth
+        required: true
+        default: load
+        type: choice
+        options:
+          - load
+          - smoke
+          - deep
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "index/**"
+      - ".github/workflows/watchtower-runtime-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    name: Build Watchtower and test every extension
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    env:
+      TEST_MODE: ${{ inputs.mode || 'load' }}
+    steps:
+      - name: Checkout extensions
+        uses: actions/checkout@v4
+        with:
+          path: watchtower-extensions
+
+      - name: Checkout Watchtower
+        uses: actions/checkout@v4
+        with:
+          repository: ferelking242/watchtower
+          path: watchtower
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.2"
+          channel: stable
+          cache: true
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends \
+            clang cmake ninja-build pkg-config libunwind-dev \
+            libgtk-3-dev libwebkit2gtk-4.0-dev libsoup-3.0-dev liblzma-dev \
+            libblkid-dev libmount-dev libglib2.0-dev libdbus-1-dev \
+            libnotify-dev libayatana-appindicator3-dev libsecret-1-dev \
+            libjsoncpp-dev libgstreamer1.0-dev \
+            libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev \
+            gstreamer1.0-plugins-good gstreamer1.0-plugins-bad \
+            libasound2-dev libpulse-dev libxcb-xfixes0-dev \
+            libepoxy-dev libmpv-dev mpv
+
+      - name: Build the real Watchtower Linux program
+        working-directory: watchtower
+        run: |
+          flutter config --enable-linux-desktop
+          flutter pub get
+          flutter build linux --release
+
+      - name: Run Watchtower CLI against all local extensions
+        working-directory: watchtower
+        run: |
+          mkdir -p ci-reports
+          build/linux/x64/release/bundle/watchtower --cli doctor
+          build/linux/x64/release/bundle/watchtower --cli extensions test \
+            --repo "$GITHUB_WORKSPACE/watchtower-extensions" \
+            --mode "$TEST_MODE" \
+            --concurrency 4 \
+            --timeout 45 \
+            --report "$GITHUB_WORKSPACE/watchtower/ci-reports/extensions.json"
+
+      - name: Upload Watchtower runtime report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: watchtower-runtime-extension-report
+          path: watchtower/ci-reports/extensions.json
