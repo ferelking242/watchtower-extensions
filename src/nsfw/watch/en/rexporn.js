@@ -322,12 +322,33 @@ class DefaultExtension extends MProvider {
         ? `https://www.rexporn.st/studios-page-${page}.html`
         : "https://www.rexporn.st/studios";
       const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
-      return this._parseCollectionList(
+      const studios = this._parseCollectionList(
         res.body,
         ".studio, .producer, [class*='studio']",
         page,
         "studios"
       );
+      // The home studio rail is intentionally a featured studio banner
+      // followed by videos from that studio. Keep later pages as a normal
+      // studio catalogue so pagination remains predictable.
+      if (page === 1 && studios.list.length > 0) {
+        const featured = studios.list[0];
+        const studioPage = await new Client().get(
+          featured.link,
+          { headers: this.getPageHeaders(featured.link) }
+        );
+        const videos = this._parseList(
+          studioPage.body,
+          featured.link,
+          1,
+          "studio"
+        ).list.slice(0, 8);
+        return {
+          list: [featured, ...videos],
+          hasNextPage: studios.hasNextPage
+        };
+      }
+      return studios;
     }
     if (listId === "categories" || listId === "tags") {
       const items = DefaultExtension.CATEGORIES
@@ -340,6 +361,7 @@ class DefaultExtension extends MProvider {
             link,
             url: link,
             description: "Browse RexPorn videos",
+            genre: [name],
             metadata: { collection: true, collectionType: listId }
           };
         });
@@ -374,9 +396,34 @@ class DefaultExtension extends MProvider {
         episodes: videos.map(video => ({ name: video.name, url: video.link }))
       };
     }
+    if (url.includes("/studio/") || url.includes("/studios/")) {
+      const videos = this._parseList(res.body, url, 1, "studio").list;
+      return {
+        name: title,
+        imageUrl: thumb,
+        description: "Videos from this studio",
+        genre: [],
+        episodes: videos.map(video => ({ name: video.name, url: video.link }))
+      };
+    }
     const tagEls = doc.select(".video-tags a, .tags a, .category a");
     const tags = [];
     for (const el of tagEls) tags.push({ name: el.text.trim() });
+    // Category and tag cards link directly to a listing page. Expose that
+    // listing as episodes so tapping a tag opens its videos instead of trying
+    // to play the category HTML as a video source.
+    if (!url.includes("/watch/")) {
+      const videos = this._parseList(res.body, url, 1, "collection").list;
+      if (videos.length > 0) {
+        return {
+          name: title,
+          imageUrl: thumb,
+          description: "RexPorn collection",
+          genre: tags,
+          episodes: videos.map(video => ({ name: video.name, url: video.link }))
+        };
+      }
+    }
     return { name: title, imageUrl: thumb, description: "", genre: tags,
       episodes: [{ name: title, url }] };
   }
