@@ -49,6 +49,7 @@ const watchtowerSources = [{
         "vi": 88174953
     },
     "baseUrl": "https://mangadex.org",
+    "lang": "en",
     "apiUrl": "https://api.mangadex.org",
     "iconUrl": "https://raw.githubusercontent.com/gato404/kegareta-sauces/main/javascript/icon/all.mangadex.png",
     "typeSource": "single",
@@ -68,7 +69,7 @@ class DefaultExtension extends MProvider {
     }
     async getPopular(page) {
         const offset = 20 * (page - 1);
-        const url = `${this.source.apiUrl}/manga?limit=20&offset=${offset}&availableTranslatedLanguage[]=${this.source.lang}&includes[]=cover_art${this.preferenceOriginalLanguages()}&order[followedCount]=desc`;
+        const url = `${this.source.apiUrl}/manga?limit=20&offset=${offset}&availableTranslatedLanguage[]=${this.source.lang}&hasAvailableChapters=true&contentRating[]=pornographic&includes[]=cover_art${this.preferenceOriginalLanguages()}&order[followedCount]=desc`;
         const response = await new Client().get(url, this.getHeaders());
         return this.mangaRes(response.body);
     }
@@ -181,7 +182,7 @@ class DefaultExtension extends MProvider {
         let hasMoreResults = true;
 
         while (hasMoreResults) {
-            const url = `${this.source.apiUrl}/manga/${mangaId}/feed?limit=500&offset=${offset}&includes[]=user&includes[]=scanlation_group&order[volume]=desc&order[chapter]=desc&translatedLanguage[]=${lang}&includeFuturePublishAt=0&includeEmptyPages=0`;
+            const url = `${this.source.apiUrl}/manga/${mangaId}/feed?limit=500&offset=${offset}&includes[]=user&includes[]=scanlation_group&order[volume]=desc&order[chapter]=desc&translatedLanguage[]=${lang}&includeFuturePublishAt=0&includeEmptyPages=0&contentRating[]=pornographic`;
             const res = await new Client().get(url, this.getHeaders());
             const paginatedData = JSON.parse(res.body);
             const limit = paginatedData?.limit ?? 0;
@@ -275,8 +276,10 @@ class DefaultExtension extends MProvider {
         return "";
     }
     getCover(data) {
-        const coverArt = data.relationships?.find(r => r.type === "cover_art");
-        return coverArt ? `https://uploads.mangadex.org/covers/${data.id}/${coverArt.attributes.fileName}` : "";
+            const coverArt = data.relationships?.find(r => r.type === "cover_art");
+            return coverArt?.attributes?.fileName
+                ? `https://uploads.mangadex.org/covers/${data.id}/${coverArt.attributes.fileName}`
+                : "";
     }
     preferenceOriginalLanguages() {
         const originalLanguages = this.getPreference("original_languages", []) || [];
@@ -284,7 +287,7 @@ class DefaultExtension extends MProvider {
     }
     getPreference(key, defaulValue) {
         const preferences = new SharedPreferences();
-        return preferences.get(key, defaulValue);
+        return preferences.get(key) ?? defaulValue;
     }
     ll(url) {
         return url.includes("?") ? "&" : "?";

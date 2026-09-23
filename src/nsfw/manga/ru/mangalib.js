@@ -25,7 +25,10 @@ class DefaultExtension extends MProvider {
         this.apiHeaders = {
             'accept': '*/*',
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'};
-        this.getFilterUrl = this.source.apiUrl + '/constants?fields[]=genres&fields[]=tags&fields[]=types&fields[]=scanlateStatus&fields[]=status&fields[]=format&fields[]=ageRestriction';
+        // The runtime attaches `source` immediately after construction, so it
+        // is not available in the constructor. This field is unused by the
+        // extension; keep it inert rather than failing during loading.
+        this.getFilterUrl = null;
     }
     parseStatus(status) {
         return {

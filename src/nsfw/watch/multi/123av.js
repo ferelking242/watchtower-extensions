@@ -27,38 +27,47 @@ const watchtowerSources = [{
   
     async request(url) {
       const preference = new SharedPreferences();
-      const res = await new Client().get(preference.get("url") + "/" + preference.get("lang") + url);
+      const configuredUrl = preference.get("url");
+      const configuredLang = preference.get("lang");
+      const base = configuredUrl
+        ? `${String(configuredUrl).replace(/\/+$/, "")}/${configuredLang || "en"}`
+        : this.source.baseUrl;
+      const relativeUrl = String(url).replace(/^\/+/, "");
+      const res = await new Client().get(new URL(relativeUrl, `${base.replace(/\/+$/, "")}/`).toString());
       return res.body;
     }
   
     async getItems(url) {
       const res = await this.request(url);
       const doc = new Document(res);
-      const elements = doc.getElementsByClassName("box-item");
+      const elements = doc.select(".card");
       const items = [];
       for (const element of elements) {
-        const cover = element.selectFirst("img").attr("data-src");
-        const info = element.selectFirst("div.detail a");
+        const image = element.selectFirst("img");
+        const info = element.selectFirst(".card__cover, a[href]");
+        if (!info) continue;
         const url = info.attr("href");
-        const title = info.text;
+        if (!url) continue;
+        const cover = image?.attr("data-src") || image?.attr("src") || "";
+        const title = element.selectFirst(".card__title, h2, h3")?.text || info.attr("title") || "123AV";
         items.push({
-          link: "/" + url,
+          link: new URL(url, `${this.source.baseUrl.replace(/\/+$/, "")}/`).toString(),
           imageUrl: cover,
           name: title
         });
       }
       return {
         list: items,
-        hasNextPage: true
+          hasNextPage: !!doc.selectFirst("a[rel=next], .pagination a[aria-label=Next], .pagination a.next")
       }
     }
   
     async getPopular(page) {
-      return await this.getItems(`/dm5/trending?page=${page}`);
+      return await this.getItems(`hot?page=${page}`);
     }
   
     async getLatestUpdates(page) {
-      return await this.getItems(`/dm5/new-release?page=${page}`);
+      return await this.getItems(`new?page=${page}`);
     }
   
     async search(query, page, filters) {
@@ -71,9 +80,9 @@ const watchtowerSources = [{
             sort = filter["values"][filter["state"]]["value"];
           }
         }
-        return await this.getItems(`/${category}?sort=${sort}&page=${page}`);
+        return await this.getItems(`${category}?sort=${sort}&page=${page}`);
       } else {
-        return await this.getItems(`/search?keyword=${query}&page=${page}`);
+        return await this.getItems(`search?keyword=${encodeURIComponent(query)}&page=${page}`);
       }
     }
   
@@ -94,37 +103,27 @@ const watchtowerSources = [{
     async getDetail(url) {
       const res = await this.request(url);
       const doc = new Document(res);
-      const body = doc.selectFirst("div#body");
-      const title = body.selectFirst("h1").text;
-      const cover = body.selectFirst("div#player").attr("data-poster");
-      const info = body.selectFirst("div.detail-item").select("div");
-      var desc;
-      try {
-        desc = body.selectFirst("div.description p").text;
-      } catch {
-        desc = "";
+      const title = doc.selectFirst("h1, .watch__title")?.text || "123AV";
+      const cover = doc.selectFirst('meta[property="og:image"]')?.attr("content") || "";
+      const desc = doc.selectFirst(".watch__desc-text, meta[property=\"og:description\"]")?.text || "";
+      const genres = doc.select(".chips a, .watch__info-row a").map(e => e.text).filter(Boolean);
+      const playerData = res.match(/x-data="player\(JSON\.parse\('([^']+)'\)\)/);
+      let eps = [];
+      if (playerData) {
+        const encoded = playerData[1]
+          .replace(/\\u([0-9a-f]{4})/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+          .replace(/\\\//g, "/");
+        try {
+          eps = JSON.parse(encoded).map(ep => ({
+            name: ep.name || `Episode ${ep.number || ""}`.trim(),
+            url: ep.url
+          })).filter(ep => ep.url);
+        } catch (_) {}
       }
-      const updateTime = this.dateStringToTimestamp(info[1].select("span")[1].text);
-      var author;
-      try {
-        author = info[3].select("span")[1].text.replaceAll("\n", "");
-      } catch {
-        author = "Unknown";
-      }
-      var genres
-      try {
-        genres = info[4].selectFirst("span.genre").select("a").map(e => e.text);
-      } catch {
-        genres = [];
-      }
-      const id_start = body.selectFirst("div.container").attr("v-scope").indexOf(": ", 1);
-      const id_end = body.selectFirst("div.container").attr("v-scope").indexOf(",", 1);
-      const id = body.selectFirst("div.container").attr("v-scope").slice(id_start+2, id_end);
-      const eps = await this.getEpisodes(id, updateTime);
+      if (!eps.length) eps = [{ name: title, url }];
       return {
         name: title,
         imageUrl: cover,
-        author: author,
         genre: genres,
         description: desc,
         episodes: eps
@@ -132,18 +131,13 @@ const watchtowerSources = [{
     }
   
     async getVideoList(url) {
-      const res = await new Client().get(url);
-      const doc = new Document(res.body);
-      const str = doc.selectFirst("div#player").attr("v-scope").match(/, {([^']*)\)/)[1];
-      const data = JSON.parse("{" + str);
       return [{
-        url: data["stream"],
-        originalUrl: data["stream"],
-        quality: "Origin",
-        headers: {
-          Referer: "https://javplayer.me/",
-          Origin: "https://javplayer.me"
-        }
+        url,
+        originalUrl: url,
+        quality: "Web player",
+        type: "webview",
+        kind: "webview",
+        headers: { Referer: this.source.baseUrl }
       }];
     }
   

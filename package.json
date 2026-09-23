@@ -5,7 +5,7 @@
   "description": "Watchtower extensions repository — CI validation scripts",
   "scripts": {
     "validate": "node tools/validate-extensions.mjs",
-    "validate:live": "node tools/run_all_tests.mjs --files src/nsfw/watch/en/pornhub.js,src/nsfw/watch/en/xnxx.js,src/nsfw/watch/en/xvideos.js,src/nsfw/watch/en/youporn.js,src/nsfw/watch/en/redtube.js,src/nsfw/watch/en/1porntv.js --deep --strict --concurrency 2 --out tools/live-report.json"
+    "validate:live": "files=$(find src/nsfw -type f -name '*.js' -print | sort | paste -sd, -) && node tools/run_all_tests.mjs --files \"$files\" --deep --strict --concurrency 4 --out tools/live-report.json"
   },
   "engines": {
     "node": ">=18"
