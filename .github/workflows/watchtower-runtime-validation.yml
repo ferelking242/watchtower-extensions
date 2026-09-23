@@ -69,6 +69,8 @@ jobs:
           test -n "$WATCHTOWER_BIN"
           test -x "$WATCHTOWER_BIN"
           echo "WATCHTOWER_BIN=$WATCHTOWER_BIN" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=$RUNNER_TEMP/watchtower/bundle/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
+            >> "$GITHUB_ENV"
         env:
           GH_TOKEN: ${{ github.token }}
 
