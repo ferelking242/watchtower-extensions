@@ -24,36 +24,24 @@ permissions:
 
 jobs:
   linux:
-    name: Build Watchtower and test every extension
+    name: Test extensions with Watchtower Linux headless release
     runs-on: ubuntu-22.04
     timeout-minutes: 45
     env:
       TEST_MODE: ${{ inputs.mode || 'load' }}
+      WATCHTOWER_RELEASE_TAG: linux-headless-latest
+      WATCHTOWER_RELEASE_ASSET: watchtower-linux-x64-headless.7z
     steps:
       - name: Checkout extensions
         uses: actions/checkout@v4
         with:
           path: watchtower-extensions
 
-      - name: Checkout Watchtower
-        uses: actions/checkout@v4
-        with:
-          repository: ferelking242/watchtower
-          path: watchtower
-
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.47.2"
-          channel: stable
-          cache: true
-
-      - uses: dtolnay/rust-toolchain@stable
-
-      - name: Install Linux build dependencies
+      - name: Install Linux runtime dependencies
         run: |
           sudo apt-get update -y
           sudo apt-get install -y --no-install-recommends \
-            clang cmake ninja-build pkg-config libunwind-dev \
+            libunwind-dev \
             libgtk-3-dev libwebkit2gtk-4.0-dev libwpewebkit-1.0-dev \
             libwpebackend-fdo-1.0-dev libsoup-3.0-dev liblzma-dev \
             libblkid-dev libmount-dev libglib2.0-dev libdbus-1-dev \
@@ -62,30 +50,44 @@ jobs:
             libgstreamer-plugins-base1.0-dev libgstreamer-plugins-bad1.0-dev \
             gstreamer1.0-plugins-good gstreamer1.0-plugins-bad \
             libasound2-dev libpulse-dev libxcb-xfixes0-dev \
-            libepoxy-dev libmpv-dev mpv
+            libepoxy-dev libmpv-dev mpv p7zip-full xvfb
 
-      - name: Build the real Watchtower Linux program
-        working-directory: watchtower
+      - name: Download Watchtower Linux headless release
         run: |
-          flutter config --enable-linux-desktop
-          flutter pub get
-          flutter build linux --release
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/watchtower"
+          gh release download "$WATCHTOWER_RELEASE_TAG" \
+            --repo ferelking242/watchtower \
+            --pattern "$WATCHTOWER_RELEASE_ASSET" \
+            --dir "$RUNNER_TEMP/watchtower"
+          7z x -y \
+            "$RUNNER_TEMP/watchtower/$WATCHTOWER_RELEASE_ASSET" \
+            "-o$RUNNER_TEMP/watchtower/bundle" \
+            >/dev/null
+          WATCHTOWER_BIN="$(find "$RUNNER_TEMP/watchtower/bundle" \
+            -type f -name watchtower -print -quit)"
+          test -n "$WATCHTOWER_BIN"
+          test -x "$WATCHTOWER_BIN"
+          echo "WATCHTOWER_BIN=$WATCHTOWER_BIN" >> "$GITHUB_ENV"
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Run Watchtower CLI against all local extensions
-        working-directory: watchtower
         run: |
-          mkdir -p ci-reports
-          build/linux/x64/release/bundle/watchtower --cli doctor
-          build/linux/x64/release/bundle/watchtower --cli extensions test \
+          mkdir -p "$GITHUB_WORKSPACE/ci-reports"
+          xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
+            "$WATCHTOWER_BIN" --cli doctor
+          xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
+            "$WATCHTOWER_BIN" --cli extensions test \
             --repo "$GITHUB_WORKSPACE/watchtower-extensions" \
             --mode "$TEST_MODE" \
             --concurrency 4 \
             --timeout 45 \
-            --report "$GITHUB_WORKSPACE/watchtower/ci-reports/extensions.json"
+            --report "$GITHUB_WORKSPACE/ci-reports/extensions.json"
 
       - name: Upload Watchtower runtime report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: watchtower-runtime-extension-report
-          path: watchtower/ci-reports/extensions.json
+          path: ci-reports/extensions.json
