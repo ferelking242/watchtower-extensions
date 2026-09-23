@@ -121,7 +121,7 @@ var MOCK_CATALOGUE = [
 // ── MProvider Implementation ──────────────────────────────────────────────────
 
 var DefaultExtension = class extends MProvider {
-  constructor() { super(); this.client.headers = {}; }
+  constructor() { super(); }
 
   get supportsLatest() { return false; }
 

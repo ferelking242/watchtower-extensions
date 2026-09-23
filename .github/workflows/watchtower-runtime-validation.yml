@@ -6,7 +6,7 @@ on:
       mode:
         description: CLI test depth
         required: true
-        default: load
+        default: deep
         type: choice
         options:
           - load
@@ -26,9 +26,9 @@ jobs:
   linux:
     name: Test extensions with Watchtower Linux headless release
     runs-on: ubuntu-22.04
-    timeout-minutes: 45
+    timeout-minutes: 120
     env:
-      TEST_MODE: ${{ inputs.mode || 'load' }}
+      TEST_MODE: ${{ inputs.mode || 'deep' }}
       WATCHTOWER_RELEASE_TAG: linux-headless-latest
       WATCHTOWER_RELEASE_ASSET: watchtower-linux-x64-headless.7z
     steps:
