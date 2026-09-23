@@ -202,9 +202,9 @@ const watchtowerSources = [
         // Match any internal animegg.org link that looks like an episode page
         const epPatterns = [
           // /series-name/episode-X or /watch/X
-          /<a[^>]+href="(https?:\/\/[^/]*animegg\.org\/[^"#\s]{5,})"[^>]*>([\s\S]{0,300}?)<\/a>/gi,
+          new RegExp('<a[^>]+href="(https?://[^/]*animegg\\.org/[^"#\\s]{5,})"[^>]*>([\\s\\S]{0,300}?)</a>', "gi"),
           // relative links
-          /<a[^>]+href="(\/[^"#\s]{5,})"[^>]*>([\s\S]{0,300}?)<\/a>/gi,
+          new RegExp('<a[^>]+href="(/[^"#\\s]{5,})"[^>]*>([\\s\\S]{0,300}?)</a>', "gi"),
         ];
         for (const re of epPatterns) {
           re.lastIndex = 0;

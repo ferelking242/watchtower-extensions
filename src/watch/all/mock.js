@@ -5,7 +5,7 @@
 //  But : tester l'UI home (carousel, sections, catalogue) sur web.
 // ══════════════════════════════════════════════════════════════
 
-const watchtowerSources = [{
+var watchtowerSources = [{
   "name": "Watch Mock",
   "lang": "all",
   "id": 9999999901,
