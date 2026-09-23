@@ -319,12 +319,12 @@ class DefaultExtension extends MProvider {
     }
     if (listId === "studios") {
       const url = page > 1
-        ? `https://www.rexporn.st/studios-page-${page}.html`
-        : "https://www.rexporn.st/studios";
+        ? `https://www.rexporn.st/channels-page-${page}.html`
+        : "https://www.rexporn.st/channels";
       const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
       const studios = this._parseCollectionList(
         res.body,
-        ".studio, .producer, [class*='studio']",
+        ".pornstudio, .studio, .producer, [class*='studio'], [class*='channel']",
         page,
         "studios"
       );
@@ -396,7 +396,7 @@ class DefaultExtension extends MProvider {
         episodes: videos.map(video => ({ name: video.name, url: video.link }))
       };
     }
-    if (url.includes("/studio/") || url.includes("/studios/")) {
+    if (url.includes("/studio/") || url.includes("/studios/") || url.includes("/channel/")) {
       const videos = this._parseList(res.body, url, 1, "studio").list;
       return {
         name: title,
