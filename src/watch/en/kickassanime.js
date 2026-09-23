@@ -45,7 +45,8 @@ class DefaultExtension extends MProvider {
   }
 
   getBaseUrl() {
-    return this.getPreference("kaa_base_url");
+    const preferred = this.getPreference("kaa_base_url");
+    return (preferred || this.source?.baseUrl || "https://kaa.lt").replace(/\/$/, "");
   }
 
   async apiCall(slug) {
@@ -140,7 +141,7 @@ class DefaultExtension extends MProvider {
     var url = baseUrl + "/api/fsearch";
     var hdr = this.getHeaders(url);
 
-    var res = await new Client().post(url, hdr, body);
+    var res = await new Client().post(url, body, hdr);
     var rd = JSON.parse(res.body);
 
     var list = this.formatList(rd.result);
@@ -402,10 +403,11 @@ class DefaultExtension extends MProvider {
   async getVideoList(url) {
     var streams = [];
     var doc = await this.apiCall(url);
-    var servers = doc.servers;
+    var servers = Array.isArray(doc.servers) ? doc.servers : [];
+    var errors = [];
     var hdr = this.getHeaders(this.getBaseUrl());
-    try {
-      for (var server of servers) {
+    for (var server of servers) {
+      try {
         var vidStreams = [];
         var shortName = server.shortName;
         var link = server.src;
@@ -416,11 +418,14 @@ class DefaultExtension extends MProvider {
         }
 
         streams = [...streams, ...vidStreams];
+      } catch (e) {
+        errors.push(`${server.shortName || "unknown"}: ${e.message}`);
       }
-    } catch (e) {
-      console.log(e);
     }
 
+    if (!streams.length && errors.length) {
+      throw new Error(`no playable server returned a stream (${errors.join("; ")})`);
+    }
     return this.sortStreams(streams);
   }
 
@@ -655,18 +660,24 @@ class DefaultExtension extends MProvider {
   }
 
   async decodeVidStreaming(url, hdr) {
-    var id = url.substring(url.indexOf("id=") + 3, url.indexOf("&ln="));
+    var parsedUrl = new URL(url);
+    var id = parsedUrl.searchParams.get("id");
+    if (!id) throw new Error("Vid server URL has no id parameter");
     var body = (await new Client().get(url, hdr)).body;
 
     var sKey = "cid: '";
     var eKey = "',";
     var s = body.indexOf(sKey) + sKey.length;
     var e = body.indexOf(eKey, s);
+    if (s < sKey.length || e < s) {
+      throw new Error("Vid player response has no cid payload");
+    }
     var cid = body.substring(s, e);
     cid = this.hexToString(cid);
 
     var cidSp = cid.split("|");
     var ip = cidSp[0];
+    if (!cidSp[1]) throw new Error("Vid cid payload has no player route");
     var route = cidSp[1].replace("player.php", "source.php");
     var key = "e13d38099bf562e8b9851a652d2043d3";
     hdr = this.getHeaders("https://krussdomi.com");
@@ -689,7 +700,9 @@ class DefaultExtension extends MProvider {
     var api = `https://krussdomi.com${route}?id=${id}&e=${timestamp}&s=${signHash}`;
 
     body = (await new Client().get(api, hdr)).body;
-    var data = JSON.parse(body)["data"];
+    var parsed = JSON.parse(body);
+    var data = parsed["data"];
+    if (!data) throw new Error("Vid source response has no encrypted data");
     var dataSp = data.replace("\\", "").split(":");
     var encText = dataSp[0];
     var iv = dataSp[1].substring(0, 16);

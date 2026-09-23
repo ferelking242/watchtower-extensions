@@ -123,7 +123,7 @@ class DefaultExtension extends MProvider {
   async search(query, page, filters) {
     try {
       var url = BASE_URL + "/api/fetchAnime";
-      var res = await new Client().post(url, this.getHeaders(), { "query": query });
+      var res = await new Client().post(url, { "query": query }, this.getHeaders());
       var body = JSON.parse(res.body);
       var list = await this.formListForAnilist(body.results || []);
       var hasNextPage = body.pages > page;

@@ -25,6 +25,10 @@ const TIMEOUT   = 20000;
 
 // ── Shared stubs ───────────────────────────────────────────────
 class Client {
+  constructor() {
+    this.requestLog = null;
+  }
+
   async _fetch(method, url, headers, body) {
     const ctrl = new AbortController();
     const t    = setTimeout(() => ctrl.abort(), TIMEOUT);
@@ -33,8 +37,24 @@ class Client {
       const text = await res.text();
       const hdrs = {};
       res.headers.forEach((v, k) => { hdrs[k] = v; });
+      this.requestLog?.push({
+        method,
+        url: reportUrl(res.url || url),
+        status: res.status,
+        contentType: res.headers.get("content-type") || "",
+        bytes: Buffer.byteLength(text),
+      });
       return { statusCode: res.status, body: text, headers: hdrs, url: res.url };
-    } finally { clearTimeout(t); }
+    } catch (error) {
+      this.requestLog?.push({
+        method,
+        url: reportUrl(url),
+        error: error.message,
+      });
+      throw error;
+    } finally {
+      clearTimeout(t);
+    }
   }
   async get(url, h)       { return this._fetch("GET",  url, h); }
   async post(url, body, h){ let b=body,hd={...(h||{})};if(b&&typeof b==="object"&&!(b instanceof URLSearchParams)){b=JSON.stringify(b);if(!hd["Content-Type"]&&!hd["content-type"])hd["Content-Type"]="application/json";}return this._fetch("POST",url,hd,b); }
@@ -48,10 +68,10 @@ class SharedPreferences {
 }
 
 // ── Load & run one extension ────────────────────────────────────
-function loadExtension(filePath) {
+function loadExtension(filePath, ClientClass = Client) {
   const code    = fs.readFileSync(filePath, "utf8");
   const sandbox = {
-    MProvider, Client, SharedPreferences, Document,
+    MProvider, Client: ClientClass, SharedPreferences, Document,
     extLog: () => {},
     console, setTimeout, clearTimeout, setInterval, clearInterval,
     URL, URLSearchParams, TextDecoder, TextEncoder, fetch, Buffer,
@@ -82,12 +102,64 @@ async function raceTimeout(p, ms, label) {
   try { return await Promise.race([p,t]); } finally { clearTimeout(h); }
 }
 
+function reportUrl(url) {
+  try {
+    const parsed = new URL(String(url));
+    return `${parsed.origin}${parsed.pathname}`;
+  } catch {
+    return String(url || "");
+  }
+}
+
 function mediaUrl(url) {
   try {
     const parsed = new URL(String(url));
     return `${parsed.origin}${parsed.pathname}`;
   } catch {
     return String(url || "").split("?")[0];
+  }
+}
+
+function looksLikeWebView(video) {
+  const url = String(video?.url || "").trim();
+  const hint = `${video?.type || ""} ${video?.kind || ""} ${video?.quality || ""}`.toLowerCase();
+  if (/(webview|web view|browser|embed page|player page)/i.test(hint)) return true;
+  if (/\.(?:m3u8|mp4|webm|m4v)(?:[?#]|$)/i.test(url)) return false;
+  return /(\/watch(?:\/|$)|\/player(?:\/|$)|\/embed(?:\/|$)|\/iframe(?:\/|$)|youtube\.com\/(?:watch|embed)|youtu\.be\/|dailymotion\.com\/|vimeo\.com\/)/i.test(url);
+}
+
+async function probeWebView(video, pageUrl) {
+  const url = String(video?.url || "").trim();
+  if (!url) return { ok: false, kind: "webview", error: "video page URL is empty" };
+  const headers = { ...(video?.headers || {}) };
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
+  try {
+    const response = await fetch(url, {
+      headers,
+      redirect: "follow",
+      signal: controller.signal,
+    });
+    const body = await response.text();
+    const contentType = response.headers.get("content-type") || "";
+    const looksPlayable = /<iframe\b|<video\b|\.m3u8\b|\.mp4\b|player|embed/i.test(body);
+    return {
+      ok: response.status >= 200 && response.status < 300 && looksPlayable,
+      kind: "webview",
+      playback: "webview",
+      status: response.status,
+      contentType,
+      url: reportUrl(response.url || url),
+      pageUrl: reportUrl(pageUrl),
+      playableMarkers: looksPlayable,
+      error: response.status >= 200 && response.status < 300 && looksPlayable
+        ? undefined
+        : "webview page is reachable but does not expose a player marker",
+    };
+  } catch (error) {
+    return { ok: false, kind: "webview", url: reportUrl(url), error: error.message };
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -117,11 +189,12 @@ async function probeMedia(video, pageUrl) {
       status: response.status,
       kind: isHls ? "hls" : "media",
       contentType,
-      url: mediaUrl(response.url || url),
+      url: reportUrl(response.url || url),
+      pageUrl: reportUrl(pageUrl),
       error: response.status >= 200 && response.status < 300 && validBody ? undefined : "response is not a readable media stream",
     };
   } catch (error) {
-    return { ok: false, url: mediaUrl(url), error: error.message };
+    return { ok: false, kind: "media", url: reportUrl(url), pageUrl: reportUrl(pageUrl), error: error.message };
   } finally {
     clearTimeout(timer);
   }
@@ -150,11 +223,19 @@ async function runExtension(relPath, options = {}) {
   const filePath = path.join(ROOT, relPath);
   const result   = { file: relPath, name: null, lang: "?", itemType: 1, baseUrl: "", iconUrl: "", steps: {}, ok: true, errors: [], testedAt: Date.now() };
 
+  const requestLog = [];
+  class TracedClient extends Client {
+    constructor() {
+      super();
+      this.requestLog = requestLog;
+    }
+  }
+
   let exp;
-  try { exp = loadExtension(filePath); }
+  try { exp = loadExtension(filePath, TracedClient); }
   catch(e) { result.ok=false; result.errors.push("load: "+e.message); return result; }
 
-  if (!exp.sources || !exp.DefaultExtension) {
+  if (!Array.isArray(exp.sources) || !exp.sources[0] || typeof exp.DefaultExtension !== "function") {
     result.ok=false; result.errors.push("missing watchtowerSources or DefaultExtension"); return result;
   }
 
@@ -167,18 +248,36 @@ async function runExtension(relPath, options = {}) {
   result.version  = src.version  ?? "?";
   result.isNsfw   = !!(src.isNsfw);
 
-  const ext   = new exp.DefaultExtension();
-  ext.source  = { ...src, prefs: [] };
+  let ext;
+  try {
+    ext = new exp.DefaultExtension();
+    ext.source = { ...src, prefs: [] };
+  } catch (e) {
+    result.ok = false;
+    result.errors.push(`construct: ${e.message}`);
+    return result;
+  }
 
   async function step(name, fn) {
     const t0 = Date.now();
+    const requestStart = requestLog.length;
     try {
       const out = await raceTimeout(Promise.resolve().then(fn), TIMEOUT+3000, name);
-      result.steps[name] = { ok: true, ms: Date.now()-t0, info: summarize(name, out) };
+      result.steps[name] = {
+        ok: true,
+        ms: Date.now()-t0,
+        info: summarize(name, out),
+        http: requestLog.slice(requestStart),
+      };
       return out;
     } catch(e) {
       result.ok = false;
-      result.steps[name] = { ok: false, ms: Date.now()-t0, error: e.message };
+      result.steps[name] = {
+        ok: false,
+        ms: Date.now()-t0,
+        error: e.message,
+        http: requestLog.slice(requestStart),
+      };
       result.errors.push(`${name}: ${e.message}`);
       return null;
     }
@@ -282,16 +381,24 @@ async function runExtension(relPath, options = {}) {
         }
         if (options.deep && Array.isArray(videos) && videos.length) {
           const probes = [];
-          for (const video of videos.slice(0, 3)) probes.push(await probeMedia(video, epUrl));
+          for (const video of videos.slice(0, 3)) {
+            probes.push(
+              looksLikeWebView(video)
+                ? await probeWebView(video, epUrl)
+                : await probeMedia(video, epUrl),
+            );
+          }
           result.steps.videoProbe = {
             ok: probes.some((probe) => probe.ok),
             tested: probes.length,
             passed: probes.filter((probe) => probe.ok).length,
+            directMediaPassed: probes.filter((probe) => probe.ok && probe.kind !== "webview").length,
+            webViewPassed: probes.filter((probe) => probe.ok && probe.kind === "webview").length,
             probes,
           };
           if (!result.steps.videoProbe.ok) {
             result.ok = false;
-            result.errors.push("videoProbe: no returned stream accepted a readable media response");
+            result.errors.push("videoProbe: no returned media stream or playable webview responded successfully");
           }
         }
       }

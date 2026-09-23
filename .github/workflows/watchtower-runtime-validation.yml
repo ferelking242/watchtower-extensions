@@ -74,9 +74,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-      - name: Run Watchtower CLI against all local extensions
+      - name: Run Watchtower CLI against every local extension
         run: |
           mkdir -p "$GITHUB_WORKSPACE/ci-reports"
+          echo "Watchtower runtime scope:"
+          find "$GITHUB_WORKSPACE/watchtower-extensions/src" \
+            -type f -name '*.js' ! -name '*.min.js' ! -name 'server.js' | sort
           xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \
             "$WATCHTOWER_BIN" --cli doctor
           xvfb-run --auto-servernum --server-args="-screen 0 1280x720x24" \

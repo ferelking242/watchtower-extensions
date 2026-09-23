@@ -27,13 +27,16 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Run selected live checks
+      - name: Run live checks for every extension
         run: |
+          files="$(find src -type f -name '*.js' ! -name '*.min.js' ! -name 'server.js' -print | sort | paste -sd, -)"
+          test -n "$files"
+          echo "Testing $(printf '%s' "$files" | tr ',' '\n' | wc -l) extensions across all source categories, including NSFW"
           node tools/run_all_tests.mjs \
-            --files "src/nsfw/watch/en/pornhub.js,src/nsfw/watch/en/xnxx.js,src/nsfw/watch/en/xvideos.js,src/nsfw/watch/en/youporn.js,src/nsfw/watch/en/redtube.js,src/nsfw/watch/en/1porntv.js" \
+            --files "$files" \
             --deep \
             --strict \
-            --concurrency 2 \
+            --concurrency 10 \
             --out tools/live-report.json
 
       - name: Upload live report
