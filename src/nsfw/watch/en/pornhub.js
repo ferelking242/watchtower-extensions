@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.pornhub.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "pkgPath": "nsfw/watch/en/pornhub.js",
   "notes": "Adult content (18+) — native HLS/MP4 quality extraction",
   "isNsfw": true
@@ -462,30 +462,28 @@ class DefaultExtension extends MProvider {
     return videos;
   }
 
-  _collectionItem(name, path, imageUrl, description) {
+  _collectionItem(name, path, description, listId) {
     const link = this._absolute(path);
     return {
       name,
-      imageUrl: imageUrl || "",
+      imageUrl: "",
       link,
       url: link,
       description: description || "",
+      collectionId: listId || undefined,
       metadata: { collection: true }
     };
   }
 
-  async _collectionItems(definitions, page) {
-    const coverSource = await this._list("mv", 1);
-    const covers = coverSource.list || [];
-    return definitions.map(([name, slug], index) => {
-      const cover = covers[index % Math.max(covers.length, 1)]?.imageUrl || "";
-      return this._collectionItem(
+  _collectionItems(definitions, listIdPrefix, pathFor) {
+    return definitions.map(([name, slug]) =>
+      this._collectionItem(
         name,
-        `/video/search?search=${encodeURIComponent(slug)}`,
-        cover,
-        "Browse videos"
-      );
-    });
+        pathFor(slug),
+        "Browse videos",
+        `${listIdPrefix}_${slug}`
+      )
+    );
   }
 
   async getCustomList(listId, page) {
@@ -498,13 +496,21 @@ class DefaultExtension extends MProvider {
 
     if (listId === "categories") {
       return {
-        list: await this._collectionItems(PORNHUB_CATEGORIES, page),
+        list: this._collectionItems(
+          PORNHUB_CATEGORIES,
+          "category",
+          slug => `/video/search?search=${encodeURIComponent(slug)}`
+        ),
         hasNextPage: false
       };
     }
     if (listId === "tags") {
       return {
-        list: await this._collectionItems(PORNHUB_TAGS, page),
+        list: this._collectionItems(
+          PORNHUB_TAGS,
+          "tag",
+          slug => `/video/search?search=${encodeURIComponent(slug)}`
+        ),
         hasNextPage: false
       };
     }
@@ -514,8 +520,8 @@ class DefaultExtension extends MProvider {
           this._collectionItem(
             name,
             `/language/${slug}`,
-            "",
-            "Browse videos in this language"
+            "Browse videos in this language",
+            `language_${slug}`
           )
         ),
         hasNextPage: false
@@ -523,7 +529,11 @@ class DefaultExtension extends MProvider {
     }
     if (listId === "playlists") {
       return {
-        list: await this._collectionItems(PORNHUB_PLAYLISTS, page),
+        list: this._collectionItems(
+          PORNHUB_PLAYLISTS,
+          "playlist",
+          slug => `/video?o=${encodeURIComponent(slug)}`
+        ),
         hasNextPage: false
       };
     }

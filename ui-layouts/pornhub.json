@@ -18,18 +18,44 @@
         }
       },
       {
+        "id": "categories",
+        "component": "categoryPills",
+        "title": "Top Categories",
+        "accent": "#7c4dff",
+        "seeAll": true
+      },
+      {
+        "id": "tags",
+        "component": "categoryPills",
+        "title": "Popular Tags",
+        "accent": "#26a69a",
+        "icon": "local_offer",
+        "seeAll": true
+      },
+      {
+        "id": "languages",
+        "component": "categoryPills",
+        "title": "Languages",
+        "accent": "#3949ab",
+        "icon": "language",
+        "seeAll": true
+      },
+      {
+        "id": "latest",
+        "component": "grid",
+        "title": "Nouveautés",
+        "accent": "#ff7043",
+        "paginated": true,
+        "columns": 3,
+        "cardStyle": "thumbnail",
+        "seeAll": true
+      },
+      {
         "id": "top",
         "component": "carousel",
         "title": "Top Videos",
         "accent": "#ff4081",
         "icon": "trending_up",
-        "seeAll": true
-      },
-      {
-        "id": "categories",
-        "component": "categoryPills",
-        "title": "Top Categories",
-        "accent": "#7c4dff",
         "seeAll": true
       },
       {
@@ -55,7 +81,7 @@
       },
       {
         "id": "playlists",
-        "component": "carousel",
+        "component": "categoryPills",
         "title": "Playlists",
         "accent": "#5c6bc0",
         "icon": "playlist_play",
@@ -75,37 +101,6 @@
             "cardStyle": "thumbnail"
           }
         }
-      },
-      {
-        "id": "tags",
-        "component": "grid",
-        "title": "Tags",
-        "accent": "#26a69a",
-        "icon": "local_offer",
-        "columns": 2,
-        "rows": 2,
-        "cardStyle": "poster",
-        "seeAll": true
-      },
-      {
-        "id": "languages",
-        "component": "grid",
-        "title": "Languages",
-        "accent": "#3949ab",
-        "icon": "language",
-        "columns": 2,
-        "cardStyle": "cover",
-        "seeAll": true
-      },
-      {
-        "id": "catalogue",
-        "component": "grid",
-        "title": "All Videos",
-        "accent": "#ff7043",
-        "paginated": true,
-        "columns": 3,
-        "cardStyle": "thumbnail",
-        "seeAll": true
       }
     ]
   },

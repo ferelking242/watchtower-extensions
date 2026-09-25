@@ -3765,7 +3765,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000178.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.1.0",
+    "version": "1.1.1",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/nsfw/watch/en/pornhub.js",
     "isManga": false,
     "isNsfw": true,
@@ -3776,7 +3776,7 @@
     "requiresAccount": false,
     "hasDRM": false,
     "uiLayout": "ui-layouts/pornhub.json",
-    "uiLayoutVersion": "1.1.0"
+    "uiLayoutVersion": "1.2.0"
   },
   {
     "name": "RedTube",
