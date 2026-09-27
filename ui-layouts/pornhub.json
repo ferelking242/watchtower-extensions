@@ -3,85 +3,46 @@
   "home": {
     "sections": [
       {
-        "id": "recommended",
-        "component": "spotlight",
-        "title": "Recommended For You",
-        "accent": "#ff9900",
-        "icon": "auto_awesome",
-        "seeAll": true,
-        "layout": {
-          "featured": "fullWidth",
-          "secondary": {
-            "columns": 3,
-            "cardStyle": "thumbnail"
-          }
-        }
+        "id": "top",
+        "component": "rankedWide",
+        "title": "Top 20 hits du moment",
+        "accent": "#ff4081",
+        "icon": "trending_up",
+        "seeAll": true
+      },
+      {
+        "id": "latest",
+        "component": "showcase",
+        "title": "Nouveautés",
+        "accent": "#ff7043",
+        "seeAll": true
       },
       {
         "id": "categories",
-        "component": "categoryPills",
-        "title": "Top Categories",
+        "component": "collectionCards",
+        "title": "Catégories",
         "accent": "#7c4dff",
         "seeAll": true
       },
       {
         "id": "tags",
-        "component": "categoryPills",
-        "title": "Popular Tags",
+        "component": "collectionCards",
+        "title": "Tags populaires",
         "accent": "#26a69a",
         "icon": "local_offer",
         "seeAll": true
       },
       {
         "id": "languages",
-        "component": "categoryPills",
+        "component": "collectionCards",
         "title": "Languages",
         "accent": "#3949ab",
         "icon": "language",
         "seeAll": true
       },
       {
-        "id": "latest",
-        "component": "grid",
-        "title": "Nouveautés",
-        "accent": "#ff7043",
-        "paginated": true,
-        "columns": 3,
-        "cardStyle": "thumbnail",
-        "seeAll": true
-      },
-      {
-        "id": "top",
-        "component": "carousel",
-        "title": "Top Videos",
-        "accent": "#ff4081",
-        "icon": "trending_up",
-        "seeAll": true
-      },
-      {
-        "id": "category_amateur",
-        "component": "carousel",
-        "title": "Amateur",
-        "accent": "#00b8d4",
-        "seeAll": true
-      },
-      {
-        "id": "category_couples",
-        "component": "carousel",
-        "title": "Couples",
-        "accent": "#00bfa5",
-        "seeAll": true
-      },
-      {
-        "id": "category_mature",
-        "component": "carousel",
-        "title": "Mature",
-        "accent": "#8e24aa",
-        "seeAll": true
-      },
-      {
         "id": "playlists",
-        "component": "categoryPills",
+        "component": "playlistCarousel",
         "title": "Playlists",
         "accent": "#5c6bc0",
         "icon": "playlist_play",
@@ -89,18 +50,32 @@
       },
       {
         "id": "shorts",
-        "component": "spotlight",
+        "component": "landscapeStacked",
         "title": "Shorties",
         "accent": "#f4511e",
         "icon": "bolt",
-        "seeAll": true,
-        "layout": {
-          "featured": "fullWidth",
-          "secondary": {
-            "columns": 3,
-            "cardStyle": "thumbnail"
-          }
-        }
+        "seeAll": true
+      },
+      {
+        "id": "category_amateur",
+        "component": "landscapeStacked",
+        "title": "Amateur",
+        "accent": "#00b8d4",
+        "seeAll": true
+      },
+      {
+        "id": "category_couples",
+        "component": "landscapeStacked",
+        "title": "Couples",
+        "accent": "#00bfa5",
+        "seeAll": true
+      },
+      {
+        "id": "category_mature",
+        "component": "landscapeStacked",
+        "title": "Mature",
+        "accent": "#8e24aa",
+        "seeAll": true
       }
     ]
   },

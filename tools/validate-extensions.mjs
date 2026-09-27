@@ -70,6 +70,10 @@ const supportedLayoutComponents = new Set([
   "banner", "spotlight", "categoryPills", "carousel", "historyRow",
   "posterRow", "continueWatching", "quizCard", "newsTicker", "liveNow", "grid",
   "ranked", "compactRow", "creatorRow", "masonry", "studioExplorer",
+  "rankedWide", "showcase", "collectionCards", "playlistCarousel",
+  "landscapeStacked", "backdropWide", "metadataPoster", "statusPoster",
+  "discoverGrid", "universeExplorer", "collectionTimeline", "doubleFeature",
+  "editorialSplit", "feed", "newHot",
 ]);
 for (const rel of jsonFiles.filter((file) => file.startsWith("ui-layouts/"))) {
   const layout = JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
