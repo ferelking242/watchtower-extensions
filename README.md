@@ -32,6 +32,33 @@ https://google.com
 
   ---
 
+  ## ⚙️ Préférences communes Watchtower
+
+  Chaque extension doit continuer à exposer `getSourcePreferences()`, même
+  lorsqu'elle ne propose aucun réglage local (`return []`). Watchtower ajoute
+  automatiquement les réglages communs à partir des métadonnées de la source :
+
+  - qualité vidéo par défaut et qualité de secours (supérieure ou inférieure) ;
+  - langues préférées lorsque l'extension en publie plusieurs ;
+  - conservation de la session, partagée entre les requêtes HTTP et le WebView.
+
+  Les extensions doivent déclarer les qualités réellement supportées dans leur
+  manifeste quand elles sont connues :
+
+  ```js
+  const watchtowerSources = [{
+    // ...
+    "videoQualities": ["2160p", "1080p", "720p", "480p", "360p"]
+  }];
+  ```
+
+  Les qualités déclarées ne servent pas à fabriquer des URLs : Watchtower les
+  utilise uniquement pour choisir une vidéo retournée par `getVideoList()`.
+  Si une qualité exacte n'existe pas pour un épisode, le réglage de secours
+  choisit la voisine supérieure ou inférieure disponible.
+
+  ---
+
   ## 📲 Ajouter le dépôt à Watchtower
 
   > **Watchtower** — ouvre l'app → **Plus** → **Paramètres** → **Browse**
