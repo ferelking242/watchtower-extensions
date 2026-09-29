@@ -28,7 +28,9 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 120
     env:
-      TEST_MODE: ${{ inputs.mode || 'deep' }}
+      # On pushes, validate runtime loading without making CI depend on third-party
+      # site availability. Manual runs keep their deep default; live checks run daily.
+      TEST_MODE: ${{ inputs.mode || 'load' }}
       WATCHTOWER_RELEASE_TAG: linux-headless-latest
       WATCHTOWER_RELEASE_ASSET: watchtower-linux-x64-headless.7z
     steps:
