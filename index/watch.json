@@ -3776,7 +3776,7 @@
     "requiresAccount": false,
     "hasDRM": false,
     "uiLayout": "ui-layouts/pornhub.json",
-    "uiLayoutVersion": "1.3.0"
+    "uiLayoutVersion": "1.3.1"
   },
   {
     "name": "RedTube",

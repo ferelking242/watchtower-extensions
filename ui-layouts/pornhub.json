@@ -3,6 +3,12 @@
   "home": {
     "sections": [
       {
+        "id": "trending",
+        "component": "spotlight",
+        "title": "À la une",
+        "accent": "#ff4081"
+      },
+      {
         "id": "top",
         "component": "rankedWide",
         "title": "Top 20 hits du moment",
