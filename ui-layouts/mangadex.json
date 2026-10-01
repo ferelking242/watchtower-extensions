@@ -2,12 +2,19 @@
   "schemaVersion": 1,
   "home": {
     "sections": [
-      { "id": "home",            "component": "carousel", "title": "🏠 Accueil",         "accent": "primary",   "icon": "home",       "seeAll": true },
-      { "id": "new_titles",      "component": "carousel", "title": "✨ New Titles",       "accent": "tertiary",  "icon": "fiber_new",  "seeAll": true },
-      { "id": "recommended",     "component": "carousel", "title": "⭐ Recommended",      "accent": "secondary", "icon": "star",       "seeAll": true },
-      { "id": "self_published",  "component": "carousel", "title": "📈 Self-Published",   "accent": "#FF6F00",   "icon": "trending_up","seeAll": true },
-      { "id": "seasonal_spring", "component": "carousel", "title": "🌸 Seasonal: Spring", "accent": "#E91E63",   "icon": "animation",  "seeAll": true }
-    ]
+      { "id": "seasonal_banner",  "component": "spotlight",  "title": "Seasonal Spotlight",     "accent": "primary",   "icon": "auto_awesome",        "seeAll": true },
+      { "id": "latest_updates",   "component": "banner",     "title": "Latest Chapter Updates", "accent": "secondary", "icon": "update",              "seeAll": true },
+      { "id": "trending_now",     "component": "ranked",     "title": "🔥 Trending Now",        "accent": "error",     "icon": "local_fire_department","seeAll": true },
+      { "id": "popular",          "component": "carousel",   "title": "Most Follows",           "accent": "tertiary",  "icon": "favorite",            "seeAll": true },
+      { "id": "top_rated",        "component": "carousel",   "title": "Top Rated",              "accent": "#FFB300",   "icon": "star",                "seeAll": true },
+      { "id": "seasonal",         "component": "carousel",   "title": "🍂 Seasonal Picks",     "accent": "#4FC3F7",   "icon": "ac_unit",             "seeAll": true },
+      { "id": "new_titles",       "component": "banner",     "title": "✨ Recently Added",      "accent": "tertiary",  "icon": "fiber_new",           "seeAll": true },
+      { "id": "completed",        "component": "grid",       "title": "Completed",              "accent": "#66BB6A",   "icon": "check_circle",        "seeAll": true, "columns": 3, "rows": 2 },
+      { "id": "official_content", "component": "carousel",   "title": "Official Content",       "accent": "secondary", "icon": "verified",            "seeAll": true },
+      { "id": "untranslated",     "component": "banner",     "title": "Untranslated Titles",    "accent": "#AB47BC",   "icon": "translate",           "seeAll": true },
+      { "id": "self_published",   "component": "grid",       "title": "Self-Published",         "accent": "primary",   "icon": "brush",               "seeAll": true, "columns": 3, "rows": 2 }
+    ],
+    "note": "Mirror of the mangadex.org home page (Seasonal spotlight → Latest updates → Trending → Most follows → Recently added → status/rating shelves)."
   },
   "browse": {
     "popular": { "component": "grid", "columns": 3, "cardStyle": "poster" },

@@ -53,7 +53,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.mangadex.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.2.2",
+    "version": "0.3.0",
     "pkgPath": "manga/src/all/mangadex.js"
 }];
 
@@ -309,6 +309,53 @@ class DefaultExtension extends MProvider {
 
     // ─── Search ──────────────────────────────────────────────────────────────
 
+    /**
+     * "Author / Artist" helper — mirrors the Advanced Search "Author/Artist" input.
+     * Resolves comma-separated names into authors[] / artists[] / group[] UUIDs via
+     * /author and /scanlation_group lookups (the site does the same name→UUID step).
+     * /author returns both authors and artists, distinguished by the person's
+     * relationships (manga ids carrying an "author" vs "artist" relationship).
+     */
+    async resolveAuthorIds(raw) {
+        const names = String(raw || "")
+            .split(",")
+            .map(s => s.trim())
+            .filter(Boolean);
+        const authorIds = [];
+        const artistIds = [];
+        const groupIds  = [];
+        for (const name of names) {
+            try {
+                const [aRes, gRes] = await Promise.all([
+                    new Client().get(`${this.source.apiUrl}/author?name=${encodeURIComponent(name)}&limit=1&includes[]=manga`, this.getHeaders()),
+                    new Client().get(`${this.source.apiUrl}/scanlation_group?name=${encodeURIComponent(name)}&limit=1`, this.getHeaders())
+                ]);
+                let a, g;
+                try { a = JSON.parse(aRes.body); } catch (_) { a = null; }
+                try { g = JSON.parse(gRes.body); } catch (_) { g = null; }
+                const person = a?.data?.[0];
+                if (person?.id) {
+                    // Probe the API to classify the person: author (authors[]) or artist (artists[])
+                    let isAuthor = false, isArtist = false;
+                    try {
+                        const probeA = await new Client().get(`${this.source.apiUrl}/manga?authors[]=${person.id}&limit=1`, this.getHeaders());
+                        isAuthor = (JSON.parse(probeA.body)?.total ?? 0) > 0;
+                    } catch (_) { }
+                    if (!isAuthor) {
+                        try {
+                            const probeR = await new Client().get(`${this.source.apiUrl}/manga?artists[]=${person.id}&limit=1`, this.getHeaders());
+                            isArtist = (JSON.parse(probeR.body)?.total ?? 0) > 0;
+                        } catch (_) { }
+                    }
+                    if (isArtist && !isAuthor) artistIds.push(person.id);
+                    else authorIds.push(person.id);
+                }
+                if (!authorIds.length && !artistIds.length && g?.data?.[0]?.id) groupIds.push(g.data[0].id);
+            } catch (_) { /* ignore unresolvable names */ }
+        }
+        return { authorIds, artistIds, groupIds };
+    }
+
     async search(query, page, filters) {
         const offset = 20 * (page - 1);
         let url = `${this.source.apiUrl}/manga`
@@ -319,7 +366,17 @@ class DefaultExtension extends MProvider {
 
         let hasContentRating = false;
 
-        filters.forEach(filter => {
+        // Flatten the groups (chapter count, date range) so nested TextFilters are processed
+        const flat = [];
+        (filters || []).forEach(f => {
+            if (f.type === "ChapterCountFilter" || f.type === "DateRangeFilter") {
+                (f.state || []).forEach(c => flat.push(c));
+            } else {
+                flat.push(f);
+            }
+        });
+
+        flat.forEach(filter => {
             if (filter.type === "HasAvailableChaptersFilter") {
                 if (filter.state) {
                     url += `&hasAvailableChapters=true` + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`);
@@ -341,6 +398,15 @@ class DefaultExtension extends MProvider {
                 url += `&order[${filter.values[filter.state.index].value}]=${dir}`;
             } else if (filter.type === "TagsFilter") {
                 filter.state.forEach(tag => { url += `&${tag.values[tag.state].value}`; });
+            } else if (filter.type === "AuthorFilter") {
+                // Advanced Search: Author / Artist — resolved to authors[]/artists[]/group[] UUIDs (async)
+                filter._ids = this.resolveAuthorIds(filter.state);
+            } else if (filter.type === "YearFilter") {
+                if (filter.state && !isNaN(parseInt(filter.state, 10))) url += `&year=${parseInt(filter.state, 10)}`;
+            } else if (filter.type === "CreatedAtSinceFilter") {
+                if (filter.state) url += `&createdAtSince=${encodeURIComponent(filter.state)}`;
+            } else if (filter.type === "UpdatedAtSinceFilter") {
+                if (filter.state) url += `&updatedAtSince=${encodeURIComponent(filter.state)}`;
             } else if (
                 filter.type === "FormatFilter"   ||
                 filter.type === "GenreFilter"    ||
@@ -355,8 +421,35 @@ class DefaultExtension extends MProvider {
         // Fall back to preference-based rating if none was set by the filters
         if (!hasContentRating) url += this.contentRatingParams();
 
+        // Async author/artist resolution (site: "Author/Artist" text input)
+        const authorFilters = filters.filter(f => f.type === "AuthorFilter");
+        for (const af of authorFilters) {
+            const { authorIds, artistIds, groupIds } = await af._ids;
+            authorIds.forEach(id => { url += `&authors[]=${id}`; });
+            artistIds.forEach(id => { url += `&artists[]=${id}`; });
+            groupIds.forEach(id => { url += `&group=${id}`; });
+        }
+
         const res = await new Client().get(url, this.getHeaders());
-        return this.mangaRes(res.body);
+        const out = this.mangaRes(res.body);
+
+        // Site: "Chapter count" range — client-side (the API has no chapter-count parameter)
+        const minCh = parseInt((flat.find(f => f.type === "MinChapterCount") || {}).state, 10);
+        const maxCh = parseInt((flat.find(f => f.type === "MaxChapterCount") || {}).state, 10);
+        if (!isNaN(minCh) || !isNaN(maxCh)) {
+            const data = JSON.parse(res.body)?.data ?? [];
+            const countById = {};
+            for (const e of data) countById[e.id] = parseFloat(e.attributes?.lastChapter) || 0;
+            out.list = out.list.filter(m => {
+                const c = countById[(m.link || "").replace("/manga/", "")];
+                if (c === undefined) return true;
+                if (!isNaN(minCh) && c < minCh) return false;
+                if (!isNaN(maxCh) && c > maxCh) return false;
+                return true;
+            });
+        }
+
+        return out;
     }
 
     // ─── Detail ──────────────────────────────────────────────────────────────
@@ -502,72 +595,182 @@ class DefaultExtension extends MProvider {
 
         return files.map(f => `${host}/${segment}/${hash}/${f}`);
     }
-      // ─── Custom lists: Accueil uses getPopular (list), Popular & Recently Added use grids ───
+    // ─── Home sections — mirror of the mangadex.org home (ui-layouts/mangadex.json) ───
 
-async getCustomList(listId, page) {
-            if (listId === "popular")         return this.getFollowedPopular(page);
-            if (listId === "recently_added")  return this.getLatestUpdates(page);
-            if (listId === "new_titles")      return this.getNewTitles(page);
-            if (listId === "recommended")     return this.getRecommended(page);
-            if (listId === "self_published")  return this.getSelfPublished(page);
-            if (listId === "seasonal_spring") return this.getSeasonalSpring(page);
-            return this.getPopular(page);
-        }
+    /** Current season name/month bucket, like the site's "Seasonal: …" banner. */
+    currentSeason() {
+        const now = new Date();
+        const m   = now.getUTCMonth() + 1; // 1..12
+        if (m === 12 || m <= 2) return { name: "Winter", startMonth: 12, endMonth: 2, year: now.getUTCFullYear() };
+        if (m <= 5)             return { name: "Spring", startMonth: 3, endMonth: 5, year: now.getUTCFullYear() };
+        if (m <= 8)             return { name: "Summer", startMonth: 6, endMonth: 8, year: now.getUTCFullYear() };
+        return                        { name: "Fall",   startMonth: 9, endMonth: 11, year: now.getUTCFullYear() };
+    }
 
-        async getRecommended(page) {
-            const offset = 20 * (page - 1);
-            const url = `${this.source.apiUrl}/manga`
-                + `?limit=20&offset=${offset}`
-                + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
-                + `&includes[]=cover_art`
-                + this.contentRatingParams()
-                + this.originalLanguageParams()
-                + `&order[rating]=desc`
-                + `&hasAvailableChapters=true`;
-            const res = await new Client().get(url, this.getHeaders());
-            return this.mangaRes(res.body);
-        }
+    /** Season window [start,end> as API ISO timestamps (UTC). */
+    seasonWindow() {
+        const s = this.currentSeason();
+        // Winter spans Dec(prev year) -> Feb(current year)
+        const startYear = s.name === "Winter" ? s.year - 1 : s.year;
+        const start = new Date(Date.UTC(startYear, s.startMonth - 1, 1));
+        let endY = s.year, endM = s.endMonth;
+        if (s.endMonth === 12) { endY += 1; endM = 0; }
+        const end = new Date(Date.UTC(endY, endM, 1));
+        const iso = (d) => d.toISOString().replace(/\.\d{3}Z$/, "");
+        return { since: iso(start), until: iso(end) };
+    }
 
-        async getSelfPublished(page) {
-            const offset = 20 * (page - 1);
-            const url = `${this.source.apiUrl}/manga`
-                + `?limit=20&offset=${offset}`
-                + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
-                + `&includes[]=cover_art`
-                + this.contentRatingParams()
-                + `&publicationDemographic[]=none`
-                + `&order[followedCount]=desc`;
-            const res = await new Client().get(url, this.getHeaders());
-            return this.mangaRes(res.body);
-        }
+    /** One representative seasonal title for the spotlight banner. */
+    async getSeasonalSpotlight(page) {
+        const w = this.seasonWindow();
+        const url = `${this.source.apiUrl}/manga`
+            + `?limit=20&offset=${20 * (page - 1)}`
+            + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
+            + `&includes[]=cover_art`
+            + this.contentRatingParams()
+            + this.originalLanguageParams()
+            + `&createdAtSince=${encodeURIComponent(w.since)}`
+            + `&order[followedCount]=desc`
+            + `&hasAvailableChapters=true`;
+        const res = await new Client().get(url, this.getHeaders());
+        return this.mangaRes(res.body);
+    }
 
-        async getSeasonalSpring(page) {
-            const offset = 20 * (page - 1);
-            const url = `${this.source.apiUrl}/manga`
-                + `?limit=20&offset=${offset}`
-                + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
-                + `&includes[]=cover_art`
-                + this.contentRatingParams()
-                + this.originalLanguageParams()
-                + `&year=2026`
-                + `&order[followedCount]=desc`
-                + `&hasAvailableChapters=true`;
-            const res = await new Client().get(url, this.getHeaders());
-            return this.mangaRes(res.body);
-        }
+    /** Full seasonal feed (current season, by follows). */
+    async getSeasonal(page) {
+        const w = this.seasonWindow();
+        const url = `${this.source.apiUrl}/manga`
+            + `?limit=20&offset=${20 * (page - 1)}`
+            + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
+            + `&includes[]=cover_art`
+            + this.contentRatingParams()
+            + this.originalLanguageParams()
+            + `&createdAtSince=${encodeURIComponent(w.since)}`
+            + `&order[rating]=desc`
+            + `&hasAvailableChapters=true`;
+        const res = await new Client().get(url, this.getHeaders());
+        return this.mangaRes(res.body);
+    }
 
-        async getNewTitles(page) {
-            const offset = 20 * (page - 1);
-            const url = `${this.source.apiUrl}/manga`
-                + `?limit=20&offset=${offset}`
-                + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
-                + `&includes[]=cover_art`
-                + this.contentRatingParams()
-                + this.originalLanguageParams()
-                + `&order[createdAt]=desc`;
-            const res = await new Client().get(url, this.getHeaders());
-            return this.mangaRes(res.body);
+    /** "Top rated" carousel. */
+    async getTopRated(page) {
+        const url = `${this.source.apiUrl}/manga`
+            + `?limit=20&offset=${20 * (page - 1)}`
+            + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
+            + `&includes[]=cover_art`
+            + this.contentRatingParams()
+            + this.originalLanguageParams()
+            + `&order[rating]=desc`
+            + `&hasAvailableChapters=true`;
+        const res = await new Client().get(url, this.getHeaders());
+        return this.mangaRes(res.body);
+    }
+
+    /** "Trending now" — hottest this week (follows among recently updated). */
+    async getTrendingNow(page) {
+        const weekAgo = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString().replace(/\.\d{3}Z$/, "");
+        const url = `${this.source.apiUrl}/manga`
+            + `?limit=20&offset=${20 * (page - 1)}`
+            + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
+            + `&includes[]=cover_art`
+            + this.contentRatingParams()
+            + this.originalLanguageParams()
+            + `&updatedAtSince=${encodeURIComponent(weekAgo)}`
+            + `&order[followedCount]=desc`
+            + `&hasAvailableChapters=true`;
+        const res = await new Client().get(url, this.getHeaders());
+        return this.mangaRes(res.body);
+    }
+
+    /** Status shelf helper (completed / ongoing). */
+    async getByStatus(status, page) {
+        const url = `${this.source.apiUrl}/manga`
+            + `?limit=20&offset=${20 * (page - 1)}`
+            + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
+            + `&includes[]=cover_art`
+            + this.contentRatingParams()
+            + this.originalLanguageParams()
+            + `&status[]=${status}`
+            + `&order[followedCount]=desc`;
+        const res = await new Client().get(url, this.getHeaders());
+        return this.mangaRes(res.body);
+    }
+
+    /** "New titles" carousel (latest created on MangaDex). */
+    async getNewTitles(page) {
+        const url = `${this.source.apiUrl}/manga`
+            + `?limit=20&offset=${20 * (page - 1)}`
+            + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
+            + `&includes[]=cover_art`
+            + this.contentRatingParams()
+            + this.originalLanguageParams()
+            + `&order[createdAt]=desc`;
+        const res = await new Client().get(url, this.getHeaders());
+        return this.mangaRes(res.body);
+    }
+
+    /** Official / publisher content. */
+    async getOfficialContent(page) {
+        const url = `${this.source.apiUrl}/manga`
+            + `?limit=20&offset=${20 * (page - 1)}`
+            + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
+            + `&includes[]=cover_art`
+            + this.contentRatingParams()
+            + this.originalLanguageParams()
+            + `&publicationDemographic[]=` + ["none", "shounen", "shoujo", "seinen", "josei"].join("&publicationDemographic[]=")
+            + `&excludedTags[]=b13b2a48-c720-44a9-9c77-39c9979373fb`
+            + `&excludedTags[]=891cf039-b895-47f0-9229-bef4c96eccd4`
+            + `&excludedTags[]=e197df38-d0e7-43b5-9b09-2842d0c326dd`
+            + `&excludedTagsMode=AND`
+            + `&order[followedCount]=desc`
+            + `&hasAvailableChapters=true`;
+        const res = await new Client().get(url, this.getHeaders());
+        return this.mangaRes(res.body);
+    }
+
+    /** Untranslated titles — originally in the app language, awaiting translations. */
+    async getUntranslated(page) {
+        const lang = (this.source.lang || "en").split("-")[0];
+        const url = `${this.source.apiUrl}/manga`
+            + `?limit=20&offset=${20 * (page - 1)}`
+            + `&includes[]=cover_art`
+            + this.contentRatingParams()
+            + `&originalLanguage[]=${lang}`
+            + `&order[followedCount]=desc`
+            + `&hasAvailableChapters=true`;
+        const res = await new Client().get(url, this.getHeaders());
+        return this.mangaRes(res.body);
+    }
+
+    async getSelfPublished(page) {
+        const url = `${this.source.apiUrl}/manga`
+            + `?limit=20&offset=${20 * (page - 1)}`
+            + (this.isMultiLang() ? '' : `&availableTranslatedLanguage[]=${this.source.lang}`)
+            + `&includes[]=cover_art`
+            + this.contentRatingParams()
+            + `&publicationDemographic[]=none`
+            + `&order[followedCount]=desc`;
+        const res = await new Client().get(url, this.getHeaders());
+        return this.mangaRes(res.body);
+    }
+
+    async getCustomList(listId, page) {
+        switch (listId) {
+            case "popular":          return this.getFollowedPopular(page);   // site: Most follows
+            case "latest_updates":   return this.getLatestUpdates(page);     // site: Latest chapter updates
+            case "seasonal_banner":  return this.getSeasonalSpotlight(page); // site: Seasonal spotlight
+            case "seasonal":         return this.getSeasonal(page);          // site: Seasonal grid
+            case "top_rated":        return this.getTopRated(page);
+            case "trending_now":     return this.getTrendingNow(page);
+            case "new_titles":       return this.getNewTitles(page);         // site: Recently added
+            case "completed":        return this.getByStatus("completed", page);
+            case "ongoing":          return this.getByStatus("ongoing", page);
+            case "official_content": return this.getOfficialContent(page);
+            case "untranslated":     return this.getUntranslated(page);      // site: Untranslated titles
+            case "self_published":   return this.getSelfPublished(page);
+            default:                 return this.getPopular(page);
         }
+    }
 
       // ─── Source preferences (mirrors Aidoku settings) ────────────────────────
 
@@ -683,6 +886,40 @@ async getCustomList(listId, page) {
 
     getFilterList() {
         return [
+            // Site: "Author / Artist" text input — resolved to authorAndArtist[] UUIDs
+            {
+                type_name: "TextFilter",
+                type: "AuthorFilter",
+                name: "Author / Artist",
+                state: ""
+            },
+            // Site: "Year" number input
+            {
+                type_name: "TextFilter",
+                type: "YearFilter",
+                name: "Year of release",
+                state: ""
+            },
+            // Site: "Chapter count" number range (filters client-side on latestChapter check)
+            {
+                type_name: "GroupFilter",
+                type: "ChapterCountFilter",
+                name: "Chapter count",
+                state: [
+                    {
+                        type_name: "TextFilter",
+                        type: "MinChapterCount",
+                        name: "Minimum chapters",
+                        state: ""
+                    },
+                    {
+                        type_name: "TextFilter",
+                        type: "MaxChapterCount",
+                        name: "Maximum chapters",
+                        state: ""
+                    }
+                ]
+            },
             {
                 type_name: "CheckBox",
                 type: "HasAvailableChaptersFilter",
@@ -697,6 +934,32 @@ async getCustomList(listId, page) {
                     ["Japanese (Manga)", "originalLanguage[]=ja"],
                     ["Chinese (Manhua)", "originalLanguage[]=zh&originalLanguage[]=zh-hk"],
                     ["Korean (Manhwa)",  "originalLanguage[]=ko"]
+                ].map(x => ({ type_name: "CheckBox", name: x[0], value: x[1] }))
+            },
+            // Site: "Translated language" multi-select
+            {
+                type_name: "GroupFilter",
+                type: "TranslatedLanguageList",
+                name: "Translated language",
+                state: [
+                    ["English",             "availableTranslatedLanguage[]=en"],
+                    ["French",              "availableTranslatedLanguage[]=fr"],
+                    ["Spanish (Spain)",     "availableTranslatedLanguage[]=es"],
+                    ["Spanish (LatAm)",     "availableTranslatedLanguage[]=es-419"],
+                    ["Portuguese (Brazil)", "availableTranslatedLanguage[]=pt-br"],
+                    ["Japanese",            "availableTranslatedLanguage[]=ja"],
+                    ["Korean",              "availableTranslatedLanguage[]=ko"],
+                    ["Chinese (Simplified)","availableTranslatedLanguage[]=zh"],
+                    ["German",              "availableTranslatedLanguage[]=de"],
+                    ["Italian",             "availableTranslatedLanguage[]=it"],
+                    ["Russian",             "availableTranslatedLanguage[]=ru"],
+                    ["Indonesian",          "availableTranslatedLanguage[]=id"],
+                    ["Thai",                "availableTranslatedLanguage[]=th"],
+                    ["Vietnamese",          "availableTranslatedLanguage[]=vi"],
+                    ["Turkish",             "availableTranslatedLanguage[]=tr"],
+                    ["Arabic",              "availableTranslatedLanguage[]=ar"],
+                    ["Polish",              "availableTranslatedLanguage[]=pl"],
+                    ["Dutch",               "availableTranslatedLanguage[]=nl"]
                 ].map(x => ({ type_name: "CheckBox", name: x[0], value: x[1] }))
             },
             {
@@ -732,6 +995,26 @@ async getCustomList(listId, page) {
                     ["Hiatus",    "status[]=hiatus"],
                     ["Cancelled", "status[]=cancelled"]
                 ].map(x => ({ type_name: "CheckBox", name: x[0], value: x[1] }))
+            },
+            // Site: "Date range" — created/updated since (API createdAtSince / updatedAtSince)
+            {
+                type_name: "GroupFilter",
+                type: "DateRangeFilter",
+                name: "Date range (YYYY-MM-DD)",
+                state: [
+                    {
+                        type_name: "TextFilter",
+                        type: "CreatedAtSinceFilter",
+                        name: "Created after",
+                        state: ""
+                    },
+                    {
+                        type_name: "TextFilter",
+                        type: "UpdatedAtSinceFilter",
+                        name: "Updated after",
+                        state: ""
+                    }
+                ]
             },
             {
                 type_name: "SortFilter",
@@ -800,7 +1083,7 @@ async getCustomList(listId, page) {
                     ["Long Strip",       "3e2b8dae-350e-4ab8-a8ce-016e844b9f0d"],
                     ["Official Colored", "320831a8-4026-470b-94f6-8353740e6f04"],
                     ["Oneshot",          "0234a31e-a729-4e28-9d6a-3f87c4966b9e"],
-                    ["User Created",     "891cf039-b895-47f0-9229-bef4c96eccd4"],
+                    ["Self-Published",   "891cf039-b895-47f0-9229-bef4c96eccd4"],
                     ["Web Comic",        "e197df38-d0e7-43b5-9b09-2842d0c326dd"]
                 ].map(x => ({ type_name: "TriState", name: x[0], value: x[1] }))
             },
@@ -855,6 +1138,7 @@ async getCustomList(listId, page) {
                     ["Loli",             "2d1f5d56-a1e5-4d0d-a961-2193588b08ec"],
                     ["Mafia",            "85daba54-a71c-4554-8a28-9901a8b0afad"],
                     ["Magic",            "a1f53773-c69a-4ce5-8cab-fffcd90b1565"],
+                    ["Mahjong",          "cb562697-929f-4d28-9d66-6d3995bf2592"],
                     ["Martial Arts",     "799c202e-7daa-44eb-9cf7-8a3c0441531e"],
                     ["Military",         "ac72833b-c4e9-4878-b9db-6c8a4a99444a"],
                     ["Monster Girls",    "dd1f77c5-dea9-4e2b-97ae-224af09caf99"],
