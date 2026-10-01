@@ -8,6 +8,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 2,
   "version": "0.0.7",
+  "login": false,
+  "forYou": false,
   "dateFormat": "",
   "dateFormatLocale": "",
   "pkgPath": "novel/src/en/novelupdates.js",

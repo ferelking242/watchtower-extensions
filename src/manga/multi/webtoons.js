@@ -9,6 +9,8 @@ const watchtowerSources = [{
     "isManga": true,
     "isNsfw": false,
     "version": "0.0.47",
+    "login": false,
+    "forYou": false,
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/all/webtoons.js"

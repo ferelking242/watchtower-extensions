@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"MangaDar","lang":"ar","baseUrl":"https://mangadar.org","iconUrl":"https://mangadar.org/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/mangadar.js"}];
+const watchtowerSources = [{"name":"MangaDar","lang":"ar","baseUrl":"https://mangadar.org","iconUrl":"https://mangadar.org/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/mangadar.js"}];
 const BASE_URL = "https://mangadar.org";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

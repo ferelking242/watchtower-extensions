@@ -7,6 +7,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 1,
   "version": "1.0.2",
+  "login": false,
+  "forYou": false,
   "pkgPath": "sextb/ko/ko.sextb.js",
   "notes": "SexTB — Korean adult and Asian videos",
   "isNsfw": true

@@ -7,6 +7,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 0,
     "version": "1.1.0",
+    "login": false,
+    "forYou": false,
     "pkgPath": "manga/src/es/mangasee.js"
 }];
 

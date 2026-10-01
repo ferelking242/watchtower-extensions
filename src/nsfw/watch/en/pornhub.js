@@ -7,6 +7,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 1,
   "version": "1.3.0",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/watch/en/pornhub.js",
   "notes": "Adult content (18+) — native HLS/MP4 quality extraction",
   "isNsfw": true

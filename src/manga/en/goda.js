@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Goda","lang":"en","baseUrl":"https://goda-comic.com","iconUrl":"https://goda-comic.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/en/goda.js"}];
+const watchtowerSources = [{"name":"Goda","lang":"en","baseUrl":"https://goda-comic.com","iconUrl":"https://goda-comic.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/en/goda.js"}];
 const BASE_URL = "https://goda-comic.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

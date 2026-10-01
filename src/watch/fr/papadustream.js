@@ -8,6 +8,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "version": "0.1.7",
+    "login": false,
+    "forYou": false,
     "pkgPath": "watch/fr/papadustream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",

@@ -8,6 +8,8 @@ const watchtowerSources = [
     "typeSource": "single",
     "itemType": 0,
     "version": "0.2.23",
+    "login": true,
+    "forYou": false,
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/all/mangafire.js"

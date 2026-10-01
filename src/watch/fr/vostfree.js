@@ -8,6 +8,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "version": "0.1.12",
+    "login": false,
+    "forYou": false,
     "pkgPath": "watch/fr/vostfree.js",
     "editableBaseUrl": true,
     "customUserAgent": "",

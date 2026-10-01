@@ -16,6 +16,8 @@ const watchtowerSources = [{
     "isNsfw": false,
     "hasCloudflare": false,
     "version": "0.1.0",
+    "login": false,
+    "forYou": false,
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/en/allmanga.js",

@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Atsumaru","lang":"en","baseUrl":"https://atsumaru.com","iconUrl":"https://atsumaru.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/en/atoscans.js"}];
+const watchtowerSources = [{"name":"Atsumaru","lang":"en","baseUrl":"https://atsumaru.com","iconUrl":"https://atsumaru.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/en/atoscans.js"}];
 const BASE_URL = "https://atsumaru.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

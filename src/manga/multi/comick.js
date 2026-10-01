@@ -51,6 +51,8 @@ const watchtowerSources = [
         "typeSource": "single",
         "itemType": 0,
         "version": "0.1.5",
+        "login": false,
+        "forYou": false,
         "pkgPath": "manga/src/all/comick.js"
     }];
 

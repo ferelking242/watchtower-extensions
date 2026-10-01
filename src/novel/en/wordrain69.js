@@ -8,6 +8,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 2,
   "version": "0.0.6",
+  "login": false,
+  "forYou": false,
   "dateFormat": "",
   "dateFormatLocale": "",
   "pkgPath": "novel/src/en/wordrain69.js",

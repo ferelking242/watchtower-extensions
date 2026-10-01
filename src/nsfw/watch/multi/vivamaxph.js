@@ -8,6 +8,8 @@ const watchtowerSources = [{
     "itemType": 1,
     "isNsfw": true,
     "version": "0.0.1.3",
+    "login": false,
+    "forYou": false,
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "nsfw/watch/multi/vivamaxph.js"

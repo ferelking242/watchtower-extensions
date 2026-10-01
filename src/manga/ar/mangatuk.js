@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"MangaTuk","lang":"ar","baseUrl":"https://mangatuk.com","iconUrl":"https://mangatuk.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/mangatuk.js"}];
+const watchtowerSources = [{"name":"MangaTuk","lang":"ar","baseUrl":"https://mangatuk.com","iconUrl":"https://mangatuk.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/mangatuk.js"}];
 const BASE_URL = "https://mangatuk.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

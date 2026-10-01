@@ -11,6 +11,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "version": "1.1.2",
+    "login": false,
+    "forYou": true,
     "pkgPath": "watch/fr/plutonflix.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,

@@ -8,6 +8,8 @@ const watchtowerSources = [{
   "itemType": 0,
   "isManga": true,
   "version": "1.0.2",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/manga/en/tsumino.js",
   "notes": "Tsumino — hentai manga/doujin reader (18+). API JSON.",
   "isNsfw": true

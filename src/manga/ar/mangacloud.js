@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"MangaCloud","lang":"ar","baseUrl":"https://mangacloud.me","iconUrl":"https://mangacloud.me/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/mangacloud.js"}];
+const watchtowerSources = [{"name":"MangaCloud","lang":"ar","baseUrl":"https://mangacloud.me","iconUrl":"https://mangacloud.me/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/mangacloud.js"}];
 const BASE_URL = "https://mangacloud.me";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

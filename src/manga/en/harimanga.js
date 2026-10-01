@@ -9,6 +9,8 @@ const watchtowerSources = [
     "typeSource": "single",
     "itemType": 0,
     "version": "0.4.0",
+    "login": false,
+    "forYou": false,
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,

@@ -7,6 +7,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 1,
   "version": "1.0.3",
+  "login": false,
+  "forYou": false,
   "pkgPath": "juicyasians/en/en.juicyasians.js",
   "notes": "JuicyAsians — Asian amateur and professional porn",
   "isNsfw": true

@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Toomics","lang":"en","baseUrl":"https://toomics.com","iconUrl":"https://toomics.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/en/toomics.js","notes":"Toomics — webtoons premium (部分 gratuit)"}];
+const watchtowerSources = [{"name":"Toomics","lang":"en","baseUrl":"https://toomics.com","iconUrl":"https://toomics.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": true, "forYou": false,"pkgPath":"manga/src/en/toomics.js","notes":"Toomics — webtoons premium (部分 gratuit)"}];
 const BASE_URL = "https://toomics.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

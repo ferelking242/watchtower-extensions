@@ -11,6 +11,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 2,
     "version": "1.1.1",
+    "login": false,
+    "forYou": true,
     "pkgPath": "watch/fr/jetanimes.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,

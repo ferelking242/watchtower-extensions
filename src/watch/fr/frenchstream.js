@@ -24,6 +24,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "version": "1.0.0",
+    "login": false,
+    "forYou": true,
     "pkgPath": "watch/fr/frenchstream.js",
     "editableBaseUrl": true,
     "customUserAgent": "",

@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"AnimeKhor","lang":"multi","langs":["en","id"],"ids":{"en":1900000201,"id":1900000202},"baseUrl":"https://animekhor.org","iconUrl":"https://animekhor.org/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0","pkgPath":"anime/src/multi/animekhor.js","notes":"AnimeKhor — donghua (anime chinois) sub EN/ID"}];
+const watchtowerSources = [{"name":"AnimeKhor","lang":"multi","langs":["en","id"],"ids":{"en":1900000201,"id":1900000202},"baseUrl":"https://animekhor.org","iconUrl":"https://animekhor.org/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"anime/src/multi/animekhor.js","notes":"AnimeKhor — donghua (anime chinois) sub EN/ID"}];
 const BASE_URL = "https://animekhor.org";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

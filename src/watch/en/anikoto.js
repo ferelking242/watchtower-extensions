@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Anikoto","lang":"en","baseUrl":"https://anikoto.to","iconUrl":"https://anikoto.to/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0","pkgPath":"anime/src/en/anikoto.js","notes":"Anikoto — anime streaming HD gratuit"}];
+const watchtowerSources = [{"name":"Anikoto","lang":"en","baseUrl":"https://anikoto.to","iconUrl":"https://anikoto.to/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"anime/src/en/anikoto.js","notes":"Anikoto — anime streaming HD gratuit"}];
 const BASE_URL = "https://anikoto.to";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

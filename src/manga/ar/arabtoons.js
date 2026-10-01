@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Arab Toons","lang":"ar","baseUrl":"https://arabtoons.net","iconUrl":"https://arabtoons.net/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/arabtoons.js"}];
+const watchtowerSources = [{"name":"Arab Toons","lang":"ar","baseUrl":"https://arabtoons.net","iconUrl":"https://arabtoons.net/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/arabtoons.js"}];
 const BASE_URL = "https://arabtoons.net";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

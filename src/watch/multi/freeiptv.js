@@ -8,6 +8,8 @@ const watchtowerSources = [{
     "isManga": false,
     "itemType": 1,
     "version": "1.0.2",
+    "login": false,
+    "forYou": false,
     "isNsfw": false,
     "hasCloudflare": false,
     "pkgPath": "watch/src/multi/freeiptv.js",

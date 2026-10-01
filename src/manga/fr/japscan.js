@@ -9,6 +9,8 @@ const watchtowerSources = [{
     "itemType": 0,
     "isManga": true,
     "version": "0.1.2",
+    "login": true,
+    "forYou": true,
     "pkgPath": "manga/fr/japscan.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,

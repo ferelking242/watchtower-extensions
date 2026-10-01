@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"MangaForFree","lang":"en","baseUrl":"https://mangaforfree.net","iconUrl":"https://mangaforfree.net/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/en/mangaforfree.js"}];
+const watchtowerSources = [{"name":"MangaForFree","lang":"en","baseUrl":"https://mangaforfree.net","iconUrl":"https://mangaforfree.net/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/en/mangaforfree.js"}];
 const BASE_URL = "https://mangaforfree.net";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

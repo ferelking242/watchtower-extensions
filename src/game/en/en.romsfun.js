@@ -8,6 +8,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 4,
   "version": "1.0.2",
+  "login": false,
+  "forYou": false,
   "pkgPath": "game/en/en.romsfun.js",
   "notes": "ROM downloads — PSP, PS2, GBA, SNES, N64, NDS and more",
   "isNsfw": false,

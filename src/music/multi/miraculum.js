@@ -13,6 +13,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 3,
     "version": "2.1.0",
+    "login": false,
+    "forYou": false,
     "pkgPath": "music/multi/miraculum.js",
     "requiresAccount": false,
     "hasDRM": false,

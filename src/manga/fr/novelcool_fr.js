@@ -9,13 +9,15 @@ const watchtowerSources = [{
     "itemType": 2,
     "isManga": true,
     "version": "0.1.0",
+    "login": true,
+    "forYou": true,
     "pkgPath": "manga/fr/novelcool_fr.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
     "requiresAccount": false,
     "hasDRM": false,
     "paywall": "free",
-    "notes": "Mangas FR — NovelCool (manga uniquement, romans exclus)"
+    "notes": "Mangas FR — NovelCool (manga uniquement, romans exclus).NB : le site étiquette parfois des romans textuels en « Manga » dans ses listes ; leurs chapitres sont du texte sans images lisibles."
 }];
 const BASE_URL = "https://fr.novelcool.com";
 class DefaultExtension extends MProvider {
@@ -32,7 +34,18 @@ class DefaultExtension extends MProvider {
                 dialogTitle: "URL du site",
                 dialogMessage: "URL actuelle : " + BASE_URL
             }
-        }];
+        },
+            {
+                key: "images_per_page",
+                listPreference: {
+                    title: "Images par requête",
+                    summary: "Nombre d'images chargées par requête pendant la lecture (10 = recommandé). Les tailles plus petites consomment plus de requêtes.",
+                    valueIndex: 2,
+                    entries: ["3", "6", "10"],
+                    entryValues: ["3", "6", "10"]
+                }
+            }
+        ];
     }
     _hdrs(ref){ return {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36","Accept-Language":"fr-FR,fr;q=0.9","Referer":ref||this.baseUrl+"/"}; }
     _dec(s){ return String(s||"").replace(/&amp;/g,"&").replace(/&quot;/g,'"').replace(/&#0?39;/g,"'").replace(/&nbsp;/g," ").replace(/<[^>]+>/g,"").replace(/\\'/g,"'").replace(/\s+/g," ").trim(); }
@@ -104,6 +117,7 @@ class DefaultExtension extends MProvider {
         chapters.reverse(); // la liste est du plus récent au plus ancien
         return {name,imageUrl:im?im[1]:"",description,author,artist:author,genre,status,chapters};
     }
+    _imgPerPage(){ const v=parseInt(new SharedPreferences().get("images_per_page"),10); return (v===3||v===6||v===10)?v:10; }
     async getPageList(url){
         const ua=this._hdrs()["User-Agent"];
         const r=await new Client().get(url,this._hdrs(url));
@@ -119,12 +133,13 @@ class DefaultExtension extends MProvider {
         const stm=html.match(/value="(https?:\/\/[^"]+?)-1\.html"/);
         const stem=stm?stm[1]:url.replace(/\.html$/,"").replace(/\/+$/,"");
         if(!total||total<2) return baseImgs.map(u=>({url:u,headers:{"User-Agent":ua,"Referer":url}}));
-        // NovelCool accepte "Load images: 10" : ...-10-<groupe>.html regroupe 10 images par requête
-        // (index de groupe croissant, pas offset : groupe 1 = pages 1-10, groupe 2 = pages 11-20...)
-        const groups=Math.min(Math.ceil(total/10),30);
+        // NovelCool accepte "Load images" : ...-<taille>-<groupe>.html regroupe N images par requête
+        // (index de groupe croissant, pas offset : groupe 1 = pages 1-N, groupe 2 = pages N+1-2N...)
+        const size=this._imgPerPage();
+        const groups=Math.min(Math.ceil(total/size),30);
         const results=await Promise.all(Array.from({length:groups},(_,i)=>i+1).map(async (g)=>{
             try{
-                const res=await new Client().get(stem+"-10-"+g+".html",this._hdrs(url));
+                const res=await new Client().get(stem+"-"+size+"-"+g+".html",this._hdrs(url));
                 return extract(res.body||"");
             }catch(_){ return []; }
         }));

@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"LikeManga","lang":"en","baseUrl":"https://likemanga.org","iconUrl":"https://likemanga.org/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/en/likemanga.js"}];
+const watchtowerSources = [{"name":"LikeManga","lang":"en","baseUrl":"https://likemanga.org","iconUrl":"https://likemanga.org/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/en/likemanga.js"}];
 const BASE_URL = "https://likemanga.org";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

@@ -10,6 +10,8 @@ const watchtowerSources = [{
         "isManga": true,
         "isNsfw": false,
         "version": "0.1.0",
+        "login": false,
+        "forYou": false,
         "pkgPath": "manga/fr/animesama.js",
         "editableBaseUrl": true,
         "hasCloudflare": false,

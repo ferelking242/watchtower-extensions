@@ -8,6 +8,8 @@ const watchtowerSources = [{
   "itemType": 0,
   "isManga": true,
   "version": "1.0.2",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/manga/en/multporn.js",
   "notes": "Multporn — western/hentai comics & doujin (18+). Équivalent JS de all.multporn Mihon.",
   "isNsfw": true

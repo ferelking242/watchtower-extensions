@@ -8,6 +8,8 @@ const watchtowerSources = [{
     "isManga": false,
     "itemType": 1,
     "version": "1.0.6",
+    "login": false,
+    "forYou": false,
     "dateFormat": "",
     "dateFormatLocale": "",
     "isNsfw": false,

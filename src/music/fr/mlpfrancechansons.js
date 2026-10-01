@@ -8,6 +8,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 3,
     "version": "1.1.1",
+    "login": false,
+    "forYou": true,
     "pkgPath": "music/fr/mlpfrancechansons.js",
     "editableBaseUrl": false,
     "hasCloudflare": false,

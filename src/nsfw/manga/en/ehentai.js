@@ -8,6 +8,8 @@ const watchtowerSources = [{
   "itemType": 0,
   "isManga": true,
   "version": "1.0.2",
+  "login": true,
+  "forYou": false,
   "pkgPath": "nsfw/manga/en/ehentai.js",
   "notes": "E-Hentai galleries (18+). API JSON officielle. Compte recommandé pour contenu complet.",
   "isNsfw": true,

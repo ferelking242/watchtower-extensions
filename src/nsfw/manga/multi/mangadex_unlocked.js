@@ -55,6 +55,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 0,
     "version": "0.0.5",
+    "login": true,
+    "forYou": false,
     "pkgPath": "nsfw/manga/multi/mangadex_unlocked.js"
 }];
 
@@ -155,7 +157,7 @@ class DefaultExtension extends MProvider {
         const manga = {};
         const coverRel = data.relationships.find(rel => rel.type === "cover_art");
         if (coverRel && coverRel.attributes && coverRel.attributes.fileName) {
-            manga.imageUrl = `https://uploads.mangadex.org/covers/${data.id}/${coverRel.attributes.fileName}`;
+            manga.imageUrl = `https://uploads.mangadex.org/covers/${data.id}/${coverRel.attributes.fileName}${this.coverSuffix()}`;
         }
         const authors = data.relationships
             .filter(rel => rel.type === "author")
@@ -275,10 +277,13 @@ class DefaultExtension extends MProvider {
         if (altInEn) return altInEn.en;
         return "";
     }
+    coverSuffix() {
+        return this.getPreference("cover_quality", "") ?? "";
+    }
     getCover(data) {
             const coverArt = data.relationships?.find(r => r.type === "cover_art");
             return coverArt?.attributes?.fileName
-                ? `https://uploads.mangadex.org/covers/${data.id}/${coverArt.attributes.fileName}`
+                ? `https://uploads.mangadex.org/covers/${data.id}/${coverArt.attributes.fileName}${this.coverSuffix()}`
                 : "";
     }
     preferenceOriginalLanguages() {

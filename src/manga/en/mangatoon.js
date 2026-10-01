@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"MangaToon","lang":"en","baseUrl":"https://mangatoon.mobi","iconUrl":"https://mangatoon.mobi/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/en/mangatoon.js"}];
+const watchtowerSources = [{"name":"MangaToon","lang":"en","baseUrl":"https://mangatoon.mobi","iconUrl":"https://mangatoon.mobi/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": true, "forYou": false,"pkgPath":"manga/src/en/mangatoon.js"}];
 const BASE_URL = "https://mangatoon.mobi";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

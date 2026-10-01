@@ -9,6 +9,8 @@ const watchtowerSources = [{
       "itemType": 2,
       "isManga": true,
       "version": "0.1.0",
+      "login": false,
+      "forYou": true,
       "pkgPath": "manga/fr/histoiredhentai.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,

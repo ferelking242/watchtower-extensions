@@ -8,6 +8,8 @@ const watchtowerSources = [{
   "itemType": 0,
   "isManga": true,
   "version": "1.0.2",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/manga/en/imhentai.js",
   "notes": "IMHentai — hentai doujin reading (18+)",
   "isNsfw": true

@@ -11,6 +11,8 @@ const watchtowerSources = [
     "typeSource": "single",
     "itemType": 1,
     "version": "0.1.3",
+    "login": false,
+    "forYou": false,
     "pkgPath": "anime/src/en/animeparadise.js",
   },
 ];

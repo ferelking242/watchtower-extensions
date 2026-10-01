@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Cubari","lang":"en","baseUrl":"https://cubari.moe","iconUrl":"https://cubari.moe/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/en/cubari.js"}];
+const watchtowerSources = [{"name":"Cubari","lang":"en","baseUrl":"https://cubari.moe","iconUrl":"https://cubari.moe/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/en/cubari.js"}];
 const BASE_URL = "https://cubari.moe";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

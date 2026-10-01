@@ -7,6 +7,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 1,
   "version": "1.0.4",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/watch/ja/javleak.js",
   "notes": "JAVLeak — JAV HD streaming, Japanese porn movies",
   "isNsfw": true

@@ -10,6 +10,8 @@ const watchtowerSources = [
       "typeSource": "single",
       "itemType": 1,
       "version": "1.0.9",
+      "login": false,
+      "forYou": false,
       "pkgPath": "anime/src/en/animegg.js"
     }
   ];

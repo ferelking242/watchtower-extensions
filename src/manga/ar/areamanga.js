@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Area Manga","lang":"ar","baseUrl":"https://areamanga.com","iconUrl":"https://areamanga.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/areamanga.js"}];
+const watchtowerSources = [{"name":"Area Manga","lang":"ar","baseUrl":"https://areamanga.com","iconUrl":"https://areamanga.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/areamanga.js"}];
 const BASE_URL = "https://areamanga.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

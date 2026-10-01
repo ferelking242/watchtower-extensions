@@ -9,6 +9,8 @@ const watchtowerSources = [{
     "isManga": true,
     "itemType": 0,
     "version": "1.2.1",
+    "login": false,
+    "forYou": true,
     "pkgPath": "manga/fr/mlpfrancecomics.js",
     "editableBaseUrl": false,
     "hasCloudflare": false,

@@ -9,6 +9,8 @@ const watchtowerSources = [
     "typeSource": "single",
     "itemType": 0,
     "version": "0.1.2",
+    "login": true,
+    "forYou": false,
     "pkgPath": "manga/src/en/comix.js"
   }
 ];

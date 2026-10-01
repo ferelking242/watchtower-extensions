@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Leviathan Scans","lang":"fr","baseUrl":"https://levithanscans.com","iconUrl":"https://levithanscans.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/fr/leviathan_scans.js"}];
+const watchtowerSources = [{"name":"Leviathan Scans","lang":"fr","baseUrl":"https://levithanscans.com","iconUrl":"https://levithanscans.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/fr/leviathan_scans.js"}];
 const BASE_URL = "https://levithanscans.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

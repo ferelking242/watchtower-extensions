@@ -54,6 +54,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 0,
     "version": "0.3.0",
+    "login": true,
+    "forYou": false,
     "pkgPath": "manga/src/all/mangadex.js"
 }];
 

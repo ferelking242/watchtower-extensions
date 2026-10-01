@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Onma","lang":"ar","baseUrl":"https://onma.org","iconUrl":"https://onma.org/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/onma.js"}];
+const watchtowerSources = [{"name":"Onma","lang":"ar","baseUrl":"https://onma.org","iconUrl":"https://onma.org/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/onma.js"}];
 const BASE_URL = "https://onma.org";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

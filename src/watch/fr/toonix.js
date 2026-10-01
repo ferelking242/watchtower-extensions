@@ -8,6 +8,8 @@ const watchtowerSources = [{
       "typeSource": "single",
       "itemType": 2,
       "version": "0.2.2",
+      "login": false,
+      "forYou": true,
       "pkgPath": "watch/fr/toonix.js",
       "editableBaseUrl": true,
       "hasCloudflare": false,

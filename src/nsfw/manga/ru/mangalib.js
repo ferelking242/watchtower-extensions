@@ -8,6 +8,8 @@ const watchtowerSources = [{
     "isManga": true,
     "isNsfw": true,
     "version": "0.0.5",
+    "login": false,
+    "forYou": false,
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "nsfw/manga/ru/mangalib.js"

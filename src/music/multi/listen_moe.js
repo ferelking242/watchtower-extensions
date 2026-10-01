@@ -9,6 +9,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 3,
     "version": "1.1.0",
+    "login": false,
+    "forYou": false,
     "pkgPath": "music/src/multi/listen_moe.js",
     "notes": "listen.moe — radio anime 24/7 streaming"
 }];

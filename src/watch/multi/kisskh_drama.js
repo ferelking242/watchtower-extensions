@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"KissKH Drama","lang":"multi","langs":["en","id","th","vi"],"ids":{"en":1900000501},"baseUrl":"https://kisskh.co","iconUrl":"https://kisskh.co/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0","pkgPath":"anime/src/multi/kisskh_drama.js","notes":"KissKH — dramas asiatiques (KDrama, CDrama, Thai)"}];
+const watchtowerSources = [{"name":"KissKH Drama","lang":"multi","langs":["en","id","th","vi"],"ids":{"en":1900000501},"baseUrl":"https://kisskh.co","iconUrl":"https://kisskh.co/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"anime/src/multi/kisskh_drama.js","notes":"KissKH — dramas asiatiques (KDrama, CDrama, Thai)"}];
 const BASE_URL = "https://kisskh.co";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

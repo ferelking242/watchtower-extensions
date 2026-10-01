@@ -20,6 +20,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "version": "0.1.5",
+    "login": false,
+    "forYou": false,
     "pkgPath": "watch/en/gogoanime.js",
     "isNsfw": false,
     "hasCloudflare": false,

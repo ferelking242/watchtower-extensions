@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"MANGA Plus Creators","lang":"en","baseUrl":"https://mangaplus.shueisha.co.jp","iconUrl":"https://mangaplus.shueisha.co.jp/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/en/mangapluscreators.js","notes":"MANGA Plus Creators — webtoons originaux Shueisha"}];
+const watchtowerSources = [{"name":"MANGA Plus Creators","lang":"en","baseUrl":"https://mangaplus.shueisha.co.jp","iconUrl":"https://mangaplus.shueisha.co.jp/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/en/mangapluscreators.js","notes":"MANGA Plus Creators — webtoons originaux Shueisha"}];
 const BASE_URL = "https://mangaplus.shueisha.co.jp";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

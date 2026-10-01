@@ -8,6 +8,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "version": "0.1.8",
+    "login": false,
+    "forYou": false,
     "pkgPath": "watch/fr/hdss.js",
     "editableBaseUrl": true,
     "customUserAgent": "",

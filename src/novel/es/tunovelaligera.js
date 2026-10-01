@@ -8,6 +8,8 @@ const watchtowerSources = [{
     "isManga": false,
     "itemType": 2,
     "version": "1.0.0",
+    "login": false,
+    "forYou": false,
     "isNsfw": false,
     "hasCloudflare": false,
     "pkgPath": "novel/src/es/tunovelaligera.js",

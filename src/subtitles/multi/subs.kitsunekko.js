@@ -18,6 +18,8 @@ const watchtowerSources = [{
     "isManga": false,
     "itemType": 7,
     "version": "1.0.1",
+    "login": false,
+    "forYou": false,
     "baseUrl": "https://kitsunekko.net",
     "apiUrl": "",
     "iconUrl": "https://kitsunekko.net/favicon.ico",

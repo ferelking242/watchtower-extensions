@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Manga Starz","lang":"ar","baseUrl":"https://mangastarz.com","iconUrl":"https://mangastarz.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/mangastarz.js"}];
+const watchtowerSources = [{"name":"Manga Starz","lang":"ar","baseUrl":"https://mangastarz.com","iconUrl":"https://mangastarz.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/mangastarz.js"}];
 const BASE_URL = "https://mangastarz.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

@@ -7,6 +7,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 1,
   "version": "1.0.2",
+  "login": false,
+  "forYou": false,
   "pkgPath": "91porn/zh/zh.91porn.js",
   "notes": "91Porn — Chinese homemade and Asian amateur videos",
   "isNsfw": true

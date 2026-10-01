@@ -7,6 +7,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 1,
   "version": "1.0.2",
+  "login": false,
+  "forYou": false,
   "pkgPath": "xkorean/ko/ko.xkorean.js",
   "notes": "XKorean — Korean adult videos and BJ content",
   "isNsfw": true

@@ -7,6 +7,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 1,
   "version": "1.0.4",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/watch/ja/javbesttv.js",
   "notes": "JAVBestTV — best quality JAV streaming",
   "isNsfw": true

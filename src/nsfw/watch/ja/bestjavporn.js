@@ -7,6 +7,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 1,
   "version": "1.0.4",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/watch/ja/bestjavporn.js",
   "notes": "Best JAV Porn — free Japanese adult videos",
   "isNsfw": true

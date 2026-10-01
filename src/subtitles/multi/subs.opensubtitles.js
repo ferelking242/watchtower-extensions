@@ -18,6 +18,8 @@ const watchtowerSources = [{
     "isManga": false,
     "itemType": 7,
     "version": "1.0.1",
+    "login": false,
+    "forYou": false,
     "baseUrl": "https://opensubtitles.com",
     "apiUrl": "https://api.opensubtitles.com/api/v1",
     "iconUrl": "https://www.opensubtitles.com/favicon.ico",

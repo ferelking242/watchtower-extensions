@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"NeverScans","lang":"ar","baseUrl":"https://neverscans.com","iconUrl":"https://neverscans.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/never_scans.js"}];
+const watchtowerSources = [{"name":"NeverScans","lang":"ar","baseUrl":"https://neverscans.com","iconUrl":"https://neverscans.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/never_scans.js"}];
 const BASE_URL = "https://neverscans.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

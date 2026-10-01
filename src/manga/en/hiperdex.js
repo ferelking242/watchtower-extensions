@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Hiperdex","lang":"en","baseUrl":"https://hiperdex.com","iconUrl":"https://hiperdex.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/en/hiperdex.js"}];
+const watchtowerSources = [{"name":"Hiperdex","lang":"en","baseUrl":"https://hiperdex.com","iconUrl":"https://hiperdex.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/en/hiperdex.js"}];
 const BASE_URL = "https://hiperdex.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

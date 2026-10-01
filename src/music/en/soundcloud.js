@@ -7,6 +7,8 @@ const watchtowerSources = [{
       "typeSource": "single",
       "itemType": 3,
       "version": "1.0.3",
+      "login": false,
+      "forYou": false,
       "pkgPath": "music/en/soundcloud.js",
       "notes": "SoundCloud — Free music streaming",
       "isNsfw": false

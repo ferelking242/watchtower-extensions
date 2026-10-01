@@ -7,8 +7,9 @@ const watchtowerSources = [{
   "iconUrl": "https://www.google.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.2"
-}];
+  "version": "1.0.2",
+  "login": false,
+  "forYou": false,}];
 
 const BASE_URL = "https://www.google.com";
 const ICON = "https://www.google.com/favicon.ico";

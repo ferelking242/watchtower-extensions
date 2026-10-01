@@ -8,6 +8,8 @@ const watchtowerSources = [{
       "typeSource": "single",
       "itemType": 1,
       "version": "0.2.2",
+      "login": false,
+      "forYou": true,
       "pkgPath": "watch/fr/wiflix.js",
       "editableBaseUrl": true,
       "hasCloudflare": true,

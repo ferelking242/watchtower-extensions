@@ -8,6 +8,8 @@ const watchtowerSources = [{
   "itemType": 0,
   "isManga": true,
   "version": "1.0.2",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/manga/en/hentai2read.js",
   "notes": "Hentai2Read — hentai manga reading (18+)",
   "isNsfw": true

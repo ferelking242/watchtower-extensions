@@ -7,6 +7,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 3,
     "version": "1.1.0",
+    "login": false,
+    "forYou": false,
     "pkgPath": "music/src/en/anime_themes.js",
     "notes": "AnimeThemes — base de données OP/ED anime avec vidéos"
 }];

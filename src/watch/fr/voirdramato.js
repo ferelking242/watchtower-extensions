@@ -8,6 +8,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 2,
     "version": "0.1.7",
+    "login": false,
+    "forYou": false,
     "pkgPath": "watch/fr/voirdramato.js",
     "editableBaseUrl": true,
     "customUserAgent": "",

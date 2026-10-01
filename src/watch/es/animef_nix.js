@@ -7,6 +7,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "version": "0.1.15",
+    "login": false,
+    "forYou": false,
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/es/animefenix.js"

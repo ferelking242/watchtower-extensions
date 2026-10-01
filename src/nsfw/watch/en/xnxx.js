@@ -7,6 +7,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 1,
   "version": "1.2.3",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/watch/en/xnxx.js",
   "notes": "Adult content (18+) — free XNXX catalog only",
   "isNsfw": true

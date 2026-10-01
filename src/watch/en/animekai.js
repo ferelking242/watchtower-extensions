@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"AnimeKai","lang":"en","baseUrl":"https://animekai.to","iconUrl":"https://animekai.to/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0","pkgPath":"anime/src/en/animekai.js","notes":"AnimeKai — anime streaming populaire"}];
+const watchtowerSources = [{"name":"AnimeKai","lang":"en","baseUrl":"https://animekai.to","iconUrl":"https://animekai.to/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"anime/src/en/animekai.js","notes":"AnimeKai — anime streaming populaire"}];
 const BASE_URL = "https://animekai.to";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

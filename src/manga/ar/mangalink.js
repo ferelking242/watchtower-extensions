@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Mangalink","lang":"ar","baseUrl":"https://mangalink.org","iconUrl":"https://mangalink.org/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/mangalink.js"}];
+const watchtowerSources = [{"name":"Mangalink","lang":"ar","baseUrl":"https://mangalink.org","iconUrl":"https://mangalink.org/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/mangalink.js"}];
 const BASE_URL = "https://mangalink.org";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

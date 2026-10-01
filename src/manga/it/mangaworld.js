@@ -7,6 +7,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": true,
     "version": "0.0.3",
+    "login": false,
+    "forYou": false,
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/it/mangaworld.js"

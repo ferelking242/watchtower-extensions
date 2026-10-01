@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"ArbxComix","lang":"ar","baseUrl":"https://arbxcomix.com","iconUrl":"https://arbxcomix.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/arbxcomix.js"}];
+const watchtowerSources = [{"name":"ArbxComix","lang":"ar","baseUrl":"https://arbxcomix.com","iconUrl":"https://arbxcomix.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/arbxcomix.js"}];
 const BASE_URL = "https://arbxcomix.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

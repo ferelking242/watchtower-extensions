@@ -9,6 +9,8 @@ const watchtowerSources = [{
     "itemType": 2,
     "isManga": true,
     "version": "0.1.0",
+    "login": true,
+    "forYou": true,
     "pkgPath": "manga/fr/niadd.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -32,7 +34,18 @@ class DefaultExtension extends MProvider {
                 dialogTitle: "URL du site",
                 dialogMessage: "URL actuelle : " + BASE_URL
             }
-        }];
+        },
+            {
+                key: "images_per_page",
+                listPreference: {
+                    title: "Images par requête",
+                    summary: "Nombre d'images chargées par requête pendant la lecture (10 = recommandé). Les tailles plus petites consomment plus de requêtes.",
+                    valueIndex: 2,
+                    entries: ["3", "6", "10"],
+                    entryValues: ["3", "6", "10"]
+                }
+            }
+        ];
     }
     // Pas de Referer : les pages de lecture répondent 302 quand un Referer est envoyé
     _hdrs(){ return {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36","Accept-Language":"fr-FR,fr;q=0.9"}; }
@@ -108,6 +121,7 @@ class DefaultExtension extends MProvider {
         }
         return {name,imageUrl:im?im[1]:"",description,author:author.join(", "),artist:"",genre,status:5,chapters};
     }
+    _imgPerPage(){ const v=parseInt(new SharedPreferences().get("images_per_page"),10); return (v===3||v===6||v===10)?v:10; }
     async getPageList(url){
         const ua=this._hdrs()["User-Agent"];
         const r=await new Client().get(url,this._hdrs());
@@ -131,11 +145,12 @@ class DefaultExtension extends MProvider {
             stem=url.replace(/\.html$/,"").replace(/\/+$/,"");
         }
         if(!total||total<2) return baseImgs.map(u=>({url:u,headers:{"User-Agent":ua}}));
-        // "Charger les images: 10" : ...-10-<groupe>.html (groupe 1 = pages 1-10, groupe 2 = pages 11-18...)
-        const groups=Math.min(Math.ceil(total/10),30);
+        // "Charger les images" : ...-<taille>-<groupe>.html (groupe 1 = pages 1-N, groupe 2 = pages N+1-2N...)
+        const size=this._imgPerPage();
+        const groups=Math.min(Math.ceil(total/size),30);
         const results=await Promise.all(Array.from({length:groups},(_,i)=>i+1).map(async (g)=>{
             try{
-                const res=await new Client().get(stem+"-10-"+g+".html",this._hdrs());
+                const res=await new Client().get(stem+"-"+size+"-"+g+".html",this._hdrs());
                 return extract(res.body||"");
             }catch(_){ return []; }
         }));

@@ -7,6 +7,8 @@ const watchtowerSources = [{
     "typeSource": "multi",
     "itemType": 1,
     "version": "0.1.8",
+    "login": false,
+    "forYou": false,
     "pkgPath": "anime/src/all/kisskh.js"
 }];
 

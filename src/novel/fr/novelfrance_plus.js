@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Novel France+","lang":"fr","baseUrl":"https://novelfrance.org","iconUrl":"https://novelfrance.org/favicon.ico","typeSource":"single","itemType":2,"version": "1.1.0","pkgPath":"novel/src/fr/novelfrance_plus.js","notes":"Novel France+ — light novel traduction FR"}];
+const watchtowerSources = [{"name":"Novel France+","lang":"fr","baseUrl":"https://novelfrance.org","iconUrl":"https://novelfrance.org/favicon.ico","typeSource":"single","itemType":2,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"novel/src/fr/novelfrance_plus.js","notes":"Novel France+ — light novel traduction FR"}];
 const BASE_URL = "https://novelfrance.org";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

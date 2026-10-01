@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"AnimeSuge","lang":"en","baseUrl":"https://animesuge.to","iconUrl":"https://animesuge.to/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0","pkgPath":"anime/src/en/animesuge.js","notes":"AnimeSuge — anime streaming HD gratuit"}];
+const watchtowerSources = [{"name":"AnimeSuge","lang":"en","baseUrl":"https://animesuge.to","iconUrl":"https://animesuge.to/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"anime/src/en/animesuge.js","notes":"AnimeSuge — anime streaming HD gratuit"}];
 const BASE_URL = "https://animesuge.to";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

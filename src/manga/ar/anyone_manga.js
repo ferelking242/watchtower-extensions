@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Anyone Manga","lang":"ar","baseUrl":"https://anyonemanga.com","iconUrl":"https://anyonemanga.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/anyone_manga.js"}];
+const watchtowerSources = [{"name":"Anyone Manga","lang":"ar","baseUrl":"https://anyonemanga.com","iconUrl":"https://anyonemanga.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/anyone_manga.js"}];
 const BASE_URL = "https://anyonemanga.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

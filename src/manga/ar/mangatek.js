@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"MangaTek","lang":"ar","baseUrl":"https://mangatek.com","iconUrl":"https://mangatek.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/mangatek.js"}];
+const watchtowerSources = [{"name":"MangaTek","lang":"ar","baseUrl":"https://mangatek.com","iconUrl":"https://mangatek.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/mangatek.js"}];
 const BASE_URL = "https://mangatek.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

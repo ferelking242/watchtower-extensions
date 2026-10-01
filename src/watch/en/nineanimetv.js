@@ -7,6 +7,8 @@ const watchtowerSources = [{
       "typeSource": "single",
       "itemType": 1,
       "version": "0.1.6",
+      "login": false,
+      "forYou": false,
       "pkgPath": "watch/en/nineanimetv.js",
       "notes": "9AnimeTv — Anime streaming (restored)",
       "isNsfw": false

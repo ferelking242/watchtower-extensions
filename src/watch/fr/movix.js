@@ -12,6 +12,8 @@ var watchtowerSources = [{
   "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/watch/fr/movix.js",
   "apiUrl": "https://api.themoviedb.org/3",
   "version": "1.0.0",
+  "login": false,
+  "forYou": false,
   "isManga": false,
   "itemType": 1,
   "isFullData": false,

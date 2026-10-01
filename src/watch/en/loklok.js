@@ -13,6 +13,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "version": "2.0.0",
+    "login": false,
+    "forYou": false,
     "pkgPath": "watch/en/loklok.js",
     "notes": "DÉPRÉCIÉ — utilisez MovieBox (multi) à la place. Free movies + TV series streaming, captions in 12 languages. Backed by aoneroom (LokLok / MovieBox / themoviebox.xyz).",
     "isNsfw": false,

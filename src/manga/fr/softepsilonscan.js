@@ -10,6 +10,8 @@ const watchtowerSources = [{
         "isManga": true,
         "isNsfw": true,
         "version": "0.1.0",
+        "login": false,
+        "forYou": true,
         "pkgPath": "manga/fr/softepsilonscan.js",
         "editableBaseUrl": true,
         "hasCloudflare": true,

@@ -7,6 +7,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 2,
     "version": "1.0.3",
+    "login": false,
+    "forYou": false,
     "pkgPath": "novel/src/en/webnoveltranslations.js",
     "notes": ""
 }];

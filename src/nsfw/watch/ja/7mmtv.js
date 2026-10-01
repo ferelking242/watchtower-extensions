@@ -7,6 +7,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 1,
   "version": "1.0.4",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/watch/ja/7mmtv.js",
   "notes": "7MMTV — censored and uncensored JAV online",
   "isNsfw": true

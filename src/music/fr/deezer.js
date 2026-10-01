@@ -7,6 +7,8 @@ const watchtowerSources = [{
       "typeSource": "single",
       "itemType": 3,
       "version": "1.0.3",
+      "login": false,
+      "forYou": false,
       "pkgPath": "music/fr/deezer.js",
       "notes": "Deezer — Catalogue mondial de musique (previews 30s)",
       "isNsfw": false

@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"MangaTaro","lang":"en","baseUrl":"https://mangataro.com","iconUrl":"https://mangataro.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/en/mangataro.js"}];
+const watchtowerSources = [{"name":"MangaTaro","lang":"en","baseUrl":"https://mangataro.com","iconUrl":"https://mangataro.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/en/mangataro.js"}];
 const BASE_URL = "https://mangataro.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

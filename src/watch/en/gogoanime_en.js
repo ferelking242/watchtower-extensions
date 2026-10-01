@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"GoGoAnime","lang":"en","baseUrl":"https://gogoanimehd.io","iconUrl":"https://gogoanimehd.io/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0","pkgPath":"anime/src/en/gogoanime_en.js","notes":"GoGoAnime — anime HD gratuit classique"}];
+const watchtowerSources = [{"name":"GoGoAnime","lang":"en","baseUrl":"https://gogoanimehd.io","iconUrl":"https://gogoanimehd.io/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"anime/src/en/gogoanime_en.js","notes":"GoGoAnime — anime HD gratuit classique"}];
 const BASE_URL = "https://gogoanimehd.io";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

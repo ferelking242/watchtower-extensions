@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Dilar","lang":"ar","baseUrl":"https://dilar.me","iconUrl":"https://dilar.me/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/dilar.js"}];
+const watchtowerSources = [{"name":"Dilar","lang":"ar","baseUrl":"https://dilar.me","iconUrl":"https://dilar.me/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/dilar.js"}];
 const BASE_URL = "https://dilar.me";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

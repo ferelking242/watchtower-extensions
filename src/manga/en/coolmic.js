@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Coolmic","lang":"en","baseUrl":"https://coolmic.me","iconUrl":"https://coolmic.me/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/en/coolmic.js"}];
+const watchtowerSources = [{"name":"Coolmic","lang":"en","baseUrl":"https://coolmic.me","iconUrl":"https://coolmic.me/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": true, "forYou": false,"pkgPath":"manga/src/en/coolmic.js"}];
 const BASE_URL = "https://coolmic.me";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

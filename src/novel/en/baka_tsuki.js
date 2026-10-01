@@ -7,6 +7,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 2,
     "version": "1.1.0",
+    "login": false,
+    "forYou": false,
     "pkgPath": "novel/src/en/baka_tsuki.js",
     "notes": "Baka-Tsuki — plus grande source TL communautaire light novel"
 }];

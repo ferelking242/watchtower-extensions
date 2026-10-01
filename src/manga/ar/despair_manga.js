@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Despair Manga","lang":"ar","baseUrl":"https://despairmanga.com","iconUrl":"https://despairmanga.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/despair_manga.js"}];
+const watchtowerSources = [{"name":"Despair Manga","lang":"ar","baseUrl":"https://despairmanga.com","iconUrl":"https://despairmanga.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/despair_manga.js"}];
 const BASE_URL = "https://despairmanga.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

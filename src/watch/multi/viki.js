@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Rakuten Viki","lang":"multi","langs":["en","fr","es","pt","de","it","ko","zh","ja"],"ids":{"en":1900000401},"baseUrl":"https://www.viki.com","apiUrl":"https://api.viki.io","iconUrl":"https://www.viki.com/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0","pkgPath":"anime/src/multi/viki.js","notes":"Rakuten Viki — dramas asiatiques"}];
+const watchtowerSources = [{"name":"Rakuten Viki","lang":"multi","langs":["en","fr","es","pt","de","it","ko","zh","ja"],"ids":{"en":1900000401},"baseUrl":"https://www.viki.com","apiUrl":"https://api.viki.io","iconUrl":"https://www.viki.com/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"anime/src/multi/viki.js","notes":"Rakuten Viki — dramas asiatiques"}];
 const BASE_URL = "https://www.viki.com";
 const API = "https://api.viki.io";
 class DefaultExtension extends MProvider {

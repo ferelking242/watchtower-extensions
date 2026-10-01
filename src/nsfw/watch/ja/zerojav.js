@@ -7,6 +7,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 1,
   "version": "1.0.4",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/watch/ja/zerojav.js",
   "notes": "ZeroJav — free JAV streaming, no registration",
   "isNsfw": true

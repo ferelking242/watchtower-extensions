@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Yokai","lang":"ar","baseUrl":"https://yokai.lol","iconUrl":"https://yokai.lol/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/yokai_ar.js"}];
+const watchtowerSources = [{"name":"Yokai","lang":"ar","baseUrl":"https://yokai.lol","iconUrl":"https://yokai.lol/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/yokai_ar.js"}];
 const BASE_URL = "https://yokai.lol";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

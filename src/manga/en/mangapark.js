@@ -14,6 +14,8 @@ const watchtowerSources = [
     "sourceCodeUrl": "",
     "apiUrl": "",
     "version": "1.0.3",
+    "login": true,
+    "forYou": false,
     "isManga": true,
     "itemType": 0,
     "isFullData": false,

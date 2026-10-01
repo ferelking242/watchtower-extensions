@@ -8,6 +8,8 @@ const mangayomiSources = [{
     "typeSource": "single",
     "itemType": 2,
     "version": "0.0.3",
+    "login": false,
+    "forYou": false,
     "pkgPath": "novel/src/ar/kolnovel.js",
     "notes": ""
 }];

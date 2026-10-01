@@ -7,6 +7,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 1,
   "version": "1.2.4",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/watch/en/rexporn.js",
   "notes": "Adult content (18+) — multi-quality MP4 streaming",
   "isNsfw": true

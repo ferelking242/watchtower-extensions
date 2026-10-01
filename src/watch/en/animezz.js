@@ -10,6 +10,8 @@ const watchtowerSources = [
     "typeSource": "multi",
     "itemType": 1,
     "version": "1.1.4",
+    "login": false,
+    "forYou": false,
     "pkgPath": "anime/src/en/animez.js",
   },
 ];

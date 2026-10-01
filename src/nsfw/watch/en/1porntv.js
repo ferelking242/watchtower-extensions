@@ -7,6 +7,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 1,
   "version": "1.1.3",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/watch/en/1porntv.js",
   "notes": "Adult content (18+) — multi-quality MP4",
   "isNsfw": true

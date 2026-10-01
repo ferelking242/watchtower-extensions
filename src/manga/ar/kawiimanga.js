@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Kawii Manga","lang":"ar","baseUrl":"https://kawiimanga.com","iconUrl":"https://kawiimanga.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/kawiimanga.js"}];
+const watchtowerSources = [{"name":"Kawii Manga","lang":"ar","baseUrl":"https://kawiimanga.com","iconUrl":"https://kawiimanga.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/kawiimanga.js"}];
 const BASE_URL = "https://kawiimanga.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

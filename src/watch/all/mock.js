@@ -16,6 +16,8 @@ var watchtowerSources = [{
   "isManga": false,
   "itemType": 1,
   "version": "1.0.1",
+  "login": false,
+  "forYou": false,
   "dateFormat": "",
   "dateFormatLocale": "",
   "isNsfw": false,

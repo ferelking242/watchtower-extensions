@@ -8,6 +8,8 @@ const mangayomiSources = [{
     "itemType": 0,
     "isNsfw": false,
     "version": "0.0.37",
+    "login": false,
+    "forYou": false,
     "apiUrl": "",
     "dateFormat": "",
     "dateFormatLocale": "",

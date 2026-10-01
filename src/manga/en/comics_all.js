@@ -10,6 +10,8 @@ const watchtowerSources = [
     "itemType": 0,
     "isManga": true,
     "version": "0.1.5",
+    "login": false,
+    "forYou": false,
     "pkgPath": "manga/en/comics_all.js",
     "isNsfw": false,
     "appMinVerReq": "0.5.0",

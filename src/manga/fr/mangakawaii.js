@@ -10,6 +10,8 @@ const watchtowerSources = [{
         "isManga": true,
         "isNsfw": false,
         "version": "0.1.0",
+        "login": true,
+        "forYou": true,
         "pkgPath": "manga/fr/mangakawaii.js",
         "editableBaseUrl": true,
         "hasCloudflare": true,

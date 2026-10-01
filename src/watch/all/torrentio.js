@@ -8,6 +8,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "version": "0.1.6",
+    "login": false,
+    "forYou": false,
     "pkgPath": "anime/all/torrentio.js",
     "notes": "Movies + Series + Anime via Torrentio (Stremio addon). Streams play through Watchtower's built-in torrent server. Use 'Catalog' filter to switch."
 }];

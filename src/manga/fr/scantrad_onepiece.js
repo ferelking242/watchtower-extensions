@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Scantrad One Piece","lang":"fr","baseUrl":"https://scan-op.com","iconUrl":"https://scan-op.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/fr/scantrad_onepiece.js","notes":"Scantrad One Piece — scanlation officieuse One Piece FR"}];
+const watchtowerSources = [{"name":"Scantrad One Piece","lang":"fr","baseUrl":"https://scan-op.com","iconUrl":"https://scan-op.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/fr/scantrad_onepiece.js","notes":"Scantrad One Piece — scanlation officieuse One Piece FR"}];
 const BASE_URL = "https://scan-op.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

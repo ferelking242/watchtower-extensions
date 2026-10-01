@@ -8,6 +8,8 @@ const mangayomiSources = [{
     "itemType": 0,
     "isNsfw": false,
     "version": "0.0.28",
+    "login": false,
+    "forYou": false,
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/zh/copymanga.js"

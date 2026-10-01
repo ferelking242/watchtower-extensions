@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"ArabManhwa","lang":"ar","baseUrl":"https://arabmanhwa.com","iconUrl":"https://arabmanhwa.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/arabmanhwa.js"}];
+const watchtowerSources = [{"name":"ArabManhwa","lang":"ar","baseUrl":"https://arabmanhwa.com","iconUrl":"https://arabmanhwa.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/arabmanhwa.js"}];
 const BASE_URL = "https://arabmanhwa.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

@@ -8,6 +8,8 @@ var watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "version": "1.0.10",
+    "login": false,
+    "forYou": false,
     "pkgPath": "flixgaze/en/en.flixgaze.js",
     "notes": "FlixGaze.com — Free Movies & TV Series streaming via ZeusDL HLS",
     "isNsfw": false

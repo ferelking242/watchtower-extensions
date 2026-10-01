@@ -36,6 +36,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "version": "3.0.2",
+    "login": false,
+    "forYou": true,
     "pkgPath": "watch/fr/tropistream.js",
     "editableBaseUrl": true,
     "videoQualities": ["AUTO", "VF", "VOSTFR", "VO"],

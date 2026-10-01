@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"Hijala","lang":"ar","baseUrl":"https://hijala.com","iconUrl":"https://hijala.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/hijala.js"}];
+const watchtowerSources = [{"name":"Hijala","lang":"ar","baseUrl":"https://hijala.com","iconUrl":"https://hijala.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/hijala.js"}];
 const BASE_URL = "https://hijala.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

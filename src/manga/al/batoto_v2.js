@@ -7,6 +7,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 0,
     "version": "1.0.6",
+    "login": true,
+    "forYou": false,
     "pkgPath": "manga/src/all/batoto.js",
     "notes": "Uses web-scraping to pull details and chapters"
 }];

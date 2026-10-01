@@ -25,6 +25,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "version": "1.1.1",
+    "login": false,
+    "forYou": true,
     "pkgPath": "watch/fr/fstv.js",
     "editableBaseUrl": true,
     "customUserAgent": "",

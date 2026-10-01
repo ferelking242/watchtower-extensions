@@ -7,6 +7,8 @@ const mangayomiSources = [{
     "typeSource": "single",
     "itemType": 0,
     "version": "0.0.2",
+    "login": false,
+    "forYou": false,
     "pkgPath": "manga/src/zh/gfmanhua.js"
 }];
 

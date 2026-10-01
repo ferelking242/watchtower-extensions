@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"MangaFreak","lang":"en","baseUrl":"https://mangafreak.net","iconUrl":"https://mangafreak.net/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/en/mangafreak.js"}];
+const watchtowerSources = [{"name":"MangaFreak","lang":"en","baseUrl":"https://mangafreak.net","iconUrl":"https://mangafreak.net/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/en/mangafreak.js"}];
 const BASE_URL = "https://mangafreak.net";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

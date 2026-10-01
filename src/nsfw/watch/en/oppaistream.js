@@ -7,6 +7,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 1,
   "version": "1.0.2",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/watch/en/oppaistream.js",
   "notes": "oppai.stream hentai streaming (18+)",
   "isNsfw": true

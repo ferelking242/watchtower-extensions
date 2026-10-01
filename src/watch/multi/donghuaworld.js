@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"DonghuaWorld","lang":"multi","langs":["en","id","ar","fr","de"],"ids":{"en":1900000301},"baseUrl":"https://donghuaworld.com","iconUrl":"https://donghuaworld.com/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0","pkgPath":"anime/src/multi/donghuaworld.js","notes":"DonghuaWorld — donghua multi-langues"}];
+const watchtowerSources = [{"name":"DonghuaWorld","lang":"multi","langs":["en","id","ar","fr","de"],"ids":{"en":1900000301},"baseUrl":"https://donghuaworld.com","iconUrl":"https://donghuaworld.com/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"anime/src/multi/donghuaworld.js","notes":"DonghuaWorld — donghua multi-langues"}];
 const BASE_URL = "https://donghuaworld.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

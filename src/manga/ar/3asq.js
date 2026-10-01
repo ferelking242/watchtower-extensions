@@ -7,6 +7,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 0,
     "version": "1.1.0",
+    "login": false,
+    "forYou": false,
     "pkgPath": "manga/src/ar/3asq.js",
     "notes": "3asq Manga — source manga arabe populaire"
 }];

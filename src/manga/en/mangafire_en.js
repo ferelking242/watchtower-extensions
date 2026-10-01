@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"MangaFire","lang":"en","baseUrl":"https://mangafire.to","iconUrl":"https://mangafire.to/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/en/mangafire_en.js"}];
+const watchtowerSources = [{"name":"MangaFire","lang":"en","baseUrl":"https://mangafire.to","iconUrl":"https://mangafire.to/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": true, "forYou": false,"pkgPath":"manga/src/en/mangafire_en.js"}];
 const BASE_URL = "https://mangafire.to";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

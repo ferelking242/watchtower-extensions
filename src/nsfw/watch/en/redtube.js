@@ -7,6 +7,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "version": "1.0.3",
+    "login": false,
+    "forYou": false,
     "pkgPath": "nsfw/watch/en/redtube.js",
     "notes": "Adult content (18+) — ZeusDL powered streaming",
     "isNsfw": true

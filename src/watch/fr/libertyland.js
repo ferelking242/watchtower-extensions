@@ -8,6 +8,8 @@ const watchtowerSources = [{
       "typeSource": "single",
       "itemType": 1,
       "version": "0.2.3",
+      "login": false,
+      "forYou": true,
       "pkgPath": "watch/fr/libertyland.js",
       "editableBaseUrl": true,
       "hasCloudflare": true,

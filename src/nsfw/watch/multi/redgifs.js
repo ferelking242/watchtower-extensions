@@ -12,6 +12,8 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 1,
   "version": "2.2.1",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/watch/multi/redgifs.js",
   "notes": "RedGIFs v2.2.0 — tags, creatorAvatar, verified, creator feed, profil créateur",
   "isNsfw": true

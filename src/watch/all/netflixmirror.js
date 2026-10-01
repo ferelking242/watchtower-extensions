@@ -8,6 +8,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "version": "0.1.4",
+    "login": false,
+    "forYou": false,
     "pkgPath": "anime/src/all/netflixmirror.js"
 }];
 

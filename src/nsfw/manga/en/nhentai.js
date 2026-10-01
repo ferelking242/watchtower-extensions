@@ -8,6 +8,8 @@ const watchtowerSources = [{
   "itemType": 0,
   "isManga": true,
   "version": "1.0.2",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/manga/en/nhentai.js",
   "notes": "NHentai — premier site de lecture hentai (18+). API JSON officielle.",
   "isNsfw": true

@@ -8,6 +8,8 @@ const watchtowerSources = [{
   "itemType": 0,
   "isManga": true,
   "version": "1.0.2",
+  "login": false,
+  "forYou": false,
   "pkgPath": "nsfw/manga/en/manhwa18cc.js",
   "notes": "Manhwa18.cc — manhwa/manga adulte (18+). Équivalent JS de all.manhwa18cc Mihon.",
   "isNsfw": true

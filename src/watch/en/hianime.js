@@ -7,6 +7,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "version": "1.1.0",
+    "login": false,
+    "forYou": false,
     "pkgPath": "anime/src/en/hianime.js",
     "notes": "HiAnime — successeur d'AniWave, grand catalogue anime",
     "editableBaseUrl": true,

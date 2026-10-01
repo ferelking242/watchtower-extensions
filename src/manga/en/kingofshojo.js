@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"King of Shojo","lang":"en","baseUrl":"https://kingofshojo.com","iconUrl":"https://kingofshojo.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/en/kingofshojo.js"}];
+const watchtowerSources = [{"name":"King of Shojo","lang":"en","baseUrl":"https://kingofshojo.com","iconUrl":"https://kingofshojo.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/en/kingofshojo.js"}];
 const BASE_URL = "https://kingofshojo.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"AnimeHeaven","lang":"en","baseUrl":"https://animeheaven.me","iconUrl":"https://animeheaven.me/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0","pkgPath":"anime/src/en/animeheaven.js","notes":"AnimeHeaven — anime HD gratuit sub/dub"}];
+const watchtowerSources = [{"name":"AnimeHeaven","lang":"en","baseUrl":"https://animeheaven.me","iconUrl":"https://animeheaven.me/favicon.ico","typeSource":"single","itemType":1,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"anime/src/en/animeheaven.js","notes":"AnimeHeaven — anime HD gratuit sub/dub"}];
 const BASE_URL = "https://animeheaven.me";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

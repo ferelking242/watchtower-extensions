@@ -16,6 +16,8 @@ const watchtowerSources = [{
     "isManga": false,
     "itemType": 7,
     "version": "1.0.1",
+    "login": false,
+    "forYou": false,
     "baseUrl": "https://subsource.net",
     "apiUrl": "https://api.subsource.net/api",
     "iconUrl": "https://subsource.net/favicon.ico",

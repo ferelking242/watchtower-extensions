@@ -16,6 +16,8 @@ const watchtowerSources = [{
     "isManga": false,
     "itemType": 7,
     "version": "1.0.1",
+    "login": false,
+    "forYou": false,
     "baseUrl": "https://podnapisi.net",
     "apiUrl": "https://podnapisi.net/subtitles/search/ppds3",
     "iconUrl": "https://podnapisi.net/static/ico/favicon.ico",

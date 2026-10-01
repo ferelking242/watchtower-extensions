@@ -1,4 +1,4 @@
-const watchtowerSources = [{"name":"StellarSaber","lang":"ar","baseUrl":"https://stellarsaber.com","iconUrl":"https://stellarsaber.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0","pkgPath":"manga/src/ar/stellarsaber.js"}];
+const watchtowerSources = [{"name":"StellarSaber","lang":"ar","baseUrl":"https://stellarsaber.com","iconUrl":"https://stellarsaber.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/ar/stellarsaber.js"}];
 const BASE_URL = "https://stellarsaber.com";
 class DefaultExtension extends MProvider {
     constructor() { super(); }

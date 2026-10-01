@@ -8,6 +8,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 0,
     "version": "0.0.5",
+    "login": false,
+    "forYou": false,
     "isNsfw": false,
     "pkgPath": "manga/src/ar/teamx.js"
 }];

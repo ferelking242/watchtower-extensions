@@ -9,6 +9,8 @@ const watchtowerSources = [{
     "itemType": 0,
     "isManga": true,
     "version": "0.1.2",
+    "login": false,
+    "forYou": true,
     "pkgPath": "manga/fr/bentobento.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,

@@ -8,6 +8,8 @@ const watchtowerSources = [{
   "itemType": 0,
   "isManga": true,
   "version": "1.0.2",
+  "login": true,
+  "forYou": false,
   "pkgPath": "nsfw/manga/en/luscious.js",
   "notes": "Luscious — hentai album reader (18+). API GraphQL.",
   "isNsfw": true

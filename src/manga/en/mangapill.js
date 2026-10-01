@@ -9,6 +9,8 @@ const mangayomiSources = [
     "typeSource": "single",
     "isManga": true,
     "version": "1.0.5",
+    "login": false,
+    "forYou": false,
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "manga/src/en/mangapill.js"

@@ -10,6 +10,8 @@ const watchtowerSources = [{
     "isManga": true,
     "isNsfw": true,
     "version": "0.1.0",
+    "login": true,
+    "forYou": true,
     "pkgPath": "nsfw/manga/fr/honeytoon.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
