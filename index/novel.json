@@ -16,7 +16,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "ArNovel",
@@ -35,7 +36,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Azora",
@@ -54,7 +56,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "dilar tube",
@@ -73,7 +76,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Free Kol Novel",
@@ -92,7 +96,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "HizoManga",
@@ -111,7 +116,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "ملوك الروايات",
@@ -130,7 +136,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Markazriwayat",
@@ -149,7 +156,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novel4Up",
@@ -168,7 +176,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novels Paradise",
@@ -187,7 +196,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Olaoe.cyou",
@@ -206,7 +216,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Rewayat Club",
@@ -225,7 +236,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Riwyat",
@@ -244,7 +256,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Sunovels",
@@ -263,7 +276,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "FirstKissNovel",
@@ -282,7 +296,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "AllNovel",
@@ -301,7 +316,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "AllNovelFull",
@@ -320,7 +336,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Annas Archive",
@@ -339,7 +356,8 @@
     "sourceCodeLanguage": 1,
     "notes": "EPUBs are automatically downloaded to view chapters! Downloads from Libgen might be slow!",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Arcane Translations",
@@ -358,7 +376,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Archive Of Our Own",
@@ -377,7 +396,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Srank Manga",
@@ -396,7 +416,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Baka-Tsuki",
@@ -415,7 +436,8 @@
     "sourceCodeLanguage": 1,
     "notes": "Baka-Tsuki — plus grande source TL communautaire light novel",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Belle Reservoir",
@@ -434,7 +456,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "BoxNovel",
@@ -453,7 +476,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Cherry Mist Cafe",
@@ -472,7 +496,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Chrysanthemum Garden",
@@ -491,7 +516,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Citrus Aurora",
@@ -510,7 +536,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Coral Boutique",
@@ -529,7 +556,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "CPUnovel",
@@ -548,7 +576,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Crimson Scrolls",
@@ -567,7 +596,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Daoist Quest",
@@ -586,7 +616,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "DaoNovel",
@@ -605,7 +636,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "DaoTranslate",
@@ -624,7 +656,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Divine Dao Library",
@@ -643,7 +676,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Dearest Rosalie",
@@ -662,7 +696,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Dragonholic",
@@ -681,7 +716,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Dragon Tea",
@@ -700,7 +736,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Dream Big Translations",
@@ -719,7 +756,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Dusk Blossoms",
@@ -738,7 +776,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "ElloTL",
@@ -757,7 +796,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Eternalune",
@@ -776,7 +816,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Etude Translations",
@@ -795,7 +836,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "FanNovel",
@@ -814,7 +856,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Fans Translations",
@@ -833,7 +876,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Fenrir Realm",
@@ -852,7 +896,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Fiction Zone",
@@ -871,7 +916,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Foxaholic",
@@ -890,7 +936,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Foxteller",
@@ -909,7 +956,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Faq Wiki",
@@ -928,7 +976,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Free Web Novel",
@@ -947,7 +996,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Galaxy Translations",
@@ -966,7 +1016,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Genesis",
@@ -985,7 +1036,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Guavaread",
@@ -1004,7 +1056,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Hiraeth Translation",
@@ -1023,7 +1076,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "HotNovelPub",
@@ -1042,7 +1096,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Hyacinth in Bloom",
@@ -1061,7 +1116,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Indra Translations",
@@ -1080,7 +1136,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Inkitt",
@@ -1099,7 +1156,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "iNovelTranslation",
@@ -1118,7 +1176,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Ippotranslations",
@@ -1137,7 +1196,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "KDT Novels",
@@ -1156,7 +1216,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Keopi Translations",
@@ -1175,7 +1236,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "KnoxT",
@@ -1194,7 +1256,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Lazy Girl Translations",
@@ -1213,7 +1276,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "LeafStudio",
@@ -1232,7 +1296,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Lib Read",
@@ -1251,7 +1316,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "LightNovelCave",
@@ -1270,7 +1336,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "LightNovelPlus",
@@ -1289,7 +1356,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "LightNovelPub Vip",
@@ -1308,7 +1376,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Light Novel Translations",
@@ -1327,7 +1396,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Light Novel Updates",
@@ -1346,7 +1416,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Lily on the Valley",
@@ -1365,7 +1436,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "LightNovelHeaven",
@@ -1384,7 +1456,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "LnMTL",
@@ -1403,7 +1476,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "LNORI",
@@ -1422,7 +1496,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Ltnovel",
@@ -1441,7 +1516,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "LulloBox",
@@ -1460,7 +1536,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "LunarLetters",
@@ -1479,7 +1556,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Meownovel",
@@ -1498,7 +1576,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Moonlight Novels",
@@ -1517,7 +1596,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MostNovel",
@@ -1536,7 +1616,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MTL-Novel",
@@ -1555,7 +1636,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MTL Novel",
@@ -1574,7 +1656,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MVLEMPYR",
@@ -1593,7 +1676,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MysticalSeries",
@@ -1612,7 +1696,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NeoSekai Translations",
@@ -1631,7 +1716,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Nitro Manga",
@@ -1650,7 +1736,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "novelsOnline",
@@ -1669,7 +1756,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NobleMTL",
@@ -1688,7 +1776,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Noice Translations",
@@ -1707,7 +1796,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novel Updates",
@@ -1726,7 +1816,8 @@
     "sourceCodeLanguage": 1,
     "notes": "This extension requires you to login to view the chapters!",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novel Arrow",
@@ -1745,7 +1836,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novel Bin",
@@ -1764,7 +1856,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novelbuddy",
@@ -1783,7 +1876,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelCool",
@@ -1802,7 +1896,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelFire",
@@ -1821,7 +1916,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelFull",
@@ -1840,7 +1936,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novel Hall",
@@ -1859,7 +1956,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelHi",
@@ -1878,7 +1976,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelHub",
@@ -1897,7 +1996,8 @@
     "sourceCodeLanguage": 1,
     "notes": "Free web novels (Romance, Fantasy, Mystery, Sci-fi, LGBT+, Urban...). Same publisher as LokLok / MovieBox.",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelLib",
@@ -1916,7 +2016,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novelight",
@@ -1935,7 +2036,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelMultiverse",
@@ -1954,7 +2056,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novel Ninja",
@@ -1973,7 +2076,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelRest",
@@ -1992,7 +2096,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelsKnight",
@@ -2011,7 +2116,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelTranslate",
@@ -2030,7 +2136,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Panda Machine Translations",
@@ -2049,7 +2156,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Pastel Tales",
@@ -2068,7 +2176,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "PawRead",
@@ -2087,7 +2196,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Penguin Squad",
@@ -2106,7 +2216,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Prizma",
@@ -2125,7 +2236,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Rainofsnow",
@@ -2144,7 +2256,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Ranobes",
@@ -2163,7 +2276,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Ranovel",
@@ -2182,7 +2296,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Read Fanfic",
@@ -2201,7 +2316,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Read From Net",
@@ -2220,7 +2336,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "ReadNovelFull",
@@ -2239,7 +2356,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Re:Library",
@@ -2258,7 +2376,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Requiem Translations",
@@ -2277,7 +2396,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Royal Road",
@@ -2296,7 +2416,8 @@
     "sourceCodeLanguage": 1,
     "notes": "LitRPG, Fantasy, Sci-Fi, Progression, WebFiction",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Salmon Latte",
@@ -2315,7 +2436,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Scribble Hub",
@@ -2334,7 +2456,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "SleepyTranslations",
@@ -2353,7 +2476,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "SonicMTL",
@@ -2372,7 +2496,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "StorySeedling",
@@ -2391,7 +2516,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Sweet Escape",
@@ -2410,7 +2536,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "System Translation",
@@ -2429,7 +2556,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "TranslatinOtaku",
@@ -2448,7 +2576,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Translation Weaver",
@@ -2467,7 +2596,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Universal Novel",
@@ -2486,7 +2616,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Vandy Translate",
@@ -2505,7 +2636,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Violet Lily",
@@ -2524,7 +2656,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "VyNovel",
@@ -2543,7 +2676,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Web Novel Translations",
@@ -2562,7 +2696,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Webnovel",
@@ -2581,7 +2716,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "WebNovelLover",
@@ -2600,7 +2736,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Web Novel Pub",
@@ -2619,7 +2756,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "White Moonlight Novels",
@@ -2638,7 +2776,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Witch Cult Translations",
@@ -2657,7 +2796,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Wook's Teahouse",
@@ -2676,7 +2816,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "WordExcerpt",
@@ -2695,7 +2836,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Wordrain69",
@@ -2714,7 +2856,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "WTR-LAB",
@@ -2733,7 +2876,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Wuxiafox",
@@ -2752,7 +2896,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Wuxiabox",
@@ -2771,7 +2916,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Wuxia Space",
@@ -2790,7 +2936,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "WuxiaV",
@@ -2809,7 +2956,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Wuxia World",
@@ -2828,7 +2976,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "WuxiaWorld.Site",
@@ -2847,7 +2996,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Zetro Translation",
@@ -2866,7 +3016,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "AllNovelRead",
@@ -2885,7 +3036,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "AnimesHoy12",
@@ -2904,7 +3056,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Hasu Translations",
@@ -2923,7 +3076,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "LightNovelDaily",
@@ -2942,7 +3096,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MTL Novel (ES)",
@@ -2961,7 +3116,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NOVA",
@@ -2980,7 +3136,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novelas Ligera",
@@ -2999,7 +3156,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novelyra",
@@ -3018,7 +3176,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Oasis Translations",
@@ -3037,7 +3196,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Pancho Translations",
@@ -3056,7 +3216,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "ReinoWuxia",
@@ -3075,7 +3236,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "SkyNovels",
@@ -3094,7 +3256,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "TC & Sega",
@@ -3113,7 +3276,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Traducciones Amistosas",
@@ -3132,7 +3296,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "TuNovelaLigera",
@@ -3151,7 +3316,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Yuuki Tls",
@@ -3170,7 +3336,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Chireads",
@@ -3189,7 +3356,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "HarkenEliwood",
@@ -3208,7 +3376,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "KissWood",
@@ -3227,7 +3396,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Ligh Novel FR",
@@ -3246,7 +3416,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MassNovel",
@@ -3265,7 +3436,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MTL Novel (FR)",
@@ -3284,7 +3456,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelDeGlace",
@@ -3303,7 +3476,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelFrance",
@@ -3322,7 +3496,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novel France+",
@@ -3341,7 +3516,8 @@
     "sourceCodeLanguage": 1,
     "notes": "Novel France+ — light novel traduction FR",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novhell",
@@ -3360,7 +3536,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Re:Zero Web Novel FR",
@@ -3379,7 +3556,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Warrior Legend Trad",
@@ -3398,7 +3576,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "WorldNovel",
@@ -3417,7 +3596,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "WuxiaLnScantrad",
@@ -3436,7 +3616,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Xiaowaz",
@@ -3455,7 +3636,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Baca Light Novel",
@@ -3474,7 +3656,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "IndoWebNovel",
@@ -3493,7 +3676,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MeioNovel",
@@ -3512,7 +3696,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Vanovel",
@@ -3531,7 +3716,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MTL Novel (ID)",
@@ -3550,7 +3736,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelBookID",
@@ -3569,7 +3756,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "SakuraNovel",
@@ -3588,7 +3776,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Sekte Novel",
@@ -3607,7 +3796,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "WBNovel",
@@ -3626,7 +3816,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "kakuyomu",
@@ -3645,7 +3836,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Syosetu",
@@ -3664,7 +3856,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Agitoon",
@@ -3683,7 +3876,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Fortune Eternal",
@@ -3702,7 +3896,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novelki",
@@ -3721,7 +3916,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Better Novels",
@@ -3740,7 +3936,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Blog do Amon Novels",
@@ -3759,7 +3956,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Central Novel",
@@ -3778,7 +3976,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Illusia",
@@ -3797,7 +3996,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Kiniga",
@@ -3816,7 +4016,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "LaNovels",
@@ -3835,7 +4036,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Light Novel Brasil",
@@ -3854,7 +4056,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MTL Novel (PT)",
@@ -3873,7 +4076,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novel Mania",
@@ -3892,7 +4096,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Tsundoku Traduções",
@@ -3911,7 +4116,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Автор Тудей",
@@ -3930,7 +4136,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Bllate (API)",
@@ -3949,7 +4156,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Bookhamster",
@@ -3968,7 +4176,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Bookriver",
@@ -3987,7 +4196,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Erolate (API)",
@@ -4006,7 +4216,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "EzNovels",
@@ -4025,7 +4236,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "ficbook",
@@ -4044,7 +4256,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Свободный Мир Ранобэ",
@@ -4063,7 +4276,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Jaomix",
@@ -4082,7 +4296,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MTL Novel (RU)",
@@ -4101,7 +4316,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Neobook",
@@ -4120,7 +4336,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelCool (RU)",
@@ -4139,7 +4356,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Ranobes (RU)",
@@ -4158,7 +4376,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Renovels",
@@ -4177,7 +4396,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "RanobeLib",
@@ -4196,7 +4416,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "RanobeHub",
@@ -4215,7 +4436,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "РанобэРФ",
@@ -4234,7 +4456,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Rulate (API)",
@@ -4253,7 +4476,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelTL",
@@ -4272,7 +4496,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "ТопЛиба",
@@ -4291,7 +4516,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Целлюлоза",
@@ -4310,7 +4536,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novel Lucky",
@@ -4329,7 +4556,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novel PDF",
@@ -4348,7 +4576,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Araz Novel",
@@ -4367,7 +4596,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "E-KİTAPLAR",
@@ -4386,7 +4616,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "EpikNovel",
@@ -4405,7 +4636,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "kakikata",
@@ -4424,7 +4656,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Kodeks Library",
@@ -4443,7 +4676,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaTR",
@@ -4462,7 +4696,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NABİ SCANS",
@@ -4481,7 +4716,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Namevt",
@@ -4500,7 +4736,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novel oku",
@@ -4519,7 +4756,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NovelTR",
@@ -4538,7 +4776,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Ragnar Scans",
@@ -4557,7 +4796,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "ThNovels",
@@ -4576,7 +4816,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "TurkceLightNovels",
@@ -4595,7 +4836,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "WebNovelOku",
@@ -4614,7 +4856,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "BakaInUA",
@@ -4633,7 +4876,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Смаколики",
@@ -4652,7 +4896,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Light Novel VN",
@@ -4671,7 +4916,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Hako",
@@ -4690,7 +4936,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Nettruyen",
@@ -4709,7 +4956,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "TruyenSS",
@@ -4728,7 +4976,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "69书吧",
@@ -4747,7 +4996,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "爱下电子书",
@@ -4766,7 +5016,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "linovel",
@@ -4785,7 +5036,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Linovelib",
@@ -4804,7 +5056,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Linovelib(繁體)",
@@ -4823,7 +5076,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Novel543",
@@ -4842,7 +5096,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Quanben",
@@ -4861,6 +5116,7 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   }
 ]

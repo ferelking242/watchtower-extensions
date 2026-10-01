@@ -126,10 +126,15 @@ SemVer strict, incrémenté **à chaque modification** du fichier (l'app détect
   "iconUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/icons/subtitles/opensubtitles-mirror.png",
   "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/subtitles/multi/subs.opensubtitlesmirror.js",
   "requiresAccount": false,
+  "login": true,
   "paywall": "free",
   "notes": "changelog court"
 }
 ```
+
+`login: true` exposes Watchtower's shared in-app sign-in and sign-out controls
+for the source website. Sign-in opens the source URL in the cookie-sharing
+WebView; sources that do not provide a website login should omit this flag.
 
 ---
 

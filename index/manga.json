@@ -16,7 +16,8 @@
     "sourceCodeLanguage": 1,
     "notes": "Uses web-scraping to pull details and chapters",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "3asq",
@@ -35,7 +36,8 @@
     "sourceCodeLanguage": 1,
     "notes": "3asq Manga — source manga arabe populaire",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Anyone Manga",
@@ -54,7 +56,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "ArabManhwa",
@@ -73,7 +76,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Arab Toons",
@@ -92,7 +96,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "ArbxComix",
@@ -111,7 +116,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Area Manga",
@@ -130,7 +136,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "AriaToon",
@@ -149,7 +156,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Brown Manga",
@@ -168,7 +176,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Despair Manga",
@@ -187,7 +196,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Dilar",
@@ -206,7 +216,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Empire Webtoon",
@@ -225,7 +236,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Hijala",
@@ -244,7 +256,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Kawii Manga",
@@ -263,7 +276,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaCloud",
@@ -282,7 +296,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaDar",
@@ -301,7 +316,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaHub",
@@ -320,7 +336,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Mangalek",
@@ -339,7 +356,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Mangalink",
@@ -358,7 +376,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaLionz",
@@ -377,7 +396,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaSpark",
@@ -396,7 +416,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Manga Starz",
@@ -415,7 +436,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaSwat",
@@ -434,7 +456,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaTek",
@@ -453,7 +476,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaTuk",
@@ -472,7 +496,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Manhatic",
@@ -491,7 +516,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NeverScans",
@@ -510,7 +536,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Oduto - Boruto",
@@ -529,7 +556,8 @@
     "sourceCodeLanguage": 1,
     "notes": "This Source Just For Boruto",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Onma",
@@ -548,7 +576,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Rocks Manga",
@@ -567,7 +596,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "StellarSaber",
@@ -586,7 +616,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "TeamX",
@@ -605,7 +636,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Yokai",
@@ -624,7 +656,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "AllManga",
@@ -644,7 +677,8 @@
     "notes": "Uses AllAnime GraphQL API. Chapter images served via api.allanime.day.",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.allanime.day/api"
+    "apiUrl": "https://api.allanime.day/api",
+    "login": true
   },
   {
     "name": "Asura Scans",
@@ -663,7 +697,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Atsumaru",
@@ -682,7 +717,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "ComicsAll",
@@ -701,7 +737,8 @@
     "sourceCodeLanguage": 1,
     "notes": "Download-only — .cbz/.cbr files via external hosts (florenfile, etc.)",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Comix",
@@ -721,7 +758,8 @@
     "notes": "",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://comix.to/api/v2/"
+    "apiUrl": "https://comix.to/api/v2/",
+    "login": true
   },
   {
     "name": "Coolmic",
@@ -740,7 +778,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Cubari",
@@ -759,7 +798,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Diva Scans",
@@ -778,7 +818,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Dynasty Scans",
@@ -798,7 +839,8 @@
     "notes": "",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://dynasty-scans.com"
+    "apiUrl": "https://dynasty-scans.com",
+    "login": true
   },
   {
     "name": "Flame Comics",
@@ -817,7 +859,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "GlobalComix",
@@ -837,7 +880,8 @@
     "notes": "",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://globalcomix.com"
+    "apiUrl": "https://globalcomix.com",
+    "login": true
   },
   {
     "name": "Goda",
@@ -856,7 +900,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Harimanga",
@@ -875,7 +920,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Hiperdex",
@@ -894,7 +940,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Hive Scans",
@@ -913,7 +960,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "King of Shojo",
@@ -932,7 +980,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "LikeManga",
@@ -951,7 +1000,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Lily Manga",
@@ -970,7 +1020,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Lunar Manga",
@@ -989,7 +1040,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Manga Ball",
@@ -1008,7 +1060,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaDNA",
@@ -1027,7 +1080,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaFire",
@@ -1046,7 +1100,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaForFree",
@@ -1065,7 +1120,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaForFree.net",
@@ -1084,7 +1140,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaFox",
@@ -1103,7 +1160,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaFreak",
@@ -1122,7 +1180,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaKatana",
@@ -1141,7 +1200,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Mangapark",
@@ -1160,7 +1220,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Mangapill",
@@ -1179,7 +1240,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MANGA Plus by SHUEISHA",
@@ -1199,7 +1261,8 @@
     "notes": "MANGA Plus — source officielle Shueisha (One Piece, JJK, MHA, Chainsaw Man...)",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://jumpg-webapi.tokyo-cdn.com"
+    "apiUrl": "https://jumpg-webapi.tokyo-cdn.com",
+    "login": true
   },
   {
     "name": "MANGA Plus Creators",
@@ -1218,7 +1281,8 @@
     "sourceCodeLanguage": 1,
     "notes": "MANGA Plus Creators — webtoons originaux Shueisha",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaTaro",
@@ -1237,7 +1301,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaToon",
@@ -1256,7 +1321,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "ManhwaZ",
@@ -1275,7 +1341,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "ReadComicOnline",
@@ -1294,7 +1361,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Toomics",
@@ -1313,7 +1381,8 @@
     "sourceCodeLanguage": 1,
     "notes": "Toomics — webtoons premium (部分 gratuit)",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Weeb Central",
@@ -1332,7 +1401,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaKakalot",
@@ -1351,7 +1421,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "MangaSee",
@@ -1370,7 +1441,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Anime-Sama",
@@ -1393,7 +1465,8 @@
     "apiUrl": "https://anime-sama.to",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "AralosBD",
@@ -1416,7 +1489,8 @@
     "apiUrl": "https://aralosbd.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Astral Manga",
@@ -1439,7 +1513,8 @@
     "apiUrl": "https://astral-manga.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Banana Scan",
@@ -1462,7 +1537,8 @@
     "apiUrl": "https://harmony-scan.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "BentoBento",
@@ -1485,7 +1561,8 @@
     "apiUrl": "https://bentobento.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Big Solo",
@@ -1508,7 +1585,8 @@
     "apiUrl": "https://bigsolo.org",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "BlueSolo",
@@ -1531,7 +1609,8 @@
     "apiUrl": "https://bluesolo.org",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Chaos Trad",
@@ -1554,7 +1633,8 @@
     "apiUrl": "https://chaostrad.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "CrunchyScan",
@@ -1577,7 +1657,8 @@
     "apiUrl": "https://crunchyscan.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Dassou Scan",
@@ -1600,7 +1681,8 @@
     "apiUrl": "https://dassouscan.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Epsilon Scan",
@@ -1623,7 +1705,8 @@
     "apiUrl": "https://epsilonscan.to",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "FMTeam",
@@ -1646,7 +1729,8 @@
     "apiUrl": "https://fmteam.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Furyo Squad",
@@ -1669,7 +1753,8 @@
     "apiUrl": "https://www.furyosociety.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Hana Book",
@@ -1692,7 +1777,8 @@
     "apiUrl": "https://www.hana-book.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Hentai Origines",
@@ -1715,7 +1801,8 @@
     "apiUrl": "https://hentai-origines.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Hentai Scan Reader",
@@ -1738,7 +1825,8 @@
     "apiUrl": "https://hentai.scanreader.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Hentai Scantrad",
@@ -1761,7 +1849,8 @@
     "apiUrl": "https://hentai.scantrad-vf.cc",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Hentai Zone",
@@ -1784,7 +1873,8 @@
     "apiUrl": "https://hentaizone.xyz",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Histoire d'Hentai",
@@ -1807,7 +1897,8 @@
     "apiUrl": "https://hhentai.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Japscan",
@@ -1830,7 +1921,8 @@
     "apiUrl": "https://www.japscan.lol",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Kiwiya Scans",
@@ -1853,7 +1945,8 @@
     "apiUrl": "https://kiwiyascans.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Lanor Trad",
@@ -1876,7 +1969,8 @@
     "apiUrl": "https://lanortrad.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Lel Manga",
@@ -1899,7 +1993,8 @@
     "apiUrl": "https://www.lelmanga.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "LelScan",
@@ -1922,7 +2017,8 @@
     "apiUrl": "https://lelscans.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "LelScanVF",
@@ -1945,7 +2041,8 @@
     "apiUrl": "https://www.lelscanfr.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Les Poroïniens",
@@ -1968,7 +2065,8 @@
     "apiUrl": "https://lesporoiniens.org",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Leviathan Scans",
@@ -1987,7 +2085,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Manga Corporation",
@@ -2010,7 +2109,8 @@
     "apiUrl": "https://manga-corporation.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "MangaHub FR",
@@ -2033,7 +2133,8 @@
     "apiUrl": "https://mangahub.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Manga Kawaii",
@@ -2056,7 +2157,8 @@
     "apiUrl": "https://www.mangakawaii.io",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Manga Moins",
@@ -2079,7 +2181,8 @@
     "apiUrl": "https://mangamoins.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Manga Nova",
@@ -2102,7 +2205,8 @@
     "apiUrl": "https://www.manga-nova.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Manga Scantrad",
@@ -2125,7 +2229,8 @@
     "apiUrl": "https://manga-scantrad.io",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Mangas Origines",
@@ -2148,7 +2253,8 @@
     "apiUrl": "https://mangas-origines.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Mangas Scans",
@@ -2171,7 +2277,8 @@
     "apiUrl": "https://mangas-scans.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "MLP France Comics",
@@ -2195,7 +2302,8 @@
     "langs": [
       "fr",
       "en"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Ono",
@@ -2218,7 +2326,8 @@
     "apiUrl": "https://www.ono.live",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Ortega Scans",
@@ -2241,7 +2350,8 @@
     "apiUrl": "https://ortegascans.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Pantheon Scan",
@@ -2264,7 +2374,8 @@
     "apiUrl": "https://pantheon-scan.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Perf Scan",
@@ -2287,7 +2398,8 @@
     "apiUrl": "https://perf-scan.xyz",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Phenix Scans",
@@ -2310,7 +2422,8 @@
     "apiUrl": "https://phenix-scans.co",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Pornhwa FR",
@@ -2333,7 +2446,8 @@
     "apiUrl": "https://pornhwa.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Poseidon Scans",
@@ -2356,7 +2470,8 @@
     "apiUrl": "https://poseidon-scans.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Raijin Scans",
@@ -2379,7 +2494,8 @@
     "apiUrl": "https://raijin-scans.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Rimu Scans",
@@ -2402,7 +2518,8 @@
     "apiUrl": "https://rimuscan.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Scan Hentai Menu",
@@ -2425,7 +2542,8 @@
     "apiUrl": "https://x-manga.org",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Scan-Manga",
@@ -2448,7 +2566,8 @@
     "apiUrl": "https://m.scan-manga.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Team ScanR",
@@ -2471,7 +2590,8 @@
     "apiUrl": "https://teamscanr.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Scan Reader",
@@ -2494,7 +2614,8 @@
     "apiUrl": "https://scanreader.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Scans FR",
@@ -2517,7 +2638,8 @@
     "apiUrl": "https://scansfr.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Scantrad One Piece",
@@ -2536,7 +2658,8 @@
     "sourceCodeLanguage": 1,
     "notes": "Scantrad One Piece — scanlation officieuse One Piece FR",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Scantrad Union",
@@ -2559,7 +2682,8 @@
     "apiUrl": "https://scantrad-union.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Scan-VF",
@@ -2582,7 +2706,8 @@
     "apiUrl": "https://www.scan-vf.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Siren Scans FR",
@@ -2605,7 +2730,8 @@
     "apiUrl": "https://sirenscans.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Soft Epsilon Scan",
@@ -2628,7 +2754,8 @@
     "apiUrl": "https://epsilonsoft.to",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Sushi Scan",
@@ -2651,7 +2778,8 @@
     "apiUrl": "https://sushiscan.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Sushi Scan FR",
@@ -2674,7 +2802,8 @@
     "apiUrl": "https://sushiscan.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "ToonFR",
@@ -2697,7 +2826,8 @@
     "apiUrl": "https://toonfr.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Twatt",
@@ -2720,7 +2850,8 @@
     "apiUrl": "https://twatt.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Yaoi Scan",
@@ -2743,7 +2874,8 @@
     "apiUrl": "https://yaoiscan.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "MangaWorld",
@@ -2762,7 +2894,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "WeLoMa",
@@ -2781,7 +2914,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Comick",
@@ -2844,7 +2978,8 @@
       "el",
       "sr",
       "da"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "MangaDex",
@@ -2913,7 +3048,8 @@
       "tr",
       "uk",
       "vi"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Mangafire",
@@ -2941,7 +3077,8 @@
       "es-la",
       "pt",
       "pt-br"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Webtoons",
@@ -2969,7 +3106,8 @@
       "es",
       "zh",
       "de"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "AsmHentai",
@@ -2988,7 +3126,8 @@
     "sourceCodeLanguage": 1,
     "notes": "AsmHentai — hentai doujin reading (18+). Équivalent JS de all.asmhentai (Mihon).",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "E-Hentai",
@@ -3008,7 +3147,8 @@
     "notes": "E-Hentai galleries (18+). API JSON officielle. Compte recommandé pour contenu complet.",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.e-hentai.org/api.php"
+    "apiUrl": "https://api.e-hentai.org/api.php",
+    "login": true
   },
   {
     "name": "Hentai2Read",
@@ -3027,7 +3167,8 @@
     "sourceCodeLanguage": 1,
     "notes": "Hentai2Read — hentai manga reading (18+)",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "HentaiFox",
@@ -3046,7 +3187,8 @@
     "sourceCodeLanguage": 1,
     "notes": "HentaiFox — hentai manga reading (18+)",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "IMHentai",
@@ -3065,7 +3207,8 @@
     "sourceCodeLanguage": 1,
     "notes": "IMHentai — hentai doujin reading (18+)",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Luscious",
@@ -3085,7 +3228,8 @@
     "notes": "Luscious — hentai album reader (18+). API GraphQL.",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://www.luscious.net/api/graphql"
+    "apiUrl": "https://www.luscious.net/api/graphql",
+    "login": true
   },
   {
     "name": "Manhwa18.cc",
@@ -3104,7 +3248,8 @@
     "sourceCodeLanguage": 1,
     "notes": "Manhwa18.cc — manhwa/manga adulte (18+). Équivalent JS de all.manhwa18cc Mihon.",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Multporn",
@@ -3123,7 +3268,8 @@
     "sourceCodeLanguage": 1,
     "notes": "Multporn — western/hentai comics & doujin (18+). Équivalent JS de all.multporn Mihon.",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "NHentai",
@@ -3143,7 +3289,8 @@
     "notes": "NHentai — premier site de lecture hentai (18+). API JSON officielle.",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://nhentai.net/api"
+    "apiUrl": "https://nhentai.net/api",
+    "login": true
   },
   {
     "name": "Pururin",
@@ -3162,7 +3309,8 @@
     "sourceCodeLanguage": 1,
     "notes": "Pururin — hentai doujin reader (18+). Équivalent JS de all.pururin Mihon.",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "ReadHentai",
@@ -3181,7 +3329,8 @@
     "sourceCodeLanguage": 1,
     "notes": "ReadHentai — hentai manga/doujin reader (18+)",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Tsumino",
@@ -3201,7 +3350,8 @@
     "notes": "Tsumino — hentai manga/doujin reader (18+). API JSON.",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://www.tsumino.com/api"
+    "apiUrl": "https://www.tsumino.com/api",
+    "login": true
   },
   {
     "name": "MangaDex (unlocked)",
@@ -3268,7 +3418,8 @@
       "tr",
       "uk",
       "vi"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Mangalib",
@@ -3288,7 +3439,8 @@
     "notes": "",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.mangalib.me/api"
+    "apiUrl": "https://api.mangalib.me/api",
+    "login": true
   },
   {
     "name": "新新漫画",
@@ -3307,7 +3459,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "拷贝漫画",
@@ -3327,7 +3480,8 @@
     "notes": "",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.mangacopy.com"
+    "apiUrl": "https://api.mangacopy.com",
+    "login": true
   },
   {
     "name": "动漫之家",
@@ -3346,7 +3500,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "古风漫画",
@@ -3365,7 +3520,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "漫画柜",
@@ -3384,7 +3540,8 @@
     "sourceCodeLanguage": 1,
     "notes": "",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "SayManhwa",
@@ -3405,7 +3562,8 @@
     "notes": "Webtoons manhwa FR — SayManhwa",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://saymanhwa.com"
+    "apiUrl": "https://saymanhwa.com",
+    "login": true
   },
   {
     "name": "Honeytoon",
@@ -3426,7 +3584,8 @@
     "notes": "Webtoons adultes FR — Honeytoon (épisodes gratuits lisibles)",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://honeytoon.com"
+    "apiUrl": "https://honeytoon.com",
+    "login": true
   },
   {
     "name": "NovelCool",
@@ -3447,7 +3606,8 @@
     "notes": "Mangas FR — NovelCool (manga uniquement, romans exclus)",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://fr.novelcool.com"
+    "apiUrl": "https://fr.novelcool.com",
+    "login": true
   },
   {
     "name": "Niadd",
@@ -3468,6 +3628,7 @@
     "notes": "Mangas FR — Niadd (lecture par blocs de 10 pages)",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://fr.niadd.com"
+    "apiUrl": "https://fr.niadd.com",
+    "login": true
   }
 ]

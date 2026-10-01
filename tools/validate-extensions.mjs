@@ -64,6 +64,26 @@ for (const rel of jsonFiles) {
 }
 console.log(`   ${jsonFiles.length} JSON file(s) valid`);
 
+// ── 2a. Every source catalogue opts in to the shared login controls ───────────
+console.log("▶ source login support flag");
+let sourceEntries = 0;
+for (const rel of jsonFiles.filter(
+  (file) => file.startsWith("index/") && file !== "index/plugins.json",
+)) {
+  const entries = JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
+  if (!Array.isArray(entries)) {
+    problems.push(`LOGIN: ${rel} must contain a source array`);
+    continue;
+  }
+  for (const entry of entries) {
+    sourceEntries++;
+    if (entry.login !== true) {
+      problems.push(`LOGIN: ${rel} / ${entry.name || entry.id} must declare login: true`);
+    }
+  }
+}
+console.log(`   ${sourceEntries} source entries checked`);
+
 // ── 2a. Validate the declarative UI contract ─────────────────────────────────
 console.log("▶ UI layout structure");
 const supportedLayoutComponents = new Set([

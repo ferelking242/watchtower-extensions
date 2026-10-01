@@ -16,7 +16,8 @@
     "sourceCodeLanguage": 1,
     "notes": "v1.0.0 — Sous-titres anime (JP/EN) : listing par titre, fichiers ASS/SRT.",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "OpenSubtitles",
@@ -36,7 +37,8 @@
     "notes": "v1.0.0 — Fallback massif : recherche par hash/TMDB/IMDb/titre, quota download 5/jour en gratuit.",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.opensubtitles.com/api/v1"
+    "apiUrl": "https://api.opensubtitles.com/api/v1",
+    "login": true
   },
   {
     "name": "Podnapisi",
@@ -56,7 +58,8 @@
     "notes": "v1.0.0 — Sans clé API : recherche texte multi-langues, films+séries, ZIP individuels.",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://podnapisi.net/subtitles/search/ppds3"
+    "apiUrl": "https://podnapisi.net/subtitles/search/ppds3",
+    "login": true
   },
   {
     "name": "SubDL",
@@ -76,7 +79,8 @@
     "notes": "v1.0.0 — Provider principal : recherche TMDB/IMDb/titre, films+séries+épisodes, multi-langues, ZIP individuels.",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.subdl.com"
+    "apiUrl": "https://api.subdl.com",
+    "login": true
   },
   {
     "name": "SubSource",
@@ -96,6 +100,7 @@
     "notes": "v1.0.0 — Sans clé API : recherche titre, films+séries, FR/EN + langues rares.",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.subsource.net/api"
+    "apiUrl": "https://api.subsource.net/api",
+    "login": true
   }
 ]

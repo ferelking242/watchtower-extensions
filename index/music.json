@@ -17,7 +17,8 @@
     "notes": "AnimeThemes — base de données OP/ED anime avec vidéos",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://animethemes.moe/api"
+    "apiUrl": "https://animethemes.moe/api",
+    "login": true
   },
   {
     "name": "Bandcamp",
@@ -36,7 +37,8 @@
     "sourceCodeLanguage": 1,
     "notes": "Bandcamp — Independent artists & albums",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "SoundCloud",
@@ -55,7 +57,8 @@
     "sourceCodeLanguage": 1,
     "notes": "SoundCloud — Free music streaming",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "name": "Deezer",
@@ -75,7 +78,8 @@
     "notes": "Deezer — Catalogue mondial de musique (previews 30s)",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.deezer.com"
+    "apiUrl": "https://api.deezer.com",
+    "login": true
   },
   {
     "name": "MLP France — Chansons",
@@ -99,7 +103,8 @@
     "langs": [
       "fr",
       "en"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Karaoke Mugen",
@@ -131,7 +136,8 @@
       "zh",
       "ko",
       "ru"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "listen.moe",
@@ -156,7 +162,8 @@
       "ja",
       "en",
       "ko"
-    ]
+    ],
+    "login": true
   },
   {
     "name": "Miraculum Music",
@@ -176,7 +183,8 @@
     "notes": "Miraculous Ladybug — albums OST, film, jeux, intros localisées. CDN Amexd.",
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://Amexd.b-cdn.net"
+    "apiUrl": "https://Amexd.b-cdn.net",
+    "login": true
   },
   {
     "name": "YouTube Music",
@@ -195,7 +203,8 @@
     "sourceCodeLanguage": 1,
     "notes": "YouTube Music — Stream music via YouTube",
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "login": true
   },
   {
     "id": 3001,
@@ -215,7 +224,8 @@
       "Audio Provider"
     ],
     "description": "Métadonnées complètes (titres, albums, artistes, playlists) et lecture audio via l'API Spotify.",
-    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/spotify.smplug"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/spotify.smplug",
+    "login": true
   },
   {
     "id": 3002,
@@ -234,7 +244,8 @@
       "Audio Provider"
     ],
     "description": "Lecture de fichiers locaux et distants en qualité lossless FLAC. Aucun compte requis.",
-    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/flac.smplug"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/flac.smplug",
+    "login": true
   },
   {
     "id": 3003,
@@ -254,7 +265,8 @@
       "Audio Provider"
     ],
     "description": "Catalogue complet via l'API MusicKit. Métadonnées et lecture audio pour les abonnés Apple Music.",
-    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/applemusic.smplug"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/applemusic.smplug",
+    "login": true
   },
   {
     "id": 3004,
@@ -274,7 +286,8 @@
       "Audio Provider"
     ],
     "description": "Accès au catalogue mondial via l'API Deezer. Métadonnées complètes et streaming haute qualité.",
-    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/deezer.smplug"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/deezer.smplug",
+    "login": true
   },
   {
     "id": 3005,
@@ -294,7 +307,8 @@
       "Audio Provider"
     ],
     "description": "Accès gratuit au catalogue YouTube Music. Aucun compte requis pour la plupart des fonctionnalités.",
-    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/youtubemusic.smplug"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/youtubemusic.smplug",
+    "login": true
   },
   {
     "id": 3006,
@@ -313,6 +327,7 @@
       "Metadata Provider"
     ],
     "description": "Base de données musicale open source. Métadonnées enrichies, ISRC, et scrobbling via ListenBrainz.",
-    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/musicbrainz.smplug"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/musicbrainz.smplug",
+    "login": true
   }
 ]
