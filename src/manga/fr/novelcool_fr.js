@@ -119,12 +119,12 @@ class DefaultExtension extends MProvider {
         const stm=html.match(/value="(https?:\/\/[^"]+?)-1\.html"/);
         const stem=stm?stm[1]:url.replace(/\.html$/,"").replace(/\/+$/,"");
         if(!total||total<2) return baseImgs.map(u=>({url:u,headers:{"User-Agent":ua,"Referer":url}}));
-        // NovelCool accepte "Load images: 10" : ...-10-<départ>.html regroupe 10 images par requête
-        const starts=[];
-        for(let s=1;s<=total&&starts.length<30;s+=10) starts.push(s);
-        const results=await Promise.all(starts.map(async (s)=>{
+        // NovelCool accepte "Load images: 10" : ...-10-<groupe>.html regroupe 10 images par requête
+        // (index de groupe croissant, pas offset : groupe 1 = pages 1-10, groupe 2 = pages 11-20...)
+        const groups=Math.min(Math.ceil(total/10),30);
+        const results=await Promise.all(Array.from({length:groups},(_,i)=>i+1).map(async (g)=>{
             try{
-                const res=await new Client().get(stem+"-10-"+s+".html",this._hdrs(url));
+                const res=await new Client().get(stem+"-10-"+g+".html",this._hdrs(url));
                 return extract(res.body||"");
             }catch(_){ return []; }
         }));
