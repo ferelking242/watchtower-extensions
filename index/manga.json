@@ -3448,5 +3448,26 @@
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://fr.novelcool.com"
+  },
+  {
+    "name": "Niadd",
+    "id": 2000000161,
+    "lang": "fr",
+    "langs": ["fr"],
+    "baseUrl": "https://fr.niadd.com",
+    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/manga-2000000161.svg",
+    "typeSource": "single",
+    "itemType": 2,
+    "version": "0.1.0",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/manga/fr/niadd.js",
+    "isManga": true,
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "appMinVerReq": "0.5.0",
+    "sourceCodeLanguage": 1,
+    "notes": "Mangas FR — Niadd (lecture par blocs de 10 pages)",
+    "requiresAccount": false,
+    "hasDRM": false,
+    "apiUrl": "https://fr.niadd.com"
   }
 ]
