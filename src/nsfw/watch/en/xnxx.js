@@ -123,6 +123,37 @@ class DefaultExtension extends MProvider {
     return classes.includes("premium") || classes.includes("gold");
   }
 
+  _checkedBody(url, response) {
+    const body = String(response && response.body != null ? response.body : "");
+    const rawStatus = response && (response.statusCode || response.status);
+    const status = Number(rawStatus);
+    const hasStatus = Number.isFinite(status) && status > 0;
+    const route = (() => {
+      try { return new URL(url).pathname; } catch (_) { return url; }
+    })();
+    const cloudflareChallenge =
+      /cf-chl-|challenge-platform|cf-browser-verification|__cf_chl_|attention required|checking your browser|just a moment|verify you are human|cloudflare ray id/i
+        .test(body);
+
+    if (cloudflareChallenge) {
+      const message =
+        "XNXX is showing a Cloudflare verification page. Open the source, complete its verification, then retry.";
+      extLog("warn", `XNXX request blocked by Cloudflare route=${route} status=${hasStatus ? status : "unknown"}`);
+      throw new Error(message);
+    }
+    if (hasStatus && status >= 400) {
+      extLog("warn", `XNXX request failed route=${route} status=${status}`);
+      throw new Error(`XNXX returned HTTP ${status} for ${route}.`);
+    }
+    if (!body.trim()) {
+      extLog("warn", `XNXX returned an empty response route=${route} status=${hasStatus ? status : "unknown"}`);
+      throw new Error(`XNXX returned an empty response for ${route}.`);
+    }
+
+    extLog("info", `XNXX request ok route=${route} status=${hasStatus ? status : "unknown"} bytes=${body.length}`);
+    return body;
+  }
+
   _pageHasNext(doc, page, pathPrefix, items) {
     if (page >= 50) return false;
     const next = `${pathPrefix}/${page + 1}`;
@@ -167,6 +198,12 @@ class DefaultExtension extends MProvider {
         link,
         description: duration ? `Duration: ${duration[1]}` : ""
       });
+    }
+    if (!items.length) {
+      extLog(
+        "warn",
+        `XNXX parsed zero video cards mode=${mode || "unknown"} page=${page} htmlBytes=${String(html || "").length}`
+      );
     }
 
     const prefix = mode === "hits" ? "/hits" :
@@ -284,8 +321,17 @@ class DefaultExtension extends MProvider {
 
   async _get(path) {
     const url = this._absolute(path);
-    const res = await new Client().get(url, this.getHeaders(url));
-    return { url, body: res.body };
+    let res;
+    try {
+      res = await new Client().get(url, this.getHeaders(url));
+    } catch (error) {
+      const route = (() => {
+        try { return new URL(url).pathname; } catch (_) { return url; }
+      })();
+      extLog("error", `XNXX network request failed route=${route} error=${error.message}`);
+      throw new Error(`XNXX request failed for ${route}: ${error.message}`);
+    }
+    return { url, body: this._checkedBody(url, res) };
   }
 
   async getPopular(page) {
@@ -478,14 +524,17 @@ class DefaultExtension extends MProvider {
     if (encodedId && cdnId) {
       const endpoint = `${DefaultExtension.BASE_URL}/html5player/getvideo/${encodedId}/${cdnId}`;
       const rpc = await new Client().get(endpoint, headers);
+      const rpcBody = this._checkedBody(endpoint, rpc);
+      let data;
       try {
-        const data = JSON.parse(rpc.body || "{}");
-        if (data.hls) add([null, data.hls], "Auto (HLS)");
-        if (data.mp4_high) add([null, data.mp4_high], "720p");
-        if (data.mp4_low) add([null, data.mp4_low], "360p");
-      } catch {
-        extLog("warn", "XNXX media RPC returned invalid JSON");
+        data = JSON.parse(rpcBody);
+      } catch (error) {
+        extLog("warn", `XNXX media RPC returned invalid JSON error=${error.message}`);
+        throw new Error("XNXX returned an unreadable response for its video sources.");
       }
+      if (data.hls) add([null, data.hls], "Auto (HLS)");
+      if (data.mp4_high) add([null, data.mp4_high], "720p");
+      if (data.mp4_low) add([null, data.mp4_low], "360p");
     }
     if (!videos.length) {
       add(body.match(/html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/), "Auto (HLS)");
