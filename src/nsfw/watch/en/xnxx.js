@@ -6,17 +6,66 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.3",
+  "version": "1.2.4",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xnxx.js",
   "notes": "Adult content (18+) — free XNXX catalog only",
-  "isNsfw": true
+  "isNsfw": true,
+  "touchToPreview": true
 }];
 
 class DefaultExtension extends MProvider {
   static get BASE_URL() { return "https://www.xnxx.com"; }
   get supportsLatest() { return true; }
+
+  _storedHistory() {
+    try {
+      if (!Array.isArray(DefaultExtension._historyCache)) {
+        const preferences = new SharedPreferences();
+        const raw = typeof preferences.getString === "function"
+          ? preferences.getString("xnxx_watch_history", "")
+          : preferences.get("xnxx_watch_history");
+        const parsed = typeof raw === "string" ? JSON.parse(raw || "[]") : raw;
+        DefaultExtension._historyCache = Array.isArray(parsed)
+          ? parsed.filter(item => item && item.link && item.name)
+          : [];
+      }
+      return DefaultExtension._historyCache;
+    } catch (_) {
+      return Array.isArray(DefaultExtension._historyCache)
+        ? DefaultExtension._historyCache
+        : [];
+    }
+  }
+
+  async _saveHistoryItem(item) {
+    try {
+      const entries = this._storedHistory().filter(entry => entry.link !== item.link);
+      entries.unshift(item);
+      const history = entries.slice(0, 60);
+      DefaultExtension._historyCache = history;
+      const preferences = new SharedPreferences();
+      const value = JSON.stringify(history);
+      if (typeof preferences.setString === "function") {
+        await preferences.setString("xnxx_watch_history", value);
+      } else if (typeof preferences.set === "function") {
+        // The test harness exposes set(); Watchtower's runtime uses setString().
+        await preferences.set("xnxx_watch_history", value);
+      }
+    } catch (error) {
+      extLog("warn", `XNXX local history could not be saved: ${error.message}`);
+    }
+  }
+
+  _historyDescription(timestamp) {
+    const date = new Date(timestamp);
+    if (Number.isNaN(date.getTime())) return "Reprise locale disponible";
+    return `Vu le ${date.toLocaleString("fr-FR", {
+      day: "2-digit", month: "short", year: "numeric",
+      hour: "2-digit", minute: "2-digit"
+    })}`;
+  }
 
   static get CATEGORIES() {
     return [
@@ -52,7 +101,13 @@ class DefaultExtension extends MProvider {
 
   _absolute(href) {
     if (!href) return "";
-    return href.startsWith("http") ? href : `${DefaultExtension.BASE_URL}${href}`;
+    if (href.startsWith("http")) return href;
+    if (href.startsWith("//")) return `https:${href}`;
+    try {
+      return new URL(href, `${DefaultExtension.BASE_URL}/`).toString();
+    } catch (_) {
+      return `${DefaultExtension.BASE_URL}${href}`;
+    }
   }
 
   _text(el) { return (el && el.text ? el.text : "").replace(/\s+/g, " ").trim(); }
@@ -102,10 +157,13 @@ class DefaultExtension extends MProvider {
         card.selectFirst(".duration")
       );
       const duration = metadata.match(/(\d+\s*(?:min|sec|h))/i);
+      const preview = card.selectFirst("img")?.attr("data-pvv") ||
+        card.selectFirst("[data-pvv]")?.attr("data-pvv") || "";
 
       items.push({
         name: this._text(titleAnchor) || "Untitled",
         imageUrl: image,
+        previewUrl: this._absolute(preview),
         link,
         description: duration ? `Duration: ${duration[1]}` : ""
       });
@@ -165,6 +223,7 @@ class DefaultExtension extends MProvider {
         name,
         imageUrl: "",
         link: this._absolute(href),
+        collectionId: `search_${href.slice("/search/".length).split(/[/?#]/)[0]}`,
         description: count ? `${count} videos` : "Browse videos",
         // The layout renderer may use this to create a staggered card.
         metadata: { masonryKey: name.length + (count ? count.length : 0) }
@@ -173,10 +232,45 @@ class DefaultExtension extends MProvider {
     return { list: items, hasNextPage: false };
   }
 
-  _monthSlug(page) {
+  _monthSlug(monthsAgo = 1) {
     const now = new Date(Date.now());
-    const total = now.getFullYear() * 12 + now.getMonth() - (page - 1);
+    const total = now.getFullYear() * 12 + now.getMonth() - monthsAgo;
     return `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, "0")}`;
+  }
+
+  _dailySelections() {
+    return [
+      {
+        name: "Suggestions Straight",
+        link: this._absolute("/your-suggestions/straight"),
+        collectionId: "suggestion_straight",
+        description: "Une sélection personnalisée"
+      },
+      {
+        name: "African · Top",
+        link: this._absolute("/search/african?top&id=73997887"),
+        collectionId: "search_african_top",
+        description: "Les vidéos African les plus populaires"
+      },
+      {
+        name: "Teen",
+        link: this._absolute("/search/Teen"),
+        collectionId: "search_teen",
+        description: "Parcourir les vidéos Teen"
+      },
+      {
+        name: "Amateur",
+        link: this._absolute("/search/amateur"),
+        collectionId: "search_amateur",
+        description: "Parcourir les vidéos Amateur"
+      },
+      {
+        name: "MILF",
+        link: this._absolute("/search/milf"),
+        collectionId: "search_milf",
+        description: "Parcourir les vidéos MILF"
+      }
+    ].map(item => ({ ...item, imageUrl: "" }));
   }
 
   _filterState(filters, index) {
@@ -204,7 +298,9 @@ class DefaultExtension extends MProvider {
       return this._parseVideoList(body, page, query);
     }
     if (mode === 1) {
-      const { body } = await this._get(`/best/${this._monthSlug(page)}`);
+      const month = this._monthSlug();
+      const path = page <= 1 ? `/best/${month}` : `/best/${month}/${page}`;
+      const { body } = await this._get(path);
       const result = this._parseVideoList(body, page, "best");
       result.hasNextPage = result.list.length > 0 && page < 24;
       return result;
@@ -240,11 +336,69 @@ class DefaultExtension extends MProvider {
 
   async getCustomList(listId, page) {
     if (listId === "history") {
-      const { body } = await this._get("/history");
-      return this._parseVideoList(body, 1, "history");
+      let remote = [];
+      try {
+        const { body } = await this._get("/history");
+        remote = this._parseVideoList(body, 1, "history").list;
+      } catch (error) {
+        if (!this._storedHistory().length) throw error;
+        extLog("warn", `XNXX website history unavailable: ${error.message}`);
+      }
+      const seen = new Set();
+      const local = this._storedHistory().map(item => ({
+        name: item.name,
+        link: item.link,
+        imageUrl: item.imageUrl || "",
+        previewUrl: item.previewUrl || "",
+        description: this._historyDescription(item.watchedAt)
+      }));
+      const list = [...local, ...remote].filter(item => {
+        if (!item.link || seen.has(item.link)) return false;
+        seen.add(item.link);
+        return true;
+      });
+      return { list, hasNextPage: false };
+    }
+    if (listId === "daily") {
+      return { list: this._dailySelections(), hasNextPage: false };
+    }
+    if (listId === "suggestion_straight") {
+      const suggestionPath = page <= 1
+        ? "/your-suggestions/straight"
+        : `/your-suggestions/straight/${page}`;
+      const { body } = await this._get(suggestionPath);
+      const suggested = this._parseVideoList(body, page, "suggestions");
+      if (suggested.list.length) return suggested;
+      // XNXX only fills its personal suggestions from browser-local activity.
+      // Give the collection a useful, paginated fallback when that data is absent.
+      const fallback = await this._get(`/search/straight/${page}`);
+      return this._parseVideoList(fallback.body, page, "straight");
+    }
+    const bestMonth = /^best_(\d{4}-\d{2})$/.exec(listId);
+    if (bestMonth) {
+      const monthNumber = Number(bestMonth[1].slice(-2));
+      if (monthNumber < 1 || monthNumber > 12) {
+        throw new Error(`Invalid XNXX best-of month: ${bestMonth[1]}`);
+      }
+      const path = page <= 1
+        ? `/best/${bestMonth[1]}`
+        : `/best/${bestMonth[1]}/${page}`;
+      const { body } = await this._get(path);
+      return this._parseVideoList(body, page, "best");
+    }
+    if (listId.startsWith("search_")) {
+      const rawId = listId.slice("search_".length);
+      const top = rawId.endsWith("_top");
+      const query = top ? rawId.slice(0, -4) : rawId;
+      const encoded = encodeURIComponent(query).replace(/%20/g, "+");
+      const pagePath = page <= 1 ? "" : `/${page}`;
+      const suffix = top ? "?top&id=73997887" : "";
+      const { body } = await this._get(`/search/${encoded}${pagePath}${suffix}`);
+      return this._parseVideoList(body, page, query);
     }
     if (listId === "pornstars") {
-      const { body } = await this._get(`/pornstars/${page}`);
+      const path = page <= 1 ? "/pornstars" : `/pornstars/${page}`;
+      const { body } = await this._get(path);
       return this._parsePornstars(body, page);
     }
     if (listId === "tags") {
@@ -262,11 +416,14 @@ class DefaultExtension extends MProvider {
   async getDetail(url) {
     const { body } = await this._get(url.replace(DefaultExtension.BASE_URL, ""));
     const doc = new Document(body);
+    const metaTitle = doc
+      .selectFirst('meta[property="og:title"]')
+      ?.attr("content") || "";
     const title = this._text(
       doc.selectFirst("h1.page-title") ||
       doc.selectFirst("h2.page-title") ||
       doc.selectFirst("h1.content-title")
-    ) || this._text(doc.selectFirst('meta[property="og:title"]')?.attr("content"))
+    ) || metaTitle.replace(/\s+/g, " ").trim()
       || "XNXX";
     const cover = doc.selectFirst('meta[property="og:image"]')?.attr("content") || "";
 
@@ -299,6 +456,7 @@ class DefaultExtension extends MProvider {
 
   async getVideoList(url) {
     const { body } = await this._get(url.replace(DefaultExtension.BASE_URL, ""));
+    const page = new Document(body);
     const headers = { ...this.getHeaders(url), "Referer": url };
     const videos = [];
     const add = (match, quality) => {
@@ -342,6 +500,22 @@ class DefaultExtension extends MProvider {
         : (quality.toLowerCase().includes(preferred) ? 0 : 1);
       return score(a.quality) - score(b.quality);
     });
+    if (videos.length) {
+      const metaTitle = page
+        .selectFirst('meta[property="og:title"]')
+        ?.attr("content") || "";
+      const title = this._text(page.selectFirst("h1.page-title")) ||
+        this._text(page.selectFirst("h1.content-title")) ||
+        metaTitle.replace(/\s+/g, " ").trim() ||
+        "XNXX video";
+      const cover = page.selectFirst('meta[property="og:image"]')?.attr("content") || "";
+      await this._saveHistoryItem({
+        name: title,
+        link: this._absolute(url),
+        imageUrl: this._absolute(cover),
+        watchedAt: Date.now()
+      });
+    }
     extLog("info", `XNXX.getVideoList: ${videos.length} free sources`);
     return videos;
   }

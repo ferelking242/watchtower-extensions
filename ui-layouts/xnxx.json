@@ -2,11 +2,28 @@
   "schemaVersion": 1,
   "home": {
     "sections": [
-      { "id": "history",   "component": "carousel", "title": "History",    "accent": "#7C4DFF", "icon": "history", "seeAll": true },
-      { "id": "hits",      "component": "ranked",   "title": "Hits",       "accent": "#FF3D71", "icon": "trending_up", "seeAll": true },
-      { "id": "pornstars", "component": "grid",     "title": "Pornstars",  "accent": "#FFB300", "icon": "star", "seeAll": true },
-      { "id": "tags",      "component": "masonry",   "title": "Tags",      "accent": "#00B8D4", "icon": "local_offer", "columns": 2, "cardStyle": "tag", "seeAll": true },
-      { "id": "catalogue", "component": "grid",     "title": "Catalogue", "paginated": true }
+      { "id": "hits", "component": "spotlight", "title": "À la une", "accent": "#FF3D71", "icon": "trending_up", "seeAll": true },
+      { "id": "daily", "component": "collectionCards", "title": "Sélection du jour", "accent": "#237F78" },
+      { "id": "history", "component": "showcase", "title": "Historique · reprendre", "accent": "#7C4DFF", "icon": "history" },
+      {
+        "id": "best_month",
+        "component": "rankedWide",
+        "title": "Le meilleur de {month}",
+        "accent": "#FFB300",
+        "icon": "calendar_month",
+        "seeAll": true,
+        "monthSelector": {
+          "listIdPrefix": "best_",
+          "initialMonth": "2026-08",
+          "monthsBack": 48
+        }
+      },
+      { "id": "pornstars", "component": "landscapeStacked", "title": "Pornstars", "accent": "#FFB300", "icon": "star", "seeAll": true, "cardStyle": "landscape" },
+      { "id": "tags", "component": "grid", "title": "Tags", "accent": "#00B8D4", "icon": "local_offer", "columns": 2, "rows": 2, "cardStyle": "tag", "seeAll": true },
+      { "id": "search_teen", "component": "showcase", "title": "Teen", "accent": "#DB6C91", "seeAll": true, "cardStyle": "landscape" },
+      { "id": "search_african", "component": "showcase", "title": "African", "accent": "#BD7838", "seeAll": true, "cardStyle": "landscape" },
+      { "id": "search_amateur", "component": "showcase", "title": "Amateur", "accent": "#4A89A8", "seeAll": true, "cardStyle": "landscape" },
+      { "id": "search_milf", "component": "showcase", "title": "MILF", "accent": "#9A6CB5", "seeAll": true, "cardStyle": "landscape" }
     ]
   },
   "browse": {
@@ -22,5 +39,5 @@
     "episodeList": "compact",
     "showRecommendations": false
   },
-  "player": { "mode": "standard" }
+  "player": { "mode": "standard", "touchToPreview": true }
 }
