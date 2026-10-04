@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.5",
+  "version": "1.2.6",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xnxx.js",
@@ -112,6 +112,22 @@ class DefaultExtension extends MProvider {
 
   _text(el) { return (el && el.text ? el.text : "").replace(/\s+/g, " ").trim(); }
 
+  _elementsByClass(root, className) {
+    if (!root) return [];
+    const elements = typeof root.getElementsByClassName === "function"
+      ? root.getElementsByClassName(className)
+      : root.select(`.${className}`);
+    return Array.isArray(elements) ? elements : [];
+  }
+
+  _elementsByTag(root, tagName) {
+    if (!root) return [];
+    const elements = typeof root.getElementsByTagName === "function"
+      ? root.getElementsByTagName(tagName)
+      : root.select(tagName);
+    return Array.isArray(elements) ? elements : [];
+  }
+
   _image(el) {
     if (!el) return "";
     return el.attr("data-src") || el.attr("data-original") ||
@@ -157,7 +173,7 @@ class DefaultExtension extends MProvider {
   _pageHasNext(doc, page, pathPrefix, items) {
     if (page >= 50) return false;
     const next = `${pathPrefix}/${page + 1}`;
-    for (const anchor of doc.select("a")) {
+    for (const anchor of this._elementsByTag(doc, "a")) {
       const href = anchor.attr("href") || "";
       if (href === next || href === `${next}?top`) return true;
     }
@@ -168,32 +184,49 @@ class DefaultExtension extends MProvider {
     const doc = new Document(html);
     const items = [];
     const seen = {};
-    const cards = doc.select(".thumb-block.video, .thumb-block.with-uploader");
+    // Use the DOM's native class/tag lookups here rather than a compound CSS
+    // selector. Watchtower's embedded selector engine is intentionally smaller
+    // than a browser's, and older runtimes can silently miss grouped selectors.
+    const cards = this._elementsByClass(doc, "thumb-block");
+    let videoLinksFound = 0;
 
     for (const card of cards) {
-      if (this._hasPremiumMarker(card)) continue;
-      const anchor = card.selectFirst("a[href*='/video-']");
+      const anchors = this._elementsByTag(card, "a");
+      const anchor = anchors.find(item =>
+        (item.attr("href") || "").includes("/video-")
+      );
       if (!anchor) continue;
+      videoLinksFound++;
+      if (this._hasPremiumMarker(card)) continue;
       const link = this._absolute(anchor.attr("href"));
       if (!link || seen[link]) continue;
       seen[link] = true;
 
-      const titleAnchor = card.selectFirst(".thumb-under a[title]") ||
-        card.selectFirst("a[title]") ||
-        card.selectFirst(".thumb-under p a") ||
-        card.selectFirst(".thumb-under a");
-      const image = this._image(card.selectFirst("img"));
+      const thumbUnder = this._elementsByClass(card, "thumb-under")[0] || card;
+      const titleAnchors = this._elementsByTag(thumbUnder, "a");
+      const titleAnchor = titleAnchors.find(item => (item.attr("title") || "").trim()) ||
+        anchors.find(item => (item.attr("title") || "").trim()) ||
+        titleAnchors.find(item => this._text(item)) ||
+        anchors.find(item => this._text(item)) ||
+        anchor;
+      const images = this._elementsByTag(card, "img");
+      const imageElement = images[0] || null;
       const metadata = this._text(
-        card.selectFirst(".thumb-under .metadata") ||
-        card.selectFirst(".duration")
+        this._elementsByClass(thumbUnder, "metadata")[0] ||
+        this._elementsByClass(card, "metadata")[0] ||
+        this._elementsByClass(card, "duration")[0]
       );
       const duration = metadata.match(/(\d+\s*(?:min|sec|h))/i);
-      const preview = card.selectFirst("img")?.attr("data-pvv") ||
-        card.selectFirst("[data-pvv]")?.attr("data-pvv") || "";
+      const preview = [
+        ...images,
+        ...this._elementsByTag(card, "div"),
+        ...this._elementsByTag(card, "a"),
+        ...this._elementsByTag(card, "span")
+      ].map(item => item.attr("data-pvv") || "").find(Boolean) || "";
 
       items.push({
         name: this._text(titleAnchor) || "Untitled",
-        imageUrl: image,
+        imageUrl: this._image(imageElement),
         previewUrl: this._absolute(preview),
         link,
         description: duration ? `Duration: ${duration[1]}` : ""
@@ -202,7 +235,7 @@ class DefaultExtension extends MProvider {
     if (!items.length) {
       extLog(
         "warn",
-        `XNXX parsed zero video cards mode=${mode || "unknown"} page=${page} htmlBytes=${String(html || "").length}`
+        `XNXX parsed zero video cards mode=${mode || "unknown"} page=${page} thumbBlocks=${cards.length} videoLinks=${videoLinksFound} htmlBytes=${String(html || "").length}`
       );
     }
 
@@ -221,20 +254,24 @@ class DefaultExtension extends MProvider {
     const doc = new Document(html);
     const items = [];
     const seen = {};
-    for (const card of doc.select(".thumb-block.thumb-cat")) {
-      if (this._hasPremiumMarker(card) && !card.selectFirst("a[href*='/pornstar/']")) {
-        continue;
-      }
-      const anchor = card.selectFirst("a[href*='/pornstar/']");
+    for (const card of this._elementsByClass(doc, "thumb-block")) {
+      const anchors = this._elementsByTag(card, "a");
+      const anchor = anchors.find(item =>
+        (item.attr("href") || "").includes("/pornstar/")
+      );
       if (!anchor) continue;
       const link = this._absolute(anchor.attr("href"));
       if (seen[link]) continue;
       seen[link] = true;
-      const title = card.selectFirst(".title a") || anchor;
-      const count = this._text(card.selectFirst(".uploader"));
+      if (this._hasPremiumMarker(card)) continue;
+      const titleBlock = this._elementsByClass(card, "title")[0];
+      const title = this._elementsByTag(titleBlock, "a")[0] ||
+        anchors.find(item => (item.attr("title") || "").trim()) ||
+        anchor;
+      const count = this._text(this._elementsByClass(card, "uploader")[0]);
       items.push({
         name: this._text(title) || "Pornstar",
-        imageUrl: this._image(card.selectFirst("img")),
+        imageUrl: this._image(this._elementsByTag(card, "img")[0]),
         link,
         description: count ? `${count} free videos` : "Free videos"
       });
@@ -248,12 +285,18 @@ class DefaultExtension extends MProvider {
   _parseTags(html) {
     const doc = new Document(html);
     const items = [];
-    for (const row of doc.select("#tags li")) {
-      const anchor = row.selectFirst("a[href]");
+    const tagRoot = typeof doc.getElementById === "function"
+      ? doc.getElementById("tags")
+      : null;
+    const tagRows = this._elementsByTag(tagRoot, "li");
+    const rows = tagRows.length ? tagRows : this._elementsByTag(doc, "li");
+    for (const row of rows) {
+      const anchor = this._elementsByTag(row, "a").find(item =>
+        (item.attr("href") || "").startsWith("/search/")
+      );
       if (!anchor) continue;
       const href = anchor.attr("href") || "";
-      if (!href.startsWith("/search/")) continue;
-      const count = this._text(row.selectFirst("strong"));
+      const count = this._text(this._elementsByTag(row, "strong")[0]);
       const name = this._text(anchor);
       if (!name) continue;
       items.push({

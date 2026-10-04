@@ -37,7 +37,8 @@ vm.runInNewContext(
 
 const provider = new context.XnxxForTest();
 const fixture = `
-  <div class="thumb-block video">
+  <div class="thumb-block">
+    <div class="thumb-container" data-pvv="//preview.example/one.mp4"></div>
     <a class="thumb-link" href="/video-one/test">
       <img data-src="//img.example/one.jpg" />
     </a>
@@ -46,13 +47,16 @@ const fixture = `
       <span class="metadata">12 min</span>
     </div>
   </div>
-  <div class="thumb-block video">
+  <div class="thumb-block with-uploader">
     <a class="thumb-link" href="/video-two/test">
       <img src="https://img.example/two.jpg" />
     </a>
     <div class="thumb-under">
       <a title="Second listing" href="/video-two/test">Second listing</a>
     </div>
+  </div>
+  <div class="thumb-block thumb-cat">
+    <a href="/pornstar/example-star">Example Star</a>
   </div>`;
 
 const parsed = provider._parseVideoList(fixture, 1, "hits");
@@ -60,8 +64,36 @@ assert.equal(parsed.list.length, 2);
 assert.equal(parsed.list[0].name, "First listing");
 assert.equal(parsed.list[0].link, "https://www.xnxx.com/video-one/test");
 assert.equal(parsed.list[0].imageUrl, "//img.example/one.jpg");
+assert.equal(parsed.list[0].previewUrl, "https://preview.example/one.mp4");
+response = { statusCode: 200, body: fixture };
+assert.equal((await provider.getCustomList("hits", 1)).list.length, 2);
+assert.equal((await provider.getPopular(1)).list.length, 2);
+assert.equal((await provider.getLatestUpdates(1)).list.length, 2);
 assert.equal(provider._parseVideoList("<html></html>", 1, "hits").list.length, 0);
 assert.ok(logs.some(({ message }) => message.includes("parsed zero video cards")));
+
+const tagsFixture = `
+  <div id="tags">
+    <ul>
+      <li><a href="/search/teen">Teen</a><strong>120</strong></li>
+      <li><a href="/search/amateur">Amateur</a><strong>80</strong></li>
+    </ul>
+  </div>`;
+response = { statusCode: 200, body: tagsFixture };
+const tags = await provider.getCustomList("tags", 1);
+assert.equal(tags.list.length, 2);
+assert.equal(tags.list[0].collectionId, "search_teen");
+
+const pornstarFixture = `
+  <div class="thumb-block thumb-cat">
+    <a href="/pornstar/example-star" title="Example Star">Example Star</a>
+    <span class="uploader">1200</span>
+    <img src="https://img.example/star.jpg" />
+  </div>`;
+response = { statusCode: 200, body: pornstarFixture };
+const pornstars = await provider.getCustomList("pornstars", 1);
+assert.equal(pornstars.list.length, 1);
+assert.equal(pornstars.list[0].name, "Example Star");
 
 response = { statusCode: 200, body: fixture };
 const loaded = await provider._get("/hits/1");

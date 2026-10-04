@@ -230,6 +230,42 @@ class HtmlNode {
   selectFirst(selector) {
     return this.select(selector)[0] || null;
   }
+
+  getElementsByTagName(localNames) {
+    const names = new Set(
+      String(localNames || "").toLowerCase().split(/\s+/).filter(Boolean),
+    );
+    const found = [];
+    const visit = (node) => {
+      for (const child of node.children) {
+        if (child.type !== "element") continue;
+        if (names.has("*") || names.has(child.tagName)) found.push(child);
+        visit(child);
+      }
+    };
+    visit(this);
+    return found;
+  }
+
+  getElementsByClassName(classNames) {
+    const names = String(classNames || "").trim().split(/\s+/).filter(Boolean);
+    if (!names.length) return [];
+    const found = [];
+    const visit = (node) => {
+      for (const child of node.children) {
+        if (child.type !== "element") continue;
+        const classes = new Set(child.attr("class").split(/\s+/).filter(Boolean));
+        if (names.every((name) => classes.has(name))) found.push(child);
+        visit(child);
+      }
+    };
+    visit(this);
+    return found;
+  }
+
+  getElementById(id) {
+    return this.getElementsByTagName("*").find((element) => element.attr("id") === id) || null;
+  }
 }
 
 function parseHtml(html) {
@@ -276,6 +312,18 @@ export class Document {
 
   selectFirst(selector) {
     return this._root.selectFirst(selector);
+  }
+
+  getElementsByTagName(localNames) {
+    return this._root.getElementsByTagName(localNames);
+  }
+
+  getElementsByClassName(classNames) {
+    return this._root.getElementsByClassName(classNames);
+  }
+
+  getElementById(id) {
+    return this._root.getElementById(id);
   }
 
   get html() {
