@@ -18,12 +18,12 @@ const watchtowerSources = [{
     "name": "French-Stream",
     "langs": ["fr"],
     "ids": { "fr": 112837465 },
-    "baseUrl": "https://french-stream.one",
-    "apiUrl": "https://french-stream.one",
-    "iconUrl": "https://french-stream.one/favicon.ico",
+    "baseUrl": "https://french-stream.net",
+    "apiUrl": "https://french-stream.net",
+    "iconUrl": "https://french-stream.net/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "login": false,
     "forYou": true,
     "pkgPath": "watch/fr/frenchstream.js",
@@ -39,7 +39,7 @@ const watchtowerSources = [{
     ]
 }];
 
-const BASE_URL = "https://french-stream.one";
+const BASE_URL = "https://french-stream.net";
 
 class DefaultExtension extends MProvider {
     constructor() { super(); }
@@ -664,7 +664,7 @@ async getCustomList(listId, page) {
                         }
                         chapters.push({
                             name: sName + " — Épisode " + n + (epLangs.length ? " (" + epLangs.join("/") + ")" : ""),
-                            url: url + "?s=" + season.id + "&ep=" + n,
+                            url: url + (url.indexOf("?") >= 0 ? "&" : "?") + "s=" + season.id + "&ep=" + n,
                             dateUpload: "",
                             description: "Épisode " + n + " sur " + nums.length,
                             scanlator: epLangs.join(" / ") || ""
@@ -681,67 +681,235 @@ async getCustomList(listId, page) {
         return { name: title, imageUrl: image, description: fullDesc, genres: genres, status: 1, author: year, artist: cast, rating: rating, chapters: chapters };
     }
 
-    // ── Video list ───────────────────────────────────────────────────────────
-    async getVideoList(url) {
-        await this._ensureLogin();
-        const r    = await new Client().get(url, this._hdrs(url));
-        const html = r.body;
-        const videos = [];
+    _resolveUrl(value, base) {
+        if (typeof value !== "string") return "";
+        const candidate = value.trim().replace(/\\\//g, "/").replace(/&amp;/g, "&");
+        if (!candidate || /^(?:javascript|data|blob):/i.test(candidate)) return "";
+        if (candidate.charAt(0) === "/" && candidate.charAt(1) === "/") return "https:" + candidate;
+        if (/^https?:\/\//i.test(candidate)) return candidate;
 
-        // Strategy 1 — Embedded player data JSON
-        const playerM = /(?:var|let|const)\s+(?:playerData|videoData|streamData)\s*=\s*(\{[\s\S]*?\});/.exec(html)
-                     || /data-streams="([^"]+)"/.exec(html);
+        const reference = base || this.baseUrl + "/";
+        const originM = /^([a-z][a-z0-9+.-]*:\/\/[^/]+)/i.exec(reference);
+        const origin = originM ? originM[1] : this.baseUrl;
+        if (candidate.charAt(0) === "/") return origin + candidate;
+        const path = reference.split(/[?#]/)[0];
+        const directory = path.substring(0, path.lastIndexOf("/") + 1);
+        return directory + candidate.replace(/^\.?\//, "");
+    }
+
+    _addVideo(videos, rawUrl, quality, referer) {
+        const videoUrl = this._resolveUrl(rawUrl, referer);
+        if (!videoUrl || !/\.(?:m3u8|mp4|m4v)(?:$|[?#])/i.test(videoUrl)) return false;
+        if (videos.some(video => video.url === videoUrl)) return false;
+        videos.push({
+            url: videoUrl,
+            originalUrl: videoUrl,
+            quality: String(quality || "AUTO").trim(),
+            headers: this._hdrs(referer || videoUrl)
+        });
+        return true;
+    }
+
+    _collectPlayableVideos(html, referer, quality) {
+        const videos = [];
+        const add = (value, label) => this._addVideo(videos, value, label || quality, referer);
+        const body = String(html || "")
+            .replace(/\\\//g, "/")
+            .replace(/&amp;/g, "&");
+        const markup = body.replace(/&quot;/g, '"');
+
+        const playerM = /(?:var|let|const)\s+(?:playerData|videoData|streamData)\s*=\s*(\{[\s\S]*?\});/.exec(body)
+                     || /data-streams="([^"]+)"/.exec(body);
         if (playerM) {
             try {
-                const pd = JSON.parse(playerM[1].replace(/&quot;/g, '"'));
-                if (pd.file || pd.src) videos.push({ url: pd.file || pd.src, quality: pd.label || "AUTO", headers: this._hdrs(url) });
-                if (pd.sources) pd.sources.forEach(s => videos.push({ url: s.file || s.src, quality: s.label || "AUTO", headers: this._hdrs(url) }));
+                const data = JSON.parse(playerM[1].replace(/&quot;/g, '"'));
+                if (data.file || data.src) add(data.file || data.src, data.label || data.quality);
+                if (Array.isArray(data.sources)) {
+                    data.sources.forEach(source => {
+                        if (source && typeof source === "object") {
+                            add(source.file || source.src || source.url, source.label || source.quality);
+                        }
+                    });
+                }
             } catch (_) {}
         }
 
-        // Strategy 2 — m3u8 / mp4 direct links in source
-        const hlsRe = /https?:\/\/[^\s"'<>]+\.(?:m3u8|mp4)(?:\?[^\s"'<>]*)?/gi;
-        let hm;
-        while ((hm = hlsRe.exec(html)) !== null) {
-            const streamUrl = hm[0].replace(/&amp;/g, "&");
-            if (!videos.find(v => v.url === streamUrl)) videos.push({ url: streamUrl, quality: "AUTO", headers: this._hdrs(url) });
-        }
+        const mediaTagRe = /<(?:video|source)\b[^>]*\b(?:src|data-src)\s*=\s*(["'])(.*?)\1/gi;
+        let tagM;
+        while ((tagM = mediaTagRe.exec(markup)) !== null) add(tagM[2]);
 
-        // Strategy 3 — iframes (external players)
-        if (videos.length === 0) {
-            const iRe = /<iframe[^>]+src="([^"]+)"/gi;
-            let im;
-            while ((im = iRe.exec(html)) !== null) {
-                const src = im[1];
-                if (src && !src.includes("javascript") && !src.includes("about:")) {
-                    videos.push({ url: src, quality: "AUTO", headers: this._hdrs(url) });
+        const directRe = /(?:https?:)?\/\/[^\s"'<>]+\.(?:m3u8|mp4|m4v)(?:\?[^\s"'<>]*)?/gi;
+        let directM;
+        while ((directM = directRe.exec(body)) !== null) add(directM[0]);
+
+        videos.sort((a, b) => {
+            const aHls = /\.m3u8(?:$|[?#])/i.test(a.url) ? 0 : 1;
+            const bHls = /\.m3u8(?:$|[?#])/i.test(b.url) ? 0 : 1;
+            return aHls - bHls;
+        });
+        return videos;
+    }
+
+    _collectPlayerEmbeds(html, base) {
+        const embeds = [];
+        const iframeRe = /<iframe\b[^>]*\b(?:src|data-src)\s*=\s*(["'])(.*?)\1/gi;
+        let match;
+        while ((match = iframeRe.exec(String(html || ""))) !== null) {
+            const raw = match[2].trim();
+            if (!raw) continue;
+            const resolved = this._resolveUrl(raw, base);
+            if (resolved && resolved !== base && !embeds.includes(resolved)) embeds.push(resolved);
+        }
+        return embeds;
+    }
+
+    async _resolvePlayerUrl(rawUrl, referer, quality) {
+        const playerUrl = this._resolveUrl(rawUrl, referer);
+        if (!playerUrl) return [];
+
+        const direct = [];
+        if (this._addVideo(direct, playerUrl, quality, referer)) return direct;
+
+        try {
+            const response = await new Client().get(playerUrl, this._hdrs(referer || playerUrl));
+            return this._collectPlayableVideos(response.body, response.url || playerUrl, quality);
+        } catch (_) {
+            return [];
+        }
+    }
+
+    _preferredVideoLanguages() {
+        const preferred = (this._getPref("preferred_lang") || "AUTO").trim().toUpperCase();
+        const orders = {
+            "VF": ["vff", "vf", "default"],
+            "VOSTFR": ["vostfr", "default", "vff", "vf"],
+            "VO": ["vo", "default", "vff", "vf"],
+            "VFQ": ["vfq", "vff", "vf", "default"],
+            "TRUEFRENCH": ["truefrench", "vff", "default", "vf"],
+            "AUTO": ["default", "vff", "vf", "vostfr", "vo", "vfq"]
+        };
+        return orders[preferred] || orders.AUTO;
+    }
+
+    async _getVideosFromFilmApi(newsId, episodeUrl) {
+        if (!newsId) return [];
+        try {
+            const response = await new Client().get(
+                this.baseUrl + "/engine/ajax/film_api.php?id=" + encodeURIComponent(newsId),
+                this._ajaxHdrs(episodeUrl)
+            );
+            const data = this._parseJsonOrJs(response.body);
+            const players = data && data.players;
+            if (!players || typeof players !== "object") return [];
+
+            const providers = ["vidzy", "premium", "uqload", "dood", "voe", "filmoon"];
+            const qualityByLanguage = {
+                "default": "AUTO",
+                "vff": "VF",
+                "vf": "VF",
+                "vostfr": "VOSTFR",
+                "vo": "VO",
+                "vfq": "VFQ",
+                "truefrench": "TrueFrench"
+            };
+            const languages = this._preferredVideoLanguages();
+            for (let li = 0; li < languages.length; li++) {
+                const language = languages[li];
+                for (let pi = 0; pi < providers.length; pi++) {
+                    const provider = players[providers[pi]];
+                    if (!provider || typeof provider !== "object") continue;
+                    let value = provider[language];
+                    if (!value) continue;
+                    if (typeof value === "object" && !Array.isArray(value)) {
+                        value = value.file || value.src || value.url;
+                    }
+                    const links = Array.isArray(value) ? value : [value];
+                    for (let vi = 0; vi < links.length; vi++) {
+                        const resolved = await this._resolvePlayerUrl(
+                            links[vi],
+                            episodeUrl,
+                            qualityByLanguage[language] || "AUTO"
+                        );
+                        if (resolved.length > 0) return resolved.slice(0, 1);
+                    }
                 }
             }
-        }
+        } catch (_) {}
+        return [];
+    }
 
-        // Strategy 4 — episode language variants from URL params
-        const epM    = /[?&]ep=(\d+)/.exec(url);
-        const sIdM   = /[?&]s=(\d+)/.exec(url);
-        if (epM && sIdM && videos.length === 0) {
-            const newsId = this._extractNewsId(url, html);
-            if (newsId) {
-                const v = Math.floor(Date.now() / 30000);
-                try {
-                    const epR = await new Client().get(this.baseUrl + "/static/series/" + sIdM[1] + ".js?v=" + v, this._hdrs(url));
-                    const epData = JSON.parse(epR.body);
-                    const langs  = ["vf", "vostfr", "vo"];
-                    for (var li = 0; li < langs.length; li++) {
-                        const ld = epData[langs[li]];
-                        if (ld && ld[epM[1]]) {
-                            const streamUrls = Array.isArray(ld[epM[1]]) ? ld[epM[1]] : [ld[epM[1]]];
-                            streamUrls.forEach(su => videos.push({ url: su, quality: langs[li].toUpperCase(), headers: this._hdrs(url) }));
-                        }
-                    }
-                } catch (_) {}
+    async _getVideosFromSeriesEpisode(url, seasonId, episodeNumber, pageUrl) {
+        const cacheVersion = Math.floor(Date.now() / 30000);
+        try {
+            const response = await new Client().get(
+                this.baseUrl + "/static/series/" + seasonId + ".js?v=" + cacheVersion,
+                this._hdrs(pageUrl)
+            );
+            const data = this._parseJsonOrJs(response.body);
+            if (!data || typeof data !== "object") return [];
+
+            const qualityByLanguage = {
+                "vf": "VF",
+                "vostfr": "VOSTFR",
+                "vo": "VO"
+            };
+            const preferred = (this._getPref("preferred_lang") || "AUTO").trim().toLowerCase();
+            const languages = preferred === "vostfr" ? ["vostfr", "vf", "vo"]
+                : preferred === "vo" ? ["vo", "vf", "vostfr"]
+                : ["vf", "vostfr", "vo"];
+            for (let li = 0; li < languages.length; li++) {
+                const language = languages[li];
+                const entries = data[language];
+                const raw = entries && (entries[String(episodeNumber)] || entries[episodeNumber]);
+                if (!raw) continue;
+                const links = Array.isArray(raw) ? raw : [raw];
+                for (let vi = 0; vi < links.length; vi++) {
+                    const entry = links[vi];
+                    const link = entry && typeof entry === "object"
+                        ? (entry.file || entry.src || entry.url)
+                        : entry;
+                    const resolved = await this._resolvePlayerUrl(
+                        link,
+                        pageUrl || url,
+                        qualityByLanguage[language] || "AUTO"
+                    );
+                    if (resolved.length > 0) return resolved.slice(0, 1);
+                }
             }
+        } catch (_) {}
+        return [];
+    }
+
+    // ── Video list ───────────────────────────────────────────────────────────
+    async getVideoList(url) {
+        await this._ensureLogin();
+        const response = await new Client().get(url, this._hdrs(url));
+        const html = response.body || "";
+        const pageUrl = response.url || url;
+
+        const directVideos = this._collectPlayableVideos(html, pageUrl, "AUTO");
+        if (directVideos.length > 0) return directVideos;
+
+        const embeds = this._collectPlayerEmbeds(html, pageUrl);
+        for (let i = 0; i < embeds.length; i++) {
+            const resolved = await this._resolvePlayerUrl(embeds[i], pageUrl, "AUTO");
+            if (resolved.length > 0) return resolved.slice(0, 1);
         }
 
-        return videos.length > 0 ? videos : [{ url: url, quality: "AUTO", headers: this._hdrs(url) }];
+        const episodeMatch = /[?&]ep=(\d+)/.exec(url);
+        const seasonMatch = /[?&]s=(\d+)/.exec(url);
+        if (episodeMatch && seasonMatch) {
+            const episodeVideos = await this._getVideosFromSeriesEpisode(
+                url,
+                seasonMatch[1],
+                episodeMatch[1],
+                pageUrl
+            );
+            if (episodeVideos.length > 0) return episodeVideos;
+        }
+
+        const newsId = this._extractNewsId(url, html);
+        return this._getVideosFromFilmApi(newsId, pageUrl);
     }
 
     getSourcePreferences() {

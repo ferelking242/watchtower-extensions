@@ -5,6 +5,7 @@
   "description": "Watchtower extensions repository — CI validation scripts",
   "scripts": {
     "validate": "node tools/validate-extensions.mjs",
+    "test:frenchstream": "node tools/test-frenchstream.mjs",
     "test:xnxx": "node tools/test-xnxx.mjs",
     "validate:live": "files=$(find src/nsfw -type f -name '*.js' -print | sort | paste -sd, -) && node tools/run_all_tests.mjs --files \"$files\" --deep --strict --concurrency 4 --out tools/live-report.json"
   },
