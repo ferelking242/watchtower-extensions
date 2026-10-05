@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.6",
+  "version": "1.2.7",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xnxx.js",
@@ -112,20 +112,68 @@ class DefaultExtension extends MProvider {
 
   _text(el) { return (el && el.text ? el.text : "").replace(/\s+/g, " ").trim(); }
 
+  _elementArray(elements) {
+    if (!elements) return [];
+    if (Array.isArray(elements)) return elements;
+
+    let length = typeof elements.length === "number" ? elements.length : null;
+    if (length === null && typeof elements.size === "number") {
+      length = elements.size;
+    } else if (length === null && typeof elements.size === "function") {
+      try { length = elements.size(); } catch (_) {}
+    }
+    if (Number.isInteger(length) && length >= 0) {
+      const result = [];
+      for (let index = 0; index < length; index++) {
+        try {
+          const item = typeof elements.item === "function" ? elements.item(index)
+            : typeof elements.get === "function" ? elements.get(index)
+              : elements[index];
+          if (item != null) result.push(item);
+        } catch (_) {}
+      }
+      return result;
+    }
+
+    if (typeof elements.toArray === "function") {
+      try {
+        const converted = elements.toArray();
+        if (Array.isArray(converted)) return converted;
+      } catch (_) {}
+    }
+    if (typeof Symbol !== "undefined" && Symbol.iterator &&
+        typeof elements[Symbol.iterator] === "function") {
+      try { return Array.from(elements); } catch (_) {}
+    }
+    return [];
+  }
+
   _elementsByClass(root, className) {
     if (!root) return [];
-    const elements = typeof root.getElementsByClassName === "function"
-      ? root.getElementsByClassName(className)
-      : root.select(`.${className}`);
-    return Array.isArray(elements) ? elements : [];
+    if (typeof root.getElementsByClassName === "function") {
+      try {
+        const elements = this._elementArray(root.getElementsByClassName(className));
+        if (elements.length) return elements;
+      } catch (_) {}
+    }
+    if (typeof root.select === "function") {
+      try { return this._elementArray(root.select(`.${className}`)); } catch (_) {}
+    }
+    return [];
   }
 
   _elementsByTag(root, tagName) {
     if (!root) return [];
-    const elements = typeof root.getElementsByTagName === "function"
-      ? root.getElementsByTagName(tagName)
-      : root.select(tagName);
-    return Array.isArray(elements) ? elements : [];
+    if (typeof root.getElementsByTagName === "function") {
+      try {
+        const elements = this._elementArray(root.getElementsByTagName(tagName));
+        if (elements.length) return elements;
+      } catch (_) {}
+    }
+    if (typeof root.select === "function") {
+      try { return this._elementArray(root.select(tagName)); } catch (_) {}
+    }
+    return [];
   }
 
   _image(el) {
