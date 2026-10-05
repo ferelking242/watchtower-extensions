@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.rexporn.st/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.4",
+  "version": "1.2.5",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/rexporn.js",
@@ -66,6 +66,13 @@ class DefaultExtension extends MProvider {
     ];
   }
 
+  static get CATEGORY_THUMBNAIL_CACHE() {
+    if (!this._categoryThumbnailCache) {
+      this._categoryThumbnailCache = Object.create(null);
+    }
+    return this._categoryThumbnailCache;
+  }
+
   // ── Headers ──────────────────────────────────────────────────────────────
   getPageHeaders(url) {
     return {
@@ -109,6 +116,33 @@ class DefaultExtension extends MProvider {
   _categoryUrl(slug, page) {
     if (page > 1) return `https://www.rexporn.st/${slug}-page-${page}.html`;
     return `https://www.rexporn.st/${slug}`;
+  }
+
+  async _getCategoryThumbnail(slug) {
+    const cache = DefaultExtension.CATEGORY_THUMBNAIL_CACHE;
+    if (cache[slug]) return cache[slug];
+
+    const request = (async () => {
+      const url = this._categoryUrl(slug, 1);
+      try {
+        const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+        const item = this._parseList(res.body, url, 1, "category")
+          .list.find(video => !!video.imageUrl);
+        if (!item) {
+          extLog("warn", `RexPorn category preview missing: slug=${slug}`);
+          return "";
+        }
+        return item.imageUrl;
+      } catch (error) {
+        extLog("warn", `RexPorn category preview failed: slug=${slug} error=${error.message || error}`);
+        return "";
+      }
+    })();
+
+    cache[slug] = request;
+    const imageUrl = await request;
+    if (!imageUrl) delete cache[slug];
+    return imageUrl;
   }
 
   // ── Listings ──────────────────────────────────────────────────────────────
@@ -187,7 +221,9 @@ class DefaultExtension extends MProvider {
       seen[link] = 1;
 
       const img   = a.selectFirst("img") || card.selectFirst("img");
-      const thumb = img ? (img.attr("src") || img.attr("data-src") || "") : "";
+      const thumb = img
+        ? (img.attr("data-src") || img.attr("data-original") || img.attr("src") || "")
+        : "";
       const ftitle = card.selectFirst(".ftitle");
       let title = ftitle
         ? ftitle.text.trim()
@@ -353,20 +389,31 @@ class DefaultExtension extends MProvider {
       return studios;
     }
     if (listId === "categories" || listId === "tags") {
-      const items = DefaultExtension.CATEGORIES
-        .filter(([, slug]) => !!slug)
-        .map(([name, slug]) => {
+      const categories = DefaultExtension.CATEGORIES
+        .filter(([, slug]) => !!slug);
+      const items = new Array(categories.length);
+      let nextCategory = 0;
+      const loadNextCategory = async () => {
+        while (nextCategory < categories.length) {
+          const index = nextCategory++;
+          const [name, slug] = categories[index];
           const link = `https://www.rexporn.st/${slug}`;
-          return {
+          const imageUrl = await this._getCategoryThumbnail(slug);
+          items[index] = {
             name,
-            imageUrl: "",
+            imageUrl,
             link,
             url: link,
-            description: "Browse RexPorn videos",
+            description: `Browse ${name} videos`,
             genre: [name],
             metadata: { collection: true, collectionType: listId }
           };
-        });
+        }
+      };
+      const workerCount = Math.min(4, categories.length);
+      await Promise.all(
+        Array.from({ length: workerCount }, () => loadNextCategory())
+      );
       return { list: items, hasNextPage: false };
     }
     if (listId.startsWith("category_")) {

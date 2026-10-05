@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Watchtower Extensions</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%236366f1'/%3E%3Cpath d='M14 52h36L32 12z' fill='white'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
@@ -23,6 +24,8 @@
       --manga: #f97316;
       --novel: #a855f7;
       --game: #22c55e;
+      --music: #14b8a6;
+      --subtitles: #f59e0b;
     }
 
     html { scroll-behavior: smooth; }
@@ -125,14 +128,14 @@
     /* ── STATS BAR ── */
     .stats {
       position: relative; z-index: 1;
-      display: flex; justify-content: center; gap: 0;
-      margin: 0 auto; max-width: 700px;
+      display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+      margin: 0 auto; max-width: 900px;
       border: 1px solid var(--border);
       border-radius: 16px; overflow: hidden;
       background: var(--bg2);
     }
     .stat {
-      flex: 1; padding: 24px; text-align: center;
+      padding: 24px 16px; text-align: center;
       border-right: 1px solid var(--border);
     }
     .stat:last-child { border-right: none; }
@@ -168,6 +171,8 @@
     .card.manga { --c: var(--manga); }
     .card.novel { --c: var(--novel); }
     .card.game  { --c: var(--game); }
+    .card.music { --c: var(--music); }
+    .card.subtitles { --c: var(--subtitles); }
     .card:hover { border-color: var(--c); box-shadow: 0 0 30px rgba(var(--c-rgb,99,102,241),0.15); }
 
     .card-icon {
@@ -257,6 +262,7 @@
       transition: border-color .2s, background .2s;
     }
     .upload-area:hover { border-color: var(--primary); background: rgba(99,102,241,0.08); }
+    .upload-area.is-dragging { border-color: var(--accent); background: rgba(34,211,238,0.1); }
     .upload-icon { font-size: 48px; margin-bottom: 16px; }
     .upload-area h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
     .upload-area p { color: var(--muted); font-size: 14px; }
@@ -271,8 +277,11 @@
     @media (max-width: 768px) {
       nav { padding: 16px 20px; }
       .nav-links { display: none; }
-      .stats { flex-direction: column; }
-      .stat { border-right: none; border-bottom: 1px solid var(--border); }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stat:nth-child(3n) { border-right: 1px solid var(--border); }
+      .stat:nth-child(2n) { border-right: none; }
+      .stat:nth-child(-n+4) { border-bottom: 1px solid var(--border); }
+      .stat:nth-last-child(-n+2) { border-bottom: none; }
     }
   </style>
 </head>
@@ -293,29 +302,37 @@
   <div class="hero-bg"></div>
   <div class="hero-badge">Official Extension Registry</div>
   <h1>Extensions for<br/>Watchtower</h1>
-  <p>Browse, install, and manage extensions for Watch, Manga, Novel and Game — all from one unified repository.</p>
+  <p>Browse, install, and manage Watch, Manga, Novel, Game, Music, and Subtitle extensions from one unified repository.</p>
   <div class="hero-actions">
     <a href="#add" class="btn-primary">📱 Add to Watchtower</a>
     <a href="#create" class="btn-ghost">🛠 Create Extension</a>
   </div>
 
-  <div style="margin-top:64px; width:100%; max-width:700px; position:relative; z-index:1;">
+  <div style="margin-top:64px; width:100%; max-width:900px; position:relative; z-index:1;">
     <div class="stats">
       <div class="stat">
-        <div class="stat-num" id="cnt-watch">211</div>
+        <div class="stat-num" id="cnt-watch">—</div>
         <div class="stat-label">Watch Sources</div>
       </div>
       <div class="stat">
-        <div class="stat-num" id="cnt-manga">200+</div>
+        <div class="stat-num" id="cnt-manga">—</div>
         <div class="stat-label">Manga Sources</div>
       </div>
       <div class="stat">
-        <div class="stat-num" id="cnt-novel">18</div>
+        <div class="stat-num" id="cnt-novel">—</div>
         <div class="stat-label">Novel Sources</div>
       </div>
       <div class="stat">
-        <div class="stat-num" id="cnt-game">1</div>
+        <div class="stat-num" id="cnt-game">—</div>
         <div class="stat-label">Game Sources</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="cnt-music">—</div>
+        <div class="stat-label">Music Sources</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="cnt-subtitles">—</div>
+        <div class="stat-label">Subtitle Sources</div>
       </div>
     </div>
   </div>
@@ -325,47 +342,67 @@
 <section id="repos">
   <div class="section-label">Extension Repositories</div>
   <h2>All Content Types</h2>
-  <p class="subtitle">Four specialized repositories covering every type of content — streaming video, manga, novels, and games.</p>
+  <p class="subtitle">Live source counts and direct index links for all six supported content catalogs.</p>
 
   <div class="cards">
     <div class="card watch">
       <div class="card-icon">📺</div>
       <h3>Watch</h3>
       <p>Streaming platforms, anime sites, IPTV, adult content, and more. 30+ languages supported.</p>
-      <div class="card-count">211 sources</div>
+      <div class="card-count" id="card-count-watch">Loading…</div>
       <div class="url-chip">
-        <span>watch/index.json</span>
-        <button class="copy-btn" onclick="copy(this,'https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/index.json')">Copy</button>
+        <span>index/watch.json</span>
+        <button class="copy-btn" onclick="copy(this,'https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/watch.json')">Copy</button>
       </div>
     </div>
     <div class="card manga">
       <div class="card-icon">📖</div>
       <h3>Manga</h3>
       <p>Comics, manhwa, manhua from MangaDex, Comick, and 50+ regional sources worldwide.</p>
-      <div class="card-count">200+ sources</div>
+      <div class="card-count" id="card-count-manga">Loading…</div>
       <div class="url-chip">
-        <span>manga/index.json</span>
-        <button class="copy-btn" onclick="copy(this,'https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/manga/index.json')">Copy</button>
+        <span>index/manga.json</span>
+        <button class="copy-btn" onclick="copy(this,'https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/manga.json')">Copy</button>
       </div>
     </div>
     <div class="card novel">
       <div class="card-icon">📝</div>
       <h3>Novel</h3>
       <p>Web novels, light novels, wuxia, isekai from Royal Road, NovelBuddy, WuxiaWorld and more.</p>
-      <div class="card-count">18 sources</div>
+      <div class="card-count" id="card-count-novel">Loading…</div>
       <div class="url-chip">
-        <span>novel/index.json</span>
-        <button class="copy-btn" onclick="copy(this,'https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/novel/index.json')">Copy</button>
+        <span>index/novel.json</span>
+        <button class="copy-btn" onclick="copy(this,'https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/novel.json')">Copy</button>
       </div>
     </div>
     <div class="card game">
       <div class="card-icon">🎮</div>
       <h3>Game</h3>
       <p>ROM repositories and game downloads — PSP, PS2, GBA, N64, SNES, NDS and beyond.</p>
-      <div class="card-count">1 source</div>
+      <div class="card-count" id="card-count-game">Loading…</div>
       <div class="url-chip">
-        <span>game/index.json</span>
-        <button class="copy-btn" onclick="copy(this,'https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/game/index.json')">Copy</button>
+        <span>index/game.json</span>
+        <button class="copy-btn" onclick="copy(this,'https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/game.json')">Copy</button>
+      </div>
+    </div>
+    <div class="card music">
+      <div class="card-icon">🎵</div>
+      <h3>Music</h3>
+      <p>Music streaming and discovery sources available in the Watchtower catalog.</p>
+      <div class="card-count" id="card-count-music">Loading…</div>
+      <div class="url-chip">
+        <span>index/music.json</span>
+        <button class="copy-btn" onclick="copy(this,'https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/music.json')">Copy</button>
+      </div>
+    </div>
+    <div class="card subtitles">
+      <div class="card-icon">💬</div>
+      <h3>Subtitles</h3>
+      <p>Subtitle search and download sources from the Watchtower catalog.</p>
+      <div class="card-count" id="card-count-subtitles">Loading…</div>
+      <div class="url-chip">
+        <span>index/subtitles.json</span>
+        <button class="copy-btn" onclick="copy(this,'https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/index/subtitles.json')">Copy</button>
       </div>
     </div>
   </div>
@@ -390,10 +427,10 @@
         <div class="step-num">2</div>
         <div>
           <h4>Tap + and paste the URL</h4>
-          <p>Choose the tab for Watch, Manga, or Novel. Tap the + button and paste the raw index URL below:</p>
+          <p>Paste the unified repository URL to add every available content catalog:</p>
           <div class="url-chip" style="margin-top:12px;">
-            <span>https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/index.json</span>
-            <button class="copy-btn" onclick="copy(this,'https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/watch/index.json')">Copy</button>
+            <span>https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/repo.json</span>
+            <button class="copy-btn" onclick="copy(this,'https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/repo.json')">Copy</button>
           </div>
         </div>
       </div>
@@ -444,19 +481,19 @@
   </div>
 
   <div style="margin-top:40px;">
-    <h3 style="margin-bottom:16px;font-size:20px;">Upload Your Extension</h3>
-    <div class="upload-area" onclick="document.getElementById('file-input').click()">
+    <h3 style="margin-bottom:16px;font-size:20px;">Select a local extension file</h3>
+    <div class="upload-area" id="upload-area" role="button" tabindex="0" aria-label="Select an extension file">
       <div class="upload-icon">📦</div>
-      <h3>Drop your extension here</h3>
-      <p>Drag & drop a <code>.js</code> or <code>.wpkg</code> file, or click to browse</p>
+      <h3>Choose or drop a file</h3>
+      <p>This page keeps the file local; it does not upload, execute, or install it.</p>
       <div>
         <span class="format-badge">.js</span>
-        <span class="format-badge">.wpkg</span>
+        <span class="format-badge">.flare</span>
         <span class="format-badge">.json</span>
       </div>
     </div>
-    <input type="file" id="file-input" accept=".js,.wpkg,.json" style="display:none" onchange="handleFile(this)" />
-    <div id="upload-result" style="display:none; margin-top:20px;"></div>
+    <input type="file" id="file-input" accept=".js,.flare,.json" style="display:none" onchange="handleFile(this)" />
+    <div id="upload-result" aria-live="polite" style="display:none; margin-top:20px;"></div>
   </div>
 
   <div style="margin-top:48px;">
@@ -484,39 +521,86 @@
     });
   }
 
-  // Load live counts from indexes
+  // Load live counts from the repository's actual index paths.
+  const repoBase = 'https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main';
+  const sourceIndexes = [
+    { key: 'watch', path: 'index/watch.json' },
+    { key: 'manga', path: 'index/manga.json' },
+    { key: 'novel', path: 'index/novel.json' },
+    { key: 'game', path: 'index/game.json' },
+    { key: 'music', path: 'index/music.json' },
+    { key: 'subtitles', path: 'index/subtitles.json' },
+  ];
+
   async function loadCounts() {
-    try {
-      const base = 'https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main';
-      const [w, m, n, g] = await Promise.allSettled([
-        fetch(`${base}/watch/index.json`).then(r=>r.json()),
-        fetch(`${base}/manga/index.json`).then(r=>r.json()),
-        fetch(`${base}/novel/index.json`).then(r=>r.json()),
-        fetch(`${base}/game/index.json`).then(r=>r.json()),
-      ]);
-      if (w.status==='fulfilled') document.getElementById('cnt-watch').textContent = w.value.length;
-      if (m.status==='fulfilled') document.getElementById('cnt-manga').textContent = m.value.length;
-      if (n.status==='fulfilled') document.getElementById('cnt-novel').textContent = n.value.length;
-      if (g.status==='fulfilled') document.getElementById('cnt-game').textContent = g.value.length;
-    } catch(e) {}
+    const results = await Promise.allSettled(sourceIndexes.map(async ({ key, path }) => {
+      const response = await fetch(`${repoBase}/${path}`);
+      if (!response.ok) throw new Error(`Could not load ${path}: HTTP ${response.status}`);
+      const entries = await response.json();
+      if (!Array.isArray(entries)) throw new Error(`${path} is not a source list`);
+      return { key, count: entries.length };
+    }));
+
+    results.forEach((result, index) => {
+      const key = sourceIndexes[index].key;
+      const stat = document.getElementById(`cnt-${key}`);
+      const cardCount = document.getElementById(`card-count-${key}`);
+      if (result.status === 'fulfilled') {
+        const { count } = result.value;
+        stat.textContent = count;
+        cardCount.textContent = `${count} source${count === 1 ? '' : 's'}`;
+      } else {
+        console.warn(`Unable to load ${key} source count`, result.reason);
+        stat.textContent = '—';
+        cardCount.textContent = 'Count unavailable';
+      }
+    });
   }
   loadCounts();
 
-  // File upload handler
+  // Show selected file metadata only; this page never uploads or executes it.
   function handleFile(input) {
     const file = input.files[0];
     if (!file) return;
     const result = document.getElementById('upload-result');
     result.style.display = 'block';
-    result.innerHTML = `
-      <div style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;">
-        <div style="font-weight:700;margin-bottom:8px;">📦 ${file.name}</div>
-        <div style="color:#94a3b8;font-size:14px;">Size: ${(file.size/1024).toFixed(1)} KB</div>
-        <div style="margin-top:12px;padding:12px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:8px;color:#4ade80;font-size:13px;">
-          ✅ Extension loaded — To install in Watchtower, use the Import button in the app (Browse → Extensions → Import .wpkg)
-        </div>
-      </div>`;
+    result.replaceChildren();
+
+    const card = document.createElement('div');
+    card.style.cssText = 'background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:20px;';
+    const fileName = document.createElement('div');
+    fileName.style.cssText = 'font-weight:700;margin-bottom:8px;';
+    fileName.textContent = `📦 ${file.name}`;
+    const fileInfo = document.createElement('div');
+    fileInfo.style.cssText = 'color:#94a3b8;font-size:14px;';
+    fileInfo.textContent = `Size: ${(file.size / 1024).toFixed(1)} KB`;
+    const note = document.createElement('div');
+    note.style.cssText = 'margin-top:12px;padding:12px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:8px;color:#4ade80;font-size:13px;';
+    note.textContent = 'File selected locally only. To install it, use Watchtower → Extensions → Install from file.';
+    card.append(fileName, fileInfo, note);
+    result.append(card);
   }
+
+  const uploadArea = document.getElementById('upload-area');
+  const fileInput = document.getElementById('file-input');
+  uploadArea.addEventListener('click', () => fileInput.click());
+  uploadArea.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      fileInput.click();
+    }
+  });
+  uploadArea.addEventListener('dragover', (event) => {
+    event.preventDefault();
+    uploadArea.classList.add('is-dragging');
+  });
+  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('is-dragging'));
+  uploadArea.addEventListener('drop', (event) => {
+    event.preventDefault();
+    uploadArea.classList.remove('is-dragging');
+    const file = event.dataTransfer.files[0];
+    if (file) handleFile({ files: [file] });
+  });
 </script>
 </body>
 </html>

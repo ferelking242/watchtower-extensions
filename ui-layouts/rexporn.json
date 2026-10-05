@@ -4,7 +4,7 @@
     "sections": [
       {
         "id": "latest",
-        "component": "banner",
+        "component": "spotlight",
         "title": "New RexPorn Videos",
         "accent": "#FF4D8D",
         "icon": "bolt",
@@ -35,24 +35,16 @@
         "seeAll": true
       },
       {
-        "id": "categories",
-        "component": "categoryPills",
-        "title": "Categories",
-        "accent": "#26C6DA",
-        "icon": "category",
-        "seeAll": true
-      },
-      {
         "id": "tags",
         "component": "grid",
-        "title": "Tags",
+        "title": "Browse Categories",
         "accent": "#64D8CB",
-        "icon": "local_offer",
+        "icon": "category",
         "columns": 3,
         "rows": 3,
         "gridOrder": "column",
         "scrollDirection": "horizontal",
-        "cardStyle": "tag",
+        "cardStyle": "thumbnail",
         "seeAll": true
       },
       {
