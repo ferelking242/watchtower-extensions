@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "iconUrl": "https://french-stream.net/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.1",
+    "version": "1.0.2",
     "login": false,
     "forYou": true,
     "pkgPath": "watch/fr/frenchstream.js",
@@ -699,7 +699,10 @@ async getCustomList(listId, page) {
 
     _addVideo(videos, rawUrl, quality, referer) {
         const videoUrl = this._resolveUrl(rawUrl, referer);
-        if (!videoUrl || !/\.(?:m3u8|mp4|m4v)(?:$|[?#])/i.test(videoUrl)) return false;
+        const mediaPath = videoUrl.split(/[?#]/, 1)[0];
+        if (!videoUrl
+            || !/\.(?:m3u8|mp4|m4v)(?:$|[?#])/i.test(videoUrl)
+            || /\/troll(?:\/|$)/i.test(mediaPath)) return false;
         if (videos.some(video => video.url === videoUrl)) return false;
         videos.push({
             url: videoUrl,
