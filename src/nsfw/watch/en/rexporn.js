@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.rexporn.st/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.5",
+  "version": "1.2.6",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/rexporn.js",
@@ -366,26 +366,6 @@ class DefaultExtension extends MProvider {
         page,
         "studios"
       );
-      // The home studio rail is intentionally a featured studio banner
-      // followed by videos from that studio. Keep later pages as a normal
-      // studio catalogue so pagination remains predictable.
-      if (page === 1 && studios.list.length > 0) {
-        const featured = studios.list[0];
-        const studioPage = await new Client().get(
-          featured.link,
-          { headers: this.getPageHeaders(featured.link) }
-        );
-        const videos = this._parseList(
-          studioPage.body,
-          featured.link,
-          1,
-          "studio"
-        ).list.slice(0, 8);
-        return {
-          list: [featured, ...videos],
-          hasNextPage: studios.hasNextPage
-        };
-      }
       return studios;
     }
     if (listId === "categories" || listId === "tags") {
@@ -404,6 +384,7 @@ class DefaultExtension extends MProvider {
             imageUrl,
             link,
             url: link,
+            collectionId: `category_${slug}`,
             description: `Browse ${name} videos`,
             genre: [name],
             metadata: { collection: true, collectionType: listId }
@@ -435,7 +416,7 @@ class DefaultExtension extends MProvider {
     const ogImg = doc.selectFirst('meta[property="og:image"]');
     const thumbLink = doc.selectFirst('link[itemprop="thumbnailUrl"]');
     const thumb = (thumbLink ? thumbLink.attr("href") : null) || (ogImg ? ogImg.attr("content") : "");
-    if (url.includes("/pornstar/")) {
+    if (url.includes("/pornstar/") || url.includes("/pornstars/")) {
       const videos = this._parseList(res.body, url, 1, "pornstar").list;
       return {
         name: title,
@@ -445,14 +426,19 @@ class DefaultExtension extends MProvider {
         episodes: videos.map(video => ({ name: video.name, url: video.link }))
       };
     }
-    if (url.includes("/studio/") || url.includes("/studios/") || url.includes("/channel/")) {
+    if (url.includes("/studio/") || url.includes("/studios/") ||
+        url.includes("/channel/") || url.includes("/channels/")) {
       const videos = this._parseList(res.body, url, 1, "studio").list;
       return {
         name: title,
         imageUrl: thumb,
         description: "Videos from this studio",
         genre: [],
-        episodes: videos.map(video => ({ name: video.name, url: video.link }))
+        episodes: videos.map(video => ({
+          name: video.name,
+          url: video.link,
+          thumbnailUrl: video.imageUrl
+        }))
       };
     }
     const tagEls = doc.select(".video-tags a, .tags a, .category a");
@@ -469,7 +455,11 @@ class DefaultExtension extends MProvider {
           imageUrl: thumb,
           description: "RexPorn collection",
           genre: tags,
-          episodes: videos.map(video => ({ name: video.name, url: video.link }))
+          episodes: videos.map(video => ({
+            name: video.name,
+            url: video.link,
+            thumbnailUrl: video.imageUrl
+          }))
         };
       }
     }

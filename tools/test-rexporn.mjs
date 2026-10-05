@@ -18,7 +18,32 @@ const logs = [];
 class TestClient {
   async get(url) {
     requests.push(url);
-    const slug = new URL(url).pathname.split("/").filter(Boolean)[0];
+    const pathname = new URL(url).pathname;
+    if (pathname === "/channels") {
+      return {
+        statusCode: 200,
+        body: `
+          <div class="studio">
+            <a href="/channels/demo-studio">
+              <img src="https://images.example/studio.jpg" />
+            </a>
+            <div class="name">Demo Studio</div>
+          </div>`,
+      };
+    }
+    if (pathname === "/pornstars") {
+      return {
+        statusCode: 200,
+        body: `
+          <div class="pornstar">
+            <a href="/pornstars/demo-performer">
+              <img src="https://images.example/performer.jpg" />
+            </a>
+            <div class="name">Demo Performer</div>
+          </div>`,
+      };
+    }
+    const slug = pathname.split("/").filter(Boolean)[0];
     return {
       statusCode: 200,
       body: `
@@ -64,6 +89,28 @@ assert.ok(tags.list.every((item) => item.imageUrl.startsWith("https://images.exa
 assert.equal(new Set(tags.list.map((item) => item.imageUrl)).size, expectedCategories.length);
 assert.equal(tags.list[0].link, "https://www.rexporn.st/anal");
 assert.equal(tags.list[0].metadata.collectionType, "tags");
+assert.equal(tags.list[0].collectionId, "category_anal");
+
+const studios = await provider.getCustomList("studios", 1);
+assert.equal(studios.list.length, 1, "studio listings contain profiles, not videos");
+assert.equal(studios.list[0].link, "https://www.rexporn.st/channels/demo-studio");
+const studio = await provider.getDetail(studios.list[0].link);
+assert.equal(studio.episodes.length, 1);
+assert.equal(studio.episodes[0].url, "https://www.rexporn.st/watch/channels-sample.html");
+assert.equal(studio.episodes[0].thumbnailUrl, "https://images.example/channels.jpg");
+
+const performers = await provider.getCustomList("pornstars", 1);
+assert.equal(performers.list.length, 1, "performer listings contain profiles");
+assert.equal(
+  performers.list[0].link,
+  "https://www.rexporn.st/pornstars/demo-performer",
+);
+const performer = await provider.getDetail(performers.list[0].link);
+assert.equal(performer.episodes.length, 1);
+assert.equal(
+  performer.episodes[0].url,
+  "https://www.rexporn.st/watch/pornstars-sample.html",
+);
 
 const parsed = provider._parseList(
   `<div class="pitem">
@@ -76,4 +123,6 @@ const parsed = provider._parseList(
 );
 assert.equal(parsed.list[0].imageUrl, "https://images.example/preview.jpg");
 
-console.log("RexPorn regression checks passed (spotlight, tag thumbnails, shared cache, lazy images).");
+console.log(
+  "RexPorn regression checks passed (category routing, pornstar/studio profiles, episodes, thumbnails).",
+);
