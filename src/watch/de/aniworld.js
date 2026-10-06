@@ -7,9 +7,9 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "isNsfw": false,
-    "version": "0.3.10",
-    "login": false,
+    "version": "0.3.11",
     "forYou": false,
+    "login": false,
     "dateFormat": "",
     "dateFormatLocale": "",
     "pkgPath": "anime/src/de/aniworld.js"
@@ -534,32 +534,36 @@ async function burstcloudExtractor(url) {
 //  Video Extractor Wrappers
 //--------------------------------------------------------------------------------------------------
 
-_streamWishExtractor = streamWishExtractor;
+let _streamWishExtractor = (typeof streamWishExtractor !== "undefined") ? streamWishExtractor : null;
 streamWishExtractor = async (url) => {
+    if (!_streamWishExtractor) return [];
     return (await _streamWishExtractor(url, '')).map(v => {
         v.quality = v.quality.slice(3, -1);
         return v;
     });
 }
 
-_voeExtractor = voeExtractor;
+let _voeExtractor = (typeof voeExtractor !== "undefined") ? voeExtractor : null;
 voeExtractor = async (url) => {
+    if (!_voeExtractor) return [];
     return (await _voeExtractor(url, '')).map(v => {
         v.quality = v.quality.replace(/Voe: (\d+p?)/i, '$1');
         return v;
     });
 }
 
-_mp4UploadExtractor = mp4UploadExtractor;
+let _mp4UploadExtractor = (typeof mp4UploadExtractor !== "undefined") ? mp4UploadExtractor : null;
 mp4UploadExtractor = async (url) => {
+    if (!_mp4UploadExtractor) return [];
     return (await _mp4UploadExtractor(url)).map(v => {
         v.quality = v.quality.match(/\d+p/)?.[0] ?? '';
         return v;
     });
 }
 
-_yourUploadExtractor = yourUploadExtractor;
+let _yourUploadExtractor = (typeof yourUploadExtractor !== "undefined") ? yourUploadExtractor : null;
 yourUploadExtractor = async (url) => {
+    if (!_yourUploadExtractor) return [];
     return (await _yourUploadExtractor(url))
         .filter(v => !v.url.includes('/novideo'))
         .map(v => {
@@ -568,12 +572,13 @@ yourUploadExtractor = async (url) => {
         });
 }
 
-_streamTapeExtractor = streamTapeExtractor;
+let _streamTapeExtractor = (typeof streamTapeExtractor !== "undefined") ? streamTapeExtractor : null;
 streamTapeExtractor = async (url) => {
+    if (!_streamTapeExtractor) return [];
     return await _streamTapeExtractor(url, '');
 }
 
-_sendVidExtractor = sendVidExtractor;
+let _sendVidExtractor = (typeof sendVidExtractor !== "undefined") ? sendVidExtractor : null;
 sendVidExtractor = async (url) => {
     let res = await new Client().get(url);
     var videoUrl, quality;
@@ -585,6 +590,7 @@ sendVidExtractor = async (url) => {
 
     }
     if (!videoUrl) {
+        if (!_sendVidExtractor) return [];
         return _sendVidExtractor(url, null, '');
     }
     return [{ url: videoUrl, originalUrl: videoUrl, quality: quality, headers: null }];

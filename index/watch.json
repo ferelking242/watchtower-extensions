@@ -15,11 +15,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Watch Mock",
@@ -37,11 +36,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Extension mock statique — images TMDB réelles, zéro requête HTTP. Idéal pour tester l'UI sur web.",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "NetflixMirror",
@@ -59,15 +57,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://www.netflixmirror.com",
     "langs": [
       "all"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Torrentio",
@@ -85,15 +82,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Movies + Series + Anime via Torrentio (Stremio addon). Streams play through Watchtower's built-in torrent server. Use 'Catalog' filter to switch.",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://torrentio.strem.fun",
     "langs": [
       "all"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "AniWorld",
@@ -103,7 +99,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000005.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.3.10",
+    "version": "0.3.11",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/watch/de/aniworld.js",
     "isManga": false,
     "isNsfw": false,
@@ -111,11 +107,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "SerienStream",
@@ -125,7 +120,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000006.svg",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.2",
+    "version": "0.1.3",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/watch/de/serienstream.js",
     "isManga": false,
     "isNsfw": false,
@@ -133,11 +128,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "AllAnime",
@@ -155,12 +149,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.allanime.day/api",
-    "login": true
+    "apiUrl": "https://api.allanime.day/api"
   },
   {
     "name": "AniChan",
@@ -178,11 +171,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Anikoto",
@@ -200,11 +192,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Anikoto — anime streaming HD gratuit",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "AnimeFlix",
@@ -222,11 +213,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "AnimeGG",
@@ -244,11 +234,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "AnimeHeaven",
@@ -266,11 +255,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "AnimeHeaven — anime HD gratuit sub/dub",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "AnimeKai",
@@ -288,11 +276,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "AnimeKai — anime streaming populaire",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "AnimePahe",
@@ -310,15 +297,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://animepahe.ru/api",
     "langs": [
       "en"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "AnimeParadise",
@@ -336,12 +322,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.animeparadise.moe",
-    "login": true
+    "apiUrl": "https://api.animeparadise.moe"
   },
   {
     "name": "AnimeSuge",
@@ -359,11 +344,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "AnimeSuge — anime streaming HD gratuit",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "AnimeZZ",
@@ -381,11 +365,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "AsiansGoneWild",
@@ -403,11 +386,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "AsiansGoneWild — amateur Asian adult videos",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "CrunchyList (CR Mirror)",
@@ -425,15 +407,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://crunchy.metaoe.live",
     "langs": [
       "en"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "FlixGaze",
@@ -451,11 +432,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "FlixGaze.com — Free Movies & TV Series streaming via ZeusDL HLS",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Gogoanime",
@@ -473,11 +453,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "v0.1.5 — gogoanime3.co mort → gogoanime.fi (WordPress/DramaStream, juil 2026)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "GoGoAnime",
@@ -495,11 +474,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "GoGoAnime — anime HD gratuit classique",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "GoTVSeries",
@@ -509,7 +487,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000023.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.6",
+    "version": "0.1.7",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/watch/en/gotvseries.js",
     "isManga": false,
     "isNsfw": false,
@@ -517,15 +495,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://gotvseries.top",
     "langs": [
       "en"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "HiAnime",
@@ -543,11 +520,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "HiAnime — successeur d'AniWave, grand catalogue anime",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JuicyAsians",
@@ -565,11 +541,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JuicyAsians — Asian amateur and professional porn",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Kaido",
@@ -587,11 +562,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "KickAssAnime",
@@ -609,11 +583,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "LokLok / MovieBox",
@@ -631,12 +604,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "DÉPRÉCIÉ — utilisez MovieBox (multi) à la place. Free movies + TV series streaming, captions in 12 languages. Backed by aoneroom (LokLok / MovieBox / themoviebox.xyz).",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://h5-api.aoneroom.com",
-    "login": true
+    "apiUrl": "https://h5-api.aoneroom.com"
   },
   {
     "name": "9anime",
@@ -654,15 +626,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://9animetv.to/ajax",
     "langs": [
       "en"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "9AnimeTv",
@@ -680,11 +651,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "9AnimeTv — Anime streaming (restored)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "SubsPlease",
@@ -702,12 +672,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://subsplease.org/api",
-    "login": true
+    "apiUrl": "https://subsplease.org/api"
   },
   {
     "name": "Sudatchi",
@@ -725,11 +694,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Zoro / Aniwatch",
@@ -747,15 +715,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "v0.1.6 — domaine migré aniwatch.to → aniwatch.or.at (juil 2026)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://aniwatch.or.at",
     "langs": [
       "en"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "AnimeFénix",
@@ -765,7 +732,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000034.svg",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.15",
+    "version": "0.1.16",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/watch/es/animef_nix.js",
     "isManga": false,
     "isNsfw": false,
@@ -773,11 +740,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "AnimeFLV",
@@ -795,11 +761,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JKAnime",
@@ -809,7 +774,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000036.svg",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.15",
+    "version": "0.1.16",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/watch/es/jkanime.js",
     "isManga": false,
     "isNsfw": false,
@@ -817,11 +782,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "TioAnime",
@@ -831,7 +795,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000037.jpg",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.14",
+    "version": "0.1.15",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/watch/es/tioanime.js",
     "isManga": false,
     "isNsfw": false,
@@ -839,11 +803,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Adkami",
@@ -861,15 +824,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://www.adkami.com",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "ADN",
@@ -887,15 +849,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Animation Digital Network — anime légal FR",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://animationdigitalnetwork.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Allostreaming",
@@ -913,15 +874,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Allostreaming — allostreaming.one",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://allostreaming.one",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Anime-Kami",
@@ -939,15 +899,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Anime-Kami — anime-kami.com — VF/VOSTFR.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://anime-kami.com",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "AnimeKo",
@@ -965,15 +924,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Anime VF/VOSTFR",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://animeko.co",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Anime-Sama",
@@ -991,15 +949,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://anime-sama.to",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Anime-Sama (FR)",
@@ -1009,7 +966,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000044.png",
     "typeSource": "single",
     "itemType": 2,
-    "version": "1.1.1",
+    "version": "1.1.2",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/watch/fr/animesama2.js",
     "isManga": false,
     "isNsfw": false,
@@ -1017,15 +974,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Anime-Sama — animes-sama.fr — VF/VOSTFR.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://animes-sama.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "AnimeSite",
@@ -1043,15 +999,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "AnimeSite — animesite.fr — VF/VOSTFR.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://animesite.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "AnimesUltra",
@@ -1069,15 +1024,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "AnimesUltra — animesultra.fr — VF/VOSTFR.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://animesultra.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Anime-Ultime",
@@ -1095,15 +1049,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Anime VOSTFR historique",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://www.anime-ultime.net",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "AnimeVostFR",
@@ -1121,15 +1074,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://animevostfr.tv",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "AnimeZone",
@@ -1147,15 +1099,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://www.animezone.ch",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "AniStream",
@@ -1173,15 +1124,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "AniStream — anistream.xyz — VF/VOSTFR.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://anistream.xyz",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Cinefuse",
@@ -1199,15 +1149,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Cinefuse — site protégé (anti-bot), aucun contenu retourné.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://cinefuse.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Cinego",
@@ -1225,15 +1174,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Cinego — domaine cinego.xyz hors ligne. Mettre à jour baseUrl si nouveau domaine trouvé.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://cinego.xyz",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "CinePulse",
@@ -1251,15 +1199,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "CinePulse — site protégé (anti-bot), aucun contenu retourné.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://cinepulse.top",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Cinestream",
@@ -1277,15 +1224,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Cinestream — domaine cinestream.io hors ligne. Essayer cinestream.cc",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://cinestream.io",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Coflix",
@@ -1303,15 +1249,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Coflix — Films & Séries VF. Domaine actuel: coflix.re (juil 2026)",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://coflix.re",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Cpasbien",
@@ -1329,15 +1274,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Cpasbien — domaine cpasbien.gl hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://cpasbien.gl",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "CpasMal",
@@ -1355,15 +1299,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "CpasMal — domaine cpasmal.ac hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://cpasmal.ac",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Darkino",
@@ -1381,25 +1324,24 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Darkino — domaine darkino.one hors ligne. Essayer darkino.info",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://darkino.one",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
-    "name": "Dospiv",
+    "name": "Vobma",
     "id": 1900000059,
     "lang": "en",
-    "baseUrl": "https://dospiv.com",
+    "baseUrl": "https://vobma.com",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000059.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.12",
+    "version": "0.2.0",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/watch/fr/dotriv.js",
     "isManga": false,
     "isNsfw": false,
@@ -1407,15 +1349,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://dospiv.com",
+    "apiUrl": "https://vobma.com",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Echo du Marteau",
@@ -1433,15 +1374,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://echodumarteau.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Empire-Streaming",
@@ -1459,15 +1399,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Empire-Streaming — Domaine actuel: empire-streaming.fr",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://empire-streaming.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Enma",
@@ -1485,15 +1424,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Enma — enma.fr — Anime VF/VOSTFR.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://enma.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Filmoflix",
@@ -1511,15 +1449,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Filmoflix — site protégé (anti-bot), aucun contenu retourné.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://filmoflix.co",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Franime",
@@ -1537,15 +1474,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Anime VF/VOSTFR",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://franime.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "French-Anime",
@@ -1563,15 +1499,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "French-Anime — french-anime.com — Anime VF.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://french-anime.com",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "French-Manga",
@@ -1589,15 +1524,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://w16.french-manga.net",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "French-Stream",
@@ -1617,15 +1551,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://french-stream.net",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "FrFlix",
@@ -1643,15 +1576,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "FrFlix — domaine frflix.mov hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://frflix.mov",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "FStream TV",
@@ -1669,15 +1601,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://fstv.rest",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Fynd Films",
@@ -1695,15 +1626,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Fynd Films — domaine fyndfilms.com hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://www.fyndfilms.com",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "HDSS",
@@ -1721,15 +1651,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://www.hdss.to",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "JetAnimes",
@@ -1747,15 +1676,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JetAnimes — jetanimes.co — VF/VOSTFR.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://jetanimes.co",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Leizy",
@@ -1773,15 +1701,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Leizy — leizy.fr — Anime VF/VOSTFR. Moteur similaire à anime-sama.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://leizy.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "LibertyLand",
@@ -1799,15 +1726,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://libertyland.tv",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "LyokoPlay",
@@ -1825,15 +1751,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Streaming officiel et gratuit de Code Lyoko (Genèse + Saisons 1-4) et Code Lyoko Evolution, propose par le C.R.C.L.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://www.lyokoplay.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Mangas.io",
@@ -1851,15 +1776,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Manga lecture en ligne",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://www.mangas.io",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Mavanimes",
@@ -1877,15 +1801,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://mavanimes.co",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "MavAnimes (Alt)",
@@ -1903,15 +1826,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "MavAnimes Alt — mavanimes.cc — Anime VF.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://mavanimes.cc",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "MonStream",
@@ -1929,15 +1851,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "MonStream — domaine monstream.org hors ligne (redirige spam).",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://monstream.org",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Movix",
@@ -1955,12 +1876,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Movix.chat — Films, séries, anime, TV en direct et collections. Catalogue TMDB complet en VF/VOSTFR. Gratuit, open-source.",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.themoviedb.org/3",
-    "login": true
+    "apiUrl": "https://api.themoviedb.org/3"
   },
   {
     "name": "Neko-Sama",
@@ -1978,15 +1898,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Anime VF/VOSTFR — catalogue JSON disponible",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://www.neko-sama.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Neko-san",
@@ -2004,15 +1923,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Anime VF/VOSTFR",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://neko-san.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Noctaflix",
@@ -2030,15 +1948,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Noctaflix — domaine noctaflix.lol hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://noctaflix.lol",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Nova-Stream",
@@ -2056,15 +1973,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Nova-Stream — Films & Séries VF.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://novastream.top",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Nunflix",
@@ -2082,15 +1998,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Nunflix — parsing non compatible avec la nouvelle structure du site (www.nunflix.fr).",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://nunflix.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "VF24",
@@ -2108,15 +2023,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://vf24.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "PapaduStream",
@@ -2134,15 +2048,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "PapaduStream — domaine papadustream.college hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://papadustream.college",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Papystreaming",
@@ -2160,15 +2073,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Papystreaming — domaine papystreaming.sh hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://papystreaming.sh",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Plutonflix",
@@ -2186,15 +2098,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Plutonflix — domaine plutonflix.org hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://plutonflix.org",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Pstream",
@@ -2212,15 +2123,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Pstream — domaine pstream.net hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://pstream.net",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "SadisFlixs",
@@ -2238,15 +2148,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "SadisFlixs — domaine sadisflixs.pro hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://sadisflixs.pro",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Seko-Stream",
@@ -2264,15 +2173,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Seko-Stream — domaine seko-stream.fr hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://seko-stream.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Streamay",
@@ -2290,15 +2198,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Streamay — domaine streamay.net hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://streamay.net",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "StreamComplet",
@@ -2316,15 +2223,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://www.streamcomplet.blue",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "StreamFlix",
@@ -2342,15 +2248,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "StreamFlix — domaine streamflix.fr hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://streamflix.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "StreamingDivX",
@@ -2368,15 +2273,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://www.streamingdivx.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Streamvf",
@@ -2394,15 +2298,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "StreamVF — domaine streamvf.fr hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://streamvf.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "SushiAnime",
@@ -2420,15 +2323,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Anime VOSTFR",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://sushianime.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "TAnime",
@@ -2446,15 +2348,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "TAnime — tanime.fr — Anime VF/VOSTFR.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://tanime.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "TenshiTV",
@@ -2472,15 +2373,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "TenshiTV — tenshi.tv — VF/VOSTFR.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://tenshi.tv",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "ToonAnime",
@@ -2498,15 +2398,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "ToonAnime — v8.toonanime.co — VF/VOSTFR. URL miroir modifiable.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://v8.toonanime.co",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Toonix",
@@ -2524,15 +2423,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Anime VF enfants/jeunes",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://toonix.fr",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "VFStream",
@@ -2550,15 +2448,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "VFStream — domaine films.vfstream.eu hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://films.vfstream.eu",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "VoirAnime",
@@ -2576,15 +2473,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Anime VF/VOSTFR — Cloudflare actif",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://www.voiranime.io",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "VoirAnime.sh",
@@ -2602,15 +2498,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Anime VF/VOSTFR",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://voiranime.sh",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "VoirAnime HD",
@@ -2628,15 +2523,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "VoirAnime — v6.voiranime.com — VF/VOSTFR. URL miroir modifiable.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://v6.voiranime.com",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "VoirDrama.cc",
@@ -2654,15 +2548,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://voirdrama.site",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "VoirDrama",
@@ -2680,15 +2573,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://voirdrama.to",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "VoirFilm",
@@ -2706,15 +2598,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "VoirFilm — domaine voirfilm.pe hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://voirfilm.pe",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "VoirFilm HD",
@@ -2732,15 +2623,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "VoirFilm HD — domaine voirfilm.cz hors ligne.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://voirfilm.cz",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "VoirSeries",
@@ -2758,15 +2648,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://voirseries.io",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "VOSTAnimey",
@@ -2784,15 +2673,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "VOSTAnimey — vostanimey.su — Anime VOSTFR.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://vostanimey.su",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Vostfree",
@@ -2810,15 +2698,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://ipv4.vostfree.ws",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Wiflix",
@@ -2836,15 +2723,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Films et séries VF/VOSTFR",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://www.wiflix.bond",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Wooflix",
@@ -2862,15 +2748,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Wooflix — parsing non compatible avec la nouvelle structure du site (/movie/ID).",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://wooflix.io",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "YassFlix",
@@ -2888,15 +2773,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "YassFlix — domaine yassflix.cc hors ligne (blog).",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://yassflix.cc",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Zone-Telechargement",
@@ -2914,15 +2798,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Zone-Telechargement — domaine redirige vers spam.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://www.zone-telechargement.com",
     "langs": [
       "fr"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "AnimeWorld",
@@ -2932,7 +2815,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000118.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.0.14",
+    "version": "0.0.15",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/watch/it/animeworld.js",
     "isManga": false,
     "isNsfw": false,
@@ -2940,11 +2823,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "SexKBJ",
@@ -2962,11 +2844,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "SexKBJ — Korean BJ and Asian cam videos",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "SexTB",
@@ -2984,11 +2865,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "SexTB — Korean adult and Asian videos",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "XKorean",
@@ -3006,11 +2886,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "XKorean — Korean adult videos and BJ content",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "AnimeKhor",
@@ -3028,15 +2907,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "AnimeKhor — donghua (anime chinois) sub EN/ID",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "langs": [
       "en",
       "id"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Autoembed",
@@ -3054,12 +2932,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://tom.autoembed.cc",
-    "login": true
+    "apiUrl": "https://tom.autoembed.cc"
   },
   {
     "name": "DonghuaStream",
@@ -3077,7 +2954,7 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "DonghuaStream — streaming donghua (anime chinois)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
@@ -3085,8 +2962,7 @@
       "en",
       "zh",
       "ar"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "DonghuaWorld",
@@ -3104,7 +2980,7 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "DonghuaWorld — donghua multi-langues",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
@@ -3114,8 +2990,7 @@
       "ar",
       "fr",
       "de"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Free IPTV",
@@ -3133,12 +3008,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "8000+ free live TV channels worldwide. Powered by iptv-org.",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://iptv-org.github.io/api",
-    "login": true
+    "apiUrl": "https://iptv-org.github.io/api"
   },
   {
     "name": "Internet Archive Films",
@@ -3156,12 +3030,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Free public domain films, short films, classics, documentaries. No account needed.",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://archive.org/advancedsearch.php",
-    "login": true
+    "apiUrl": "https://archive.org/advancedsearch.php"
   },
   {
     "name": "KissKH",
@@ -3171,7 +3044,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000128.jpg",
     "typeSource": "multi",
     "itemType": 1,
-    "version": "0.1.8",
+    "version": "0.1.9",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/watch/multi/kisskh.js",
     "isManga": false,
     "isNsfw": false,
@@ -3179,11 +3052,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "KissKH Drama",
@@ -3201,7 +3073,7 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "KissKH — dramas asiatiques (KDrama, CDrama, Thai)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
@@ -3210,8 +3082,7 @@
       "id",
       "th",
       "vi"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "Miraculum",
@@ -3229,12 +3100,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Miraculous Ladybug — S1–S6 + World/Chibi/Spéciaux/Tales/Secrets. Qualité HD/LQ.",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://internal.miraculum.ml",
-    "login": true
+    "apiUrl": "https://internal.miraculum.ml"
   },
   {
     "name": "MovieBox",
@@ -3252,12 +3122,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "MovieBox v5.0.0 — Recherche via POST /subject/search avec session Bearer token; suggestions via POST /search-suggest.",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://h5-api.aoneroom.com",
-    "login": true
+    "apiUrl": "https://h5-api.aoneroom.com"
   },
   {
     "name": "MovieBox App",
@@ -3275,12 +3144,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "MovieBox App v3.6.0 — supportsComments + section For You sur le home; author=releaseYear, artist=director+cast, country in genre list.",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api3.aoneroom.com",
-    "login": true
+    "apiUrl": "https://api3.aoneroom.com"
   },
   {
     "name": "MovieFR",
@@ -3298,12 +3166,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "MovieFR Android API reverse-engineered from com.mfr.moviefr. Uses /api/search/result, /api/vod/info_new and /api/channel/get_list.",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://jgzm.iuk9.com",
-    "login": true
+    "apiUrl": "https://jgzm.iuk9.com"
   },
   {
     "name": "Short of the Week",
@@ -3321,11 +3188,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "The world's best curated short films. Drama, comedy, animation, horror, sci-fi, doc.",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Torrentio Anime (Torrent)",
@@ -3343,11 +3209,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "TV5Monde+",
@@ -3365,12 +3230,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Chaîne française gratuite. Films, courts métrages, séries, documentaires, jeunesse, sport.",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://www.tv5mondeplus.com",
-    "login": true
+    "apiUrl": "https://www.tv5mondeplus.com"
   },
   {
     "name": "Rakuten Viki",
@@ -3388,7 +3252,7 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Rakuten Viki — dramas asiatiques",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
@@ -3403,8 +3267,7 @@
       "ko",
       "zh",
       "ja"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "1PornTV",
@@ -3422,11 +3285,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — multi-quality MP4",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Aki-H",
@@ -3444,11 +3306,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Aki-H hentai streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Beeg",
@@ -3466,11 +3327,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — ZeusDL powered streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Eporner",
@@ -3488,11 +3348,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — ZeusDL powered streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "ESHentai",
@@ -3510,11 +3369,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "ESHentai streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "FreePornVideos",
@@ -3532,11 +3390,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — multi-quality MP4",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "haho.moe",
@@ -3554,11 +3411,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "haho.moe hentai streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Hanime1.me",
@@ -3576,11 +3432,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Hanime1.me streaming (18+) — Chinese/multilingual hentai",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Hanime.tv",
@@ -3598,12 +3453,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Hanime.tv — premier hentai streaming (18+). API JSON officielle.",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.hanime.tv",
-    "login": true
+    "apiUrl": "https://api.hanime.tv"
   },
   {
     "name": "Hentai0",
@@ -3621,11 +3475,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Hentai0.com streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Hentai2W",
@@ -3643,11 +3496,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Hentai2W streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Hentaibros",
@@ -3665,11 +3517,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Hentaibros streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "HentaiCity",
@@ -3687,11 +3538,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "HentaiCity streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "HentaiCloud",
@@ -3709,11 +3559,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "HentaiCloud streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "HentaiFox.tv",
@@ -3731,11 +3580,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "HentaiFox.tv — hentai streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "HentaiFreak",
@@ -3753,11 +3601,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "HentaiFreak.org streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Hentaigasm",
@@ -3775,11 +3622,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Hentaigasm streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "HentaiMama",
@@ -3797,11 +3643,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "HentaiMama streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "HentaiMoon",
@@ -3819,11 +3664,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "HentaiMoon streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Hentaini",
@@ -3841,11 +3685,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Hentaini streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Hentai Ocean",
@@ -3863,11 +3706,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Hentai Ocean streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "HentaiPlay",
@@ -3885,11 +3727,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "HentaiPlay streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Hentaisea",
@@ -3907,11 +3748,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Hentaisea streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Hentaiser",
@@ -3929,11 +3769,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Hentaiser streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Hentai.SH",
@@ -3951,11 +3790,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Hentai.SH streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "HentaiStream",
@@ -3973,11 +3811,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "HentaiStream (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "hentai.tv",
@@ -3995,12 +3832,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Hentai streaming — top-ranked on EverythingMoe (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://hentai.tv",
-    "login": true
+    "apiUrl": "https://hentai.tv"
   },
   {
     "name": "HentaiVideoWorld",
@@ -4018,11 +3854,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "HentaiVideoWorld streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "HentaiWorld",
@@ -4040,11 +3875,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "HentaiWorld streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Hentaverse",
@@ -4062,11 +3896,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Hentaverse streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "HMV Mania",
@@ -4084,11 +3917,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "HMV Mania — Hentai Music Videos (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "HStream.moe",
@@ -4106,12 +3938,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "#3 hentai streaming — EverythingMoe (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://hstream.moe",
-    "login": true
+    "apiUrl": "https://hstream.moe"
   },
   {
     "name": "Iwara",
@@ -4129,12 +3960,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Iwara.tv — 3D/MMD hentai et ecchi (18+). API JSON officielle.",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.iwara.tv",
-    "login": true
+    "apiUrl": "https://api.iwara.tv"
   },
   {
     "name": "KissHentaiz",
@@ -4152,11 +3982,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "KissHentaiz streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "MuchoHentai",
@@ -4174,11 +4003,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "MuchoHentai streaming — also ES/multi (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "MyHentaiMovie",
@@ -4196,11 +4024,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "MyHentaiMovie streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "OceanVeil",
@@ -4218,11 +4045,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "OceanVeil hentai streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "OnlyHentaiStuff",
@@ -4240,11 +4066,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "OnlyHentaiStuff streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "oppai.stream",
@@ -4262,11 +4087,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "oppai.stream hentai streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "PornDos",
@@ -4284,11 +4108,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — multi-quality MP4 (360p/480p/720p)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "PornHub",
@@ -4306,13 +4129,12 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — native HLS/MP4 quality extraction",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "uiLayout": "ui-layouts/pornhub.json",
-    "uiLayoutVersion": "1.3.1",
-    "login": true
+    "uiLayoutVersion": "1.3.1"
   },
   {
     "name": "RedTube",
@@ -4330,11 +4152,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — ZeusDL powered streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "RexPorn",
@@ -4352,15 +4173,24 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — multi-quality MP4 streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "subCategories": ["pornstars", "studios", "categories", "tags"],
-    "contentSubtype": ["videos", "pornstars", "studios", "tags"],
+    "subCategories": [
+      "pornstars",
+      "studios",
+      "categories",
+      "tags"
+    ],
+    "contentSubtype": [
+      "videos",
+      "pornstars",
+      "studios",
+      "tags"
+    ],
     "uiLayout": "ui-layouts/rexporn.json",
-    "uiLayoutVersion": "1.2.1",
-    "login": true
+    "uiLayoutVersion": "1.2.1"
   },
   {
     "name": "SpankBang",
@@ -4378,11 +4208,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — ZeusDL powered streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "TNAFlix",
@@ -4400,11 +4229,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — ZeusDL powered streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Tube8",
@@ -4422,11 +4250,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — ZeusDL powered streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "TXXX",
@@ -4444,11 +4271,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — ZeusDL powered streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "UnderHentai",
@@ -4466,11 +4292,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "UnderHentai streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "VidHentai",
@@ -4488,11 +4313,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "VidHentai streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "WatchHentai",
@@ -4510,11 +4334,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "WatchHentai streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "WowXXX",
@@ -4532,11 +4355,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — multi-quality MP4",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Xanimeporn",
@@ -4554,11 +4376,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Xanimeporn hentai streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "xHamster",
@@ -4576,11 +4397,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — ZeusDL powered streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "XNXX",
@@ -4601,11 +4421,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — free XNXX catalog only",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "XVideos",
@@ -4623,11 +4442,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — ZeusDL powered streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "YouPerv",
@@ -4645,11 +4463,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — direct MP4 streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "YouPorn",
@@ -4667,11 +4484,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Adult content (18+) — ZeusDL powered streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Zhentube",
@@ -4689,11 +4505,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Zhentube hentai streaming (18+)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "7MMTV",
@@ -4711,11 +4526,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "7MMTV — censored and uncensored JAV online",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "ABJav",
@@ -4733,11 +4547,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "ABJav — uncensored and censored JAV streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "AVPorner",
@@ -4755,11 +4568,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "AV porn streaming — Japanese and Asian content",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "BestJapanesePornTV",
@@ -4777,11 +4589,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "BestJapanesePornTV — curated Japanese porn streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "BestJavPorn",
@@ -4799,11 +4610,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Best JAV Porn — free Japanese adult videos",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JapanWhores",
@@ -4821,11 +4631,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JapanWhores — free Japanese porn tube",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JAVBestTV",
@@ -4843,11 +4652,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAVBestTV — best quality JAV streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JAVBraze",
@@ -4865,11 +4673,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAVBraze — Japanese AV streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JAVComCo",
@@ -4887,11 +4694,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAVComCo — JAV streaming and download portal",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JAVDoe",
@@ -4909,11 +4715,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAV free streaming — Japanese porn HD",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JAVFun",
@@ -4931,11 +4736,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAVFun — free Japanese adult video streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JAVGiga",
@@ -4953,11 +4757,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAVGiga — free JAV streaming online",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JAV.guru",
@@ -4975,11 +4778,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAV WordPress site — Japanese AV streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JAVHDToday",
@@ -4997,11 +4799,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAVHDToday — high definition JAV streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JAVKing",
@@ -5019,11 +4820,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAVKing — free Japanese AV streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JAVLeak",
@@ -5041,11 +4841,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAVLeak — JAV HD streaming, Japanese porn movies",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JAVMost",
@@ -5063,11 +4862,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Watch free JAV online streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JAVsb",
@@ -5085,11 +4883,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAVsb — Japanese adult video streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JAVTasty",
@@ -5107,11 +4904,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAVTasty — free Japanese porn streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "JAVWine",
@@ -5129,11 +4925,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAVWine — curated Japanese AV streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "KissJAV",
@@ -5151,11 +4946,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Kiss JAV — free Japanese AV streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "MaxJav",
@@ -5173,11 +4967,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "MaxJav — free JAV streaming",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "MissAV",
@@ -5195,11 +4988,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAV streaming — content always Japanese, multi-language UI",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "MyThav",
@@ -5217,11 +5009,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "MyThav — JAV streaming portal",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "NJAV",
@@ -5239,11 +5030,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "NJAV — HD JAV streaming, multi-language (en/ja/zh)",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "RJAV",
@@ -5261,11 +5051,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "RJAV — Japanese AV streaming portal",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "SupJav",
@@ -5283,11 +5072,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAV streaming — subtitled Japanese AV",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "TokyoMotion",
@@ -5305,11 +5093,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Japanese porn tube — TokyoMotion",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "VJav",
@@ -5327,11 +5114,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "JAV streaming site",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "ZeroJav",
@@ -5349,11 +5135,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "ZeroJav — free JAV streaming, no registration",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "123AV",
@@ -5371,11 +5156,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "RedGIFs",
@@ -5393,12 +5177,11 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "RedGIFs v2.2.0 — tags, creatorAvatar, verified, creator feed, profil créateur",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.redgifs.com",
-    "login": true
+    "apiUrl": "https://api.redgifs.com"
   },
   {
     "name": "VIVAMAXph",
@@ -5416,11 +5199,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "Moviesda",
@@ -5438,11 +5220,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "360资源",
@@ -5460,11 +5241,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "91Porn",
@@ -5482,11 +5262,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "91Porn — Chinese homemade and Asian amateur videos",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "蜜柑计划 (Mikan Project)",
@@ -5496,7 +5275,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000232.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.4",
+    "version": "0.1.5",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/watch/zh/mikan.js",
     "isManga": false,
     "isNsfw": false,
@@ -5504,15 +5283,14 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://mikanani.me",
     "langs": [
       "zh"
-    ],
-    "login": true
+    ]
   },
   {
     "name": "小米UC资源站",
@@ -5530,11 +5308,10 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "樱花动漫 (YHDM)",
@@ -5552,14 +5329,13 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "",
-    "login": false,
+    "login": true,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "apiUrl": "https://www.yhdmp.cc",
     "langs": [
       "zh"
-    ],
-    "login": true
+    ]
   }
 ]

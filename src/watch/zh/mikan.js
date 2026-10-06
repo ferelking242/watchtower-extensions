@@ -7,9 +7,9 @@ const watchtowerSources = [{
     "iconUrl": "https://mikanani.me/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.4",
-    "login": false,
+    "version": "0.1.5",
     "forYou": false,
+    "login": false,
     "pkgPath": "anime/src/zh/mikan.js"
 }];
 
@@ -32,13 +32,16 @@ class DefaultExtension extends MProvider {
         const items = xml.split("<item>");
         for (let i = 1; i < items.length; i++) {
             const item = items[i];
-            const titleM = item.match(/<title><!\[CDATA\[([^\]]+)\]\]><\/title>/);
+            // Title may be plain text or CDATA-wrapped depending on the feed build
+            const titleM = item.match(/<title><!\[CDATA\[([^\]]+)\]\]><\/title>/) ||
+                           item.match(/<title>([\s\S]*?)<\/title>/);
             const linkM = item.match(/<enclosure[^>]+url="([^"]+)"/);
             const imgM = item.match(/<img[^>]+src="([^"]+)"/);
+            const pageM = item.match(/<link>([^<]+)<\/link>/);
             if (titleM) {
                 list.push({
                     name: titleM[1].trim(),
-                    link: linkM ? linkM[1] : item.match(/<link[^>]*>([^<]+)/)?.[1]?.trim() || "",
+                    link: (linkM ? linkM[1] : "") || (pageM ? pageM[1].trim() : ""),
                     imageUrl: imgM ? imgM[1] : ""
                 });
             }
