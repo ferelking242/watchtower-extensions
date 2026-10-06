@@ -2,9 +2,10 @@ name: Extension Validation
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'agent/**' ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   validate:
@@ -19,3 +20,5 @@ jobs:
           node-version: '20'
       - name: Validate extensions
         run: npm run validate
+      - name: Test Eporner parser
+        run: npm run test:eporner

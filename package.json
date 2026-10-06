@@ -7,6 +7,7 @@
     "validate": "node tools/validate-extensions.mjs",
     "test:frenchstream": "node tools/test-frenchstream.mjs",
     "test:xnxx": "node tools/test-xnxx.mjs",
+    "test:eporner": "node tools/test-eporner.mjs",
     "validate:live": "files=$(find src/nsfw -type f -name '*.js' -print | sort | paste -sd, -) && node tools/run_all_tests.mjs --files \"$files\" --deep --strict --concurrency 4 --out tools/live-report.json"
   },
   "engines": {

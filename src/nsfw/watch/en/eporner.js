@@ -17,6 +17,13 @@ const watchtowerSources = [{
     getHeaders(url) {
       return { "Referer": "https://www.eporner.com/", "User-Agent": "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36" };
     }
+    _absoluteUrl(value) {
+      const url = String(value || "").trim();
+      if (!url) return "";
+      if (/^https?:\/\//i.test(url)) return url;
+      if (url.startsWith("//")) return `https:${url}`;
+      return `https://www.eporner.com/${url.replace(/^\/+/, "")}`;
+    }
     async getPopular(page) {
       const url = `https://www.eporner.com/${page > 1 ? page + "/" : ""}`;
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
@@ -24,7 +31,7 @@ const watchtowerSources = [{
     }
     get supportsLatest() { return true; }
     async getLatestUpdates(page) {
-      const url = `https://www.eporner.com/new/${page > 1 ? page + "/" : ""}`;
+      const url = `https://www.eporner.com/${page > 1 ? page + "/" : ""}recent/`;
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
       return this._parse(res.body);
     }
@@ -43,11 +50,14 @@ const watchtowerSources = [{
         if (!a) continue;
         const href = a.attr("href") || "";
         if (!href) continue;
-        const title = a.attr("title") || card.selectFirst("strong")?.text || "Unknown";
         const img = card.selectFirst("img");
-        const thumb = img?.attr("data-src") || img?.attr("src") || "";
+        const title = [a.attr("title"), img?.attr("alt"), card.selectFirst("strong")?.text]
+          .map(value => (value || "").trim())
+          .find(Boolean) || "Unknown";
+        const rawThumb = img?.attr("data-src") || img?.attr("src") || "";
+        const thumb = this._absoluteUrl(rawThumb);
         const dur = card.selectFirst(".duration, .time")?.text?.trim() || "";
-        items.push({ name: title.trim(), imageUrl: thumb, link: href.startsWith("http") ? href : "https://www.eporner.com" + href, description: dur ? `Duration: ${dur}` : "" });
+        items.push({ name: title, imageUrl: thumb, link: this._absoluteUrl(href), description: dur ? `Duration: ${dur}` : "" });
       }
       return { list: items, hasNextPage: !!doc.selectFirst(".next, a[rel='next']") };
     }
