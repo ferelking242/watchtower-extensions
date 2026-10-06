@@ -52,7 +52,6 @@ const context = {
   MProvider: class {},
   Client: TestClient,
   Document,
-  URL,
 };
 vm.runInNewContext(
   `${extensionSource}\nglobalThis.EpornerForTest = DefaultExtension;`,
