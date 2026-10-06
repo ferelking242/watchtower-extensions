@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://www.harimanga.co.uk/image/icon/hari-icon-192x192.webp",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.4.1",
+    "version": "0.4.2",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -70,27 +70,54 @@ class DefaultExtension extends MProvider {
   // Resolve a potentially relative URL against the base
   resolveUrl(url) {
     if (!url) return "";
-    if (url.startsWith("http")) return url;
-    const base = this.getBaseUrl();
-    if (url.startsWith("//")) return "https:" + url;
-    if (url.startsWith("/")) return base + url;
-    return base + "/" + url;
+    const value = String(url).trim();
+    if (value.startsWith("//")) {
+      return `https:${value}`.replace(/^(https?:\/\/[^/]+)\/{2,}/i, "$1/");
+    }
+    if (/^https?:\/\//i.test(value)) {
+      return value.replace(/^(https?:\/\/[^/]+)\/{2,}/i, "$1/");
+    }
+    const base = this.getBaseUrl().replace(/\/+$/, "");
+    return `${base}/${value.replace(/^\/+/, "")}`;
+  }
+
+  imageUrlFromElement(imgEl) {
+    if (!imgEl) return "";
+
+    const srcset = (imgEl.attr("srcset") || "")
+      .split(",")
+      .map((entry) => entry.trim().split(/\s+/)[0])
+      .filter(Boolean);
+    const candidates = [
+      imgEl.attr("data-src") || "",
+      imgEl.attr("data-lazy-src") || "",
+      imgEl.attr("data-original") || "",
+      imgEl.attr("data-backup") || "",
+      imgEl.attr("src") || "",
+      ...srcset,
+    ]
+      .map((candidate) => candidate.trim())
+      .filter((candidate) =>
+        candidate &&
+        !candidate.startsWith("data:") &&
+        !/(?:transparent|placeholder|spacer|pixel)\.(?:gif|png|webp)(?:[?#]|$)/i.test(candidate)
+      );
+
+    // Some Harimanga cards keep a relative lazy URL while `src` or
+    // `data-backup` contains the actual CDN URL. Prefer usable absolute URLs
+    // before resolving relative paths against the website origin.
+    const imageUrl =
+      candidates.find((candidate) => /^(?:https?:)?\/\//i.test(candidate)) ||
+      candidates[0] ||
+      "";
+    return this.resolveUrl(imageUrl);
   }
 
   // ── Browse page parser (div.page-item-detail) ─────────────────────────────
   // Used by getPopular / getLatestUpdates / getCustomList
   parseMangaFromPageItem(el) {
     const imgEl = el.selectFirst("img");
-
-    let imageUrl = "";
-    if (imgEl) {
-      const src     = imgEl.attr("src")         || "";
-      const dataSrc = imgEl.attr("data-src")    || "";
-      const backup  = imgEl.attr("data-backup") || "";
-      for (const c of [src, dataSrc, backup]) {
-        if (c && !c.startsWith("data:")) { imageUrl = this.resolveUrl(c); break; }
-      }
-    }
+    const imageUrl = this.imageUrlFromElement(imgEl);
 
     let titleEl = el.selectFirst("h3.h5 a")
       || el.selectFirst("div.post-title h3 a")
@@ -123,14 +150,7 @@ class DefaultExtension extends MProvider {
   parseMangaFromSearchItem(el) {
     // Image: inside .tab-thumb img
     const imgEl = el.selectFirst("div.tab-thumb img");
-    let imageUrl = "";
-    if (imgEl) {
-      const dataSrc = imgEl.attr("data-src") || "";
-      const src     = imgEl.attr("src")      || "";
-      for (const c of [dataSrc, src]) {
-        if (c && !c.startsWith("data:")) { imageUrl = this.resolveUrl(c); break; }
-      }
-    }
+    const imageUrl = this.imageUrlFromElement(imgEl);
 
     // Title & link: .tab-summary h3 a  (or h4 a as fallback)
     const titleEl = el.selectFirst("div.tab-summary div.post-title h3 a")

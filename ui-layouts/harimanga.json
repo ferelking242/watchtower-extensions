@@ -2,9 +2,10 @@
   "schemaVersion": 1,
   "home": {
     "sections": [
-      { "id": "home",      "component": "carousel", "title": "🏠 Accueil",    "accent": "primary",   "icon": "home",        "seeAll": true },
-      { "id": "new",       "component": "carousel", "title": "✨ New Manga",  "accent": "tertiary",  "icon": "fiber_new",   "seeAll": true },
-      { "id": "completed", "component": "carousel", "title": "✅ Completed",  "accent": "#4CAF50",   "icon": "check_circle","seeAll": true }
+      { "id": "popular",   "component": "ranked",   "title": "🔥 Most Popular",    "accent": "error",     "icon": "trending_up", "seeAll": true },
+      { "id": "latest",    "component": "carousel", "title": "✨ Latest Updates",  "accent": "tertiary",  "icon": "fiber_new",   "seeAll": true },
+      { "id": "new",       "component": "showcase", "title": "🆕 New Manga",       "accent": "primary",   "icon": "auto_awesome", "seeAll": true },
+      { "id": "completed", "component": "grid",     "title": "✅ Completed Manga", "accent": "#4CAF50",  "icon": "check_circle", "columns": 3, "seeAll": true }
     ]
   },
   "browse": {

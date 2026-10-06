@@ -45,10 +45,16 @@ class MProvider {
   constructor() { this.source = null; }
 }
 
+class SharedPreferences {
+  constructor() { this._values = {}; }
+  get(key) { return this._values[key] ?? null; }
+  set(key, value) { this._values[key] = value; }
+}
+
 function loadExtension(filePath) {
   const code = fs.readFileSync(filePath, "utf8");
   const sandbox = {
-    MProvider, Client, Document,
+    MProvider, Client, Document, SharedPreferences,
     extLog: () => {},
     console, setTimeout, clearTimeout, setInterval, clearInterval,
     URL, URLSearchParams, TextDecoder, TextEncoder, fetch, Buffer,

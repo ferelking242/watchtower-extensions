@@ -2,7 +2,7 @@
 // Uses the same GraphQL API as AllAnime (api.allanime.day)
 // Manga listing  : https://allmanga.to/manga?cty=ALL
 // Chapter reader : https://mkissa.to  (redirect from AllManga)
-// v0.1.1 — include detail title/cover and normalize chapter variables
+// v0.1.2 — report blocked/malformed API responses instead of hiding them
 
 const watchtowerSources = [{
     "name": "AllManga",
@@ -14,8 +14,8 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 0,
     "isNsfw": false,
-    "hasCloudflare": false,
-    "version": "0.1.1",
+    "hasCloudflare": true,
+    "version": "0.1.2",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -45,9 +45,37 @@ class DefaultExtension extends MProvider {
     async request(queryString) {
         const res = await new Client().get(
             API_URL + queryString,
-            { "Referer": BASE_URL + "/" }
+            {
+                "Accept": "application/json, text/plain, */*",
+                "Origin": BASE_URL,
+                "Referer": BASE_URL + "/"
+            }
         );
-        return res.body;
+        const status = Number(res.statusCode ?? 200);
+        const body = String(res.body || "");
+        const isCloudflare = /cloudflare|cf-chl|just a moment/i.test(body);
+
+        if (isCloudflare) {
+            throw new Error("[AllManga] Cloudflare challenge blocked the API request");
+        }
+        if (status < 200 || status >= 300) {
+            throw new Error(`[AllManga] API returned HTTP ${status}`);
+        }
+
+        let payload;
+        try {
+            payload = JSON.parse(body);
+        } catch (_) {
+            throw new Error("[AllManga] API returned invalid JSON");
+        }
+        if (Array.isArray(payload.errors) && payload.errors.length) {
+            const message = payload.errors
+                .map(error => error?.message)
+                .filter(Boolean)
+                .join("; ");
+            throw new Error(`[AllManga] GraphQL error${message ? `: ${message}` : ""}`);
+        }
+        return payload;
     }
 
     // ── Title preference ─────────────────────────────────────────────────────
@@ -91,11 +119,12 @@ class DefaultExtension extends MProvider {
             `recommendations{anyCard{_id name englishName nativeName thumbnail slugTime}}` +
             `}}`
         );
-        let recs;
-        try {
-            const raw = JSON.parse(await this.request(`?variables=${vars}&query=${gql}`));
-            recs = (raw.data.queryPopular.recommendations || []).filter(r => r.anyCard);
-        } catch (_) { return { list: [], hasNextPage: false }; }
+        const raw = await this.request(`?variables=${vars}&query=${gql}`);
+        const recommendations = raw?.data?.queryPopular?.recommendations;
+        if (!Array.isArray(recommendations)) {
+            throw new Error("[AllManga] Popular response did not contain recommendations");
+        }
+        const recs = recommendations.filter(r => r?.anyCard);
 
         const pref = new SharedPreferences().get("preferred_title_style") || "eng";
         const list = recs.map(r => ({
@@ -138,11 +167,11 @@ class DefaultExtension extends MProvider {
             `edges{_id name englishName nativeName thumbnail slugTime}` +
             `}}`
         );
-        let edges;
-        try {
-            const raw = JSON.parse(await this.request(`?variables=${vars}&query=${gql}`));
-            edges = raw.data.mangas.edges || [];
-        } catch (_) { return { list: [], hasNextPage: false }; }
+        const raw = await this.request(`?variables=${vars}&query=${gql}`);
+        const edges = raw?.data?.mangas?.edges;
+        if (!Array.isArray(edges)) {
+            throw new Error("[AllManga] Search response did not contain manga results");
+        }
 
         const pref = new SharedPreferences().get("preferred_title_style") || "eng";
         return this.parseMangaList(edges, pref, edges.length === 26);
@@ -163,12 +192,11 @@ class DefaultExtension extends MProvider {
             `availableChaptersDetail{sub raw}` +
             `}}`
         );
-        let manga;
-        try {
-            const raw = JSON.parse(await this.request(`?variables=${vars}&query=${gql}`));
-            manga = raw.data.manga;
-            if (!manga) return { name: "", imageUrl: "", description: "", author: "", status: 5, genre: [], chapters: [] };
-        } catch (_) { return { name: "", imageUrl: "", description: "", author: "", status: 5, genre: [], chapters: [] }; }
+        const raw = await this.request(`?variables=${vars}&query=${gql}`);
+        const manga = raw?.data?.manga;
+        if (!manga) {
+            throw new Error(`[AllManga] Manga not found for id ${id}`);
+        }
 
         const genre       = manga.genres || [];
         const status      = this.parseStatus(manga.status);
@@ -215,13 +243,12 @@ class DefaultExtension extends MProvider {
             `pictureUrls{url}` +
             `}}`
         );
-        let pages;
-        try {
-            const raw = JSON.parse(await this.request(`?variables=${vars}&query=${gql}`));
-            pages = raw.data.chapterPages?.pictureUrls || [];
-        } catch (_) { return []; }
-
-        return pages.map(p => p.url).filter(Boolean);
+        const raw = await this.request(`?variables=${vars}&query=${gql}`);
+        const pages = raw?.data?.chapterPages?.pictureUrls;
+        if (!Array.isArray(pages)) {
+            throw new Error("[AllManga] Chapter response did not contain page images");
+        }
+        return pages.map(p => p?.url).filter(Boolean);
     }
 
     // ── Status parser ────────────────────────────────────────────────────────
