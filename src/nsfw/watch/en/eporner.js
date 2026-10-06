@@ -24,7 +24,7 @@ const watchtowerSources = [{
     }
     get supportsLatest() { return true; }
     async getLatestUpdates(page) {
-      const url = `https://www.eporner.com/new/${page > 1 ? page + "/" : ""}`;
+      const url = `https://www.eporner.com/${page > 1 ? page + "/" : ""}recent/`;
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
       return this._parse(res.body);
     }
@@ -43,11 +43,14 @@ const watchtowerSources = [{
         if (!a) continue;
         const href = a.attr("href") || "";
         if (!href) continue;
-        const title = a.attr("title") || card.selectFirst("strong")?.text || "Unknown";
         const img = card.selectFirst("img");
-        const thumb = img?.attr("data-src") || img?.attr("src") || "";
+        const title = [a.attr("title"), img?.attr("alt"), card.selectFirst("strong")?.text]
+          .map(value => (value || "").trim())
+          .find(Boolean) || "Unknown";
+        const rawThumb = img?.attr("data-src") || img?.attr("src") || "";
+        const thumb = rawThumb ? new URL(rawThumb, "https://www.eporner.com").href : "";
         const dur = card.selectFirst(".duration, .time")?.text?.trim() || "";
-        items.push({ name: title.trim(), imageUrl: thumb, link: href.startsWith("http") ? href : "https://www.eporner.com" + href, description: dur ? `Duration: ${dur}` : "" });
+        items.push({ name: title.trim(), imageUrl: thumb, link: new URL(href, "https://www.eporner.com").href, description: dur ? `Duration: ${dur}` : "" });
       }
       return { list: items, hasNextPage: !!doc.selectFirst(".next, a[rel='next']") };
     }
