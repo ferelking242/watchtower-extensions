@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://www.harimanga.co.uk/image/icon/hari-icon-192x192.webp",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.4.0",
+    "version": "0.4.1",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -235,7 +235,9 @@ class DefaultExtension extends MProvider {
       }
     }
 
-    const hasNextPage = !!doc.selectFirst("a.next.page-numbers");
+    const hasNextPage =
+      !!doc.selectFirst("a[aria-label='Next']") ||
+      !!doc.selectFirst("a.next.page-numbers");
     return { list, hasNextPage };
   }
 

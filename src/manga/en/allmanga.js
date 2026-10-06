@@ -2,7 +2,7 @@
 // Uses the same GraphQL API as AllAnime (api.allanime.day)
 // Manga listing  : https://allmanga.to/manga?cty=ALL
 // Chapter reader : https://mkissa.to  (redirect from AllManga)
-// v0.1.0 — initial implementation
+// v0.1.1 — include detail title/cover and normalize chapter variables
 
 const watchtowerSources = [{
     "name": "AllManga",
@@ -15,7 +15,7 @@ const watchtowerSources = [{
     "itemType": 0,
     "isNsfw": false,
     "hasCloudflare": false,
-    "version": "0.1.0",
+    "version": "0.1.1",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -159,7 +159,7 @@ class DefaultExtension extends MProvider {
         const gql  = encodeURIComponent(
             `query($id:String!){` +
             `manga(_id:$id){` +
-            `thumbnail description genres status score` +
+            `name englishName nativeName thumbnail description genres status score` +
             `availableChaptersDetail{sub raw}` +
             `}}`
         );
@@ -167,11 +167,14 @@ class DefaultExtension extends MProvider {
         try {
             const raw = JSON.parse(await this.request(`?variables=${vars}&query=${gql}`));
             manga = raw.data.manga;
-            if (!manga) return { description: "", author: "", status: 5, genre: [], chapters: [] };
-        } catch (_) { return { description: "", author: "", status: 5, genre: [], chapters: [] }; }
+            if (!manga) return { name: "", imageUrl: "", description: "", author: "", status: 5, genre: [], chapters: [] };
+        } catch (_) { return { name: "", imageUrl: "", description: "", author: "", status: 5, genre: [], chapters: [] }; }
 
         const genre       = manga.genres || [];
         const status      = this.parseStatus(manga.status);
+        const pref        = new SharedPreferences().get("preferred_title_style") || "eng";
+        const name        = this.pickTitle(manga, pref);
+        const imageUrl    = manga.thumbnail || "";
         const description = [
             manga.description || "",
             manga.score ? `\nScore: ${manga.score}★` : ""
@@ -188,11 +191,11 @@ class DefaultExtension extends MProvider {
 
         const chapters = sorted.map(chapNum => ({
             name: `Chapter ${chapNum}`,
-            url:  JSON.stringify({ mangaId: id, chapNum, chapType }),
+            url:  JSON.stringify({ mangaId: id, chapNum: String(chapNum), chapType }),
             dateUpload: ""
         }));
 
-        return { description, author: "", status, genre, chapters };
+        return { name, imageUrl, description, author: "", status, genre, chapters };
     }
 
     // ── Page list (images for one chapter) ───────────────────────────────────
@@ -201,7 +204,7 @@ class DefaultExtension extends MProvider {
         try {
             const obj = JSON.parse(url);
             mangaId  = obj.mangaId;
-            chapNum  = obj.chapNum;
+            chapNum  = String(obj.chapNum);
             chapType = obj.chapType || "sub";
         } catch (_) { return []; }
 
