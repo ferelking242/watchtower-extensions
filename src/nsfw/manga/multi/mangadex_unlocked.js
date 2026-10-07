@@ -54,8 +54,9 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/gato404/kegareta-sauces/main/javascript/icon/all.mangadex.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.0.5",
+    "version": "0.0.6",
     "login": true,
+    "loginUrl": "https://mangadex.org/auth/login?afterAuthentication=%2F",
     "forYou": false,
     "pkgPath": "nsfw/manga/multi/mangadex_unlocked.js"
 }];
