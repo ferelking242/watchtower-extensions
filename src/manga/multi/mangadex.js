@@ -53,8 +53,9 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.mangadex.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.3.1",
+    "version": "0.3.2",
     "login": true,
+    "account": true,
     "loginUrl": "https://mangadex.org/auth/login?afterAuthentication=%2F",
     "forYou": false,
     "pkgPath": "manga/src/all/mangadex.js"
@@ -137,6 +138,27 @@ class DefaultExtension extends MProvider {
                 "custom_user_agent",
                 "Dalvik/2.1.0 (Linux; U; Android 14; 22081212UG Build/UKQ1.230917.001)"
             )
+        };
+    }
+
+    async getAccount() {
+        const response = await new Client().get(
+            `${this.source.apiUrl}/user/me`,
+            this.getHeaders()
+        );
+        if (response.statusCode === 401 || response.statusCode === 403) {
+            return null;
+        }
+        const payload = JSON.parse(response.body);
+        const user = payload?.data;
+        const username = user?.attributes?.username;
+        if (payload?.result !== "ok" || !user?.id || !username) {
+            return null;
+        }
+        return {
+            id: String(user.id),
+            username: String(username),
+            displayName: String(username)
         };
     }
 
