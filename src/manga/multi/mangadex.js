@@ -53,9 +53,10 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/javascript/icon/all.mangadex.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.3.2",
+    "version": "0.3.3",
     "login": true,
     "account": true,
+    "favorites": true,
     "loginUrl": "https://mangadex.org/auth/login?afterAuthentication=%2F",
     "forYou": false,
     "pkgPath": "manga/src/all/mangadex.js"
@@ -160,6 +161,26 @@ class DefaultExtension extends MProvider {
             username: String(username),
             displayName: String(username)
         };
+    }
+
+    async getFavorites() {
+        const response = await new Client().get(
+            `${this.source.apiUrl}/user/follows/manga?limit=100&includes[]=cover_art`,
+            this.getHeaders()
+        );
+        if (response.statusCode === 401 || response.statusCode === 403) {
+            return [];
+        }
+        const payload = JSON.parse(response.body);
+        if (payload?.result !== "ok" || !Array.isArray(payload.data)) {
+            return [];
+        }
+        return payload.data.map(manga => ({
+            id: String(manga.id),
+            name: this.findTitle(manga, this.source.lang) || "Sans titre",
+            url: `/manga/${manga.id}`,
+            imageUrl: this.getCover(manga)
+        }));
     }
 
     ll(url) { return url.includes("?") ? "&" : "?"; }
