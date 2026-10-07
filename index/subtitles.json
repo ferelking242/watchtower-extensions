@@ -18,8 +18,7 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   },
   {
     "name": "OpenSubtitles",
@@ -41,8 +40,7 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.opensubtitles.com/api/v1",
-    "login": true
+    "apiUrl": "https://api.opensubtitles.com/api/v1"
   },
   {
     "name": "Podnapisi",
@@ -64,8 +62,7 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://podnapisi.net/subtitles/search/ppds3",
-    "login": true
+    "apiUrl": "https://podnapisi.net/subtitles/search/ppds3"
   },
   {
     "name": "SubDL",
@@ -87,8 +84,7 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.subdl.com",
-    "login": true
+    "apiUrl": "https://api.subdl.com"
   },
   {
     "name": "SubSource",
@@ -110,7 +106,6 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.subsource.net/api",
-    "login": true
+    "apiUrl": "https://api.subsource.net/api"
   }
 ]

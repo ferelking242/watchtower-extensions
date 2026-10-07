@@ -15,6 +15,7 @@
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { sourceLoginFlag } from "./source_manifest.mjs";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const problems = [];
@@ -64,8 +65,8 @@ for (const rel of jsonFiles) {
 }
 console.log(`   ${jsonFiles.length} JSON file(s) valid`);
 
-// ── 2a. Every source catalogue opts in to the shared login controls ───────────
-console.log("▶ source login support flag");
+// ── 2a. Login controls are an explicit source-manifest opt-in ────────────────
+console.log("▶ source login support flags");
 let sourceEntries = 0;
 for (const rel of jsonFiles.filter(
   (file) => file.startsWith("index/") && file !== "index/plugins.json",
@@ -77,8 +78,19 @@ for (const rel of jsonFiles.filter(
   }
   for (const entry of entries) {
     sourceEntries++;
-    if (entry.login !== true) {
-      problems.push(`LOGIN: ${rel} / ${entry.name || entry.id} must declare login: true`);
+    if (typeof entry.login !== "boolean") {
+      problems.push(`LOGIN: ${rel} / ${entry.name || entry.id} must declare a boolean login flag`);
+      continue;
+    }
+    const expected = sourceLoginFlag(
+      ROOT,
+      entry.sourceCodeUrl,
+      entry.name,
+    );
+    if (entry.login !== expected) {
+      problems.push(
+        `LOGIN: ${rel} / ${entry.name || entry.id} declares ${entry.login}, but its source manifest expects ${expected}`,
+      );
     }
   }
 }

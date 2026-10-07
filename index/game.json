@@ -18,7 +18,6 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false,
-    "login": true
+    "hasDRM": false
   }
 ]

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * sync_versions.mjs — Syncs index JSON entry versions with JS manifests.
+ * sync_versions.mjs — Syncs index versions and login flags with JS manifests.
  *
  * The app detects extension updates by comparing the installed source version
  * with the version in the index JSON (index/<type>.json). When an extension's
@@ -12,12 +12,13 @@
  *   node tools/sync_versions.mjs            # sync all index/*.json
  *   node tools/sync_versions.mjs --dry-run  # print what would change, write nothing
  *
- * The tool only bumps versions upward to the JS manifest value and edits
- * in-place (scoped string replacement), preserving the exact formatting of
- * every other field.
+ * Versions only move upward. Login is opt-in in the source manifest; missing
+ * declarations mean false. Correcting login flags also removes duplicate JSON
+ * keys left by older index generation.
  */
 import fs from "node:fs";
 import path from "node:path";
+import { sourceLoginFlag } from "./source_manifest.mjs";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const DRY_RUN = process.argv.includes("--dry-run");
@@ -53,9 +54,25 @@ for (const type of INDEX_TYPES) {
   const raw = fs.readFileSync(file, "utf8");
   const entries = JSON.parse(raw);
   let changed = 0;
+  let loginChanged = 0;
   let out = raw; // mutated in place so multiple entries in one file all apply
 
   for (const entry of entries) {
+    const expectedLogin = sourceLoginFlag(
+      ROOT,
+      entry.sourceCodeUrl,
+      entry.name,
+    );
+    if (entry.login !== expectedLogin) {
+      if (DRY_RUN) {
+        console.log(
+          `  ${type}/${entry.name}: login ${entry.login} → ${expectedLogin}`,
+        );
+      }
+      entry.login = expectedLogin;
+      loginChanged++;
+    }
+
     const fname = (entry.sourceCodeUrl || "").split("/").pop();
     const jsVer = jsVersions.get(fname);
     if (!jsVer) continue; // no local JS manifest for this entry (or unparsed)
@@ -86,23 +103,37 @@ for (const type of INDEX_TYPES) {
     changed++;
   }
 
-  if (changed > 0) {
+  if (changed > 0 || loginChanged > 0) {
     if (DRY_RUN) {
-      console.log(`${type}.json: ${changed} version(s) would change`);
+      console.log(
+        `${type}.json: ${changed} version(s), ${loginChanged} login flag(s) would change`,
+      );
     } else {
+      if (loginChanged > 0) {
+        const correctedEntries = JSON.parse(out);
+        const loginById = new Map(entries.map((entry) => [entry.id, entry.login]));
+        for (const entry of correctedEntries) {
+          if (loginById.has(entry.id)) {
+            entry.login = loginById.get(entry.id);
+          }
+        }
+        out = `${JSON.stringify(correctedEntries, null, 2)}\n`;
+      }
       fs.writeFileSync(file, out);
-      console.log(`${type}.json: ${changed} version(s) synced`);
+      console.log(
+        `${type}.json: ${changed} version(s), ${loginChanged} login flag(s) synced`,
+      );
     }
   }
 
-  totalChanged += changed;
+  totalChanged += changed + loginChanged;
 }
 
 if (unparsed.length) {
   console.warn(`\n${unparsed.length} JS file(s) had no parseable manifest version:`);
   console.warn("  " + unparsed.join(", "));
 }
-console.log(`\n${DRY_RUN ? "[dry-run] " : ""}total: ${totalChanged} version(s)`);
+console.log(`\n${DRY_RUN ? "[dry-run] " : ""}total: ${totalChanged} changes`);
 
 function compareVersions(a, b) {
   const pa = String(a || "0").split(".").map(Number);
