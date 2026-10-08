@@ -528,6 +528,11 @@ async function main() {
   fs.writeFileSync(outputFile, JSON.stringify(report, null, 2));
   process.stderr.write(`\n📄 Report saved → ${outputFile}\n`);
   process.stderr.write(`   Open tools/report.html in a browser to view.\n\n`);
+
+  // Extensions open keep-alive sockets through undici, so the event loop never
+  // drains on its own and the job hangs until the workflow timeout. Exit once
+  // the summary is flushed, with a timer as a fallback if stderr is closed.
+  setTimeout(() => process.exit(0), 1000).unref();
 }
 
 main().catch(e => { console.error(e); process.exit(1); });
