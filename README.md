@@ -1,7 +1,7 @@
 <div align="center">
 
-  <img src="https://raw.githubusercontent.com/ferelking242/watchtower/main/assets/icon/icon.png" width="120" alt="Watchtower" />
-https://google.com
+  <img src="https://raw.githubusercontent.com/ferelking242/watchtower/main/assets/app_icons/icon.png" width="120" alt="Watchtower" />
+
   # Watchtower Extensions
 
   **Le dépôt officiel d'extensions pour [Watchtower](https://github.com/ferelking242/watchtower)**
