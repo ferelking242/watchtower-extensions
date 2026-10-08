@@ -2,7 +2,8 @@
 // Uses the same GraphQL API as AllAnime (api.allanime.day)
 // Manga listing  : https://allmanga.to/manga?cty=ALL
 // Chapter reader : https://mkissa.to  (redirect from AllManga)
-// v0.1.2 — report blocked/malformed API responses instead of hiding them
+// v0.1.3 — include the exact failing API URL in Cloudflare/HTTP errors so the
+// app opens the challenged request (the site root shows no challenge)
 
 const watchtowerSources = [{
     "name": "AllManga",
@@ -15,7 +16,7 @@ const watchtowerSources = [{
     "itemType": 0,
     "isNsfw": false,
     "hasCloudflare": true,
-    "version": "0.1.2",
+    "version": "0.1.3",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -43,8 +44,11 @@ class DefaultExtension extends MProvider {
 
     // ── HTTP helper ──────────────────────────────────────────────────────────
     async request(queryString) {
+        // Keep the exact URL: the app opens it in the bypass WebView, and
+        // Cloudflare must serve the challenge there (the site root does not).
+        const requestUrl = API_URL + queryString;
         const res = await new Client().get(
-            API_URL + queryString,
+            requestUrl,
             {
                 "Accept": "application/json, text/plain, */*",
                 "Origin": BASE_URL,
@@ -53,13 +57,15 @@ class DefaultExtension extends MProvider {
         );
         const status = Number(res.statusCode ?? 200);
         const body = String(res.body || "");
-        const isCloudflare = /cloudflare|cf-chl|just a moment/i.test(body);
+        const isCloudflare = /cloudflare|cf-chl|just a moment|attention required/i.test(body);
 
         if (isCloudflare) {
-            throw new Error("[AllManga] Cloudflare challenge blocked the API request");
+            throw new Error(
+                `[AllManga] Cloudflare challenge blocked the API request (${requestUrl})`
+            );
         }
         if (status < 200 || status >= 300) {
-            throw new Error(`[AllManga] API returned HTTP ${status}`);
+            throw new Error(`[AllManga] API returned HTTP ${status} (${requestUrl})`);
         }
 
         let payload;
