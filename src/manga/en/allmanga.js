@@ -2,6 +2,7 @@
 // Uses the same GraphQL API as AllAnime (api.allanime.day)
 // Manga listing  : https://allmanga.to/manga?cty=ALL
 // Chapter reader : https://mkissa.to  (redirect from AllManga)
+// v0.1.5 — fix the detail query field separator
 // v0.1.4 — detect localised Cloudflare interstitials and map a cut
 // connection (statusCode 0) to the anti-bot error with the exact failing URL,
 // so the app opens the challenged request (the site root shows no challenge)
@@ -17,7 +18,7 @@ const watchtowerSources = [{
     "itemType": 0,
     "isNsfw": false,
     "hasCloudflare": true,
-    "version": "0.1.4",
+    "version": "0.1.5",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -205,7 +206,7 @@ class DefaultExtension extends MProvider {
         const gql  = encodeURIComponent(
             `query($id:String!){` +
             `manga(_id:$id){` +
-            `name englishName nativeName thumbnail description genres status score` +
+            `name englishName nativeName thumbnail description genres status score ` +
             `availableChaptersDetail{sub raw}` +
             `}}`
         );

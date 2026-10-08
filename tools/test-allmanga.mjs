@@ -117,6 +117,35 @@ function loadExtension(response) {
   assert.equal(page.hasNextPage, true);
 }
 
+// ── 5. The detail query keeps adjacent GraphQL fields separated ──────────────
+{
+  const payload = {
+    data: {
+      manga: {
+        name: "Series",
+        englishName: "Series",
+        thumbnail: "",
+        description: "",
+        genres: [],
+        status: "finished",
+        score: 8.5,
+        availableChaptersDetail: { sub: ["1"], raw: [] },
+      },
+    },
+  };
+  const { provider, requests } = loadExtension({
+    statusCode: 200,
+    body: JSON.stringify(payload),
+  });
+
+  const detail = await provider.getDetail("/manga/series-id/series");
+  const query = new URL(requests[0].url).searchParams.get("query");
+
+  assert.match(query, /score\s+availableChaptersDetail/);
+  assert.doesNotMatch(query, /scoreavailableChaptersDetail/);
+  assert.equal(detail.chapters[0].name, "Chapter 1");
+}
+
 console.log(
-  "AllManga request checks passed (cut connection, localised interstitial, HTTP error, payload parse).",
+  "AllManga checks passed (request errors, list parsing, detail GraphQL fields).",
 );
