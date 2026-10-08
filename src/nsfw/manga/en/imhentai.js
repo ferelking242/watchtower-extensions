@@ -7,7 +7,7 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 0,
   "isManga": true,
-  "version": "1.0.3",
+  "version": "1.0.4",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/manga/en/imhentai.js",
@@ -36,6 +36,23 @@ class DefaultExtension extends MProvider {
     return BASE + url;
   }
 
+  // IMHentai fronts most pages with a managed Cloudflare challenge. A 403 with
+  // the interstitial must be reported, not parsed: an empty result would make
+  // the app show "no content" and hide the fact that the source is reachable.
+  async _get(url) {
+    const res = await new Client().get(url, this.getHeaders(url));
+    const body = res.body || "";
+    // `challenge-platform`/`turnstile` are injected on every normal page, so
+    // only the interstitial title and the challenge token count as a block.
+    if (res.statusCode >= 400 || /just a moment|attention required|cf-chl-|verify you are human/i.test(body)) {
+      throw new Error(
+        `Cloudflare challenge detected (cf-chl-) for ${url} — ` +
+        `the source needs browser verification (HTTP ${res.statusCode})`
+      );
+    }
+    return body;
+  }
+
   _parse(html, page) {
     const doc = new Document(html);
     const items = [];
@@ -61,27 +78,26 @@ class DefaultExtension extends MProvider {
     return { list: items, hasNextPage };
   }
 
+  // The home listing (/ and /popular/) is behind a managed Cloudflare challenge
+  // that rejects datacenter/proxy IPs. /search/ is not challenged and exposes
+  // the same galleries through its sort filters (pp = popular, lt = latest).
   async getPopular(page) {
-    const res = await new Client().get(`${BASE}/popular/?page=${page}`, this.getHeaders());
-    return this._parse(res.body, page);
+    return this._parse(await this._get(`${BASE}/search/?key=&pp=1&page=${page}`), page);
   }
 
   async getLatestUpdates(page) {
-    const res = await new Client().get(`${BASE}/?page=${page}`, this.getHeaders());
-    return this._parse(res.body, page);
+    return this._parse(await this._get(`${BASE}/search/?key=&lt=1&page=${page}`), page);
   }
 
   async search(query, page, filters) {
-    const res = await new Client().get(
-      `${BASE}/search/?key=${encodeURIComponent(query)}&page=${page}`,
-      this.getHeaders()
+    return this._parse(
+      await this._get(`${BASE}/search/?key=${encodeURIComponent(query)}&page=${page}`),
+      page
     );
-    return this._parse(res.body, page);
   }
 
   async getDetail(url) {
-    const res = await new Client().get(url, this.getHeaders(url));
-    const doc = new Document(res.body);
+    const doc = new Document(await this._get(url));
     const name = doc.selectFirst("h1")?.text?.trim() ||
                  doc.selectFirst('meta[property="og:title"]')?.attr("content") || "Doujin";
     const imageUrl = this._abs(
@@ -107,15 +123,13 @@ class DefaultExtension extends MProvider {
   }
 
   async getPageList(url) {
-    const res = await new Client().get(url, this.getHeaders(url));
-    const idM = res.body.match(/\/gallery\/(\d+)\//);
+    const idM = (await this._get(url)).match(/\/gallery\/(\d+)\//);
     if (!idM) return [];
     const id = idM[1];
 
     // The first reader page exposes the CDN directory, the file extension and
     // the total page count; every following page reuses the same base name.
-    const reader = await new Client().get(`${BASE}/view/${id}/1/`, this.getHeaders(url));
-    const rHtml = reader.body;
+    const rHtml = await this._get(`${BASE}/view/${id}/1/`);
     const gimg = rHtml.match(/id="gimg"[^>]*src="([^"]+)"/);
     const totalM = rHtml.match(/class="total_pages">\s*(\d+)/);
     if (!gimg) return [];
