@@ -2,8 +2,9 @@
 // Uses the same GraphQL API as AllAnime (api.allanime.day)
 // Manga listing  : https://allmanga.to/manga?cty=ALL
 // Chapter reader : https://mkissa.to  (redirect from AllManga)
-// v0.1.3 — include the exact failing API URL in Cloudflare/HTTP errors so the
-// app opens the challenged request (the site root shows no challenge)
+// v0.1.4 — detect localised Cloudflare interstitials and map a cut
+// connection (statusCode 0) to the anti-bot error with the exact failing URL,
+// so the app opens the challenged request (the site root shows no challenge)
 
 const watchtowerSources = [{
     "name": "AllManga",
@@ -16,7 +17,7 @@ const watchtowerSources = [{
     "itemType": 0,
     "isNsfw": false,
     "hasCloudflare": true,
-    "version": "0.1.3",
+    "version": "0.1.4",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -57,11 +58,21 @@ class DefaultExtension extends MProvider {
         );
         const status = Number(res.statusCode ?? 200);
         const body = String(res.body || "");
-        const isCloudflare = /cloudflare|cf-chl|just a moment|attention required/i.test(body);
+        // Cloudflare serves the interstitial in the page language, so the check
+        // must not be English-only. `status === 0` means the connection was cut
+        // before any response (anti-bot): both cases carry the exact URL so the
+        // app can open the bypass panel on the request that was actually cut.
+        const isCloudflare = /cloudflare|cf-chl|cf_chl|just a moment|attention required|verifying you are human|checking your browser|vérification de sécurité|un instant|verificación de seguridad|verificação de segurança|sicherheitsüberprüfung/i.test(body);
 
         if (isCloudflare) {
             throw new Error(
                 `[AllManga] Cloudflare challenge blocked the API request (${requestUrl})`
+            );
+        }
+        if (status === 0) {
+            throw new Error(
+                `[AllManga] Cloudflare blocked the API request — connection closed ` +
+                `before any response (HTTP 0) (${requestUrl})`
             );
         }
         if (status < 200 || status >= 300) {

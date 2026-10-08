@@ -7,7 +7,7 @@ const watchtowerSources = [{
   "typeSource": "single",
   "itemType": 0,
   "isManga": true,
-  "version": "1.0.4",
+  "version": "1.0.5",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/manga/en/imhentai.js",
@@ -42,9 +42,14 @@ class DefaultExtension extends MProvider {
   async _get(url) {
     const res = await new Client().get(url, this.getHeaders(url));
     const body = res.body || "";
-    // `challenge-platform`/`turnstile` are injected on every normal page, so
-    // only the interstitial title and the challenge token count as a block.
-    if (res.statusCode >= 400 || /just a moment|attention required|cf-chl-|verify you are human/i.test(body)) {
+    // Cloudflare serves the interstitial in the page language, so an
+    // English-only check misses it (e.g. "Vérification de sécurité en cours",
+    // "Un instant…"): the challenge page was then parsed as a listing, which
+    // yielded 0 items and a silent empty screen instead of the real cause.
+    // `challenge-platform`/`turnstile` alone are injected on every normal page,
+    // so they only count together with an interstitial marker below.
+    const cfPage = /just a moment|attention required|verifying you are human|verify you are human|checking your browser|enable javascript and cookies|cf-chl-|cf_chl_|challenge-platform|turnstile|vérification de sécurité|un instant|verificación de seguridad|verificação de segurança|sicherheitsüberprüfung/i;
+    if (res.statusCode >= 400 || cfPage.test(body)) {
       throw new Error(
         `Cloudflare challenge detected (cf-chl-) for ${url} — ` +
         `the source needs browser verification (HTTP ${res.statusCode})`
@@ -71,6 +76,16 @@ class DefaultExtension extends MProvider {
                    img?.attr("alt") ||
                    a.attr("title") || "Doujin";
       items.push({ name, imageUrl: thumb, link });
+    }
+    // A 200 response with zero `.thumb` cards is not a legitimately empty
+    // listing: /search/ always returns a full page. It means the server sent
+    // an interstitial or a shell, so report it instead of showing "no content"
+    // and hiding the real cause behind an empty screen.
+    if (items.length === 0) {
+      throw new Error(
+        `[IMHentai] page contained no gallery card (HTTP 200, ${html.length} bytes) ` +
+        `— likely a Cloudflare interstitial or a changed layout`
+      );
     }
     // The pagination block links to page numbers; a link to the following page
     // is the only reliable "more results" signal (last pages may still be full).

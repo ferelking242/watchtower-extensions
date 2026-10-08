@@ -22,3 +22,7 @@ jobs:
         run: npm run validate
       - name: Test Eporner parser
         run: npm run test:eporner
+      - name: Test IMHentai parser
+        run: npm run test:imhentai
+      - name: Test AllManga request wrapper
+        run: npm run test:allmanga
