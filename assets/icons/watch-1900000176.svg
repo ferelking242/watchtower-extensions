@@ -1,7 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="oppai.stream">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#65C58A"/><stop offset="1" stop-color="#1D6045"/></linearGradient></defs>
-  <rect width="512" height="512" rx="104" fill="url(#g)"/>
-  <circle cx="404" cy="108" r="52" fill="#ffffff" opacity=".14"/>
-  <circle cx="112" cy="424" r="88" fill="#000000" opacity=".10"/>
-  <text x="256" y="290" text-anchor="middle" font-family="Arial, sans-serif" font-size="148" font-weight="800" fill="#ffffff">O</text>
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="600.000000pt" height="600.000000pt" viewBox="0 0 600.000000 600.000000"
+ preserveAspectRatio="xMidYMid meet">
+<metadata>
+Created by potrace 1.14, written by Peter Selinger 2001-2017
+</metadata>
+<g transform="translate(0.000000,600.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M2740 5989 c-36 -4 -90 -10 -120 -14 -30 -4 -64 -8 -75 -10 -241 -31
+-597 -142 -850 -265 -465 -227 -848 -553 -1152 -980 -56 -79 -73 -106 -146
+-228 -49 -83 -148 -293 -194 -412 -81 -209 -137 -424 -174 -672 -30 -200 -32
+-589 -4 -798 13 -92 38 -231 49 -268 3 -9 7 -28 10 -42 2 -14 18 -74 36 -135
+163 -560 486 -1063 925 -1440 379 -325 856 -561 1335 -660 219 -45 365 -59
+615 -59 264 -1 432 16 643 64 77 17 128 31 312 84 117 34 403 164 556 252 280
+161 553 389 775 649 90 104 217 275 253 340 9 17 31 53 48 80 175 283 342 752
+384 1079 3 23 7 52 10 66 25 149 25 609 0 760 -3 14 -12 72 -21 129 -9 58 -18
+107 -20 111 -2 4 -6 20 -9 36 -8 43 -34 139 -63 234 -198 648 -630 1225 -1199
+1605 -63 42 -122 79 -132 82 -9 3 -24 12 -32 19 -17 14 -243 130 -305 156
+-234 99 -546 188 -745 213 -19 3 -71 10 -115 16 -94 13 -501 19 -595 8z"/>
+</g>
 </svg>

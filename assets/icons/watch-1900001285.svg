@@ -1,7 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="definebabe">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EF6C92"/><stop offset="1" stop-color="#7A244B"/></linearGradient></defs>
-  <rect width="512" height="512" rx="104" fill="url(#g)"/>
-  <circle cx="404" cy="108" r="52" fill="#ffffff" opacity=".14"/>
-  <circle cx="112" cy="424" r="88" fill="#000000" opacity=".10"/>
-  <text x="256" y="290" text-anchor="middle" font-family="Arial, sans-serif" font-size="148" font-weight="800" fill="#ffffff">DE</text>
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="200.000000pt" height="200.000000pt" viewBox="0 0 200.000000 200.000000"
+ preserveAspectRatio="xMidYMid meet">
+<metadata>
+Created by potrace 1.14, written by Peter Selinger 2001-2017
+</metadata>
+<g transform="translate(0.000000,200.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M0 1000 l0 -1000 1000 0 1000 0 0 1000 0 1000 -1000 0 -1000 0 0
+-1000z m1145 660 c-22 -4 -30 -8 -17 -9 52 -3 162 -36 241 -73 208 -95 368
+-273 441 -488 34 -100 39 -276 12 -366 -97 -319 -482 -437 -736 -226 l-49 40
+-51 -40 c-192 -153 -439 -141 -611 30 -61 61 -119 166 -132 242 l-8 45 -6 -50
+c-4 -37 -6 -23 -7 56 -1 58 2 119 7 135 5 16 14 54 21 84 29 130 119 278 231
+386 111 105 242 179 369 208 36 9 83 19 105 24 22 5 83 9 135 9 69 0 84 -2 55
+-7z"/>
+<path d="M880 1525 c-241 -67 -440 -257 -511 -488 -17 -56 -20 -86 -17 -170 3
+-87 8 -110 33 -160 32 -64 100 -133 166 -168 37 -20 59 -24 139 -24 85 0 101
+3 154 29 32 16 77 47 98 68 42 42 87 127 89 168 1 20 4 17 14 -16 35 -110 113
+-197 211 -233 66 -25 171 -28 235 -6 64 23 134 78 174 138 175 264 -36 701
+-405 838 -75 28 -100 32 -205 35 -86 3 -136 0 -175 -11z m-249 -674 c55 -56
+26 -141 -49 -141 -45 0 -92 46 -92 90 0 74 86 105 141 51z m926 7 c35 -33 32
+-89 -8 -122 -39 -33 -82 -34 -114 -1 -73 72 47 194 122 123z"/>
+<path d="M552 798 c2 -15 11 -24 26 -26 20 -3 23 0 20 20 -2 15 -11 24 -26 26
+-20 3 -23 0 -20 -20z"/>
+<path d="M1482 808 c-18 -18 -14 -38 8 -38 20 0 44 32 33 44 -10 10 -28 7 -41
+-6z"/>
+</g>
 </svg>

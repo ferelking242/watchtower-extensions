@@ -1,7 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="sexcom">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EF6C92"/><stop offset="1" stop-color="#7A244B"/></linearGradient></defs>
-  <rect width="512" height="512" rx="104" fill="url(#g)"/>
-  <circle cx="404" cy="108" r="52" fill="#ffffff" opacity=".14"/>
-  <circle cx="112" cy="424" r="88" fill="#000000" opacity=".10"/>
-  <text x="256" y="290" text-anchor="middle" font-family="Arial, sans-serif" font-size="148" font-weight="800" fill="#ffffff">SE</text>
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 1080 1080">
+  <g clip-path="url(#a)">
+    <circle cx="540" cy="540" r="540" fill="#FE0088"/>
+    <path fill="#fff" d="M655.142 475.571 530.935 453.07c-46.438-8.438-59.866-25.313-58.747-43.314-.559-25.313 30.772-39.939 68.258-39.939 43.081 0 79.448 23.064 82.805 60.752h201.976C819.632 301.19 712.21 223 535.411 223c-174.002 0-281.983 72.002-280.864 199.694-.56 96.753 61.544 158.63 185.751 180.568l107.981 19.126c47.557 9 69.377 21.376 69.936 45.001-.559 25.314-29.653 39.939-69.936 39.939-49.795 0-84.483-21.375-90.637-60.752H240c11.749 126.004 120.29 209.257 306.601 209.257 168.966 0 293.173-82.69 294.292-214.319-.56-90.566-60.985-143.443-185.751-165.943Z"/>
+  </g>
+  <defs>
+    <clipPath id="a">
+      <path fill="#fff" d="M0 0h1080v1080H0z"/>
+    </clipPath>
+  </defs>
 </svg>

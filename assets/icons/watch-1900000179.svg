@@ -1,7 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="RedTube">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#65C58A"/><stop offset="1" stop-color="#1D6045"/></linearGradient></defs>
-  <rect width="512" height="512" rx="104" fill="url(#g)"/>
-  <circle cx="404" cy="108" r="52" fill="#ffffff" opacity=".14"/>
-  <circle cx="112" cy="424" r="88" fill="#000000" opacity=".10"/>
-  <text x="256" y="290" text-anchor="middle" font-family="Arial, sans-serif" font-size="148" font-weight="800" fill="#ffffff">R</text>
+<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+    <path fill="#000" d="M0 0h20v20H0z"/>
+    <g clip-path="url(#a)" fill="#B2252C">
+        <path d="M11.8339 10.9681c.4638-.1818 1.9221-.7014 1.9221-2.94871 0-1.75528-1.2126-3.01594-3.2692-3.01594H7.06633l2.30565 1.65704h.61005c1.26607 0 1.86527.5894 1.86527 1.50194 0 .9427-.6686 1.50452-1.5928 1.50452h-.90425L7.06717 11.2921v3.707h1.84686v-3.6794h1.09727l1.8803 3.6794h2.1109l-2.1686-4.031Z"/>
+        <path d="m6 5.73502 3.36613 2.41792L6 10.5726V5.73502Z"/>
+    </g>
+    <defs>
+        <clipPath id="a">
+            <path fill="#fff" d="M6 5h8v10H6z"/>
+        </clipPath>
+    </defs>
 </svg>

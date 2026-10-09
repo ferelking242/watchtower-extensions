@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="usersporn">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EF6C92"/><stop offset="1" stop-color="#7A244B"/></linearGradient></defs>
-  <rect width="512" height="512" rx="104" fill="url(#g)"/>
-  <circle cx="404" cy="108" r="52" fill="#ffffff" opacity=".14"/>
-  <circle cx="112" cy="424" r="88" fill="#000000" opacity=".10"/>
-  <text x="256" y="290" text-anchor="middle" font-family="Arial, sans-serif" font-size="148" font-weight="800" fill="#ffffff">US</text>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 20010904//EN'  'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'>
+<svg width="512pt" height="512pt" version="1.0" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<g transform="translate(0 512) scale(.1 -.1)">
+<path d="m0 2560v-2560h2560 2560v2560 2560h-2560-2560v-2560zm2865 1766c186-35 386-114 520-206 72-50 201-176 251-246 127-177 194-404 194-649-1-246-50-452-147-610-177-291-422-440-941-575-357-92-526-163-623-260-80-80-119-184-119-317v-53h900 900v-315-315h-1230-1230v404c0 512 13 614 104 801 156 323 442 501 1044 651 278 69 403 119 510 203 105 84 154 182 167 338 22 248-124 450-376 519-46 13-102 18-199 18-125 0-141-2-220-30-159-56-259-143-330-288-51-104-70-212-70-402v-144h-330-330v191c0 127 5 226 16 293 85 539 488 925 1044 1002 123 17 377 12 495-10z"/>
+</g>
 </svg>

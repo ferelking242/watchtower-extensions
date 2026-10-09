@@ -1,7 +1,2 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="xstoryfr">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EF6C92"/><stop offset="1" stop-color="#7A244B"/></linearGradient></defs>
-  <rect width="512" height="512" rx="104" fill="url(#g)"/>
-  <circle cx="404" cy="108" r="52" fill="#ffffff" opacity=".14"/>
-  <circle cx="112" cy="424" r="88" fill="#000000" opacity=".10"/>
-  <text x="256" y="290" text-anchor="middle" font-family="Arial, sans-serif" font-size="148" font-weight="800" fill="#ffffff">XS</text>
-</svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg data-dc-tpl="52" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" data-om-id="6fe4f3a8:57" width="64" height="64"><path data-dc-tpl="53" fill="#FE4D74" d="M 32 32 L 32.00 24.19 L 48.16 4.80 A 5 5 0 1 1 55.84 11.20 L 38.51 32.00 Z" data-om-id="6fe4f3a8:58"></path><path data-dc-tpl="54" fill="#013068" d="M 32 32 L 32.00 24.19 L 15.84 4.80 A 5 5 0 0 0 8.16 11.20 L 25.49 32.00 Z" data-om-id="6fe4f3a8:59"></path><path data-dc-tpl="55" fill="#0E96D0" d="M 32 32 L 32.00 39.81 L 15.84 59.20 A 5 5 0 1 1 8.16 52.80 L 25.49 32.00 Z" data-om-id="6fe4f3a8:60"></path><path data-dc-tpl="56" fill="#F2B62A" d="M 32 32 L 32.00 39.81 L 48.16 59.20 A 5 5 0 0 0 55.84 52.80 L 38.51 32.00 Z" data-om-id="6fe4f3a8:61"></path></svg>
