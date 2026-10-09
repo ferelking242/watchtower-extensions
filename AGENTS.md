@@ -52,6 +52,12 @@ NamiComi (FR/EN), HentaiHand (EN), HentaiEra, HentaiZap, Dragon Ball Multiverse.
   `https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/...`.
   `tools/fetch_icons.mjs` résout le vrai favicon/apple-touch-icon (suit les
   redirections, pas de Google). Ne pas régénérer d'icônes placeholder SVG.
+  Beaucoup de sites FR sont derrière Cloudflare (403 undici). Ordre de repli
+  pour récupérer un vrai logo : (1) favicon déclaré, (2) `og:image` / logo,
+  (3) icônes du web-manifest, (4) favicon Google/DuckDuckGo, (5) le logo
+  embarqué dans l'extension Mihon amont (`res/mipmap-xxxhdpi/ic_launcher.png`)
+  quand le domaine correspond. Rejeter l'icône générique renvoyée par les
+  proxys pour un domaine inconnu (hash appris au vol).
 - IDs : utiliser 2000001170+ pour les nouvelles entrées (pas de collision).
 - Un fichier `.js` non référencé par un index est compté comme "unindexed" par
   le CLI Watchtower (`extensions list --include-unindexed`).
