@@ -44,7 +44,7 @@
   {
     "name": "NetflixMirror",
     "id": 1900000003,
-    "lang": "en",
+    "lang": "all",
     "baseUrl": "https://www.netflixmirror.com",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000003.svg",
     "typeSource": "single",
@@ -69,7 +69,7 @@
   {
     "name": "Torrentio",
     "id": 1900000004,
-    "lang": "en",
+    "lang": "all",
     "baseUrl": "https://torrentio.strem.fun",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000004.png",
     "typeSource": "single",
@@ -811,7 +811,7 @@
   {
     "name": "Adkami",
     "id": 1900000038,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://www.adkami.com",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000038.ico",
     "typeSource": "single",
@@ -836,7 +836,7 @@
   {
     "name": "ADN",
     "id": 1900000039,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://animationdigitalnetwork.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000039.png",
     "typeSource": "single",
@@ -861,7 +861,7 @@
   {
     "name": "Allostreaming",
     "id": 1900000040,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://allostreaming.one",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000040.svg",
     "typeSource": "single",
@@ -886,7 +886,7 @@
   {
     "name": "Anime-Kami",
     "id": 1900000041,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://anime-kami.com",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000041.svg",
     "typeSource": "single",
@@ -911,7 +911,7 @@
   {
     "name": "AnimeKo",
     "id": 1900000042,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://animeko.co",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000042.svg",
     "typeSource": "single",
@@ -936,7 +936,7 @@
   {
     "name": "Anime-Sama",
     "id": 1900000043,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://anime-sama.to",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000043.png",
     "typeSource": "single",
@@ -961,7 +961,7 @@
   {
     "name": "Anime-Sama (FR)",
     "id": 1900000044,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://animes-sama.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000044.png",
     "typeSource": "single",
@@ -986,7 +986,7 @@
   {
     "name": "AnimeSite",
     "id": 1900000045,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://animesite.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000045.ico",
     "typeSource": "single",
@@ -1011,7 +1011,7 @@
   {
     "name": "AnimesUltra",
     "id": 1900000046,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://animesultra.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000046.png",
     "typeSource": "single",
@@ -1036,7 +1036,7 @@
   {
     "name": "Anime-Ultime",
     "id": 1900000047,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://www.anime-ultime.net",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000047.png",
     "typeSource": "single",
@@ -1061,7 +1061,7 @@
   {
     "name": "AnimeVostFR",
     "id": 1900000048,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://animevostfr.tv",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000048.svg",
     "typeSource": "single",
@@ -1086,7 +1086,7 @@
   {
     "name": "AnimeZone",
     "id": 1900000049,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://www.animezone.ch",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000049.png",
     "typeSource": "single",
@@ -1111,7 +1111,7 @@
   {
     "name": "AniStream",
     "id": 1900000050,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://anistream.xyz",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000050.svg",
     "typeSource": "single",
@@ -1136,7 +1136,7 @@
   {
     "name": "Cinefuse",
     "id": 1900000051,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://cinefuse.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000051.svg",
     "typeSource": "single",
@@ -1161,7 +1161,7 @@
   {
     "name": "Cinego",
     "id": 1900000052,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://cinego.xyz",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000052.svg",
     "typeSource": "single",
@@ -1186,7 +1186,7 @@
   {
     "name": "CinePulse",
     "id": 1900000053,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://cinepulse.top",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000053.png",
     "typeSource": "single",
@@ -1211,7 +1211,7 @@
   {
     "name": "Cinestream",
     "id": 1900000054,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://cinestream.io",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000054.png",
     "typeSource": "single",
@@ -1236,7 +1236,7 @@
   {
     "name": "Coflix",
     "id": 1900000055,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://coflix.re",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000055.png",
     "typeSource": "single",
@@ -1261,7 +1261,7 @@
   {
     "name": "Cpasbien",
     "id": 1900000056,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://cpasbien.gl",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000056.svg",
     "typeSource": "single",
@@ -1286,7 +1286,7 @@
   {
     "name": "CpasMal",
     "id": 1900000057,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://cpasmal.ac",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000057.svg",
     "typeSource": "single",
@@ -1311,7 +1311,7 @@
   {
     "name": "Darkino",
     "id": 1900000058,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://darkino.one",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000058.svg",
     "typeSource": "single",
@@ -1336,7 +1336,7 @@
   {
     "name": "Vobma",
     "id": 1900000059,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://vobma.com",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000059.png",
     "typeSource": "single",
@@ -1361,7 +1361,7 @@
   {
     "name": "Echo du Marteau",
     "id": 1900000060,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://echodumarteau.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000060.png",
     "typeSource": "single",
@@ -1386,7 +1386,7 @@
   {
     "name": "Empire-Streaming",
     "id": 1900000061,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://empire-streaming.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000061.svg",
     "typeSource": "single",
@@ -1411,7 +1411,7 @@
   {
     "name": "Enma",
     "id": 1900000062,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://enma.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000062.png",
     "typeSource": "single",
@@ -1436,7 +1436,7 @@
   {
     "name": "Filmoflix",
     "id": 1900000063,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://filmoflix.co",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000063.ico",
     "typeSource": "single",
@@ -1461,7 +1461,7 @@
   {
     "name": "Franime",
     "id": 1900000064,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://franime.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000064.png",
     "typeSource": "single",
@@ -1486,7 +1486,7 @@
   {
     "name": "French-Anime",
     "id": 1900000065,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://french-anime.com",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000065.png",
     "typeSource": "single",
@@ -1511,7 +1511,7 @@
   {
     "name": "French-Manga",
     "id": 1900000066,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://w16.french-manga.net",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000066.png",
     "typeSource": "single",
@@ -1536,7 +1536,7 @@
   {
     "name": "French-Stream",
     "id": 1900000067,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://french-stream.net",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000067.ico",
     "typeSource": "single",
@@ -1563,7 +1563,7 @@
   {
     "name": "FrFlix",
     "id": 1900000068,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://frflix.mov",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000068.svg",
     "typeSource": "single",
@@ -1588,7 +1588,7 @@
   {
     "name": "FStream TV",
     "id": 1900000069,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://fstv.rest",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000069.ico",
     "typeSource": "single",
@@ -1613,7 +1613,7 @@
   {
     "name": "Fynd Films",
     "id": 1900000070,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://www.fyndfilms.com",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000070.svg",
     "typeSource": "single",
@@ -1638,7 +1638,7 @@
   {
     "name": "HDSS",
     "id": 1900000071,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://www.hdss.to",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000071.svg",
     "typeSource": "single",
@@ -1663,7 +1663,7 @@
   {
     "name": "JetAnimes",
     "id": 1900000072,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://jetanimes.co",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000072.svg",
     "typeSource": "single",
@@ -1688,7 +1688,7 @@
   {
     "name": "Leizy",
     "id": 1900000073,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://leizy.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000073.ico",
     "typeSource": "single",
@@ -1713,7 +1713,7 @@
   {
     "name": "LibertyLand",
     "id": 1900000074,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://libertyland.tv",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000074.svg",
     "typeSource": "single",
@@ -1738,7 +1738,7 @@
   {
     "name": "LyokoPlay",
     "id": 1900000075,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://www.lyokoplay.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000075.ico",
     "typeSource": "single",
@@ -1763,7 +1763,7 @@
   {
     "name": "Mangas.io",
     "id": 1900000076,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://www.mangas.io",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000076.ico",
     "typeSource": "single",
@@ -1788,7 +1788,7 @@
   {
     "name": "Mavanimes",
     "id": 1900000077,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://mavanimes.co",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000077.jpg",
     "typeSource": "single",
@@ -1813,7 +1813,7 @@
   {
     "name": "MavAnimes (Alt)",
     "id": 1900000078,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://mavanimes.cc",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000078.svg",
     "typeSource": "single",
@@ -1838,7 +1838,7 @@
   {
     "name": "MonStream",
     "id": 1900000079,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://monstream.org",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000079.png",
     "typeSource": "single",
@@ -1885,7 +1885,7 @@
   {
     "name": "Neko-Sama",
     "id": 1900000081,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://www.neko-sama.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000081.ico",
     "typeSource": "single",
@@ -1910,7 +1910,7 @@
   {
     "name": "Neko-san",
     "id": 1900000082,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://neko-san.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000082.svg",
     "typeSource": "single",
@@ -1935,7 +1935,7 @@
   {
     "name": "Noctaflix",
     "id": 1900000083,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://noctaflix.lol",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000083.svg",
     "typeSource": "single",
@@ -1960,7 +1960,7 @@
   {
     "name": "Nova-Stream",
     "id": 1900000084,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://novastream.top",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000084.svg",
     "typeSource": "single",
@@ -1985,7 +1985,7 @@
   {
     "name": "Nunflix",
     "id": 1900000085,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://nunflix.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000085.png",
     "typeSource": "single",
@@ -2010,7 +2010,7 @@
   {
     "name": "VF24",
     "id": 1900000086,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://vf24.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000086.png",
     "typeSource": "single",
@@ -2035,7 +2035,7 @@
   {
     "name": "PapaduStream",
     "id": 1900000087,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://papadustream.college",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000087.svg",
     "typeSource": "single",
@@ -2060,7 +2060,7 @@
   {
     "name": "Papystreaming",
     "id": 1900000088,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://papystreaming.sh",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000088.svg",
     "typeSource": "single",
@@ -2085,7 +2085,7 @@
   {
     "name": "Plutonflix",
     "id": 1900000089,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://plutonflix.org",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000089.svg",
     "typeSource": "single",
@@ -2110,7 +2110,7 @@
   {
     "name": "Pstream",
     "id": 1900000090,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://pstream.net",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000090.svg",
     "typeSource": "single",
@@ -2135,7 +2135,7 @@
   {
     "name": "SadisFlixs",
     "id": 1900000091,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://sadisflixs.pro",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000091.svg",
     "typeSource": "single",
@@ -2160,7 +2160,7 @@
   {
     "name": "Seko-Stream",
     "id": 1900000092,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://seko-stream.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000092.svg",
     "typeSource": "single",
@@ -2185,7 +2185,7 @@
   {
     "name": "Streamay",
     "id": 1900000093,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://streamay.net",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000093.svg",
     "typeSource": "single",
@@ -2210,7 +2210,7 @@
   {
     "name": "StreamComplet",
     "id": 1900000094,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://www.streamcomplet.blue",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000094.svg",
     "typeSource": "single",
@@ -2235,7 +2235,7 @@
   {
     "name": "StreamFlix",
     "id": 1900000095,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://streamflix.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000095.png",
     "typeSource": "single",
@@ -2260,7 +2260,7 @@
   {
     "name": "StreamingDivX",
     "id": 1900000096,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://www.streamingdivx.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000096.png",
     "typeSource": "single",
@@ -2285,7 +2285,7 @@
   {
     "name": "Streamvf",
     "id": 1900000097,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://streamvf.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000097.svg",
     "typeSource": "single",
@@ -2310,7 +2310,7 @@
   {
     "name": "SushiAnime",
     "id": 1900000098,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://sushianime.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000098.svg",
     "typeSource": "single",
@@ -2335,7 +2335,7 @@
   {
     "name": "TAnime",
     "id": 1900000099,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://tanime.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000099.svg",
     "typeSource": "single",
@@ -2360,7 +2360,7 @@
   {
     "name": "TenshiTV",
     "id": 1900000100,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://tenshi.tv",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000100.ico",
     "typeSource": "single",
@@ -2385,7 +2385,7 @@
   {
     "name": "ToonAnime",
     "id": 1900000101,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://v8.toonanime.co",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000101.png",
     "typeSource": "single",
@@ -2410,7 +2410,7 @@
   {
     "name": "Toonix",
     "id": 1900000102,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://toonix.fr",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000102.svg",
     "typeSource": "single",
@@ -2435,7 +2435,7 @@
   {
     "name": "VFStream",
     "id": 1900000103,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://films.vfstream.eu",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000103.svg",
     "typeSource": "single",
@@ -2460,7 +2460,7 @@
   {
     "name": "VoirAnime",
     "id": 1900000104,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://www.voiranime.io",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000104.svg",
     "typeSource": "single",
@@ -2485,7 +2485,7 @@
   {
     "name": "VoirAnime.sh",
     "id": 1900000105,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://voiranime.sh",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000105.svg",
     "typeSource": "single",
@@ -2510,7 +2510,7 @@
   {
     "name": "VoirAnime HD",
     "id": 1900000106,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://v6.voiranime.com",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000106.svg",
     "typeSource": "single",
@@ -2535,7 +2535,7 @@
   {
     "name": "VoirDrama.cc",
     "id": 1900000107,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://voirdrama.site",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000107.ico",
     "typeSource": "single",
@@ -2560,7 +2560,7 @@
   {
     "name": "VoirDrama",
     "id": 1900000108,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://voirdrama.to",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000108.svg",
     "typeSource": "single",
@@ -2585,7 +2585,7 @@
   {
     "name": "VoirFilm",
     "id": 1900000109,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://voirfilm.pe",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000109.svg",
     "typeSource": "single",
@@ -2610,7 +2610,7 @@
   {
     "name": "VoirFilm HD",
     "id": 1900000110,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://voirfilm.cz",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000110.svg",
     "typeSource": "single",
@@ -2635,7 +2635,7 @@
   {
     "name": "VoirSeries",
     "id": 1900000111,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://voirseries.io",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000111.png",
     "typeSource": "single",
@@ -2660,7 +2660,7 @@
   {
     "name": "VOSTAnimey",
     "id": 1900000112,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://vostanimey.su",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000112.svg",
     "typeSource": "single",
@@ -2685,7 +2685,7 @@
   {
     "name": "Vostfree",
     "id": 1900000113,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://ipv4.vostfree.ws",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000113.ico",
     "typeSource": "single",
@@ -2710,7 +2710,7 @@
   {
     "name": "Wiflix",
     "id": 1900000114,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://www.wiflix.bond",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000114.png",
     "typeSource": "single",
@@ -2735,7 +2735,7 @@
   {
     "name": "Wooflix",
     "id": 1900000115,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://wooflix.io",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000115.png",
     "typeSource": "single",
@@ -2760,7 +2760,7 @@
   {
     "name": "YassFlix",
     "id": 1900000116,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://yassflix.cc",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000116.ico",
     "typeSource": "single",
@@ -2785,7 +2785,7 @@
   {
     "name": "Zone-Telechargement",
     "id": 1900000117,
-    "lang": "en",
+    "lang": "fr",
     "baseUrl": "https://www.zone-telechargement.com",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000117.ico",
     "typeSource": "single",
@@ -5270,7 +5270,7 @@
   {
     "name": "蜜柑计划 (Mikan Project)",
     "id": 1900000232,
-    "lang": "en",
+    "lang": "zh",
     "baseUrl": "https://mikanani.me",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000232.ico",
     "typeSource": "single",
@@ -5316,7 +5316,7 @@
   {
     "name": "樱花动漫 (YHDM)",
     "id": 1900000234,
-    "lang": "en",
+    "lang": "zh",
     "baseUrl": "https://www.yhdmp.cc",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000234.svg",
     "typeSource": "single",
