@@ -9,7 +9,7 @@ const watchtowerSources = [{
     "apiUrl": "https://anime-kami.com",
     "iconUrl": "https://anime-kami.com/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 1,
     "version": "1.1.1",
     "login": false,
     "forYou": true,

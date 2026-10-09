@@ -9,7 +9,7 @@ const watchtowerSources = [{
     "apiUrl": "https://enma.fr",
     "iconUrl": "https://enma.fr/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 1,
     "version": "1.1.1",
     "login": false,
     "forYou": true,

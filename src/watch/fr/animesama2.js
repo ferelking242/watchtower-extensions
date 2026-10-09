@@ -9,7 +9,7 @@ const watchtowerSources = [{
     "apiUrl": "https://animes-sama.fr",
     "iconUrl": "https://animes-sama.fr/img/autres/logo_icon.png",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 1,
     "version": "1.1.2",
     "forYou": true,
     "login": false,

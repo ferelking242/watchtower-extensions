@@ -22,7 +22,7 @@ const watchtowerSources = [{
     "apiUrl": "https://w16.french-manga.net",
     "iconUrl": "https://w16.french-manga.net/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 1,
     "version": "1.1.1",
     "login": false,
     "forYou": true,

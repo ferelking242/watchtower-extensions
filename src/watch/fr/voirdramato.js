@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "apiUrl": "https://voirdrama.to",
     "iconUrl": "https://voirdrama.to/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 1,
     "version": "0.1.7",
     "login": false,
     "forYou": false,

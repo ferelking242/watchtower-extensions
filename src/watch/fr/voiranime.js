@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "apiUrl": "https://www.voiranime.io",
       "iconUrl": "https://www.voiranime.io/favicon.ico",
       "typeSource": "single",
-      "itemType": 2,
+      "itemType": 1,
       "version": "0.2.3",
       "login": false,
       "forYou": true,

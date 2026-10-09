@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "apiUrl": "https://honeytoon.com",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/manga-2000000159.svg",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 0,
     "isManga": true,
     "isNsfw": true,
     "version": "0.1.0",

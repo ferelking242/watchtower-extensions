@@ -9,7 +9,7 @@ const watchtowerSources = [{
     "apiUrl": "https://v8.toonanime.co",
     "iconUrl": "https://v8.toonanime.co/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 1,
     "version": "1.1.1",
     "login": false,
     "forYou": true,

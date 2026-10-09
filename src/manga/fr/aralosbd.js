@@ -6,7 +6,7 @@ const watchtowerSources = [{
         "apiUrl": "https://aralosbd.fr",
         "iconUrl": "https://aralosbd.fr/favicon.ico",
         "typeSource": "single",
-        "itemType": 2,
+        "itemType": 0,
         "isManga": true,
         "isNsfw": false,
         "version": "0.1.0",

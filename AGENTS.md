@@ -59,6 +59,12 @@ NamiComi (FR/EN), HentaiHand (EN), HentaiEra, HentaiZap, Dragon Ball Multiverse.
   quand le domaine correspond. Rejeter l'icône générique renvoyée par les
   proxys pour un domaine inconnu (hash appris au vol).
 - IDs : utiliser 2000001170+ pour les nouvelles entrées (pas de collision).
+- `itemType` est **canonique par catalogue** : l'app mappe l'entier via
+  `ItemType.values` (`0`=manga, `1`=anime, `2`=novel, `3`=music, `4`=game ;
+  `lib/models/source.dart`). Une entrée de `index/watch.json` doit donc valoir
+  `1`, `index/manga.json` `0`, `index/novel.json` `2`, etc. Ne **jamais** y
+  écrire `2` pour dire « manga » : la source s'installe dans l'onglet Novel.
+  `tools/validate-extensions.mjs` refuse ces divergences (règle «ITEMTYPE»).
 - Un fichier `.js` non référencé par un index est compté comme "unindexed" par
   le CLI Watchtower (`extensions list --include-unindexed`).
 

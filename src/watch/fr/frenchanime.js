@@ -9,7 +9,7 @@ const watchtowerSources = [{
     "apiUrl": "https://french-anime.com",
     "iconUrl": "https://french-anime.com/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 1,
     "version": "1.1.1",
     "login": false,
     "forYou": true,

@@ -6,7 +6,7 @@ const watchtowerSources = [{
         "apiUrl": "https://poseidon-scans.net",
         "iconUrl": "https://poseidon-scans.net/favicon.ico",
         "typeSource": "single",
-        "itemType": 2,
+        "itemType": 0,
         "isManga": true,
         "isNsfw": false,
         "version": "0.1.0",

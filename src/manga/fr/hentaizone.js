@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "apiUrl": "https://hentaizone.xyz",
       "iconUrl": "https://hentaizone.xyz/favicon.ico",
       "typeSource": "single",
-      "itemType": 2,
+      "itemType": 0,
       "isManga": true,
       "version": "0.1.0",
       "login": false,

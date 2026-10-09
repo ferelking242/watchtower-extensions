@@ -6,7 +6,7 @@ const watchtowerSources = [{
         "apiUrl": "https://phenix-scans.co",
         "iconUrl": "https://phenix-scans.co/favicon.ico",
         "typeSource": "single",
-        "itemType": 2,
+        "itemType": 0,
         "isManga": true,
         "isNsfw": false,
         "version": "0.1.0",

@@ -9,7 +9,7 @@ const watchtowerSources = [{
     "apiUrl": "https://anistream.xyz",
     "iconUrl": "https://anistream.xyz/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 1,
     "version": "1.1.1",
     "login": false,
     "forYou": true,

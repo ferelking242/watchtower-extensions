@@ -6,7 +6,7 @@ const watchtowerSources = [{
         "apiUrl": "https://epsilonscan.to",
         "iconUrl": "https://epsilonscan.to/favicon.ico",
         "typeSource": "single",
-        "itemType": 2,
+        "itemType": 0,
         "isManga": true,
         "isNsfw": true,
         "version": "0.1.0",

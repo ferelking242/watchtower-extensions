@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "apiUrl": "https://animeko.co",
       "iconUrl": "https://animeko.co/favicon.ico",
       "typeSource": "single",
-      "itemType": 2,
+      "itemType": 1,
       "version": "0.2.2",
       "login": false,
       "forYou": true,

@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "apiUrl": "https://mangas-scans.com",
       "iconUrl": "https://mangas-scans.com/favicon.ico",
       "typeSource": "single",
-      "itemType": 2,
+      "itemType": 0,
       "isManga": true,
       "version": "0.1.0",
       "login": false,

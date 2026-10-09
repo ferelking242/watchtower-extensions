@@ -6,7 +6,7 @@ const watchtowerSources = [{
         "apiUrl": "https://www.manga-nova.com",
         "iconUrl": "https://www.manga-nova.com/favicon.ico",
         "typeSource": "single",
-        "itemType": 2,
+        "itemType": 0,
         "isManga": true,
         "isNsfw": false,
         "version": "0.1.0",

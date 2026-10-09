@@ -9,7 +9,7 @@ const watchtowerSources = [{
     "apiUrl": "https://jetanimes.co",
     "iconUrl": "https://jetanimes.co/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 1,
     "version": "1.1.1",
     "login": false,
     "forYou": true,

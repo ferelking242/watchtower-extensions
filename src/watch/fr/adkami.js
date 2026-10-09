@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "apiUrl": "https://www.adkami.com",
       "iconUrl": "https://www.adkami.com/favicon.ico",
       "typeSource": "single",
-      "itemType": 2,
+      "itemType": 1,
       "version": "0.2.3",
       "login": false,
       "forYou": true,

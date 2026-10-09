@@ -6,7 +6,7 @@ const watchtowerSources = [{
         "apiUrl": "https://perf-scan.xyz",
         "iconUrl": "https://perf-scan.xyz/favicon.ico",
         "typeSource": "single",
-        "itemType": 2,
+        "itemType": 0,
         "isManga": true,
         "isNsfw": false,
         "version": "0.1.0",

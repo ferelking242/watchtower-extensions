@@ -227,6 +227,31 @@ for (const file of jsFiles) {
 }
 console.log(`   ${jsFiles.length - noPrefs}/${jsFiles.length} extensions declare settings`);
 
+// ── 3b. Index itemType must match the catalogue the entry lives in ──────────
+// The app maps index itemType through ItemType.values (Source.itemType),
+// so a miscoded entry installs into the wrong catalogue tab.
+console.log("▶ index itemType matches catalogue");
+const catalogueItemType = {
+  "index/watch.json": 1,   // ItemType.anime
+  "index/manga.json": 0,   // ItemType.manga
+  "index/novel.json": 2,   // ItemType.novel
+  "index/music.json": 3,   // ItemType.music
+  "index/game.json": 4,    // ItemType.game
+};
+for (const rel of jsonFiles.filter((file) => catalogueItemType[file] !== undefined)) {
+  const expected = catalogueItemType[rel];
+  const entries = JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
+  if (!Array.isArray(entries)) continue;
+  for (const entry of entries) {
+    if (entry.itemType !== expected) {
+      problems.push(
+        `ITEMTYPE: ${rel} / ${entry.name || entry.id} declares ${entry.itemType}, expected ${expected} for this catalogue`,
+      );
+    }
+  }
+}
+console.log("   itemType values match their catalogue");
+
 // ── 4. Index versions in sync with JS manifests ─────────────────────────────
 console.log("▶ index version sync (sync_versions.mjs --dry-run)");
 try {

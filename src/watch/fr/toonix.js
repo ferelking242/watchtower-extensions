@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "apiUrl": "https://toonix.fr",
       "iconUrl": "https://toonix.fr/favicon.ico",
       "typeSource": "single",
-      "itemType": 2,
+      "itemType": 1,
       "version": "0.2.2",
       "login": false,
       "forYou": true,

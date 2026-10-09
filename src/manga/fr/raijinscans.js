@@ -6,7 +6,7 @@ const watchtowerSources = [{
         "apiUrl": "https://raijin-scans.fr",
         "iconUrl": "https://raijin-scans.fr/favicon.ico",
         "typeSource": "single",
-        "itemType": 2,
+        "itemType": 0,
         "isManga": true,
         "isNsfw": false,
         "version": "0.1.0",

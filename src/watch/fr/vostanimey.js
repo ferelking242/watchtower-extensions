@@ -9,7 +9,7 @@ const watchtowerSources = [{
     "apiUrl": "https://vostanimey.su",
     "iconUrl": "https://vostanimey.su/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 1,
     "version": "1.1.1",
     "login": false,
     "forYou": true,
