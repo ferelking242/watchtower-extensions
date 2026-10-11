@@ -250,6 +250,7 @@ async function resolveIcon(baseUrl, name, kei) {
     kei.byHost.get(host.replace(/^www\./, "").toLowerCase()),
     kei.byName.get((name || "").toLowerCase().replace(/[^a-z0-9]/g, "")),
     // Favicon aggregators cover hosts whose own TLS is unreachable from CI.
+    `https://favicon.yandex.com/favicon/${host}?size=120`,
     `https://favicon.yandex.net/favicon/${host}?size=120`,
     `https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://${host}&size=128`,
   );
@@ -261,7 +262,10 @@ async function resolveIcon(baseUrl, name, kei) {
   for (const url of candidates) {
     if (!url) continue;
     const got = await request(url);
-    if (isUsable(got)) return { ...got, from: url };
+    if (isAcceptable(got)) return { ...got, from: url };
+    if (VERBOSE && got && !got.err) {
+      console.log(`    - ${host}: reject ${got.status} len=${got.buf?.length} ${url.slice(0, 70)}`);
+    }
   }
   // Last resort: the Wayback Machine's archived icon for dead/filtered hosts.
   const wb = await resolveWayback(host);
@@ -269,36 +273,82 @@ async function resolveIcon(baseUrl, name, kei) {
   return null;
 }
 
-async function waybackClosest(url) {
-  const r = await request(`https://archive.org/wayback/available?url=${url}`);
-  if (!r || r.err || r.status !== 200) return null;
-  try {
-    return JSON.parse(r.buf.toString("utf8")).archived_snapshots?.closest?.url || null;
-  } catch {
-    return null;
-  }
+// isUsable plus shape/placeholder guards, so a banner or the repo's own
+// placeholder SVG can never overwrite a real logo.
+function isAcceptable(got) {
+  if (!isUsable(got)) return false;
+  const ext = sniffExt(got.buf, got.ct);
+  if (ext === "svg" && isPlaceholderSvgBuffer(got.buf)) return false;
+  return hasSquareIcon(got.buf, ext);
 }
 
+// Archived icons for dead or CI-filtered hosts. The CDX API surfaces every
+// snapshot whose URL looks like a favicon, which the /available endpoint misses.
 async function resolveWayback(host) {
   const bare = host.replace(/^www\./, "");
   for (const h of [bare, `www.${bare}`]) {
-    const iconSnap = await waybackClosest(`${h}/favicon.ico`);
-    if (iconSnap) {
-      const got = await request(iconSnap.replace(/^http:/, "https:"));
-      if (isUsable(got)) return { ...got, from: iconSnap };
+    const url =
+      `http://web.archive.org/cdx/search/cdx?url=${encodeURIComponent(h)}/*` +
+      `&output=json&filter=statuscode:200&filter=mimetype:image/.*` +
+      `&filter=original:.*favicon.*&collapse=urlkey&limit=50`;
+    const r = await request(url);
+    if (!r || r.err || r.status !== 200) continue;
+    let rows;
+    try {
+      rows = JSON.parse(r.buf.toString("utf8"));
+    } catch {
+      continue;
     }
-    const homeSnap = await waybackClosest(`${h}/`);
-    if (!homeSnap) continue;
-    const home = await request(homeSnap.replace(/^http:/, "https:"));
-    if (!home || home.err || !home.buf) continue;
-    const html = home.buf.toString("utf8");
-    for (const cand of [bestIconFromHtml(html, homeSnap), ogImageFromHtml(html, homeSnap)]) {
-      if (!cand) continue;
-      const got = await request(cand.replace(/^http:/, "https:"));
-      if (isUsable(got)) return { ...got, from: cand };
+    if (!Array.isArray(rows) || rows.length < 2) {
+      if (VERBOSE) console.log(`    ~ wayback ${h}: cdx rows=${Array.isArray(rows) ? rows.length - 1 : "?"}`);
+      continue;
+    }
+    const hdr = rows[0];
+    const snaps = rows
+      .slice(1)
+      .map((row) => Object.fromEntries(hdr.map((k, i) => [k, row[i]])))
+      .sort((a, b) => (b.length || 0) - (a.length || 0))
+      .slice(0, 4);
+    for (const s of snaps) {
+      const wurl = `http://web.archive.org/web/${s.timestamp}id_/${s.original}`;
+      const got = await request(wurl);
+      if (isUsable(got)) return { ...got, from: `wayback:${s.original}` };
+      if (VERBOSE) console.log(`    ~ wayback ${s.original}: ${got.err || got.status} len=${got.buf?.length}`);
     }
   }
   return null;
+}
+
+// Square-enough raster icon: reject banners, hero images and thumbnails that
+// some CDX snapshots return when no dedicated favicon was archived.
+function iconDims(buf, ext) {
+  try {
+    if (ext === "png" && buf.slice(0, 8).toString("hex") === "89504e470d0a1a0a") {
+      return [buf.readUInt32BE(16), buf.readUInt32BE(20)];
+    }
+    if (ext === "ico") {
+      const n = buf.readUInt16LE(4);
+      if (n >= 1) return [buf[6] || 256, buf[7] || 256];
+    }
+    if (ext === "gif" && buf.slice(0, 3).toString("latin1") === "GIF") {
+      return [buf.readUInt16LE(6), buf.readUInt16LE(8)];
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function hasSquareIcon(buf, ext) {
+  const d = iconDims(buf, ext);
+  if (!d) return true; // jpg/webp/svg: shape checked elsewhere
+  const [w, h] = d;
+  return w >= 32 && h >= 32 && w <= 512 && h <= 512 && Math.max(w, h) / Math.min(w, h) <= 1.35;
+}
+
+function isPlaceholderSvgBuffer(buf) {
+  const t = buf.toString("utf8").slice(0, 1200);
+  return t.includes("linearGradient") && t.includes("aria-label=");
 }
 
 function isPlaceholderSvg(p) {

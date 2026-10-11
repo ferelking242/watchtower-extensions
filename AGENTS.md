@@ -57,12 +57,20 @@ NamiComi (FR/EN), HentaiHand (EN), HentaiEra, HentaiZap, Dragon Ball Multiverse.
   (1) favicon déclaré, (2) `og:image` / logo, (3) icônes du web-manifest,
   (4) favicon déclaré sur l'`origin` final après redirection, (5) le logo
   embarqué dans l'extension Mihon amont (`res/mipmap-*/ic_launcher.png`),
-  matché par host puis par nom, (6) accumulateurs de favicons
-  (`favicon.yandex.net`, `gstatic.com/faviconV2`) — utiles quand le TLS du
-  site est cassé, (7) variante `http://` du site, (8) favicon/`og:image` de la
-  Wayback Machine. Rejeter le placeholder générique renvoyé par les proxys
-  pour un domaine inconnu (hash appris au vol) et toute réponse dont le corps
-  est du HTML même si le `Content-Type` annonce une image.
+  matché par host puis par nom,   (6) accumulateurs de favicons
+  (`favicon.yandex.com`, `favicon.yandex.net`, `gstatic.com/faviconV2`) —
+  utiles quand le TLS du site est cassé, (7) variante `http://` du site, (8)
+  favicons archivés trouvés via l'API **CDX** de la Wayback Machine
+  (`/cdx/search/cdx?url=<host>/*&filter=original:.*favicon.*`) — l'endpoint
+  `/available` rate la plupart des snapshots ; l'API CDX est rate-limitée
+  (`429`), espacer les appels. Rejeter le placeholder générique renvoyé par
+  les proxys pour un domaine inconnu (hash appris au vol) et toute réponse
+  dont le corps est du HTML même si le `Content-Type` annonce une image.
+  Valider la géométrie : une icône doit être à peu près carrée (32–512 px,
+  ratio ≤ 1.35) — un snapshot CDX peut renvoyer une bannière/`og:image` à la
+  place du favicon. Vérifier la résolution réelle via DoH
+  (`cloudflare-dns.com/dns-query`) : beaucoup de domaines sont en NXDOMAIN
+  (morts) et ne pourront jamais être récupérés, ne pas s'acharner.
   Un `.svg` restant qui correspond à la signature placeholder
   (`aria-label` + `linearGradient id="g"` + `512x512`) est le rendu natif de
   secours : le garder tel quel pour les sources réellement inaccessibles
