@@ -36,6 +36,7 @@ vm.runInNewContext(
 );
 
 const provider = new context.XnxxForTest();
+assert.equal(provider.getSourcePreferences().length, 0);
 const fixture = `
   <div class="thumb-block">
     <div class="thumb-container" data-pvv="//preview.example/one.mp4"></div>

@@ -6,13 +6,17 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.7",
+  "version": "1.2.8",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xnxx.js",
   "notes": "Adult content (18+) — free XNXX catalog only",
   "isNsfw": true,
-  "touchToPreview": true
+  "touchToPreview": true,
+  "videoQualities": [
+    "Auto", "144p", "240p", "360p", "480p",
+    "720p", "1080p", "1440p (2K)", "2160p (4K)", "4320p (8K)"
+  ]
 }];
 
 class DefaultExtension extends MProvider {
@@ -80,15 +84,6 @@ class DefaultExtension extends MProvider {
       ["Solo", "solo female"], ["Teen", "teen"], ["Threesome", "threesome"],
     ];
   }
-
-  _pref(key, fallback) {
-    const prefs = this.source && this.source.prefs;
-    const found = Array.isArray(prefs) && prefs.find(p => p.key === key);
-    return found && found.value !== undefined && found.value !== null &&
-      found.value !== "" ? found.value : fallback;
-  }
-
-  get prefQuality() { return this._pref("preferred_quality", "auto"); }
 
   getHeaders(url) {
     return {
@@ -633,13 +628,6 @@ class DefaultExtension extends MProvider {
       add(body.match(/html5player\.setVideoUrlLow\(['"]([^'"]+)['"]\)/), "360p");
     }
 
-    const preferred = String(this.prefQuality || "auto").toLowerCase();
-    videos.sort((a, b) => {
-      const score = quality => preferred === "auto"
-        ? (quality.includes("HLS") ? 0 : 1)
-        : (quality.toLowerCase().includes(preferred) ? 0 : 1);
-      return score(a.quality) - score(b.quality);
-    });
     if (videos.length) {
       const metaTitle = page
         .selectFirst('meta[property="og:title"]')
@@ -695,15 +683,6 @@ class DefaultExtension extends MProvider {
   }
 
   getSourcePreferences() {
-    return [{
-      key: "preferred_quality",
-      list_preference: {
-        title: "Preferred quality",
-        summary: "Default free video quality picked first in the player.",
-        valueIndex: 0,
-        entries: ["Auto (HLS)", "720p", "360p"],
-        entryValues: ["auto", "720p", "360p"]
-      }
-    }];
+    return [];
   }
 }
