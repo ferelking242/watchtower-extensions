@@ -51,13 +51,22 @@ NamiComi (FR/EN), HentaiHand (EN), HentaiEra, HentaiZap, Dragon Ball Multiverse.
 - Icônes : **locales** dans `assets/icons/`, référencées via
   `https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/...`.
   `tools/fetch_icons.mjs` résout le vrai favicon/apple-touch-icon (suit les
-  redirections, pas de Google). Ne pas régénérer d'icônes placeholder SVG.
-  Beaucoup de sites FR sont derrière Cloudflare (403 undici). Ordre de repli
-  pour récupérer un vrai logo : (1) favicon déclaré, (2) `og:image` / logo,
-  (3) icônes du web-manifest, (4) favicon Google/DuckDuckGo, (5) le logo
-  embarqué dans l'extension Mihon amont (`res/mipmap-xxxhdpi/ic_launcher.png`)
-  quand le domaine correspond. Rejeter l'icône générique renvoyée par les
-  proxys pour un domaine inconnu (hash appris au vol).
+  redirections, sans Google Search/DDG). Ne pas régénérer d'icônes placeholder
+  SVG. Beaucoup de sites FR sont derrière Cloudflare ou injoignables depuis
+  l'egress (NXDOMAIN, TLS auto-signé). Ordre de repli pour un vrai logo :
+  (1) favicon déclaré, (2) `og:image` / logo, (3) icônes du web-manifest,
+  (4) favicon déclaré sur l'`origin` final après redirection, (5) le logo
+  embarqué dans l'extension Mihon amont (`res/mipmap-*/ic_launcher.png`),
+  matché par host puis par nom, (6) accumulateurs de favicons
+  (`favicon.yandex.net`, `gstatic.com/faviconV2`) — utiles quand le TLS du
+  site est cassé, (7) variante `http://` du site, (8) favicon/`og:image` de la
+  Wayback Machine. Rejeter le placeholder générique renvoyé par les proxys
+  pour un domaine inconnu (hash appris au vol) et toute réponse dont le corps
+  est du HTML même si le `Content-Type` annonce une image.
+  Un `.svg` restant qui correspond à la signature placeholder
+  (`aria-label` + `linearGradient id="g"` + `512x512`) est le rendu natif de
+  secours : le garder tel quel pour les sources réellement inaccessibles
+  (aucun outil raster/rendu SVG disponible localement).
 - IDs : utiliser 2000001170+ pour les nouvelles entrées (pas de collision).
 - `itemType` est **canonique par catalogue** : l'app mappe l'entier via
   `ItemType.values` (`0`=manga, `1`=anime, `2`=novel, `3`=music, `4`=game ;
@@ -72,3 +81,6 @@ NamiComi (FR/EN), HentaiHand (EN), HentaiEra, HentaiZap, Dragon Ball Multiverse.
 
 Remote : `https://github.com/ferelking242/watchtower-extensions.git` (branche
 `main`). Ne pas ouvrir de PR sans demande explicite.
+Le `GITHUB_TOKEN` d'app (`ghu_`) peut être en lecture seule : un `git push`
+renvoie alors `403 Permission ... denied` même si l'API montre `admin`. Dans ce
+cas, laisser le commit local et signaler le blocage.
