@@ -85,6 +85,27 @@ NamiComi (FR/EN), HentaiHand (EN), HentaiEra, HentaiZap, Dragon Ball Multiverse.
 - Un fichier `.js` non référencé par un index est compté comme "unindexed" par
   le CLI Watchtower (`extensions list --include-unindexed`).
 
+## Qualité des icônes (faux logos)
+
+Un logo **réel** est unique au site. Deux sites **sans rapport** qui partagent
+le même binaire (même `md5`) = au moins une **fausse icône** (ex. `PornHub`
+et `xtapes` sur le même fichier). Les variantes d'une même marque peuvent
+partager légitimement (`MTL Novel` + `MTL Novel (FR/ES/…)`, `Linovelib` +
+`Linovelib(繁體)`, réseau `fanmtl`, `porngo`/`xxxfiles`).
+- Détecter : grouper les `assets/icons/*` raster par `md5`, comparer les
+  `baseUrl`. Un groupe multi-hôte inter-marques est suspect.
+- Le fallback `icons.duckduckgo.com/ip3/<host>.ico` renvoie souvent un « globe »
+  générique **partagé** (16×16, ~477–1150 o) — ne pas l'utiliser comme logo
+  (vérifier l'unicité du `md5` avant d'intégrer).
+- Idem : les domaines parqués exposent un logo `sedoparking.com` — rejeter.
+- Corriger une fausse icône : refetch (HTML déclaré → `og:image` → yandex →
+  DDG → Wayback CDX/page archivée), normaliser en **128×128 PNG carré** via
+  Pillow, puis si irrécupérable générer un placeholder SVG **unique et brandé**
+  (initiale + couleur dérivée du nom, gabarit `aria-label`+`linearGradient id="g"`)
+  plutôt que de laisser un logo étranger partagé.
+- Toujours re-vérifier après : `md5` unique par marque, formes 32–512 px carré,
+  fichiers > 300 o, puis `npm run validate`.
+
 ## Push
 
 Remote : `https://github.com/ferelking242/watchtower-extensions.git` (branche
