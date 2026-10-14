@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      {
+        "id": "popular",
+        "component": "spotlight",
+        "title": "Popular",
+        "accent": "#F5A623",
+        "icon": "trending_up",
+        "seeAll": true
+      },
+      {
+        "id": "latest",
+        "component": "carousel",
+        "title": "Latest",
+        "accent": "tertiary",
+        "icon": "fiber_new",
+        "seeAll": true
+      },
+      {
+        "id": "hd",
+        "component": "carousel",
+        "title": "HD",
+        "accent": "#00BCD4",
+        "icon": "high_quality",
+        "seeAll": true
+      },
+      {
+        "id": "4k",
+        "component": "carousel",
+        "title": "4K",
+        "accent": "#8E7CFF",
+        "icon": "4k",
+        "seeAll": true
+      },
+      {
+        "id": "vr",
+        "component": "carousel",
+        "title": "VR",
+        "accent": "#66BB6A",
+        "icon": "vrpano",
+        "seeAll": true
+      },
+      {
+        "id": "amateur",
+        "component": "carousel",
+        "title": "Amateur",
+        "accent": "#EC407A",
+        "icon": "videocam",
+        "seeAll": true
+      }
+    ]
+  },
+  "browse": {
+    "popular": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 3,
+        "cardStyle": "thumbnail"
+      },
+      "filters": "chips"
+    }
+  },
+  "detail": {
+    "hero": "backdrop",
+    "episodeList": "compact",
+    "showRecommendations": false
+  },
+  "player": {
+    "mode": "standard"
+  }
+}

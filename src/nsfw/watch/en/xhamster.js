@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://xhamster.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.3",
+    "version": "1.0.4",
     "login": false,
     "forYou": false,
     "pkgPath": "nsfw/watch/en/xhamster.js",
@@ -27,6 +27,20 @@ const watchtowerSources = [{
       const url = `https://xhamster.com/videos/newest?page=${page}`;
       const res = await new Client().get(url, { headers: this.getHeaders(url) });
       return this._parse(res.body);
+    }
+    async getCustomList(id, page) {
+      const searches = {
+        hd: "HD",
+        "4k": "4K",
+        vr: "VR",
+        amateur: "Amateur"
+      };
+      if (id === "popular") return this.getPopular(page);
+      if (id === "latest") return this.getLatestUpdates(page);
+      if (Object.prototype.hasOwnProperty.call(searches, id)) {
+        return this.search(searches[id], page, []);
+      }
+      throw new Error(`Unknown xHamster home section: ${id}`);
     }
     async search(query, page, filters) {
       const q = encodeURIComponent(query.trim());
