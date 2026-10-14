@@ -98,14 +98,16 @@ console.log(`   ${sourceEntries} source entries checked`);
 
 // ── 2a. Validate the declarative UI contract ─────────────────────────────────
 console.log("▶ UI layout structure");
+// Mirror the home-context ids and aliases from
+// watchtower/lib/models/layout_component_registry.dart. Gallery card ids are
+// separate slot values and must not be accepted here as section renderers.
 const supportedLayoutComponents = new Set([
-  "banner", "spotlight", "categoryPills", "carousel", "historyRow",
-  "posterRow", "continueWatching", "quizCard", "newsTicker", "liveNow", "grid",
-  "ranked", "compactRow", "creatorRow", "masonry", "studioExplorer",
-  "rankedWide", "showcase", "collectionCards", "playlistCarousel",
-  "landscapeStacked", "backdropWide", "metadataPoster", "statusPoster",
-  "discoverGrid", "universeExplorer", "collectionTimeline", "doubleFeature",
-  "editorialSplit", "feed", "newHot",
+  "spotlight", "carousel", "banner", "hero", "ranked", "newHot", "new_hot",
+  "rankedWide", "showcase", "creatorRow", "landscapeStacked", "backdropWide",
+  "studioExplorer", "universeExplorer", "collectionTimeline", "grid",
+  "catalogue", "discoverGrid", "category", "categoryPills", "doubleFeature",
+  "editorialSplit", "masonry", "feed", "collectionCards", "playlistCarousel",
+  "compactRow", "compact", "historyRow", "metadataPoster", "statusPoster",
 ]);
 for (const rel of jsonFiles.filter((file) => file.startsWith("ui-layouts/"))) {
   const layout = JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
