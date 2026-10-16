@@ -396,6 +396,18 @@ class DefaultExtension extends MProvider {
     ].map(item => ({ ...item, imageUrl: "" }));
   }
 
+  _categoryTags() {
+    return DefaultExtension.CATEGORIES
+      .filter(([, slug]) => slug)
+      .map(([name, slug]) => ({
+        name,
+        imageUrl: "",
+        link: this._absolute(`/search/${slug.replace(/ /g, "+")}`),
+        collectionId: `search_${slug.replace(/ /g, "_")}`,
+        description: "Parcourir les vidéos"
+      }));
+  }
+
   _filterState(filters, index) {
     return filters && filters[index] ? (filters[index].state || 0) : 0;
   }
@@ -494,6 +506,17 @@ class DefaultExtension extends MProvider {
     if (listId === "daily") {
       return { list: this._dailySelections(), hasNextPage: false };
     }
+    // The layout shows "Le meilleur du mois" as a plain ranked section: the
+    // month is resolved server-side here instead of through a layout month
+    // selector, so no selector is needed on the home screen.
+    if (listId === "best_month") {
+      const month = this._monthSlug();
+      const path = page <= 1 ? `/best/${month}` : `/best/${month}/${page}`;
+      const { body } = await this._get(path);
+      const result = this._parseVideoList(body, page, "best");
+      result.hasNextPage = result.list.length > 0 && page < 24;
+      return result;
+    }
     if (listId === "suggestion_straight") {
       const suggestionPath = page <= 1
         ? "/your-suggestions/straight"
@@ -534,9 +557,10 @@ class DefaultExtension extends MProvider {
       return this._parsePornstars(body, page);
     }
     if (listId === "tags") {
-      const path = page <= 1 ? "/tags" : `/tags/${page}`;
-      const { body } = await this._get(path);
-      return this._parseTags(body);
+      // Deterministic, offline list built from the source's own category set
+      // so the tag grid always renders (the live /tags page is flaky) while
+      // each entry still carries a real /search link for the tag component.
+      return { list: this._categoryTags(), hasNextPage: false };
     }
     if (listId === "hits") {
       const { body } = await this._get(`/hits/${page}`);
