@@ -747,20 +747,64 @@ class DefaultExtension extends MProvider {
     const posts = (data && data.posts && data.posts.posts) || {};
     const children = (data && data.posts && data.posts.children) || {};
     const order = (data && data.posts && data.posts.ids) || Object.keys(posts);
-    const items = [];
+
+    // The thread endpoint returns a flat id→post map; replies carry their
+    // parent id. Build the tree so the client can show nested answers instead
+    // of a single flat list.
+    const byId = {};
+    const repliesOf = {};
+    const roots = [];
     for (const id of order) {
       const post = posts[id];
       if (!post || !post.message) continue;
+      const parent = post.id_parent || post.parent_id || post.parent || 0;
+      const parentKey = parent && parent !== id ? String(parent) : null;
+      byId[id] = { id, post, parentKey };
+    }
+    for (const id of Object.keys(byId)) {
+      const node = byId[id];
+      if (node.parentKey && byId[node.parentKey]) {
+        (repliesOf[node.parentKey] = repliesOf[node.parentKey] || []).push(node);
+      } else {
+        roots.push(node);
+      }
+    }
+
+    const build = (node, depth) => {
+      const post = node.post;
       const votes = post.votes && typeof post.votes.nb === "number" ? post.votes.nb : 0;
-      items.push({
+      const rawMessage = this._decodeEntities(post.message);
+      const item = {
         author: this._decodeEntities(post.name) || "Anonyme",
-        content: this._decodeEntities(post.message),
+        avatar: post.avatar || post.profile_pic || post.user_avatar || "",
+        content: rawMessage,
         date: post.time_diff || post.date || "",
         score: votes,
-        replyCount: typeof children[id] === "number" ? children[id] : 0
-      });
-    }
-    extLog("info", `XNXX.getComments: ${items.length} comment(s) id=${videoId}`);
+        replyCount: typeof children[node.id] === "number"
+          ? children[node.id]
+          : (repliesOf[node.id] || []).length
+      };
+      // Media embedded in the comment body (`<img src=…>`, `<video src=…>`).
+      const images = [];
+      const imageMatches = rawMessage.match(/<img[^>]+src=["']([^"']+)["']/gi) || [];
+      for (const tag of imageMatches) {
+        const src = (tag.match(/src=["']([^"']+)["']/i) || [])[1];
+        if (src) images.push({ url: this._absolute(src), type: "image" });
+      }
+      const videoMatches = rawMessage.match(/<video[^>]+src=["']([^"']+)["']/gi) || [];
+      for (const tag of videoMatches) {
+        const src = (tag.match(/src=["']([^"']+)["']/i) || [])[1];
+        if (src) images.push({ url: this._absolute(src), type: "video" });
+      }
+      if (images.length) item.images = images;
+      if (depth < 6 && repliesOf[node.id]) {
+        item.replies = repliesOf[node.id].map(child => build(child, depth + 1));
+      }
+      return item;
+    };
+
+    const items = roots.map(node => build(node, 0));
+    extLog("info", `XNXX.getComments: ${items.length} thread(s) id=${videoId}`);
     return items.slice(0, 30);
   }
   // Normalises a recommendations/comments argument: plain URL or JSON payload.
