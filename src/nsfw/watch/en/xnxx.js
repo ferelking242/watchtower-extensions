@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.8",
+  "version": "1.3.0",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xnxx.js",
@@ -587,7 +587,10 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
+    const totalSw = Date.now();
+    const pageSw = Date.now();
     const { body } = await this._get(url.replace(DefaultExtension.BASE_URL, ""));
+    const pageMs = Date.now() - pageSw;
     const page = new Document(body);
     const headers = { ...this.getHeaders(url), "Referer": url };
     const videos = [];
@@ -609,8 +612,10 @@ class DefaultExtension extends MProvider {
       body.match(/setIdCDN\(['"]?([^'")]+)['"]?\)/)?.[1];
     if (encodedId && cdnId) {
       const endpoint = `${DefaultExtension.BASE_URL}/html5player/getvideo/${encodedId}/${cdnId}`;
+      const rpcSw = Date.now();
       const rpc = await new Client().get(endpoint, headers);
       const rpcBody = this._checkedBody(endpoint, rpc);
+      const rpcMs = Date.now() - rpcSw;
       let data;
       try {
         data = JSON.parse(rpcBody);
@@ -621,6 +626,7 @@ class DefaultExtension extends MProvider {
       if (data.hls) add([null, data.hls], "Auto (HLS)");
       if (data.mp4_high) add([null, data.mp4_high], "720p");
       if (data.mp4_low) add([null, data.mp4_low], "360p");
+      extLog("info", `XNXX.getVideoList timing page=${pageMs}ms mediaRpc=${rpcMs}ms`);
     }
     if (!videos.length) {
       add(body.match(/html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/), "Auto (HLS)");
@@ -644,11 +650,129 @@ class DefaultExtension extends MProvider {
         watchedAt: Date.now()
       });
     }
-    extLog("info", `XNXX.getVideoList: ${videos.length} free sources`);
+    extLog("info", `XNXX.getVideoList: ${videos.length} free sources (total ${Date.now() - totalSw}ms)`);
     return videos;
   }
 
   async getPageList(url) { return []; }
+
+  // XNXX has no recommendations API: the detail page embeds the related
+  // videos as a JS literal (`var video_related = [...]`) next to the player.
+  // Accepts either a plain page URL or a JSON payload ({url|link}).
+  async getRecommendations(url) {
+    const target = this._targetUrl(url);
+    if (!target) return [];
+    const { body } = await this._get(target.replace(DefaultExtension.BASE_URL, ""));
+    const match = body.match(/var\s+video_related\s*=\s*(\[[\s\S]*?\])\s*;/);
+    let raw = [];
+    if (match) {
+      try { raw = JSON.parse(match[1]); } catch (_) { raw = []; }
+    }
+    const items = [];
+    const seen = {};
+    for (const video of raw) {
+      const link = this._absolute(video.u || "");
+      if (!link || seen[link]) continue;
+      seen[link] = true;
+      items.push({
+        name: video.t || video.tf || "XNXX",
+        imageUrl: this._absolute(video.i || video.il || video.ip || ""),
+        link,
+        description: [video.d, video.r, video.n].filter(Boolean).join(" • ")
+      });
+    }
+    extLog("info", `XNXX.getRecommendations: ${items.length}/${raw.length} related item(s)`);
+    return items.slice(0, 24);
+  }
+
+  // XNXX renders comments client-side: the page only ships an empty
+  // #comments-container, then the browser POSTs/GETs the thread endpoint.
+  // The public thread URL is
+  //   /threads/video-comments/get-posts/<sort>/<id_video>/<after>/<count>
+  // and returns JSON with posts.posts{id->{message,name,time_diff,votes}}.
+  async getComments(url) {
+    const target = this._targetUrl(url);
+    if (!target) return [];
+    const { body } = await this._get(target.replace(DefaultExtension.BASE_URL, ""));
+    const videoId = (body.match(/"id_video"\s*:\s*(\d+)/) || [])[1];
+    if (!videoId) {
+      extLog("warn", "XNXX.getComments: no id_video in page, comments unavailable");
+      return [];
+    }
+    const endpoint =
+      `${DefaultExtension.BASE_URL}/threads/video-comments/get-posts/top/${videoId}/0/0`;
+    let res;
+    try {
+      res = await new Client().get(endpoint, {
+        ...this.getHeaders(endpoint),
+        "Referer": this._absolute(target),
+        "X-Requested-With": "XMLHttpRequest",
+        "Accept": "application/json, text/javascript, */*; q=0.01"
+      });
+    } catch (error) {
+      extLog("warn", `XNXX.getComments network failed error=${error.message}`);
+      return [];
+    }
+    let data;
+    try {
+      data = JSON.parse(this._checkedBody(endpoint, res));
+    } catch (error) {
+      extLog("warn", `XNXX.getComments unreadable response error=${error.message}`);
+      return [];
+    }
+    const posts = (data && data.posts && data.posts.posts) || {};
+    const children = (data && data.posts && data.posts.children) || {};
+    const order = (data && data.posts && data.posts.ids) || Object.keys(posts);
+    const items = [];
+    for (const id of order) {
+      const post = posts[id];
+      if (!post || !post.message) continue;
+      const votes = post.votes && typeof post.votes.nb === "number" ? post.votes.nb : 0;
+      items.push({
+        author: this._decodeEntities(post.name) || "Anonyme",
+        content: this._decodeEntities(post.message),
+        date: post.time_diff || post.date || "",
+        score: votes,
+        replyCount: typeof children[id] === "number" ? children[id] : 0
+      });
+    }
+    extLog("info", `XNXX.getComments: ${items.length} comment(s) id=${videoId}`);
+    return items.slice(0, 30);
+  }
+  // Normalises a recommendations/comments argument: plain URL or JSON payload.
+  _targetUrl(url) {
+    if (!url) return "";
+    try {
+      const payload = JSON.parse(url);
+      if (payload && typeof payload === "object") {
+        return payload.url || payload.link || "";
+      }
+    } catch (_) {}
+    return String(url);
+  }
+
+  // The comments endpoint returns text already HTML-escaped (`An&oacute;nimo`,
+  // `as&iacute;`). Watchtower renders the string verbatim, so decode the
+  // entities the endpoint actually emits before handing the post back.
+  _decodeEntities(value) {
+    if (!value) return "";
+    const named = {
+      amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ",
+      aacute: "á", eacute: "é", iacute: "í", oacute: "ó", uacute: "ú",
+      agrave: "à", egrave: "è", igrave: "ì", ograve: "ò", ugrave: "ù",
+      acirc: "â", ecirc: "ê", icirc: "î", ocirc: "ô", ucirc: "û",
+      auml: "ä", euml: "ë", iuml: "ï", ouml: "ö", uuml: "ü",
+      ccedil: "ç", ntilde: "ñ", Aacute: "Á", Eacute: "É", Iacute: "Í",
+      Oacute: "Ó", Uacute: "Ú", Ccedil: "Ç", Ntilde: "Ñ", hellip: "…",
+      mdash: "—", ndash: "–", rsquo: "’", lsquo: "‘", ldquo: "“", rdquo: "”"
+    };
+    return String(value)
+      .replace(/&#x([0-9a-f]+);/gi, (_, hex) =>
+        String.fromCodePoint(parseInt(hex, 16)))
+      .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+      .replace(/&([a-z]+);/gi, (match, name) =>
+        Object.prototype.hasOwnProperty.call(named, name) ? named[name] : match);
+  }
 
   getFilterList() {
     return [

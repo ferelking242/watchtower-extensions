@@ -115,4 +115,65 @@ await assert.rejects(provider._get("/hits/1"), /request failed.*timed out/);
 assert.ok(logs.some(({ message }) => message.includes("blocked by Cloudflare")));
 assert.ok(logs.some(({ message }) => message.includes("route=/hits/1 status=503")));
 
-console.log("XNXX regression checks passed (listing parsing, Cloudflare, HTTP, network).");
+// ── Recommendations: related videos are a JS literal on the detail page ──────
+clientError = null;
+const detailFixture = `
+<html><head><meta property="og:title" content="A video" /></head><body>
+<script>var video_related=[{"u":"/video-one/related_a","t":"Related A","i":"https://img.example/a.jpg","d":"5min","r":"100%","n":"2M"},
+{"u":"/video-two/related_b","t":"Related B","i":"https://img.example/b.jpg","d":"8min"},
+{"u":"/video-one/related_a","t":"Duplicate","i":"https://img.example/a.jpg"}];</script>
+<script>var conf={"dyn":{"id_video":41983693}};</script>
+</body></html>`;
+response = { statusCode: 200, body: detailFixture };
+const recs = await provider.getRecommendations("https://www.xnxx.com/video-ozutped/a_video");
+assert.equal(recs.length, 2, "duplicates are dropped");
+assert.equal(recs[0].name, "Related A");
+assert.equal(recs[0].link, "https://www.xnxx.com/video-one/related_a");
+assert.equal(recs[0].imageUrl, "https://img.example/a.jpg");
+assert.ok(recs[0].description.includes("5min"));
+assert.equal((await provider.getRecommendations("")).length, 0, "empty url yields no items");
+assert.equal(
+  (await provider.getRecommendations(JSON.stringify({ url: "https://www.xnxx.com/video-ozutped/a_video" }))).length,
+  2,
+  "JSON payload {url} is accepted",
+);
+
+// ── Comments: the thread endpoint returns posts.posts{id->{message,...}} ────
+const commentsFixture = JSON.stringify({
+  result: true,
+  code: 0,
+  posts: {
+    ids: ["c2", "c1"],
+    children: { c1: 0, c2: 3 },
+    posts: {
+      c1: { id: "c1", name: "Alice &amp; Co", message: "Great video &mdash; watch as&iacute;", time_diff: "2 years ago", votes: { nb: 3598 } },
+      c2: { id: "c2", name: "Bob", message: "Nice", time_diff: "1 year ago", votes: { nb: 12 } },
+    },
+  },
+});
+response = { statusCode: 200, body: detailFixture };
+let commentCalls = 0;
+const savedGet = TestClient.prototype.get;
+TestClient.prototype.get = async function (url) {
+  const call = await savedGet.call(this, url);
+  if (String(url).includes("/threads/video-comments/get-posts/")) {
+    commentCalls++;
+    assert.ok(String(url).includes("/top/41983693/"), "uses the numeric id_video");
+    return { statusCode: 200, body: commentsFixture };
+  }
+  return call;
+};
+const comments = await provider.getComments("https://www.xnxx.com/video-ozutped/a_video");
+TestClient.prototype.get = savedGet;
+assert.equal(commentCalls, 1);
+assert.equal(comments.length, 2);
+assert.equal(comments[0].author, "Bob", "order follows posts.ids");
+assert.equal(comments[0].content, "Nice");
+assert.equal(comments[0].replyCount, 3);
+assert.equal(comments[1].author, "Alice & Co");
+assert.equal(comments[1].content, "Great video — watch así");
+assert.equal(comments[1].date, "2 years ago");
+assert.equal(comments[1].score, 3598);
+assert.equal(comments[1].replyCount, 0);
+
+console.log("XNXX regression checks passed (listing parsing, Cloudflare, HTTP, network, recommendations, comments).");
