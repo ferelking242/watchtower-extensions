@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://hentai.sh/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/hentaish.js",
@@ -82,7 +82,7 @@ class DefaultExtension extends MProvider {
     const mp4Re  = /["'](https?:\/\/[^"']+\.mp4[^"']*)['"]/gi;
     let m;
     while ((m = m3u8Re.exec(html)) !== null)
-      videos.push({ url: clean(m[1]), quality: "HLS", originalUrl: clean(m[1]), headers: this.getHeaders(url) });
+      videos.push({ url: clean(m[1]), quality: "Auto", originalUrl: clean(m[1]), headers: this.getHeaders(url) });
     while (videos.length < 3 && (m = mp4Re.exec(html)) !== null)
       videos.push({ url: clean(m[1]), quality: "MP4", originalUrl: clean(m[1]), headers: this.getHeaders(url) });
     return videos;

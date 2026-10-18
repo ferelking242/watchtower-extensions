@@ -1951,7 +1951,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/manga-2000000090.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/manga/fr/hentaizone.js",
     "isManga": true,
     "isNsfw": false,

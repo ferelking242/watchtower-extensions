@@ -7,7 +7,7 @@ var watchtowerSources = [{
     "iconUrl": "https://www.flixgaze.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.10",
+    "version": "1.0.11",
     "login": false,
     "forYou": false,
     "pkgPath": "flixgaze/en/en.flixgaze.js",
@@ -210,7 +210,7 @@ class DefaultExtension extends MProvider {
         const zm = html.match(/pathId\s*=\s*["']([^"']+)["'][\s\S]*?domainId\s*=\s*["']([^"']+)["'][\s\S]*?videoId\s*=\s*["']([^"']+)["']/);
         if (zm) {
             const u = zm[2] + "/" + zm[1] + "/" + zm[3] + ".m3u8";
-            return [{ url: u, quality: "HLS · ZeusDL", originalUrl: u }];
+            return [{ url: u, quality: "Auto · ZeusDL", originalUrl: u }];
         }
         const videos = [];
         const seen = [];

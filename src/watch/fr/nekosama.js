@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.neko-sama.fr/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.2.3",
+      "version": "0.2.4",
       "login": false,
       "forYou": true,
       "pkgPath": "watch/fr/nekosama.js",
@@ -108,13 +108,13 @@ const watchtowerSources = [{
           // neko-sama uses video.js or jwplayer with a sources array
           const srcRe = /["']file["']\s*:\s*["']([^"']+\.m3u8[^"']*)["']/gi;
           let m;
-          while ((m = srcRe.exec(html)) !== null) videos.push({ url: m[1], quality: "AUTO", headers: this._hdrs(url) });
+          while ((m = srcRe.exec(html)) !== null) videos.push({ url: m[1], quality: "Auto", headers: this._hdrs(url) });
           // iframes
           const ifRe = /<iframe[^>]+src="([^"]+)"/gi;
           while ((m = ifRe.exec(html)) !== null) {
-              if (!m[1].includes("javascript")) videos.push({ url: m[1], quality: "AUTO", headers: this._hdrs(url) });
+              if (!m[1].includes("javascript")) videos.push({ url: m[1], quality: "Auto", headers: this._hdrs(url) });
           }
-          if (videos.length === 0) videos.push({ url, quality: "AUTO", headers: this._hdrs() });
+          if (videos.length === 0) videos.push({ url, quality: "Auto", headers: this._hdrs() });
           return videos;
       }
 

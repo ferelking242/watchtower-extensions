@@ -9,7 +9,7 @@ const watchtowerSources = [
     "iconUrl":
       "https://www.google.com/s2/favicons?sz=128&domain=https://sudatchi.com",
     "typeSource": "single",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -205,7 +205,7 @@ class DefaultExtension extends MProvider {
       {
         url: url,
         originalUrl: url,
-        quality: "auto",
+        quality: "Auto",
       },
     ];
 

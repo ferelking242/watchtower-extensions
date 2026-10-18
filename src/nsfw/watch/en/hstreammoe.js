@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://hstream.moe/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/hstreammoe.js",
@@ -94,7 +94,7 @@ class DefaultExtension extends MProvider {
     const mp4Re  = /["'](https?:\/\/[^"']+\.mp4[^"']*)['"]/gi;
     let m;
     while ((m = m3u8Re.exec(html)) !== null) {
-      if (!seen.has(m[1])) { seen.add(m[1]); videos.push({ url: m[1], quality: "HLS", originalUrl: m[1], headers: this.getHeaders(url) }); }
+      if (!seen.has(m[1])) { seen.add(m[1]); videos.push({ url: m[1], quality: "Auto", originalUrl: m[1], headers: this.getHeaders(url) }); }
     }
     while ((m = mp4Re.exec(html)) !== null) {
       if (!seen.has(m[1])) { seen.add(m[1]); videos.push({ url: m[1], quality: "MP4", originalUrl: m[1], headers: this.getHeaders(url) }); }
@@ -109,7 +109,7 @@ class DefaultExtension extends MProvider {
           const iRes = await new Client().get(iSrc, { ...this.getHeaders(url), Referer: url });
           const iHtml = iRes.body;
           const im3u8 = iHtml.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/);
-          if (im3u8) videos.push({ url: im3u8[1], quality: "HLS", originalUrl: im3u8[1], headers: this.getHeaders(url) });
+          if (im3u8) videos.push({ url: im3u8[1], quality: "Auto", originalUrl: im3u8[1], headers: this.getHeaders(url) });
         } catch (_) {}
         if (videos.length > 0) break;
       }

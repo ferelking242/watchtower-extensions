@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://mavanimes.co/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.2.2",
+      "version": "0.2.3",
       "login": false,
       "forYou": true,
       "pkgPath": "watch/fr/mavanimes.js",
@@ -53,10 +53,10 @@ const watchtowerSources = [{
       async getVideoList(url){
           const r=await new Client().get(url,this._hdrs(url));const html=r.body;const videos=[];
           const ifRe=/<iframe[^>]+src="([^"]+)"/gi;let m;
-          while((m=ifRe.exec(html))!==null)if(!m[1].includes("javascript"))videos.push({url:m[1],quality:"AUTO",headers:this._hdrs(url)});
+          while((m=ifRe.exec(html))!==null)if(!m[1].includes("javascript"))videos.push({url:m[1],quality:"Auto",headers:this._hdrs(url)});
           const vRe=/["'](?:file|src)["']\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/gi;
-          while((m=vRe.exec(html))!==null)videos.push({url:m[1].startsWith("http")?m[1]:this.baseUrl+m[1],quality:"AUTO",headers:this._hdrs(url)});
-          if(videos.length===0)videos.push({url,quality:"AUTO",headers:this._hdrs()});
+          while((m=vRe.exec(html))!==null)videos.push({url:m[1].startsWith("http")?m[1]:this.baseUrl+m[1],quality:"Auto",headers:this._hdrs(url)});
+          if(videos.length===0)videos.push({url,quality:"Auto",headers:this._hdrs()});
           return videos;
       }
       getForYou(page){return this.getPopular(page);}

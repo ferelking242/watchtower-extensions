@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javhd.today/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.4",
+  "version": "1.0.5",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javhdtoday.js",
@@ -71,7 +71,7 @@ class DefaultExtension extends MProvider {
     const m3u8Rx = /["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/g;
     let m;
     while ((m = m3u8Rx.exec(html)) !== null) {
-      if (!videos.find(v => v.url === m[1])) videos.push({ url: m[1], quality: "HLS", originalUrl: m[1], headers: this.getHeaders(url) });
+      if (!videos.find(v => v.url === m[1])) videos.push({ url: m[1], quality: "Auto", originalUrl: m[1], headers: this.getHeaders(url) });
     }
     if (videos.length === 0) {
       const mp4Rx = /["'`](https?:\/\/[^"'`]+\.mp4[^"'`]{0,150})["'`]/g;

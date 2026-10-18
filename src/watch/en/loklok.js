@@ -12,7 +12,7 @@ const watchtowerSources = [{
     "iconUrl": "https://h5-static.aoneroom.com/oneroomProject/icon/moviebox-official.jpg",
     "typeSource": "single",
     "itemType": 1,
-    "version": "2.0.0",
+    "version": "2.0.1",
     "login": false,
     "forYou": false,
     "pkgPath": "watch/en/loklok.js",
@@ -223,7 +223,7 @@ class DefaultExtension extends MProvider {
 
         if (data.hls && data.hls.length) {
             const sorted = data.hls.slice().sort((a, b) => (+b.resolutions || 0) - (+a.resolutions || 0));
-            for (const s of sorted) push(s, s.resolutions ? `LokLok HLS ${s.resolutions}p` : "LokLok HLS Auto");
+            for (const s of sorted) push(s, s.resolutions ? `LokLok HLS ${s.resolutions}p` : "Auto");
         }
         if (data.streams && data.streams.length) {
             const sorted = data.streams.slice().sort((a, b) => (+b.resolutions || 0) - (+a.resolutions || 0));
@@ -268,7 +268,7 @@ class DefaultExtension extends MProvider {
                 list_preference: {
                     title: "Preferred quality", summary: "Default quality picked first.",
                     valueIndex: 0,
-                    entries:    ["Auto (HLS)", "1080p", "720p", "480p", "360p"],
+                    entries:    ["Auto", "1080p", "720p", "480p", "360p"],
                     entryValues:["auto", "1080", "720", "480", "360"]
                 }
             },

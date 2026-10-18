@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://papadustream.college/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.1.2",
+    "version": "1.1.3",
     "login": false,
     "forYou": true,
     "pkgPath": "watch/fr/papadustream2.js",
@@ -126,12 +126,12 @@ class DefaultExtension extends MProvider {
         const iframeRe = /iframe[^>]+src="(https?:\/\/[^"]{10,200})"/gi;
         let m;
         while ((m = iframeRe.exec(html)) !== null) {
-            videos.push({ url: m[1], quality: "AUTO", headers: this._hdrs(url) });
+            videos.push({ url: m[1], quality: "Auto", headers: this._hdrs(url) });
         }
         const dataPRe = /data-(?:src|url|player)="(https?:\/\/[^"]{10,200})"/gi;
         let dm;
         while ((dm = dataPRe.exec(html)) !== null) {
-            videos.push({ url: dm[1], quality: "AUTO", headers: this._hdrs(url) });
+            videos.push({ url: dm[1], quality: "Auto", headers: this._hdrs(url) });
         }
         return videos;
     }

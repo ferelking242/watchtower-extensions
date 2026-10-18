@@ -10,7 +10,7 @@ const watchtowerSources = [{
     "iconUrl": "https://animes-sama.fr/img/autres/logo_icon.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.1.2",
+    "version": "1.1.3",
     "forYou": true,
     "login": false,
     "pkgPath": "watch/fr/animesama2.js",
@@ -137,7 +137,7 @@ class DefaultExtension extends MProvider {
                 const eps = JSON.parse(epsM[1].replace(/'/g, '"'));
                 for (const ep of eps) {
                     if (typeof ep === "string" && ep.startsWith("http")) {
-                        videos.push({ url: ep, quality: "AUTO", headers: this._hdrs(url) });
+                        videos.push({ url: ep, quality: "Auto", headers: this._hdrs(url) });
                     }
                 }
             } catch (_) {}
@@ -146,7 +146,7 @@ class DefaultExtension extends MProvider {
         const iframeRe = /iframe[^>]+src="(https?:\/\/[^"]{10,200})"/gi;
         let m;
         while ((m = iframeRe.exec(html)) !== null) {
-            videos.push({ url: m[1], quality: "AUTO", headers: this._hdrs(url) });
+            videos.push({ url: m[1], quality: "Auto", headers: this._hdrs(url) });
         }
         return videos;
     }

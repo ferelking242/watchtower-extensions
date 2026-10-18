@@ -44,6 +44,22 @@ NamiComi (FR/EN), HentaiHand (EN), HentaiEra, HentaiZap, Dragon Ball Multiverse.
 - NSFW : fichiers sous `src/nsfw/...`, `"isNsfw": true`, `itemType: 0` pour les
   galeries manga/image.
 
+## Libellés de qualité
+
+- Une entrée `quality` décrit une **résolution**, jamais le conteneur. Un flux
+  HLS adaptatif s'appelle `"Auto"` (le réglage app « qualité par défaut » gère
+  déjà la sélection) ; `"HLS"`, `"Auto (HLS)"`, `"HLS Auto"` sont interdits.
+- Ne jamais annoncer une résolution que l'URL ne contient pas. XNXX renvoie
+  `mp4_high` → `video_360p.mp4` pour une source 1080p : lire la résolution dans
+  le nom de fichier (`_mp4Quality`) au lieu de supposer que `high` = 720p.
+- Les vraies variantes d'un master HLS (250p..1080p) ne sont pas listées par
+  l'extension : l'app les découvre en lisant le master
+  (`lib/services/hls_variant_resolver.dart`). Ne pas tenter de dupliquer cette
+  logique dans chaque extension.
+- Bumper `"version"` dans le manifeste de toute extension modifiée, puis
+  `node tools/sync_versions.mjs`. Sans bump, l'app ne propose jamais la mise à
+  jour et le correctif n'atteint aucune source installée.
+
 ## Index
 
 - Entrée d'index : `sourceCodeUrl` pointe vers

@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.6.1",
+    "version": "3.6.2",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -1505,7 +1505,7 @@ class DefaultExtension extends MProvider {
         // Fallback minimal
         if (!out.length) {
             if (data.url)     out.push({ url: data.url,     originalUrl: data.url,     quality: "Auto", headers: refH, subtitles: subs });
-            if (data.m3u8Url) out.push({ url: data.m3u8Url, originalUrl: data.m3u8Url, quality: "HLS",  headers: refH, subtitles: subs });
+            if (data.m3u8Url) out.push({ url: data.m3u8Url, originalUrl: data.m3u8Url, quality: "Auto",  headers: refH, subtitles: subs });
         }
         if (!out.length) throw new Error("Aucun flux trouv\u00E9 pour cet \u00E9pisode.");
         return out;

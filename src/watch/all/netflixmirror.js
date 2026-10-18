@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.netflixmirror.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.4",
+    "version": "0.1.5",
     "login": false,
     "forYou": false,
     "pkgPath": "anime/src/all/netflixmirror.js"
@@ -89,13 +89,13 @@ class DefaultExtension extends MProvider {
         const srcRe = /source[^>]+src="([^"]+\.m3u8[^"]*)"/gi;
         let m;
         while ((m = srcRe.exec(html)) !== null) {
-            videos.push({ url: m[1], quality: "HLS Auto", originalUrl: m[1] });
+            videos.push({ url: m[1], quality: "Auto", originalUrl: m[1] });
         }
 
         const embedRe = /(?:file|src)\s*:\s*["']([^"']+\.m3u8[^"']*)["']/g;
         while ((m = embedRe.exec(html)) !== null) {
             if (!videos.find(v => v.url === m[1])) {
-                videos.push({ url: m[1], quality: "HLS", originalUrl: m[1] });
+                videos.push({ url: m[1], quality: "Auto", originalUrl: m[1] });
             }
         }
 

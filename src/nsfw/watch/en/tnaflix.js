@@ -6,7 +6,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.tnaflix.com/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "1.0.4",
+      "version": "1.0.5",
       "login": false,
       "forYou": false,
       "pkgPath": "nsfw/watch/en/tnaflix.js",
@@ -75,7 +75,7 @@ const watchtowerSources = [{
         const html = res.body;
         const videos = [];
         const hlsMatch = html.match(/(?:hls|playlist|m3u8)\s*[=:]\s*['"]([^'"]+\.m3u8[^'"]*)['"]/i);
-        if (hlsMatch) videos.push({ url: hlsMatch[1], quality: "HLS \u00b7 ZeusDL", originalUrl: hlsMatch[1], headers: this.getHeaders(url) });
+        if (hlsMatch) videos.push({ url: hlsMatch[1], quality: "Auto \u00b7 ZeusDL", originalUrl: hlsMatch[1], headers: this.getHeaders(url) });
         const mp4Rx = /(?:src|videoUrl|file)\s*[=:]\s*['"]([^'"]+\.mp4[^'"]*)['"]/gi;
         let m;
         while ((m = mp4Rx.exec(html)) !== null) {

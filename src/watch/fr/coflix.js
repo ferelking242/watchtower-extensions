@@ -11,7 +11,7 @@ const watchtowerSources = [{
     "iconUrl": "https://coflix.re/wp-content/uploads/2022/10/cropped-coflix-180x180-1-150x150.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.1.2",
+    "version": "1.1.3",
     "login": false,
     "forYou": true,
     "pkgPath": "watch/fr/coflix.js",
@@ -135,20 +135,20 @@ class DefaultExtension extends MProvider {
         const iframeRe = /iframe[^>]+src="(https?:\/\/[^"]*(?:lecteur|embed|player|dood|streamtape|sibnet|uqload|vudeo|voe)[^"]{0,200})"/gi;
         let im;
         while ((im = iframeRe.exec(html)) !== null) {
-            videos.push({ url: im[1], quality: "AUTO", headers: this._hdrs(url) });
+            videos.push({ url: im[1], quality: "Auto", headers: this._hdrs(url) });
         }
 
         const dataPRe = /data-player="(https?:\/\/[^"]+)"/gi;
         let dm;
         while ((dm = dataPRe.exec(html)) !== null) {
-            videos.push({ url: dm[1], quality: "AUTO", headers: this._hdrs(url) });
+            videos.push({ url: dm[1], quality: "Auto", headers: this._hdrs(url) });
         }
 
         const hlsRe = /["'](https?:\/\/[^"']+\.(?:m3u8|mp4)[^"']*)/gi;
         let hm;
         while ((hm = hlsRe.exec(html)) !== null) {
             if (!videos.find(v => v.url === hm[1]))
-                videos.push({ url: hm[1], quality: "AUTO", headers: this._hdrs(url) });
+                videos.push({ url: hm[1], quality: "Auto", headers: this._hdrs(url) });
         }
 
         return videos;

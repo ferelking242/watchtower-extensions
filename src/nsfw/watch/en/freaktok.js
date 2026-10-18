@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://freaktok.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "pkgPath": "nsfw/watch/en/freaktok.js",
   "notes": "Adult content (18+) — freaktok",
   "isNsfw": true
@@ -57,7 +57,7 @@ class DefaultExtension extends MProvider {
     const html = res.body;
     const videos = [];
     const m3u8 = html.match(/(?:file|src|source)\s*[:=]\s*["']([^"']+\.m3u8[^"']*)/);
-    if (m3u8) videos.push({ url: m3u8[1], quality: "HLS", originalUrl: m3u8[1] });
+    if (m3u8) videos.push({ url: m3u8[1], quality: "Auto", originalUrl: m3u8[1] });
     const mp4 = html.match(/(?:file|src|source)\s*[:=]\s*["']([^"']+\.mp4[^"']*)/);
     if (mp4 && !m3u8) videos.push({ url: mp4[1], quality: "Auto", originalUrl: mp4[1] });
     return videos;

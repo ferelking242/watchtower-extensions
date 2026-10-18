@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "5.3.2",
+    "version": "5.3.3",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -905,7 +905,7 @@ _buildDynamicSections(data) {
         }
         if (!out.length) {
             if (data.url)    out.push({ url: data.url,    originalUrl: data.url,    quality: "Auto", headers: refH, subtitles: subs });
-            if (data.m3u8Url)out.push({ url: data.m3u8Url,originalUrl: data.m3u8Url,quality: "HLS",  headers: refH, subtitles: subs });
+            if (data.m3u8Url)out.push({ url: data.m3u8Url,originalUrl: data.m3u8Url,quality: "Auto",  headers: refH, subtitles: subs });
         }
         if (!out.length) throw new Error("Aucun flux trouvé pour cet épisode.");
         return out;

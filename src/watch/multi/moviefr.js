@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.6",
+    "version": "1.0.7",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -373,7 +373,7 @@ headers: this._headers()
 }
 if (!out.length && item) {
 var videoUrl2 = item.play_url || item.vod_url || item.url || item.orginal_url || item.down_url;
-if (videoUrl2) out.push({ url: videoUrl2, quality: "AUTO", headers: this._headers() });
+if (videoUrl2) out.push({ url: videoUrl2, quality: "Auto", headers: this._headers() });
 }
 return this._pickQuality(out);
 }

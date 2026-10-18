@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://beeg.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.3",
+    "version": "1.0.4",
     "login": false,
     "forYou": false,
     "pkgPath": "nsfw/watch/en/beeg.js",
@@ -70,7 +70,7 @@ const watchtowerSources = [{
       }
       if (videos.length === 0) {
         const hlsMatch = html.match(/['"](https?:\/\/[^'"]+\.m3u8[^'"]*)['"]/);
-        if (hlsMatch) videos.push({ url: hlsMatch[1], quality: "HLS · ZeusDL", originalUrl: hlsMatch[1], headers: this.getHeaders(url) });
+        if (hlsMatch) videos.push({ url: hlsMatch[1], quality: "Auto · ZeusDL", originalUrl: hlsMatch[1], headers: this.getHeaders(url) });
       }
       return videos;
     }

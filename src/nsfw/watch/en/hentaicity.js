@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://hentaicity.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/hentaicity.js",
@@ -80,7 +80,7 @@ class DefaultExtension extends MProvider {
     const mp4Re  = /["'](https?:\/\/[^"']+\.mp4[^"']*)['"]/gi;
     let m;
     while ((m = m3u8Re.exec(html)) !== null) {
-      videos.push({ url: m[1], quality: "HLS", originalUrl: m[1], headers: this.getHeaders(url) });
+      videos.push({ url: m[1], quality: "Auto", originalUrl: m[1], headers: this.getHeaders(url) });
     }
     while (videos.length < 3 && (m = mp4Re.exec(html)) !== null) {
       videos.push({ url: m[1], quality: "MP4", originalUrl: m[1], headers: this.getHeaders(url) });
@@ -92,7 +92,7 @@ class DefaultExtension extends MProvider {
         try {
           const iRes = await new Client().get(src, { ...this.getHeaders(url), Referer: url });
           const im3u8 = iRes.body.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/);
-          if (im3u8) videos.push({ url: im3u8[1], quality: "HLS", originalUrl: im3u8[1], headers: this.getHeaders(url) });
+          if (im3u8) videos.push({ url: im3u8[1], quality: "Auto", originalUrl: im3u8[1], headers: this.getHeaders(url) });
         } catch (_) {}
       }
     }

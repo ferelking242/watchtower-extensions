@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "isNsfw": false,
-    "version": "0.0.2",
+    "version": "0.0.3",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -116,7 +116,7 @@ class DefaultExtension extends MProvider {
         return [{
             url: url,
             originalUrl: url,
-            quality: "HLS"
+            quality: "Auto"
         }];
     }
     // For manga chapter pages

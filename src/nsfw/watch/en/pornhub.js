@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.pornhub.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.0",
+  "version": "1.3.1",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/pornhub.js",
@@ -573,7 +573,7 @@ class DefaultExtension extends MProvider {
         title: "Preferred quality",
         summary: "Quality placed first in the player.",
         valueIndex: 0,
-        entries: ["Auto (HLS)", "1080p", "720p", "480p", "240p"],
+        entries: ["Auto", "1080p", "720p", "480p", "240p"],
         entryValues: ["auto", "1080", "720", "480", "240"]
       }
     }];

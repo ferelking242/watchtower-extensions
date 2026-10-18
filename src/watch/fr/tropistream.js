@@ -35,7 +35,7 @@ const watchtowerSources = [{
     "iconUrl": "https://tropistream.fr/tropi.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "3.0.2",
+    "version": "3.0.3",
     "login": false,
     "forYou": true,
     "pkgPath": "watch/fr/tropistream.js",
@@ -868,7 +868,7 @@ class DefaultExtension extends MProvider {
                     while ((jm = jsonRe.exec(dlHtml)) !== null) {
                         var ju = jm[1];
                         if (!videos.some(function(v) { return v.url === ju; })) {
-                            videos.push({ url: ju, quality: "AUTO", originalUrl: ju });
+                            videos.push({ url: ju, quality: "Auto", originalUrl: ju });
                         }
                     }
                 }
@@ -921,7 +921,7 @@ class DefaultExtension extends MProvider {
                     var ebody = er.body || "";
 
                     var hm = ebody.match(/["'`](https?:\/\/[^"'`\s]{10,}\.m3u8[^"'`\s]{0,300})["'`]/);
-                    if (hm) { resolved.push({ url: hm[1], quality: "HLS", originalUrl: hm[1] }); continue; }
+                    if (hm) { resolved.push({ url: hm[1], quality: "Auto", originalUrl: hm[1] }); continue; }
                     var pm = ebody.match(/["'`](https?:\/\/[^"'`\s]{10,}\.mp4[^"'`\s]{0,300})["'`]/);
                     if (pm) { resolved.push({ url: pm[1], quality: "MP4", originalUrl: pm[1] }); continue; }
                     resolved.push(vid);

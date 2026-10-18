@@ -11,7 +11,7 @@ var watchtowerSources = [{
   "hasCloudflare": false,
   "sourceCodeUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/src/watch/fr/movix.js",
   "apiUrl": "https://api.themoviedb.org/3",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "login": false,
   "forYou": false,
   "isManga": false,
@@ -262,7 +262,7 @@ class DefaultExtension extends MProvider {
     // Strip ?season= param for the main watch URL
     const cleanUrl = url.replace(/\?season=\d+/, "");
     return [
-      { url: cleanUrl, quality: "Movix · AUTO",    originalUrl: cleanUrl },
+      { url: cleanUrl, quality: "Auto · Movix",    originalUrl: cleanUrl },
     ];
   }
 

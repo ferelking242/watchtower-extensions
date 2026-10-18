@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.lyokoplay.fr/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.1.1",
+    "version": "1.1.2",
     "login": false,
     "forYou": true,
     "pkgPath": "watch/fr/lyokoplay.js",
@@ -160,7 +160,7 @@ class DefaultExtension extends MProvider {
             videos.push({
                 url: watchUrl,
                 originalUrl: watchUrl,
-                quality: "AUTO",
+                quality: "Auto",
                 headers: this._hdrs(url)
             });
         }

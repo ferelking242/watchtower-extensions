@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://hentai.tv/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/hentaitv.js",
@@ -91,7 +91,7 @@ class DefaultExtension extends MProvider {
     const mp4Re  = /(?:file|src|url)\s*[=:]\s*["']([^"']+\.mp4[^"']*)['"]/gi;
     let m;
     while ((m = m3u8Re.exec(html)) !== null) {
-      videos.push({ url: m[1], quality: "HLS", originalUrl: m[1], headers: this.getHeaders(url) });
+      videos.push({ url: m[1], quality: "Auto", originalUrl: m[1], headers: this.getHeaders(url) });
     }
     while ((m = mp4Re.exec(html)) !== null) {
       videos.push({ url: m[1], quality: "MP4", originalUrl: m[1], headers: this.getHeaders(url) });
@@ -104,7 +104,7 @@ class DefaultExtension extends MProvider {
         const iRes = await new Client().get(iframeM[1], { ...this.getHeaders(url), Referer: url });
         const iHtml = iRes.body;
         while ((m = m3u8Re.exec(iHtml)) !== null)
-          videos.push({ url: m[1], quality: "HLS", originalUrl: m[1], headers: this.getHeaders(url) });
+          videos.push({ url: m[1], quality: "Auto", originalUrl: m[1], headers: this.getHeaders(url) });
       }
     }
     return videos;

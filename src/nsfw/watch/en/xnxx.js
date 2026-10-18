@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.0",
+  "version": "1.3.1",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xnxx.js",
@@ -180,6 +180,15 @@ class DefaultExtension extends MProvider {
   _hasPremiumMarker(el) {
     const classes = (el.attr("class") || "").toLowerCase();
     return classes.includes("premium") || classes.includes("gold");
+  }
+
+  /// XNXX's RPC names its MP4 fallbacks by resolution, but `mp4_high` is not
+  /// always the high one: a 1080p source can return `video_360p.mp4`. Trust
+  /// the filename, then the slot name, and never invent a resolution.
+  _mp4Quality(url, slot) {
+    const match = String(url).match(/(\d{3,4})p/);
+    if (match) return `${match[1]}p`;
+    return slot === "high" ? "MP4 (high)" : "MP4 (low)";
   }
 
   _checkedBody(url, response) {
@@ -647,13 +656,17 @@ class DefaultExtension extends MProvider {
         extLog("warn", `XNXX media RPC returned invalid JSON error=${error.message}`);
         throw new Error("XNXX returned an unreadable response for its video sources.");
       }
-      if (data.hls) add([null, data.hls], "Auto (HLS)");
-      if (data.mp4_high) add([null, data.mp4_high], "720p");
-      if (data.mp4_low) add([null, data.mp4_low], "360p");
+      // mp4_high is mislabelled by XNXX itself: for a 1080p source the RPC
+      // returns `video_360p.mp4`, and only the HLS master carries the real
+      // renditions (250p..1080p). Do not advertise a resolution the URL does
+      // not contain - read it back from the filename.
+      if (data.hls) add([null, data.hls], "Auto");
+      if (data.mp4_high) add([null, data.mp4_high], _mp4Quality(data.mp4_high, "high"));
+      if (data.mp4_low) add([null, data.mp4_low], _mp4Quality(data.mp4_low, "low"));
       extLog("info", `XNXX.getVideoList timing page=${pageMs}ms mediaRpc=${rpcMs}ms`);
     }
     if (!videos.length) {
-      add(body.match(/html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/), "Auto (HLS)");
+      add(body.match(/html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/), "Auto");
       add(body.match(/html5player\.setVideoUrlHigh\(['"]([^'"]+)['"]\)/), "720p");
       add(body.match(/html5player\.setVideoUrlLow\(['"]([^'"]+)['"]\)/), "360p");
     }

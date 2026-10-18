@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.voiranime.io/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.2.3",
+      "version": "0.2.4",
       "login": false,
       "forYou": true,
       "pkgPath": "watch/fr/voiranime.js",
@@ -97,16 +97,16 @@ const watchtowerSources = [{
           while ((m = ifRe.exec(html)) !== null) {
               const src = m[1];
               if (!src.includes("javascript") && !src.includes("about:")) {
-                  videos.push({ url: src, quality: "AUTO", headers: this._hdrs(url) });
+                  videos.push({ url: src, quality: "Auto", headers: this._hdrs(url) });
               }
           }
           // Extract direct video sources
           const vRe = /(?:file|src|source)\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/gi;
           while ((m = vRe.exec(html)) !== null) {
               const src = m[1].startsWith("http") ? m[1] : this.baseUrl + m[1];
-              videos.push({ url: src, quality: "AUTO", headers: this._hdrs(url) });
+              videos.push({ url: src, quality: "Auto", headers: this._hdrs(url) });
           }
-          if (videos.length === 0) videos.push({ url, quality: "AUTO", headers: this._hdrs() });
+          if (videos.length === 0) videos.push({ url, quality: "Auto", headers: this._hdrs() });
           return videos;
       }
 

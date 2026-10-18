@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "iconUrl": "https://w16.french-manga.net/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.1.1",
+    "version": "1.1.2",
     "login": false,
     "forYou": true,
     "pkgPath": "watch/fr/frenchmanga.js",
@@ -459,7 +459,7 @@ async getCustomList(listId, page) {
         let hm;
         while ((hm = hlsRe.exec(html)) !== null) {
             const su = hm[0].replace(/&amp;/g, "&");
-            if (!videos.find(v => v.url === su)) videos.push({ url: su, quality: "AUTO", headers: this._hdrs(url) });
+            if (!videos.find(v => v.url === su)) videos.push({ url: su, quality: "Auto", headers: this._hdrs(url) });
         }
 
         // Episode lang streams from static data
@@ -489,12 +489,12 @@ async getCustomList(listId, page) {
             while ((im = iRe.exec(html)) !== null) {
                 const src = im[1];
                 if (src && !src.includes("javascript") && !src.includes("about:")) {
-                    videos.push({ url: src, quality: "AUTO", headers: this._hdrs(url) });
+                    videos.push({ url: src, quality: "Auto", headers: this._hdrs(url) });
                 }
             }
         }
 
-        return videos.length > 0 ? videos : [{ url: url, quality: "AUTO", headers: this._hdrs(url) }];
+        return videos.length > 0 ? videos : [{ url: url, quality: "Auto", headers: this._hdrs(url) }];
     }
 
     getSourcePreferences() {

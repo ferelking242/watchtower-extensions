@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://hanime.tv/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/hanimedottv.js",
@@ -129,7 +129,7 @@ class DefaultExtension extends MProvider {
       const m3u8Re = /["'](https?:\/\/[^"']+\.m3u8[^"']*)['"]/gi;
       let m;
       while ((m = m3u8Re.exec(html)) !== null) {
-        videos.push({ url: m[1], quality: "HLS", originalUrl: m[1], headers: this.getHeaders(url) });
+        videos.push({ url: m[1], quality: "Auto", originalUrl: m[1], headers: this.getHeaders(url) });
       }
     }
     return videos;

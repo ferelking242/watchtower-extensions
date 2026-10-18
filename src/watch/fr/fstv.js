@@ -24,7 +24,7 @@ const watchtowerSources = [{
     "iconUrl": "https://fstv.rest/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.1.1",
+    "version": "1.1.2",
     "login": false,
     "forYou": true,
     "pkgPath": "watch/fr/fstv.js",
@@ -400,7 +400,7 @@ async getCustomList(listId, page) {
         let pm;
         while ((pm = playerRe.exec(html)) !== null) {
             const su = pm[1].replace(/&amp;/g, "&");
-            if (!videos.find(v => v.url === su)) videos.push({ url: su, quality: "AUTO", headers: this._hdrs(url) });
+            if (!videos.find(v => v.url === su)) videos.push({ url: su, quality: "Auto", headers: this._hdrs(url) });
         }
 
         // Strategy 3 — jwplayer / videojs setup calls
@@ -411,7 +411,7 @@ async getCustomList(listId, page) {
             const fileM = /["']file["']\s*:\s*["']([^"']+)["']/.exec(block);
             if (fileM) {
                 const su = fileM[1].replace(/&amp;/g, "&");
-                if (!videos.find(v => v.url === su)) videos.push({ url: su, quality: "AUTO", headers: this._hdrs(url) });
+                if (!videos.find(v => v.url === su)) videos.push({ url: su, quality: "Auto", headers: this._hdrs(url) });
             }
         }
 
@@ -434,7 +434,7 @@ async getCustomList(listId, page) {
             if (!videos.find(v => v.url === su)) videos.push({ url: su, quality: "HD", headers: this._hdrs(url) });
         }
 
-        return videos.length > 0 ? videos : [{ url: url, quality: "AUTO", headers: this._hdrs(url) }];
+        return videos.length > 0 ? videos : [{ url: url, quality: "Auto", headers: this._hdrs(url) }];
     }
 
     getSourcePreferences() {

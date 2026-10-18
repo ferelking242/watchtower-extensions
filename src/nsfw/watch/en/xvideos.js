@@ -6,7 +6,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.xvideos.com/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.4",
+    "version": "1.0.5",
     "login": false,
     "forYou": false,
     "pkgPath": "nsfw/watch/en/xvideos.js",
@@ -78,7 +78,7 @@ const watchtowerSources = [{
         const rpc = await new Client().get(endpoint, { headers: this.getHeaders(url) });
         try {
           const data = JSON.parse(rpc.body || "{}");
-          if (data.hls) videos.push({ url: data.hls, quality: "HLS · ZeusDL", originalUrl: data.hls, headers: this.getHeaders(url) });
+          if (data.hls) videos.push({ url: data.hls, quality: "Auto · ZeusDL", originalUrl: data.hls, headers: this.getHeaders(url) });
           if (data.mp4_high) videos.push({ url: data.mp4_high, quality: "HD · ZeusDL", originalUrl: data.mp4_high, headers: this.getHeaders(url) });
           if (data.mp4_low) videos.push({ url: data.mp4_low, quality: "SD · ZeusDL", originalUrl: data.mp4_low, headers: this.getHeaders(url) });
         } catch {
@@ -86,7 +86,7 @@ const watchtowerSources = [{
         }
       }
       const hlsMatch = html.match(/setVideoHLS\(['"]([^'"]+)['"]\)/);
-      if (hlsMatch && !videos.length) videos.push({ url: hlsMatch[1], quality: "HLS · ZeusDL", originalUrl: hlsMatch[1], headers: this.getHeaders(url) });
+      if (hlsMatch && !videos.length) videos.push({ url: hlsMatch[1], quality: "Auto · ZeusDL", originalUrl: hlsMatch[1], headers: this.getHeaders(url) });
       const hiMatch = html.match(/setVideoUrlHigh\(['"]([^'"]+)['"]\)/);
       if (hiMatch && !videos.length) videos.push({ url: hiMatch[1], quality: "HD · ZeusDL", originalUrl: hiMatch[1], headers: this.getHeaders(url) });
       const loMatch = html.match(/setVideoUrlLow\(['"]([^'"]+)['"]\)/);

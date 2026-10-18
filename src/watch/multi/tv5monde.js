@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.2",
+    "version": "1.0.3",
     "login": false,
     "forYou": false,
     "isNsfw": false,
@@ -241,7 +241,7 @@ class DefaultExtension extends MProvider {
 
         for (const p of patterns) {
             const m = html.match(p);
-            if (m) return [{ url: m[1], quality: "HLS", originalUrl: m[1] }];
+            if (m) return [{ url: m[1], quality: "Auto", originalUrl: m[1] }];
         }
 
         return [{ url, quality: "Web", originalUrl: url }];
