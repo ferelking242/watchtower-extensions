@@ -59,6 +59,12 @@ NamiComi (FR/EN), HentaiHand (EN), HentaiEra, HentaiZap, Dragon Ball Multiverse.
 - Bumper `"version"` dans le manifeste de toute extension modifiée, puis
   `node tools/sync_versions.mjs`. Sans bump, l'app ne propose jamais la mise à
   jour et le correctif n'atteint aucune source installée.
+- `getVideoList` est le chemin critique du démarrage vidéo : tout ce qui n'est
+  pas nécessaire à l'URL de lecture doit être **hors** de son `await`. XNXX
+  attendait `_saveHistoryItem` (écriture SharedPreferences) avant de retourner
+  les sources ; le passer en fire-and-forget a supprimé cette attente. Ne pas
+  réintroduire d'`await` décoratif (historique, favoris, télémétrie) dans ce
+  retour.
 
 ## Index
 
