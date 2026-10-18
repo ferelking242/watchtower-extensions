@@ -82,8 +82,11 @@ const tagsFixture = `
   </div>`;
 response = { statusCode: 200, body: tagsFixture };
 const tags = await provider.getCustomList("tags", 1);
-assert.equal(tags.list.length, 2);
-assert.equal(tags.list[0].collectionId, "search_teen");
+// The tag grid is built from the source's own category set, not scraped: the
+// live /tags page is flaky, so the list must render with no network at all.
+assert.ok(tags.list.length > 0);
+assert.equal(tags.hasNextPage, false);
+assert.ok(tags.list.every((tag) => tag.link.startsWith("https://www.xnxx.com/search/")));
 
 const pornstarFixture = `
   <div class="thumb-block thumb-cat">
@@ -138,6 +141,30 @@ assert.equal(
   "JSON payload {url} is accepted",
 );
 
+// A response without the related literal must still fill the tab: the page's
+// own keyword tags drive a listing request instead of showing nothing.
+const noRelatedFixture = `
+<html><body>
+<div class="metadata-row video-tags">
+  <a class="is-keyword" href="/search/latina">latina</a>
+  <a class="is-keyword" href="/search/teen">teen</a>
+</div>
+</body></html>`;
+const listingGet = TestClient.prototype.get;
+TestClient.prototype.get = async function (url) {
+  if (String(url).includes("/search/")) {
+    return { statusCode: 200, body: fixture };
+  }
+  return { statusCode: 200, body: noRelatedFixture };
+};
+const fallbackRecs = await provider.getRecommendations(
+  "https://www.xnxx.com/video-ozutped/a_video",
+);
+TestClient.prototype.get = listingGet;
+assert.equal(fallbackRecs.length, 2, "tag fallback fills the tab");
+assert.equal(fallbackRecs[0].name, "First listing");
+assert.ok(logs.some(({ message }) => message.includes("tag fallback")));
+
 // ── Comments: the thread endpoint returns posts.posts{id->{message,...}} ────
 const commentsFixture = JSON.stringify({
   result: true,
@@ -176,4 +203,36 @@ assert.equal(comments[1].date, "2 years ago");
 assert.equal(comments[1].score, 3598);
 assert.equal(comments[1].replyCount, 0);
 
-console.log("XNXX regression checks passed (listing parsing, Cloudflare, HTTP, network, recommendations, comments).");
+// ── getVideoList: the media RPC path, including its helpers ──────────────────
+// Regression guard: `_mp4Quality` is a class method and must be called through
+// `this`. Calling it bare threw "ReferenceError: _mp4Quality is not defined",
+// which failed the whole getVideoList — every video appeared unplayable.
+const playerFixture = `
+<html><head><meta property="og:title" content="A video" /></head><body>
+<script>
+html5player.setEncodedIdVideo('ENC123');
+html5player.setIdCdnHLS('21');
+</script>
+<div id="video-player-bg"></div>
+</body></html>`;
+const rpcFixture = JSON.stringify({
+  hls: "https://hls.example/master.m3u8",
+  mp4_high: "https://mp4.example/video_360p.mp4",
+  mp4_low: "https://mp4.example/video_240p.mp4",
+});
+TestClient.prototype.get = async function (url) {
+  if (String(url).includes("/html5player/getvideo/")) {
+    return { statusCode: 200, body: rpcFixture };
+  }
+  return { statusCode: 200, body: playerFixture };
+};
+const sources = await provider.getVideoList("https://www.xnxx.com/video-ozutped/a_video");
+TestClient.prototype.get = savedGet;
+const byQuality = Object.fromEntries(sources.map((v) => [v.quality, v.url]));
+assert.equal(byQuality["Auto"], "https://hls.example/master.m3u8");
+// The RPC's slot names lie: mp4_high holds a 360p file, so the label must come
+// from the filename rather than the slot.
+assert.equal(byQuality["360p"], "https://mp4.example/video_360p.mp4");
+assert.equal(byQuality["240p"], "https://mp4.example/video_240p.mp4");
+
+console.log("XNXX regression checks passed (listing parsing, Cloudflare, HTTP, network, recommendations, comments, getVideoList).");

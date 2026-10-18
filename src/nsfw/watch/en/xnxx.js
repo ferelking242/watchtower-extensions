@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.1",
+  "version": "1.3.2",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xnxx.js",
@@ -661,14 +661,17 @@ class DefaultExtension extends MProvider {
       // renditions (250p..1080p). Do not advertise a resolution the URL does
       // not contain - read it back from the filename.
       if (data.hls) add([null, data.hls], "Auto");
-      if (data.mp4_high) add([null, data.mp4_high], _mp4Quality(data.mp4_high, "high"));
-      if (data.mp4_low) add([null, data.mp4_low], _mp4Quality(data.mp4_low, "low"));
+      if (data.mp4_high) add([null, data.mp4_high], this._mp4Quality(data.mp4_high, "high"));
+      if (data.mp4_low) add([null, data.mp4_low], this._mp4Quality(data.mp4_low, "low"));
       extLog("info", `XNXX.getVideoList timing page=${pageMs}ms mediaRpc=${rpcMs}ms`);
     }
     if (!videos.length) {
+      // Same rule as above: `setVideoUrlHigh` is a slot name, not a promise.
       add(body.match(/html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/), "Auto");
-      add(body.match(/html5player\.setVideoUrlHigh\(['"]([^'"]+)['"]\)/), "720p");
-      add(body.match(/html5player\.setVideoUrlLow\(['"]([^'"]+)['"]\)/), "360p");
+      const highFallback = body.match(/html5player\.setVideoUrlHigh\(['"]([^'"]+)['"]\)/);
+      if (highFallback) add(highFallback, this._mp4Quality(highFallback[1], "high"));
+      const lowFallback = body.match(/html5player\.setVideoUrlLow\(['"]([^'"]+)['"]\)/);
+      if (lowFallback) add(lowFallback, this._mp4Quality(lowFallback[1], "low"));
     }
 
     if (videos.length) {
@@ -719,7 +722,40 @@ class DefaultExtension extends MProvider {
       });
     }
     extLog("info", `XNXX.getRecommendations: ${items.length}/${raw.length} related item(s)`);
-    return items.slice(0, 24);
+    if (items.length) return items.slice(0, 24);
+
+    // The related literal is absent from some responses (a partially rendered
+    // or signed-out page), which used to leave "Pour vous" empty. The page
+    // still lists its own tags, and the first one describes the video well
+    // enough to build a real list instead of showing nothing.
+    const fallback = await this._recommendByTag(body, target);
+    extLog("info", `XNXX.getRecommendations: no related literal, tag fallback → ${fallback.length} item(s)`);
+    return fallback.slice(0, 24);
+  }
+
+  /// Recommendations built from the detail page's own keyword tags.
+  ///
+  /// Used only when the page ships no `video_related` literal: the tag search
+  /// is a second request, so it must not run on the normal path.
+  async _recommendByTag(body, target) {
+    const doc = new Document(body);
+    // Grouped/compound selectors are unreliable on the embedded selector
+    // engine, so probe the tag classes one at a time.
+    let anchors = [];
+    for (const selector of ["a.is-keyword", ".video-tags a", ".tags a"]) {
+      anchors = doc.select(selector);
+      if (anchors.length) break;
+    }
+    const keyword = anchors
+      .map((anchor) => ({ href: anchor.attr("href") || "" }))
+      .find((tag) => tag.href.startsWith("/search/"));
+    if (!keyword) return [];
+
+    const { body: listing } = await this._get(keyword.href);
+    const currentId = (target.match(/video-([a-z0-9]+)/i) || [])[1];
+    return this._parseVideoList(listing, 1, "related").list.filter(
+      (item) => item.link && (!currentId || !item.link.includes(`video-${currentId}`))
+    );
   }
 
   // XNXX renders comments client-side: the page only ships an empty
