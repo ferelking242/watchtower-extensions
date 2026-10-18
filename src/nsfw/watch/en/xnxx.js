@@ -683,7 +683,12 @@ class DefaultExtension extends MProvider {
         metaTitle.replace(/\s+/g, " ").trim() ||
         "XNXX video";
       const cover = page.selectFirst('meta[property="og:image"]')?.attr("content") || "";
-      await this._saveHistoryItem({
+      // Fire-and-forget: this is a local SharedPreferences write, and awaiting
+      // it held up the return of `getVideoList` — i.e. the video URL the player
+      // is blocked on. The history entry is a nicety; it must never delay
+      // playback. `_saveHistoryItem` catches its own errors, so there is no
+      // unhandled rejection to worry about.
+      this._saveHistoryItem({
         name: title,
         link: this._absolute(url),
         imageUrl: this._absolute(cover),
