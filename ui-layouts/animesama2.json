@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      { "id": "derniers-ajouts",   "component": "carousel",   "title": "🆕 Derniers épisodes ajoutés", "accent": "#00BCD4", "icon": "fiber_new",   "seeAll": true },
+      { "id": "derniers-contenus", "component": "carousel",   "title": "📅 Derniers contenus sortis",  "accent": "#FFB300", "icon": "event",       "seeAll": true },
+      { "id": "classiques",        "component": "compactRow", "title": "🏆 Les classiques",            "accent": "#9C27B0", "icon": "star",        "seeAll": true },
+      { "id": "pepites",           "component": "compactRow", "title": "💎 Découvrez des pépites",     "accent": "#4CAF50", "icon": "auto_awesome","seeAll": true },
+      { "id": "popular",           "component": "ranked",     "title": "🔥 Catalogue",                 "accent": "error",   "icon": "trending_up", "seeAll": true }
+    ]
+  },
+  "browse": {
+    "popular": { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "latest":  { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "search":  { "results": { "component": "grid", "columns": 3 }, "filters": "chips" }
+  },
+  "player": { "mode": "standard" }
+}
