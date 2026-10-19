@@ -133,5 +133,14 @@ partager légitimement (`MTL Novel` + `MTL Novel (FR/ES/…)`, `Linovelib` +
 Remote : `https://github.com/ferelking242/watchtower-extensions.git` (branche
 `main`). Ne pas ouvrir de PR sans demande explicite.
 Le `GITHUB_TOKEN` d'app (`ghu_`) peut être en lecture seule : un `git push`
-renvoie alors `403 Permission ... denied` même si l'API montre `admin`. Dans ce
-cas, laisser le commit local et signaler le blocage.
+renvoie alors `403 Permission ... denied` même si l'API montre `admin`.
+Utiliser `GITHUB_PERSONAL_ACCESS_TOKEN` (droits d'écriture confirmés) :
+
+```bash
+git remote set-url origin https://${GITHUB_PERSONAL_ACCESS_TOKEN}@github.com/ferelking242/watchtower-extensions.git
+git push origin main
+```
+
+Si le push est refusé en interactif (« Password for … »), c'est que l'URL du
+remote embarque le `ghu_` : la remplacer comme ci-dessus. Toujours `git fetch`
+puis `git rebase origin/main` avant de pousser, `main` bouge vite.
