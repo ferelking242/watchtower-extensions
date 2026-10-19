@@ -65,6 +65,12 @@ NamiComi (FR/EN), HentaiHand (EN), HentaiEra, HentaiZap, Dragon Ball Multiverse.
   les sources ; le passer en fire-and-forget a supprimé cette attente. Ne pas
   réintroduire d'`await` décoratif (historique, favoris, télémétrie) dans ce
   retour.
+- `tools/mpv_startup_bench.mjs <master.m3u8> [referer] [runs]` mesure le temps
+  jusqu'à la première image en pilotant **mpv**, le runtime réel de l'app. Ne
+  pas utiliser la CLI `ffmpeg` pour ça : elle ne sait pas exprimer
+  `demuxer-lavf-probe-info` (il n'y a pas d'option `-probe_info`, elle échoue
+  avec `Unrecognized option`), donc elle ne mesure pas ce qu'elle prétend.
+  C'est de là que venait le chiffre erroné de « 10,7 s pour le probe ».
 
 ## Index
 
