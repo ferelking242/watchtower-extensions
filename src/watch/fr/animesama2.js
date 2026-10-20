@@ -17,9 +17,11 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000044.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.1.4",
+    "version": "1.1.5",
     "forYou": true,
-    "login": false,
+    "login": true,
+    "account": true,
+    "loginUrl": "https://animes-sama.fr/login",
     "pkgPath": "watch/fr/animesama2.js",
     "editableBaseUrl": true,
     "hasCloudflare": false,
@@ -374,6 +376,68 @@ class DefaultExtension extends MProvider {
     }
 
     async getForYou(page) { return await this.getPopular(page); }
+
+    // Le site n'expose aucune API de compte : /profil est rendu côté serveur et
+    // redirige vers /login tant qu'aucune session n'est active. On s'appuie donc
+    // sur le HTML du profil, authentifié par le cookie de session capturé dans
+    // le WebView de connexion.
+    async getAccount() {
+        let res;
+        try {
+            res = await this._page(this.baseUrl + "/profil");
+        } catch (_) {
+            return null;
+        }
+        const html = res.body || "";
+        if (!html || /<form[^>]+action="\/login"/i.test(html)) return null;
+
+        const profile = this._profileBlock(html);
+        const loggedIn = /loggedIn\s*:\s*true/i.test(profile) ||
+            /loggedIn\s*:\s*true/i.test(html);
+        const userM = /(?:user|account|profil|profile)\s*:\s*\{([\s\S]{0,600}?)\}/i.exec(profile) ||
+            /(?:user|account|profil|profile)\s*:\s*\{([\s\S]{0,600}?)\}/i.exec(html);
+        const raw = userM ? userM[1] : "";
+
+        const pick = (key) => {
+            const m = new RegExp('["\']?' + key + '["\']?\\s*:\\s*["\']([^"\']+)["\']', "i").exec(raw) ||
+                new RegExp('data-' + key + '="([^"]+)"', "i").exec(html) ||
+                new RegExp('class="[^"]*' + key + '[^"]*"[^>]*>([^<]+)<', "i").exec(html);
+            return m ? this._decode(m[1]) : "";
+        };
+
+        const username = pick("username") || pick("pseudo") || pick("identifier");
+        const displayName = pick("displayName") || pick("name") || username;
+        let avatarUrl = pick("avatarUrl") || pick("avatar") || pick("img");
+        if (avatarUrl && avatarUrl.startsWith("/")) avatarUrl = this._abs(avatarUrl);
+
+        if (!loggedIn && !username && !displayName) return null;
+        return {
+            id: pick("id") || username || "animesama",
+            username: username || displayName || "Compte connecté",
+            displayName: displayName || username || "Compte connecté",
+            avatarUrl: avatarUrl || ""
+        };
+    }
+
+    // window.__PROFILE = { loggedIn, csrf, library, anime, … } — on isole le
+    // bloc par comptage d'accolades : une regex non gourmande s'arrêterait au
+    // premier objet imbriqué.
+    _profileBlock(html) {
+        const i = html.indexOf("__PROFILE");
+        if (i < 0) return "";
+        const start = html.indexOf("{", i);
+        if (start < 0) return "";
+        let depth = 0;
+        for (let k = start; k < html.length && k < start + 20000; k++) {
+            const c = html[k];
+            if (c === "{") depth++;
+            else if (c === "}") {
+                depth--;
+                if (depth === 0) return html.slice(start, k + 1);
+            }
+        }
+        return "";
+    }
 
     async getPageList() { return []; }
 

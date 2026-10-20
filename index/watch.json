@@ -966,7 +966,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000044.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.1.4",
+    "version": "1.1.5",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/watch/fr/animesama2.js",
     "isManga": false,
     "isNsfw": false,
@@ -974,7 +974,7 @@
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Anime-Sama — animes-sama.fr — VF/VOSTFR.",
-    "login": false,
+    "login": true,
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
@@ -983,7 +983,9 @@
       "fr"
     ],
     "uiLayout": "ui-layouts/animesama2.json",
-    "uiLayoutVersion": "1.0.0"
+    "uiLayoutVersion": "1.0.0",
+    "account": true,
+    "loginUrl": "https://animes-sama.fr/login"
   },
   {
     "name": "AnimeSite",
