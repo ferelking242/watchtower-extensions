@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      {
+        "id": "popular",
+        "component": "spotlight",
+        "title": "Most Popular",
+        "accent": "#FE628E",
+        "icon": "whatshot",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "latest",
+        "component": "showcase",
+        "title": "Latest Updates",
+        "accent": "tertiary",
+        "icon": "fiber_new",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "today_hot",
+        "component": "rankedWide",
+        "title": "Trending Today",
+        "accent": "error",
+        "icon": "trending_up",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "weekly_hot",
+        "component": "rankedWide",
+        "title": "Top This Week",
+        "accent": "#F5A623",
+        "icon": "emoji_events",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "new_release",
+        "component": "showcase",
+        "title": "New Releases",
+        "accent": "secondary",
+        "icon": "new_releases",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "uncensored",
+        "component": "showcase",
+        "title": "Uncensored Leaks",
+        "accent": "#8E7CFF",
+        "icon": "lock_open",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "english_sub",
+        "component": "showcase",
+        "title": "English Subtitles",
+        "accent": "#00BCD4",
+        "icon": "subtitles",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "fc2",
+        "component": "showcase",
+        "title": "FC2-PPV",
+        "accent": "#66BB6A",
+        "icon": "movie",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "vr",
+        "component": "showcase",
+        "title": "VR",
+        "accent": "#7E57C2",
+        "icon": "vrpano",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "catalogue",
+        "component": "grid",
+        "title": "Browse Everything",
+        "accent": "primary",
+        "icon": "grid_view",
+        "columns": 3,
+        "cardStyle": "thumbnail",
+        "paginated": true
+      }
+    ]
+  },
+  "browse": {
+    "popular": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 3,
+        "cardStyle": "thumbnail"
+      },
+      "filters": "chips"
+    }
+  },
+  "detail": {
+    "hero": "backdrop",
+    "episodeList": "compact",
+    "showRecommendations": false
+  },
+  "player": {
+    "mode": "standard"
+  }
+}
