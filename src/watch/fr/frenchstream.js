@@ -826,18 +826,51 @@ async getCustomList(listId, page) {
                     if (typeof value === "object" && !Array.isArray(value)) {
                         value = value.file || value.src || value.url;
                     }
-                    const links = Array.isArray(value) ? value : [value];
-                    for (let vi = 0; vi < links.length; vi++) {
-                        const resolved = await this._resolvePlayerUrl(
-                            links[vi],
-                            episodeUrl,
-                            qualityByLanguage[language] || "AUTO"
-                        );
-                        if (resolved.length > 0) return resolved.slice(0, 1);
-                    }
+                    const resolved = await this._resolvePlayerEntries(
+                        value,
+                        episodeUrl,
+                        qualityByLanguage[language] || "AUTO"
+                    );
+                    if (resolved.length > 0) return resolved.slice(0, 1);
                 }
             }
         } catch (_) {}
+        return [];
+    }
+
+    /**
+     * Résout les entrées brutes d'un épisode/de film vers des videos jouables.
+     * Le JSON du site peut fournir, pour une entrée donnée :
+     *   • une URL directe  → résolue telle quelle si déjà jouable ;
+     *   • un tableau d'URLs / d'objets {file|src|url} ;
+     *   • un objet {hebergeur: url} (premium, vidzy, uqload…) : la forme
+     *     actuelle de static/series/*.js — chaque valeur est une page embed
+     *     dont le lecteur livre l'URL HLS signée en clair.
+     * On essaie chaque candidat dans l'ordre du site (les hébergeurs listés
+     * en premier sont les plus fiables) et on s'arrête dès qu'un flux marche.
+     */
+    async _resolvePlayerEntries(raw, referer, quality) {
+        const candidates = [];
+        const push = (value) => {
+            if (value == null) return;
+            if (typeof value === "object") {
+                value = value.file || value.src || value.url;
+            }
+            if (typeof value === "string" && value.trim()) {
+                candidates.push(value.trim());
+            }
+        };
+        if (typeof raw === "object" && raw !== null && !Array.isArray(raw)) {
+            for (const key of Object.keys(raw)) push(raw[key]);
+        } else if (Array.isArray(raw)) {
+            for (const value of raw) push(value);
+        } else {
+            push(raw);
+        }
+        for (const candidate of candidates) {
+            const resolved = await this._resolvePlayerUrl(candidate, referer, quality);
+            if (resolved.length > 0) return resolved;
+        }
         return [];
     }
 
@@ -865,19 +898,12 @@ async getCustomList(listId, page) {
                 const entries = data[language];
                 const raw = entries && (entries[String(episodeNumber)] || entries[episodeNumber]);
                 if (!raw) continue;
-                const links = Array.isArray(raw) ? raw : [raw];
-                for (let vi = 0; vi < links.length; vi++) {
-                    const entry = links[vi];
-                    const link = entry && typeof entry === "object"
-                        ? (entry.file || entry.src || entry.url)
-                        : entry;
-                    const resolved = await this._resolvePlayerUrl(
-                        link,
-                        pageUrl || url,
-                        qualityByLanguage[language] || "AUTO"
-                    );
-                    if (resolved.length > 0) return resolved.slice(0, 1);
-                }
+                const resolved = await this._resolvePlayerEntries(
+                    raw,
+                    pageUrl || url,
+                    qualityByLanguage[language] || "AUTO"
+                );
+                if (resolved.length > 0) return resolved.slice(0, 1);
             }
         } catch (_) {}
         return [];
