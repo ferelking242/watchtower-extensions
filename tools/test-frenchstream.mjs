@@ -73,8 +73,8 @@ async function testCatalogLayout() {
   );
 
   assert.equal(source.uiLayout, "ui-layouts/frenchstream.json");
-  assert.equal(source.uiLayoutVersion, "1.0.0");
-  assert.equal(source.version, "1.0.2");
+  assert.equal(source.uiLayoutVersion, "1.0.1");
+  assert.equal(source.version, "1.0.3");
   assert.ok(sectionIds.length > 2, "French-Stream layout should define more than two sections");
   assert.equal(new Set(sectionIds).size, sectionIds.length, "layout section IDs should be unique");
   for (const id of sectionIds) {

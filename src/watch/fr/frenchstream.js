@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// French-Stream — extension Watchtower v0.6.0
+// French-Stream — extension Watchtower v0.7.0
 //
 // Méthodes :
 //   getPopular(page)            → films populaires
@@ -23,7 +23,7 @@ const watchtowerSources = [{
     "iconUrl": "https://french-stream.net/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.2",
+    "version": "1.0.3",
     "login": false,
     "forYou": true,
     "pkgPath": "watch/fr/frenchstream.js",
@@ -532,6 +532,47 @@ async getCustomList(listId, page) {
         return { list: [], hasNextPage: false };
     }
 
+    /**
+     * Dépaquette les payloads `eval(function(p,a,c,k,e,d){…})` (Dean Edwards
+     * packing). Les lecteurs hébergés (fsvid.lol, uqload…) embarquent l'URL
+     * HLS dans un script packed : sans dépaquetage, plus aucune URL directe
+     * n'est détectable par regex sur la page brute.
+     */
+    _unpackDeanEdwards(text) {
+        var out = String(text || "");
+        // Eval + variante document.write <script src=...eval(...)> et appels
+        // simples sans délimiteurs exotiques.
+        var re = /(?:eval|window\.eval|document\.eval)\s*\(\s*function\s*\(p,a,c,k,e,d\)\s*\{[\s\S]{0,400}?\}\s*\(\s*'((?:\\.|[^'\\])*)'\s*,\s*'??([0-9a-zA-Z]+)'??\s*,\s*(\d+)\s*,\s*'((?:\\.|[^'\\])*)'\s*(?:\.\s*split\s*\(\s*'\|'\s*\))?/g;
+        var m;
+        var replaced = false;
+        while ((m = re.exec(out)) !== null) {
+            try {
+                var packed = m[1];
+                var radixRaw = m[2];
+                var radix = /^[0-9]+$/.test(radixRaw) ? parseInt(radixRaw, 10) : parseInt(radixRaw, 16) || 62;
+                var count = parseInt(m[3], 10);
+                if (!(radix >= 2 && radix <= 62) || !(count > 0)) continue;
+                var keys = m[4].split("|");
+                var tokens = [];
+                for (var i = 0; i < count; i++) tokens.push(i.toString(radix));
+                // Première passe : jetons les plus longs d'abord pour éviter
+                // que "ab" remplace ce qui groupe "a b" du dictionnaire.
+                tokens.sort(function(a, b) { return b.length - a.length || (parseInt(b, radix) - parseInt(a, radix)); });
+                var tokenRe = new RegExp("\\b(?:" + tokens.map(function(t) {
+                    return t.replace(/[^a-z0-9A-Z]/g, "");
+                }).filter(Boolean).join("|") + ")\\b", "g");
+                packed = packed.replace(tokenRe, function(tok) {
+                    var idx = parseInt(tok, radix);
+                    return typeof keys[idx] === "string" ? keys[idx] : tok;
+                });
+                out = out.replace(m[0], packed);
+                replaced = true;
+                re.lastIndex = 0;
+            } catch (_) {}
+        }
+        return replaced ? out : text;
+    }
+
     _parseJsonOrJs(str) {
         if (!str || str.length < 3) return null;
         str = str.trim();
@@ -632,6 +673,9 @@ async getCustomList(listId, page) {
 
                     const paths = [
                         "/static/series/" + season.id + ".js?v=" + v,
+                        "/css/sr_" + season.id + ".css?v=" + v,
+                        "/font/sr_" + season.id + ".woff2?v=" + v,
+                        "/assets/poster_" + season.id + ".json?v=" + v,
                         "/data/eps_" + season.id + ".txt?v=" + v,
                         "/ep-data.php?id=" + season.id + "&format=js&v=" + v
                     ];
@@ -716,7 +760,11 @@ async getCustomList(listId, page) {
     _collectPlayableVideos(html, referer, quality) {
         const videos = [];
         const add = (value, label) => this._addVideo(videos, value, label || quality, referer);
-        const body = String(html || "")
+        // Déverrouille d'abord les readers packed (p,a,c,k,e,d) qui cachent
+        // l'URL HLS (fsvid.lol « premium », uqload…), sinon plus aucun regex
+        // direct ne matche.
+        let unpacked = this._unpackDeanEdwards(String(html || ""));
+        const body = unpacked
             .replace(/\\\//g, "/")
             .replace(/&amp;/g, "&");
         const markup = body.replace(/&quot;/g, '"');
@@ -867,9 +915,16 @@ async getCustomList(listId, page) {
         } else {
             push(raw);
         }
-        for (const candidate of candidates) {
-            const resolved = await this._resolvePlayerUrl(candidate, referer, quality);
-            if (resolved.length > 0) return resolved;
+        // Résolution en parallèle : un hébergeur qui rame/bloque (403,
+        // interstitial anti-bot…) ne doit pas retarder ni annuler les autres.
+        // La première réponse qui débouche, dans l'ordre d'origine, gagne.
+        if (candidates.length > 0) {
+            const results = await Promise.all(candidates.map(candidate =>
+                this._resolvePlayerUrl(candidate, referer, quality).catch(() => [])
+            ));
+            for (const resolved of results) {
+                if (resolved.length > 0) return resolved;
+            }
         }
         return [];
     }
