@@ -6,11 +6,11 @@ const watchtowerSources = [{
   "iconUrl": "https://missav.ws/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/missav.js",
-  "notes": "JAV streaming — home sections, catalogue and HLS playback fixed (surrit playlist)",
+  "notes": "JAV streaming — 10 home sections, catalogue, HLS playback (surrit) and Cloudflare clearance reuse",
   "isNsfw": true
 }];
 
@@ -42,9 +42,24 @@ const SECTIONS = {
 };
 
 class DefaultExtension extends MProvider {
+  // Used for media/download requests (surrit, covers): a browser UA is expected
+  // there and no Cloudflare clearance is involved.
   getHeaders(url) {
     return {
       "User-Agent": USER_AGENT,
+      "Referer": BASE_URL + "/",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.9,ja;q=0.8"
+    };
+  }
+
+  // Headers for missav.ws itself. The User-Agent is deliberately OMITTED: the
+  // app fills in the UA of the WebView session that solved the Cloudflare
+  // challenge, and cf_clearance is bound to that UA. Forcing a desktop Chrome
+  // UA here made Cloudflare reject the clearance, so the source looped on the
+  // challenge even after it was solved.
+  _siteHeaders(url) {
+    return {
       "Referer": BASE_URL + "/",
       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       "Accept-Language": "en-US,en;q=0.9,ja;q=0.8"
@@ -61,17 +76,24 @@ class DefaultExtension extends MProvider {
   // The app's HTTP layer expects the header map directly (wrapping it in
   // `{ headers: ... }` sends a bogus "headers" header and drops the UA).
   async _get(url) {
-    const res = await new Client().get(url, this.getHeaders(url));
+    const res = await new Client().get(url, this._siteHeaders(url));
     return this._body(res, url);
   }
 
   _body(res, url) {
     const body = (res && res.body) || "";
     const status = (res && res.statusCode) || 0;
-    // Keep the failing URL as the last token: the app extracts it to open the
-    // Cloudflare bypass panel on the exact page that failed.
-    if (status === 403 || /Just a moment|Attention Required|cf-challenge/i.test(body)) {
-      throw new Error("MissAV: Cloudflare challenge — " + url);
+    // “Cloudflare challenge” is the wording the app recognises: it opens the
+    // bypass panel on the exact failing URL (kept as the last token). The body
+    // markers are the ones only an interstitial carries — `challenge-platform`
+    // is injected into perfectly healthy pages and must not trigger it.
+    if (
+      status === 403 ||
+      status === 503 ||
+      status === 429 ||
+      /Just a moment|Attention Required|cf-chl|cf_chl|_cf_chl_opt|cf-challenge-running|Verify you are human/i.test(body)
+    ) {
+      throw new Error("MissAV: Cloudflare challenge (HTTP " + status + ") — " + url);
     }
     if (status >= 400) {
       throw new Error("MissAV: HTTP " + status + " — " + url);
