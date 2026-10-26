@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.4",
+  "version": "1.3.5",
   "login": true,
   "loginUrl": "https://www.xnxx.com/mobile/login",
   "forYou": false,
@@ -233,6 +233,82 @@ class DefaultExtension extends MProvider {
     return items.length >= 30;
   }
 
+  _parseVideoCardsRegex(html) {
+    // Last-resort extractor, independent of ANY DOM implementation: the QuickJS
+    // runtime builds Element nodes through a Dart bridge, and when that bridge
+    // fails to resolve `.thumb-block` (client quirk, markup drift, empty doc)
+    // the DOM-based path above silently produces zero items and the user sees
+    // "Aucun résultat" on a working page. Recover links straight from the HTML.
+    //
+    // Cards carry the SAME /video-… href twice (thumbnail link, then title
+    // link); the title attribute only exists on the second one, so anchors are
+    // grouped by link before anything is committed.
+    const items = [];
+    if (!html) return items;
+    const anchorRe = /<a\b[^>]*\bhref=["']([^"']*\/video-\d+[^"']*)["'][^>]*>([\s\S]{0,600}?)<\/a>/gi;
+    const groups = new Map();
+    const blockBounds = [];
+    let match;
+    while ((match = anchorRe.exec(html))) {
+      const link = this._absolute(match[1]);
+      if (!link) continue;
+      if (!groups.has(link)) {
+        groups.set(link, { link, first: match, anchors: [] });
+      }
+      groups.get(link).anchors.push(match);
+    }
+
+    const starts = [...groups.values()].map(group => group.first.index);
+    let index = 0;
+    for (const group of groups.values()) {
+      const blockEnd = index + 1 < starts.length ? starts[index + 1] : Math.min(html.length, group.first.index + 8000);
+      const block = html.slice(group.first.index, blockEnd);
+      index++;
+
+      // Title: the `title` attr first, else any tag-free inner text of the grouped anchors.
+      let name = "";
+      for (const candidate of group.anchors) {
+        const attr = /(^|\s)title=["']([^"']*)["']/.exec(candidate[0]);
+        if (attr && attr[2].trim()) {
+          name = this._decodeEntities(attr[2]).replace(/\s+/g, " ").trim();
+          break;
+        }
+      }
+      for (const candidate of group.anchors) {
+        if (name) break;
+        const text = this._decodeEntities(String(candidate[2]).replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
+        if (text.length >= 4) name = text;
+      }
+
+      // Image: first lazy-load thumb inside the grouped anchor internals
+      // (the plain `src` is a blank placeholder on xnxx), else the nearest
+      // one after the anchor in the block.
+      let image = "";
+      for (const candidate of group.anchors) {
+        const img = /<img\b[^>]*\b(?:data-src|data-original)=["']([^"']+)["']/i.exec(candidate[0]);
+        if (img) {
+          image = img[1];
+          break;
+        }
+      }
+      if (!image) {
+        const img = /<img\b[^>]*\b(?:data-src|data-original|src)=["']([^"']+)["']/i.exec(block);
+        if (img) image = img[1];
+      }
+
+      const previewMatch = /\bdata-pvv=["']([^"']+)["']/i.exec(block);
+      const duration = /(\d+\s*(?:min|sec|h)\b)/i.exec(block);
+      items.push({
+        name: name || "Untitled",
+        imageUrl: image.startsWith("//") ? `https:${image}` : image,
+        previewUrl: previewMatch ? this._absolute(previewMatch[1]) : "",
+        link: group.link,
+        description: duration ? `Duration: ${duration[1]}` : ""
+      });
+    }
+    return items;
+  }
+
   _parseVideoList(html, page, mode) {
     const doc = new Document(html);
     const items = [];
@@ -286,10 +362,21 @@ class DefaultExtension extends MProvider {
       });
     }
     if (!items.length) {
-      extLog(
-        "warn",
-        `XNXX parsed zero video cards mode=${mode || "unknown"} page=${page} thumbBlocks=${cards.length} videoLinks=${videoLinksFound} htmlBytes=${String(html || "").length}`
-      );
+      // HTML fallback so a failing embedded DOM engine can never turn a
+      // working page into an empty result set.
+      const recovered = this._parseVideoCardsRegex(html);
+      if (recovered.length) {
+        extLog(
+          "info",
+          `XNXX DOM parse empty mode=${mode || "unknown"} page=${page}, regex fallback recovered ${recovered.length} items`
+        );
+        items.push(...recovered);
+      } else {
+        extLog(
+          "warn",
+          `XNXX parsed zero video cards mode=${mode || "unknown"} page=${page} thumbBlocks=${cards.length} videoLinks=${videoLinksFound} htmlBytes=${String(html || "").length}`
+        );
+      }
     }
 
     const prefix = mode === "hits" ? "/hits" :
@@ -419,7 +506,12 @@ class DefaultExtension extends MProvider {
   }
 
   _filterState(filters, index) {
-    return filters && filters[index] ? (filters[index].state || 0) : 0;
+    // The app serializes filter state as int indexes, but defensive: some
+    // payloads carry strings. Coerce so a falsy string never breaks the
+    // category lookup in _filterCategory.
+    const state = filters && filters[index] ? filters[index].state : 0;
+    const normalized = Number(state);
+    return Number.isFinite(normalized) ? normalized : 0;
   }
 
   _filterCategory(filters) {
