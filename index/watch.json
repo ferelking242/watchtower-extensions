@@ -4999,7 +4999,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000218.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.2.0",
+    "version": "1.3.0",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/nsfw/watch/ja/missav.js",
     "uiLayout": "ui-layouts/missav.json",
     "uiLayoutVersion": "1.2.0",

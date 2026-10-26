@@ -6,11 +6,12 @@ const watchtowerSources = [{
   "iconUrl": "https://missav.ws/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.0",
+  "version": "1.3.0",
   "login": true,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/missav.js",
-  "notes": "JAV streaming — 13 home sections (random, actresses, ranking), 20 site languages, HLS playback and Cloudflare clearance reuse",
+  "videoQualities": ["1080p", "720p", "480p", "360p"],
+  "notes": "JAV streaming — 13 home sections (random, actresses, ranking), 20 site languages, real HLS qualities and Cloudflare clearance reuse",
   "isNsfw": true
 }];
 
@@ -294,10 +295,15 @@ class DefaultExtension extends MProvider {
     if (maker) lines.push("Maker: " + maker);
     if (actresses.length) lines.push("Actress: " + actresses.join(", "));
 
+    // The page's own long description (plot / presentation text) carries the
+    // detail the app shows under the title; the metadata lines stay below it.
+    const summary = (meta("og:description") || meta("description") || "").trim();
+    const fullDescription = [summary, lines.join("\n")].filter(Boolean).join("\n\n");
+
     return {
       name: title,
       imageUrl: imageUrl,
-      description: lines.join("\n"),
+      description: fullDescription,
       author: maker || actresses.join(", "),
       genre: genre,
       episodes: [{
@@ -306,6 +312,44 @@ class DefaultExtension extends MProvider {
         duration: duration
       }]
     };
+  }
+
+  // "Pour vous" : the detail page ends with a related-videos grid rendered
+  // in the same thumbnail markup as any listing, so `_parseList` covers it.
+  // The current video must not suggest itself; when a page ships no related
+  // grid (some mirrors lazy-load it), the random catalogue fills the tab
+  // instead of leaving it empty.
+  async getRecommendations(url) {
+    const target = String(url || "").trim();
+    if (!/^https?:\/\//i.test(target)) return [];
+    const current = this._videoCode(target);
+    let related;
+    try {
+      const html = await this._get(target);
+      related = this._parseList(html, 1, {})
+        .list.filter((item) => this._videoCode(item.link) !== current);
+    } catch (error) {
+      related = [];
+    }
+    if (related.length) return related.slice(0, 30);
+    try {
+      const random = await this._randomList();
+      return (random.list || []).slice(0, 30);
+    } catch (error) {
+      return [];
+    }
+  }
+
+  // Stable per-video identity: the path after the optional rotating mirror
+  // prefix, lowercase, without fragment/query — mirror prefixes change on
+  // every request, so the raw URL is never a reliable key.
+  _videoCode(link) {
+    return String(link || "")
+      .replace(/^(https?:\/\/[^/]+\/)(dm\d+\/)?/i, "")
+      .split("?")[0]
+      .split("#")[0]
+      .replace(/\/$/, "")
+      .toLowerCase();
   }
 
   _isActressUrl(url) {
@@ -449,9 +493,11 @@ class DefaultExtension extends MProvider {
   // Playback: MissAV hides the stream inside a P.A.C.K.E.R packed script
   // (`eval(function(p,a,c,k,e,d){…}('<payload>',base,count,'words'.split('|'),…))`)
   // which expands to `https://surrit.com/<uuid>/playlist.m3u8` plus its
-  // variants. The previous regex only looked for a literal `.m3u8`, so it
-  // always returned 0 videos. Unpack first, then fall back to the surrit UUID
-  // that the page also exposes through its seek thumbnails.
+  // variants. The master is fetched here (native first, then without custom
+  // headers, then through the runtime client which reroutes blocked requests
+  // through the WebView session) and expanded into ONE video entry per real
+  // rendition, labeled with its actual resolution. No `Auto` entry is ever
+  // returned: the player opens the variant playlist directly.
   async getVideoList(url) {
     const html = await this._get(url);
     const headers = this.getHeaders(url);
@@ -476,40 +522,187 @@ class DefaultExtension extends MProvider {
     const plain = flat.match(/https?:\/\/[^\s"'`\\<>]+\.(?:m3u8|mp4)[^\s"'`\\<>]*/gi) || [];
     for (const candidate of plain) pushUrl(candidate);
 
-    const video = (target, quality) => ({
-      url: target,
-      quality: quality,
-      originalUrl: target,
-      headers: headers
-    });
-
     const isHls = (candidate) => /\.m3u8(\?|#|$)/i.test(candidate);
-    const hls = candidates.filter(isHls);
-    const masters = hls.filter((candidate) => /\/playlist\.m3u8/i.test(candidate));
-    if (masters.length > 0) {
-      // A single adaptive entry: the app expands the master into its real
-      // renditions (lib/services/hls_variant_resolver.dart).
-      return [video(masters[0], "Auto")];
+    const isMp4 = (candidate) => /\.mp4(\?|#|$)/i.test(candidate);
+    const videos = [];
+    const addVideo = (target, quality) => {
+      if (!target || !quality) return;
+      if (videos.some((v) => v.url === target)) return;
+      videos.push({
+        url: target,
+        quality: quality,
+        originalUrl: target,
+        headers: headers
+      });
+    };
+
+    // 3. Masters first: expand each adaptive playlist into its variants.
+    const masters = candidates.filter((c) => isHls(c) && /\/playlist\.m3u8/i.test(c));
+    for (const master of masters.slice(0, 2)) {
+      const text = await this._fetchMasterText(master, headers);
+      if (!text) continue;
+      const variants = this._parseMasterVariants(text, master);
+      // Highest resolution first so the picker leads with the real options.
+      for (const variant of variants) addVideo(variant.url, variant.quality);
+      if (videos.length > 0) break;
     }
-    if (hls.length > 0) {
-      return hls.slice(0, 4).map((candidate) => {
-        const match = candidate.match(/\/(\d{3,4})p\//i);
-        return video(candidate, match ? match[1] + "p" : "Auto");
+
+    // 4. Direct variant playlists some pages expose (…/<n or x360p>.m3u8).
+    if (videos.length === 0) {
+      for (const candidate of candidates.filter(isHls)) {
+        if (/\/playlist\.m3u8/i.test(candidate)) continue;
+        const height = (candidate.match(/\/(\d{3,4})p\//i) || [])[1]
+          || (candidate.match(/(\d{3,4})p\.m3u8/i) || [])[1];
+        if (height) addVideo(candidate, height + "p");
+      }
+    }
+
+    // 5. MP4 sources (fallback host): only when the file name itself states
+    // the resolution — never invent one.
+    if (videos.length === 0) {
+      for (const candidate of candidates.filter(isMp4)) {
+        const height = (candidate.match(/(\d{3,4})[pi](?:\.|-|_)/i) || [])[1]
+          || (candidate.match(/[\d]x(\d{3,4})[\/\-.]/i) || [])[1];
+        if (height) addVideo(candidate, height + "p");
+      }
+    }
+
+    // 6. Last resort: the UUID the page exposes through its seek thumbnails,
+    // resolved through the same master→variants pipeline. If the pipeline
+    // yields nothing, playback is impossible anyway — returning a padded
+    // `Auto` entry would only promise qualities that do not exist.
+    if (videos.length === 0) {
+      const uuidMatch = html.match(/surrit\.com[\\/]+([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
+      if (uuidMatch) {
+        const master = "https://surrit.com/" + uuidMatch[1] + "/playlist.m3u8";
+        const text = await this._fetchMasterText(master, headers);
+        if (text) {
+          for (const variant of this._parseMasterVariants(text, master)) {
+            addVideo(variant.url, variant.quality);
+          }
+        }
+      }
+    }
+
+    if (videos.length === 0) return [];
+    return videos;
+  }
+
+  // Master text retrieval: the CDN refuses some native fingerprints with a
+  // 403, so every attempt falls through: (1) native client with the video
+  // headers, (2) native client without them (session cookies only), (3) the
+  // runtime fetch, which reroutes blocked requests through the WebView
+  // session when the app's browser bridge can serve the host.
+  async _fetchMasterText(url, headers) {
+    try {
+      const res = await new Client().get(url, headers);
+      const body = (res && res.body) || "";
+      if (((res && res.statusCode) || 0) < 400 && body) return body;
+    } catch (error) {
+      // Fall through to the next attempt.
+    }
+    try {
+      const res = await new Client().get(url);
+      const body = (res && res.body) || "";
+      if (((res && res.statusCode) || 0) < 400 && body) return body;
+    } catch (error) {
+      // Fall through to the bridge fetch.
+    }
+    try {
+      const res = await fetch(url, { headers: headers });
+      const text = await res.text();
+      if (text) return text;
+    } catch (error) {
+      // No attempt could read the master; the caller keeps searching.
+    }
+    return "";
+  }
+
+  // `#EXT-X-STREAM-INF` → { url, quality, height, bandwidth }, highest first.
+  _parseMasterVariants(text, baseUrl) {
+    const lines = String(text || "").split(/\r?\n/);
+    const dir = String(baseUrl).replace(/[^/]*$/, "");
+    const origin = (String(baseUrl).match(/^(https?:\/\/[^/]+)/i) || [])[1];
+    const variants = [];
+    const seen = {};
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (line.indexOf("#EXT-X-STREAM-INF:") !== 0) continue;
+      let attrs = line;
+      let rawUri = "";
+      for (let j = i + 1; j < lines.length; j++) {
+        const next = lines[j].trim();
+        if (!next) continue;
+        if (next.indexOf("#EXT-X-STREAM-INF:") === 0) break;
+        if (next.indexOf("#") === 0) {
+          // Attribute continuation lines still belong to this entry.
+          attrs = attrs + "," + next.replace(/^#/, "");
+          continue;
+        }
+        rawUri = next.replace(/^"([^"]*)"$/, "$1").trim();
+        break;
+      }
+      if (!rawUri) continue;
+      const abs = this._resolveVariantUrl(rawUri, dir, origin);
+      if (!abs || seen[abs]) continue;
+      seen[abs] = true;
+
+      const resolution = /RESOLUTION=\s*\d{2,5}\s*x\s*(\d{2,5})/i.exec(attrs);
+      const bandwidth = /BANDWIDTH=\s*(\d{3,})/i.exec(attrs);
+      const height = resolution
+        ? parseInt(resolution[1], 10)
+        : (parseInt((rawUri.match(/(\d{3,4})p/i) || [])[1], 10) || 0);
+      const quality = height
+        ? height + "p"
+        : (bandwidth ? this._bandwidthLabel(parseInt(bandwidth[1], 10)) : "");
+      if (!quality) continue;
+      variants.push({
+        url: abs,
+        quality: quality,
+        height: height,
+        bandwidth: bandwidth ? parseInt(bandwidth[1], 10) : 0
       });
     }
 
-    const mp4 = candidates.filter((candidate) => /\.mp4(\?|#|$)/i.test(candidate));
-    if (mp4.length > 0) {
-      return mp4.slice(0, 3).map((candidate) => video(candidate, "MP4"));
-    }
+    variants.sort((a, b) =>
+      (b.height - a.height) || (b.bandwidth - a.bandwidth)
+    );
+    return variants;
+  }
 
-    // 3. UUID fallback: the page always references surrit seek thumbnails.
-    const uuidMatch = html.match(/surrit\.com[\\/]+([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
-    if (uuidMatch) {
-      return [video("https://surrit.com/" + uuidMatch[1] + "/playlist.m3u8", "Auto")];
+  // Variant URIs may be absolute, host-relative or `../…` relative.
+  _resolveVariantUrl(uri, dir, origin) {
+    const value = (uri || "").trim();
+    if (!value) return "";
+    if (/^https?:\/\//i.test(value)) return value;
+    if (value.indexOf("//") === 0) return "https:" + value;
+    if (value.indexOf("/") === 0) return (origin || "") + value;
+    if (!dir) return "";
+    const stack = dir.replace(/^https?:\/\//i, "").split("/");
+    stack.pop(); // drop the trailing empty segment from the trailing "/"
+    const slash = dir.match(/^https?:\/\//i);
+    const scheme = slash ? slash[0].replace(/\/.*/, "") + "//" : "";
+    for (const part of value.split("/")) {
+      if (!part || part === ".") continue;
+      if (part === "..") stack.pop();
+      else stack.push(part);
+      if (stack.length === 0) return "";
     }
+    return scheme + stack.join("/");
+  }
 
-    return [];
+  // Bandwidth fallback only: a master that advertises no RESOLUTION still
+  // maps to plausible heights instead of a fake quality label.
+  _bandwidthLabel(bandwidth) {
+    if (!bandwidth || bandwidth < 60000) return "";
+    if (bandwidth >= 14000000) return "2160p";
+    if (bandwidth >= 5500000) return "1440p";
+    if (bandwidth >= 3000000) return "1080p";
+    if (bandwidth >= 1600000) return "720p";
+    if (bandwidth >= 800000) return "480p";
+    if (bandwidth >= 400000) return "360p";
+    return "240p";
   }
 
   _unpackPackedScripts(html) {
