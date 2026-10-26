@@ -6,16 +6,42 @@ const watchtowerSources = [{
   "iconUrl": "https://missav.ws/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.1.1",
-  "login": false,
+  "version": "1.2.0",
+  "login": true,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/missav.js",
-  "notes": "JAV streaming — 10 home sections, catalogue, HLS playback (surrit) and Cloudflare clearance reuse",
+  "notes": "JAV streaming — 13 home sections (random, actresses, ranking), 20 site languages, HLS playback and Cloudflare clearance reuse",
   "isNsfw": true
 }];
 
 const BASE_URL = "https://missav.ws";
-const LANG_PREFIX = "/en";
+const DEFAULT_LANGUAGE = "en";
+
+// Every locale the site serves has its own path prefix, so the extension
+// setting writes one of these codes and `_lang()` builds every URL from it.
+const LANGUAGES = [
+  ["English", "en"],
+  ["日本語", "ja"],
+  ["中文", "zh"],
+  ["繁體中文", "tw"],
+  ["한국어", "ko"],
+  ["ไทย", "th"],
+  ["Tiếng Việt", "vi"],
+  ["Bahasa Indonesia", "id"],
+  ["Bahasa Melayu", "ms"],
+  ["العربية", "ar"],
+  ["हिन्दी", "hi"],
+  ["Deutsch", "de"],
+  ["Français", "fr"],
+  ["Español", "es"],
+  ["Italiano", "it"],
+  ["Português", "pt"],
+  ["Русский", "ru"],
+  ["Türkçe", "tr"],
+  ["Polski", "pl"],
+  ["Nederlands", "nl"]
+];
+const LANGUAGE_CODES = LANGUAGES.map((entry) => entry[1]);
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
 
 // Every home section is a real MissAV catalogue path (verified against the
@@ -37,6 +63,9 @@ const SECTIONS = {
   vr: "/genres/VR",
   big_breasts: "/genres/Big%20Breasts",
   creampie: "/genres/Creampie",
+  // Actress directory (name + portrait) and its ranking (already sorted).
+  actresses: "/actresses",
+  actress_ranking: "/actresses/ranking",
   // Layout-only grid that pages through the whole catalogue.
   catalogue: "/new"
 };
@@ -53,6 +82,20 @@ class DefaultExtension extends MProvider {
     };
   }
 
+  // Site language chosen in the extension settings. A worker isolate has no
+  // database handle, so the app sends the stored values with every request;
+  // a missing preference falls back to English instead of failing the request.
+  _lang() {
+    try {
+      const stored = new SharedPreferences().get("language");
+      const value = typeof stored === "string" ? stored.trim().toLowerCase() : "";
+      if (LANGUAGE_CODES.indexOf(value) >= 0) return value;
+    } catch (error) {
+      // A missing preference must never break a request.
+    }
+    return DEFAULT_LANGUAGE;
+  }
+
   // Headers for missav.ws itself. The User-Agent is deliberately OMITTED: the
   // app fills in the UA of the WebView session that solved the Cloudflare
   // challenge, and cf_clearance is bound to that UA. Forcing a desktop Chrome
@@ -62,12 +105,12 @@ class DefaultExtension extends MProvider {
     return {
       "Referer": BASE_URL + "/",
       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-      "Accept-Language": "en-US,en;q=0.9,ja;q=0.8"
+      "Accept-Language": this._lang() + ";q=0.9,en;q=0.8"
     };
   }
 
   _pageUrl(path, page) {
-    const base = BASE_URL + LANG_PREFIX + path;
+    const base = BASE_URL + "/" + this._lang() + path;
     const current = parseInt(page, 10) || 1;
     if (current <= 1) return base;
     return base + (path.indexOf("?") >= 0 ? "&" : "?") + "page=" + current;
@@ -102,19 +145,39 @@ class DefaultExtension extends MProvider {
   }
 
   async getPopular(page) {
-    return this._parseList(await this._get(this._pageUrl(SECTIONS.popular, page)), page);
+    return this._parseList(
+      await this._get(this._pageUrl(SECTIONS.popular, page)),
+      page,
+      this._sectionBadges("popular")
+    );
   }
 
   get supportsLatest() { return true; }
 
   async getLatestUpdates(page) {
-    return this._parseList(await this._get(this._pageUrl(SECTIONS.latest, page)), page);
+    return this._parseList(
+      await this._get(this._pageUrl(SECTIONS.latest, page)),
+      page,
+      this._sectionBadges("latest")
+    );
   }
 
   async getCustomList(id, page) {
+    // `/random` redirects to one video, and the actress directory is a
+    // different page shape (people, not videos). Both keep the same
+    // `{ list, hasNextPage }` contract as every other section.
+    if (id === "random") return this._randomList();
+    if (id === "actress_ranking" || id === "actresses") {
+      const path = SECTIONS[id];
+      return this._parseActresses(await this._get(this._pageUrl(path, page)), page);
+    }
     const path = SECTIONS[id];
     if (!path) throw new Error("MissAV: unknown home section \"" + id + "\"");
-    return this._parseList(await this._get(this._pageUrl(path, page)), page);
+    return this._parseList(
+      await this._get(this._pageUrl(path, page)),
+      page,
+      this._sectionBadges(id)
+    );
   }
 
   async search(query, page, filters) {
@@ -132,7 +195,7 @@ class DefaultExtension extends MProvider {
   //   <span class="absolute bottom-1 right-1 ...">1:01:25</span>
   //   <div class="my-2 ..."><a class="text-secondary" href="/en/<code>">TITLE</a></div>
   // </div>
-  _parseList(html, page) {
+  _parseList(html, page, hints) {
     const doc = new Document(html);
     const list = [];
     const seen = {};
@@ -162,7 +225,8 @@ class DefaultExtension extends MProvider {
         name: name,
         link: link,
         imageUrl: imageUrl,
-        description: duration
+        description: duration,
+        badges: this._itemBadges(name, link, hints)
       });
     }
 
@@ -170,6 +234,9 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
+    // Actress links open the app's people screen, which expects a profile plus
+    // a filmography rather than a video detail page.
+    if (this._isActressUrl(url)) return this._getActressDetail(url);
     const html = await this._get(url);
     const doc = new Document(html);
     const meta = (property) => {
@@ -239,6 +306,144 @@ class DefaultExtension extends MProvider {
         duration: duration
       }]
     };
+  }
+
+  _isActressUrl(url) {
+    return /\/actresses\/[^\/?#]+\/?(\?|#|$)/.test(url || "");
+  }
+
+  // Section-level metadata: the list a video comes from already says whether it
+  // is an uncensored leak, an English-subtitled release or VR.
+  _sectionBadges(id) {
+    if (id === "uncensored") return { uncensored: true };
+    if (id === "english_sub") return { subtitle: "en" };
+    if (id === "vr") return { vr: true };
+    return {};
+  }
+
+  // Badges are a metadata contract, not a UI concern: the app draws a flag for
+  // `lang:xx`, a mark for `censored`/`uncensored` and a chip for `sub:xx`.
+  _itemBadges(name, link, hints) {
+    const badges = ["lang:ja"];
+    const text = (name || "") + " " + (link || "");
+    const options = hints || {};
+    if (
+      options.uncensored ||
+      /uncensored|uncensor|leak|無修正|パイパン/i.test(text)
+    ) {
+      badges.push("uncensored");
+    } else {
+      badges.push("censored");
+    }
+    if (options.subtitle) {
+      badges.push("sub:" + options.subtitle);
+    } else if (/english[\s-]*sub|subtitled|字幕/i.test(text)) {
+      badges.push("sub:en");
+    }
+    if (options.vr || /(^|[^a-z])vr([^a-z]|$)/i.test(name || "")) {
+      badges.push("vr");
+    }
+    return badges;
+  }
+
+  // The actress index and its ranking share one markup: a card whose link
+  // points at `/actresses/<name>`. The ranking page is already sorted, so its
+  // position is the rank and the app's ranked section numbers it.
+  _parseActresses(html, page) {
+    const doc = new Document(html);
+    const list = [];
+    const seen = {};
+    for (const anchor of doc.select("a[href*='/actresses/']")) {
+      let raw = anchor.attr("href") || "";
+      if (!raw) continue;
+      raw = raw.split("#")[0].split("?")[0];
+      if (!/\/actresses\/[^\/]+\/?$/.test(raw)) continue;
+      if (/\/actresses\/(ranking|all)\/?$/.test(raw)) continue;
+      const link = raw.indexOf("http") === 0 ? raw : BASE_URL + raw;
+      if (seen[link]) continue;
+      const img = anchor.selectFirst("img");
+      const imageUrl = img
+        ? (img.attr("data-src") || img.attr("src") || img.getSrc || img.attr("data-original") || "")
+        : "";
+      let name = (anchor.text || "").trim();
+      if (!name && img) name = (img.attr("alt") || "").trim();
+      name = name.replace(/\s+/g, " ").trim();
+      if (!name) continue;
+      seen[link] = true;
+      list.push({
+        name: name,
+        link: link,
+        imageUrl: imageUrl,
+        description: "Actress",
+        badges: ["lang:ja"]
+      });
+    }
+    return { list: list, hasNextPage: !!doc.selectFirst("a[rel='next']") };
+  }
+
+  // Her page is a profile (portrait + filmography). The app already renders
+  // extension people through its person screen, so the filmography is returned
+  // as chapters: one chapter per video, each opening the real video.
+  async _getActressDetail(url) {
+    const html = await this._get(url);
+    const doc = new Document(html);
+    const meta = (property) => {
+      const el = doc.selectFirst("meta[property='" + property + "']");
+      return el ? (el.attr("content") || "").trim() : "";
+    };
+    const heading = doc.selectFirst("h1");
+    const title = meta("og:title") || (heading ? heading.text.trim() : "") || "Actress";
+    const listing = this._parseList(html, 1, {});
+    const chapters = listing.list.map((item) => ({
+      name: item.name,
+      url: item.link,
+      thumbnailUrl: item.imageUrl,
+      duration: item.description || ""
+    }));
+    const lines = [];
+    if (chapters.length) {
+      lines.push(chapters.length + (chapters.length === 1 ? " video" : " videos"));
+    }
+    const rank = html.match(/rank(?:ing)?[^0-9]{0,40}([0-9]{1,4})/i);
+    if (rank) lines.push("Rank #" + rank[1]);
+    return {
+      name: title,
+      imageUrl: meta("og:image"),
+      description: lines.join("\n"),
+      author: title,
+      genre: [],
+      chapters: chapters
+    };
+  }
+
+  // `/random` redirects to a single video. The landing page carries the
+  // canonical URL in `og:url`, which is the only stable identity (the mirror
+  // prefix changes on every request).
+  async _randomList() {
+    const html = await this._get(BASE_URL + "/" + this._lang() + "/random");
+    const doc = new Document(html);
+    const meta = (property) => {
+      const el = doc.selectFirst("meta[property='" + property + "']");
+      return el ? (el.attr("content") || "").trim() : "";
+    };
+    const link = meta("og:url") || meta("og:video:url");
+    const name = meta("og:title");
+    if (link && name) {
+      return {
+        list: [{
+          name: name,
+          link: link.replace(/^(https?:\/\/[^\/]+)\/dm\d+\//, "$1/"),
+          imageUrl: meta("og:image"),
+          description: this._formatDuration(meta("og:video:duration")),
+          badges: this._itemBadges(name, link, {})
+        }],
+        hasNextPage: false
+      };
+    }
+    // Some mirrors answer with a listing instead of a redirect: keep the first
+    // video rather than showing an empty section.
+    const fallback = this._parseList(html, 1, {});
+    return { list: fallback.list.slice(0, 1), hasNextPage: false };
   }
 
   // Playback: MissAV hides the stream inside a P.A.C.K.E.R packed script
@@ -357,5 +562,20 @@ class DefaultExtension extends MProvider {
   }
 
   getFilterList() { return []; }
-  getSourcePreferences() { return []; }
+
+  // Site language. `entryValues` is what the extension reads back through
+  // SharedPreferences, so it stays a plain ISO code.
+  getSourcePreferences() {
+    return [{
+      key: "language",
+      listPreference: {
+        title: "Langue du site",
+        summary: "Langue des titres, genres et menus MissAV.",
+        // Reflect the stored choice so reopening the settings shows it.
+        valueIndex: Math.max(0, LANGUAGE_CODES.indexOf(this._lang())),
+        entries: LANGUAGES.map((entry) => entry[0]),
+        entryValues: LANGUAGE_CODES
+      }
+    }];
+  }
 }

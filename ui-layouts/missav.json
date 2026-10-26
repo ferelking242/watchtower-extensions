@@ -84,6 +84,37 @@
         "paginated": true
       },
       {
+        "id": "random",
+        "component": "showcase",
+        "title": "Random",
+        "accent": "#FF5C8A",
+        "icon": "casino",
+        "params": {
+          "items": 1
+        },
+        "paginated": false
+      },
+      {
+        "id": "actress_ranking",
+        "component": "rankedWide",
+        "title": "Actress Ranking",
+        "accent": "#F5A623",
+        "icon": "trophy",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "actresses",
+        "component": "grid",
+        "title": "All Actresses",
+        "accent": "#8E7CFF",
+        "icon": "person",
+        "columns": 4,
+        "cardStyle": "thumbnail",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
         "id": "catalogue",
         "component": "grid",
         "title": "Browse Everything",
@@ -91,7 +122,8 @@
         "icon": "grid_view",
         "columns": 3,
         "cardStyle": "thumbnail",
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       }
     ]
   },
