@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.pornhub.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.1",
+  "version": "1.4.1",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/pornhub.js",
@@ -89,11 +89,12 @@ class DefaultExtension extends MProvider {
       "User-Agent": DefaultExtension.USER_AGENT,
       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,*/*;q=0.8",
       "Accept-Language": "en-US,en;q=0.8",
-      "Cookie": "accessAgeDisclaimerPH=1; platform=pc"
+      "Cookie": "accessAgeDisclaimerPH=1; age_verified=1; platform=pc"
     };
   }
 
   async _get(url) {
+    this._lastUrl = url;
     const response = await new Client().get(url, this.getHeaders(url));
     if (!response || typeof response.body !== "string") {
       throw new Error("PornHub returned an invalid response");
@@ -247,7 +248,16 @@ class DefaultExtension extends MProvider {
     }
 
     if (items.length === 0) {
-      return this._fallbackList(html, page);
+      extLog('info', `PornHub._parseList: 0 cards url=${this._lastUrl} html_len=${String(html || "").length}`);
+      const fallback = this._fallbackList(html, page);
+      if (fallback.list.length === 0 && this._isGatePage(html)) {
+        // Age/region-block page: surface the exact URL as the last token so the
+        // app's inline access panel opens it and the user validates once.
+        throw new Error(
+          `PornHub is behind an age or region verification. Open the page to validate access ${this._lastUrl}`
+        );
+      }
+      return fallback;
     }
 
     return {
@@ -272,7 +282,9 @@ class DefaultExtension extends MProvider {
   }
 
   async getLatestUpdates(page) {
-    return this._list("n", page);
+    // "o=n" (newest) was retired by Pornhub and now 404s for every client;
+    // "tr" (trending, current) is the closest live ordering.
+    return this._list("tr", page);
   }
 
   async search(query, page) {
@@ -280,6 +292,19 @@ class DefaultExtension extends MProvider {
     if (!value) return this.getPopular(page);
     const url = `${DefaultExtension.BASE_URL}/video/search?search=${encodeURIComponent(value)}&page=${page}`;
     return this._parseList(await this._get(url), page);
+  }
+
+  static get GATE_PATTERN() {
+    // The gate page is served in the region's locale (e.g. French for FR/Congo
+    // ISPs), so match both English and French phrasings of the age/region wall.
+    // Detection only ever fires on a card-less page, so footer mentions of
+    // "age verification" on healthy listings can never produce a false hit.
+    return /age[\s_-]?(?:verif|gate|check)|verify[\s_-]?your[\s_-]?age|js_ageVerification|agecheck| verif(?:ier|ication)?[\s\S]{0,24}(?:âge|age)|v[ée]rifiez|not[.\s_-]*(?:available|accessible)|unavailable|geo[-\s]?block|blocqu[ée]/i;
+  }
+
+  _isGatePage(html) {
+    const source = String(html || "");
+    return DefaultExtension.GATE_PATTERN.test(source) && !source.includes("pcVideoListItem");
   }
 
   _meta(doc, property) {
@@ -492,7 +517,7 @@ class DefaultExtension extends MProvider {
     if (listId === "recommended") return this._list("tr", page);
     if (listId === "trending") return this._list("ht", page);
     if (listId === "top") return this._list("mv", page);
-    if (listId === "new") return this._list("n", page);
+    if (listId === "new") return this._list("tr", page); // "o=n" was retired server-side (404)
     if (listId === "shorts") return this._listPath("/shorties", page);
     if (listId === "catalogue") return this._list("mv", page);
 
