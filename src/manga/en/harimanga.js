@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://www.harimanga.co.uk/image/icon/hari-icon-192x192.webp",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.4.2",
+    "version": "0.4.3",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -86,14 +86,20 @@ class DefaultExtension extends MProvider {
 
     const srcset = (imgEl.attr("srcset") || "")
       .split(",")
-      .map((entry) => entry.trim().split(/\s+/)[0])
+      .map((entry) => entry.trim().split(/\s+/))
+      .sort((a, b) => {
+        const widthA = parseInt((a[1] || "").replace(/[^\d]/g, ""), 10) || 0;
+        const widthB = parseInt((b[1] || "").replace(/[^\d]/g, ""), 10) || 0;
+        return widthB - widthA;
+      })
+      .map((entry) => entry[0])
       .filter(Boolean);
     const candidates = [
+      imgEl.attr("data-backup") || "",
+      imgEl.attr("src") || "",
       imgEl.attr("data-src") || "",
       imgEl.attr("data-lazy-src") || "",
       imgEl.attr("data-original") || "",
-      imgEl.attr("data-backup") || "",
-      imgEl.attr("src") || "",
       ...srcset,
     ]
       .map((candidate) => candidate.trim())
@@ -111,6 +117,28 @@ class DefaultExtension extends MProvider {
       candidates[0] ||
       "";
     return this.resolveUrl(imageUrl);
+  }
+
+  // The current site home uses `.manga-grid .manga-item` for its update rail,
+  // while the catalogue pages still use `.page-item-detail`.
+  parseMangaFromHomeItem(el) {
+    const imgEl = el.selectFirst("img");
+    const imageUrl = this.imageUrlFromElement(imgEl);
+    const linkEl = el.selectFirst("a[href*='/manga/']");
+    const link = linkEl
+      ? this.resolveUrl(linkEl.getHref || linkEl.attr("href") || "")
+      : "";
+    const imageName = imgEl
+      ? (imgEl.attr("alt") || imgEl.attr("title") || "")
+        .replace(/\s+on\s+HariManga$/i, "")
+        .trim()
+      : "";
+    const name = linkEl
+      ? ((linkEl.attr("title") || "").replace(/^Read\s+|Manga Online.*$/gi, "").trim() ||
+        imageName ||
+        (linkEl.text || "").trim())
+      : imageName;
+    return { name, imageUrl, link };
   }
 
   // ── Browse page parser (div.page-item-detail) ─────────────────────────────
@@ -220,8 +248,11 @@ class DefaultExtension extends MProvider {
       }
     }
 
-    // The /home route remains on Madara and handles keyword search + filters
-    let url = `${baseUrl}/home?post_type=wp-manga&paged=${page}`;
+    // Search pagination uses /home/page/N; `paged=N` alone is ignored by the
+    // site's current route and returns page 1 again.
+    const currentPage = Math.max(1, parseInt(page, 10) || 1);
+    const pagePath = currentPage > 1 ? `/page/${currentPage}` : "";
+    let url = `${baseUrl}/home${pagePath}?post_type=wp-manga&paged=1`;
     if (query && query.trim()) url += `&s=${encodeURIComponent(query.trim())}`;
     if (sortBy) url += `&m_orderby=${sortBy}`;
     if (status) url += `&status[]=${status}`;
@@ -237,9 +268,13 @@ class DefaultExtension extends MProvider {
 
     const list = [];
 
-    // Primary: search results use .c-tabs-item cards
-    let items = doc.select("div[role='tabpanel'].c-tabs-item");
-    if (!items || items.length === 0) items = doc.select("div.c-tabs-item");
+    // The current site wraps search results in one `.c-tabs-item[role=tabpanel]`
+    // and marks each manga row as `.c-tabs-item__content`. Parsing the wrapper
+    // itself only returns its first manga.
+    let items = doc.select("div.c-tabs-item__content");
+    if (!items || items.length === 0) {
+      items = doc.select("div.c-tabs-item");
+    }
 
     if (items && items.length > 0) {
       for (let i = 0; i < items.length; i++) {
@@ -493,14 +528,40 @@ class DefaultExtension extends MProvider {
 
   async getCustomList(listId, page) {
     const baseUrl = this.getBaseUrl();
-    // Map each section to Madara query params
-    const orderMap  = { popular: "views", latest: "latest", new: "new-manga", completed: "latest" };
+    // Mirror the real home update rail for the leading spotlight section.
+    if (listId === "spotlight") {
+      const res = await new Client().get(baseUrl + "/", this.getHeaders());
+      const doc = new Document(res.body);
+      const items = doc.select(".manga-updates .manga-grid .manga-item");
+      const list = [];
+      for (let i = 0; i < items.length; i++) {
+        const parsed = this.parseMangaFromHomeItem(items[i]);
+        if (parsed.name && parsed.link) list.push(parsed);
+      }
+      return { list, hasNextPage: false };
+    }
+
+    const categorySlug = listId.startsWith("category_")
+      ? listId.slice("category_".length).replace(/[^a-z0-9-]/gi, "").toLowerCase()
+      : "";
+    const pageSegment = page > 1 ? `/page/${page}` : "";
+    const orderMap = {
+      popular: "views",
+      trending: "trending",
+      latest: "latest",
+      top_rated: "rating",
+      new: "new-manga",
+      completed: "latest",
+    };
     const statusMap = { completed: "end" };
-    const order  = orderMap[listId]  || "latest";
+    const order = orderMap[listId] || "latest";
     const status = statusMap[listId] || "";
 
-    // Use the same _browseUrl helper — avoids the trailing-slash 301 redirect
-    let url = this._browseUrl(baseUrl, page, order);
+    // Category pages have a dedicated site route; other shelves use the
+    // sortable catalogue route. Both support /page/N pagination.
+    let url = categorySlug
+      ? `${baseUrl}/manga-genre/${categorySlug}${pageSegment}`
+      : this._browseUrl(baseUrl, page, order);
     if (status) url += `&status[]=${status}`;
 
     const res = await new Client().get(url, this.getHeaders());

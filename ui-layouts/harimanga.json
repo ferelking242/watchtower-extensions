@@ -2,16 +2,21 @@
   "schemaVersion": 1,
   "home": {
     "sections": [
-      { "id": "popular",   "component": "ranked",   "title": "🔥 Most Popular",    "accent": "error",     "icon": "trending_up", "seeAll": true },
-      { "id": "latest",    "component": "carousel", "title": "✨ Latest Updates",  "accent": "tertiary",  "icon": "fiber_new",   "seeAll": true },
-      { "id": "new",       "component": "showcase", "title": "🆕 New Manga",       "accent": "primary",   "icon": "auto_awesome", "seeAll": true },
-      { "id": "completed", "component": "grid",     "title": "✅ Completed Manga", "accent": "#4CAF50",  "icon": "check_circle", "columns": 3, "seeAll": true }
+      { "id": "spotlight",        "component": "spotlight",  "title": "✨ Manga Updates",       "accent": "primary",  "icon": "auto_awesome", "seeAll": true },
+      { "id": "popular",          "component": "ranked",    "title": "🔥 Most Popular",        "accent": "error",    "icon": "trending_up",  "seeAll": true },
+      { "id": "latest",           "component": "compactRow","title": "🆕 Latest Updates",      "accent": "tertiary", "icon": "fiber_new",    "seeAll": true },
+      { "id": "trending",         "component": "compactRow","title": "📈 Trending Now",        "accent": "#FF7043", "icon": "local_fire_department", "seeAll": true },
+      { "id": "top_rated",        "component": "compactRow","title": "⭐ Top Rated",           "accent": "#FFC107", "icon": "star",         "seeAll": true },
+      { "id": "new",              "component": "grid",      "title": "🌱 Recently Added",      "accent": "secondary","icon": "auto_awesome", "columns": 3, "rows": 2, "cardStyle": "poster", "seeAll": true },
+      { "id": "category_romance", "component": "compactRow","title": "💕 Romance",             "accent": "#E91E63", "icon": "favorite",     "seeAll": true },
+      { "id": "category_action",  "component": "compactRow","title": "⚔️ Action",              "accent": "#42A5F5", "icon": "bolt",         "seeAll": true },
+      { "id": "completed",        "component": "grid",      "title": "✅ Completed Manga",     "accent": "#4CAF50", "icon": "check_circle", "columns": 3, "rows": 2, "cardStyle": "poster", "seeAll": true }
     ]
   },
   "browse": {
     "popular": { "component": "grid", "columns": 3, "cardStyle": "poster" },
     "latest":  { "component": "grid", "columns": 3, "cardStyle": "poster" },
-    "search":  { "results": { "component": "grid", "columns": 3 }, "filters": "chips" }
+    "search":  { "results": { "component": "grid", "columns": 3, "cardStyle": "poster" }, "filters": "chips" }
   },
   "player": { "mode": "standard" }
 }
