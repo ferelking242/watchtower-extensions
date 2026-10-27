@@ -142,6 +142,30 @@ for (const rel of jsonFiles.filter((file) => file.startsWith("ui-layouts/"))) {
 }
 console.log("   layout structure is valid");
 
+// ── 2a-bis. Les sourceCodeUrl doivent viser un commit figé ──────────────────
+// Avertissement, pas erreur : le workflow `pin-sources.yml` répare l'index
+// automatiquement juste après le push. On le signale quand même, car une URL
+// sur `@main` signifie que l'app servira du code périmé jusqu'à ce que le
+// figage soit committé.
+console.log("▶ source URLs pinned to a commit");
+{
+  let mutable = 0;
+  for (const rel of jsonFiles.filter((file) => file.startsWith("index/"))) {
+    const raw = fs.readFileSync(path.join(ROOT, rel), "utf8");
+    const matches = raw.match(
+      /cdn\.jsdelivr\.net\/gh\/[\w.-]+\/[\w.-]+@(?![\da-f]{7,40}\/)([^/"]+)\//gi,
+    );
+    mutable += matches ? matches.length : 0;
+  }
+  if (mutable > 0) {
+    console.warn(
+      `   ⚠ ${mutable} source URL(s) on a mutable revision — run: npm run pin (or wait for pin-sources.yml)`,
+    );
+  } else {
+    console.log("   all source URLs pinned to a commit");
+  }
+}
+
 // ── 2b. Reject the pre-2026 NSFW source layout ───────────────────────────────
 console.log("▶ canonical NSFW source layout");
 const legacyNsfwDirs = ["src/watch/nsfw", "src/manga/nsfw"];
@@ -164,9 +188,14 @@ for (const rel of jsonFiles.filter((file) => file.startsWith("index/"))) {
   if (Array.isArray(entries)) {
     for (const entry of entries) {
       const sourceUrl = typeof entry.sourceCodeUrl === "string" ? entry.sourceCodeUrl : "";
-      const marker = "/watchtower-extensions@main/";
+      // La révision est un SHA figé (ou une branche) : on ne peut pas la
+      // chercher en dur, sinon la vérification « fichier source présent »
+      // serait silencieusement ignorée dès que les URL sont figées.
+      const marker = sourceUrl.match(
+        /cdn\.jsdelivr\.net\/gh\/[^@]+@[^/]+\//,
+      )?.[0];
+      if (!marker) continue;
       const markerIndex = sourceUrl.indexOf(marker);
-      if (markerIndex === -1) continue;
       const relativeSource = sourceUrl.slice(markerIndex + marker.length).split(/[?#]/)[0];
       if (
         relativeSource.startsWith("src/") &&

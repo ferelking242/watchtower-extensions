@@ -8,7 +8,7 @@
     "typeSource": "single",
     "itemType": 4,
     "version": "1.0.2",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/game/en/en.romsfun.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@55fb89c855fa51900d9ecc49199ab62a7c529db4/src/game/en/en.romsfun.js",
     "isManga": false,
     "isNsfw": false,
     "hasCloudflare": false,

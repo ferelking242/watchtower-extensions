@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.4.0",
+  "version": "1.4.1",
   "login": true,
   "loginUrl": "https://www.xnxx.com/mobile/login",
   "forYou": false,

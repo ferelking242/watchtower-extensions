@@ -1,0 +1,89 @@
+name: Pin Sources to Commit
+
+# Fige `sourceCodeUrl` sur le SHA du commit à chaque push sur main.
+#
+# Pourquoi c'est nécessaire (et pourquoi purger le CDN ne suffit pas) :
+#   L'app lit l'index depuis raw.githubusercontent.com (frais, ≤5 min) donc
+#   elle voit bien « mise à jour disponible ». Mais elle télécharge ensuite le
+#   code depuis `cdn.jsdelivr.net/gh/<repo>@main/src/...`, que jsDelivr sert
+#   avec s-maxage=43200 (12 h) / max-age=604800 (7 j). Surtout, jsDelivr
+#   IGNORE la query string : le `?_=<timestamp>` ajouté par l'app pour forcer
+#   un cache-miss renvoie l'objet en cache, pas le nouveau fichier. L'app
+#   retélécharge donc l'ancien code pendant des heures.
+#
+#   Une URL figée sur un SHA est immutable côté jsDelivr : un nouveau commit
+#   donne une nouvelle URL, donc toujours le bon contenu, sans purge ni délai
+#   de propagation. Ce workflow maintient ce figage automatiquement.
+#
+# Le job « pin » committe les index réécrits ; ce commit déclenche ensuite
+# « Purge jsDelivr CDN » pour l'index lui-même (les fichiers source figés
+# n'ont, eux, jamais besoin d'être purgés).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "index/**"
+      - "tools/pin_sources.mjs"
+      - ".github/workflows/pin-sources.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pin-sources-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  pin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Profondeur 2 : pin_sources.mjs compare HEAD~1..HEAD pour ne refiger
+          # que les extensions dont le fichier source a changé (diff minimal et
+          # relisible). Si l'historique manque, le script se rabat sur un
+          # refigage complet — toujours sûr.
+          fetch-depth: 2
+          # Utilise le token du workflow : le push du commit généré ne
+          # redéclenche pas ce workflow (garde anti-boucle ci-dessous), mais il
+          # déclenche bien la purge du CDN.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Vérifier que le commit ne vient pas de ce workflow
+        id: guard
+        run: |
+          SUBJECT="$(git log -1 --pretty=%s)"
+          echo "subject=$SUBJECT"
+          if [ "$SUBJECT" = "chore(cdn): pin sourceCodeUrl to commit" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Figer les URL sur ${{ github.sha }}
+        if: steps.guard.outputs.skip == 'false'
+        run: node tools/pin_sources.mjs --sha="${{ github.sha }}"
+
+      - name: Vérifier que les URL sont bien figées
+        if: steps.guard.outputs.skip == 'false'
+        run: node tools/pin_sources.mjs --check --sha="${{ github.sha }}"
+
+      - name: Committer et pousser si nécessaire
+        if: steps.guard.outputs.skip == 'false'
+        run: |
+          if git diff --quiet; then
+            echo "Rien à figer — index déjà à jour."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index/*.json
+          git commit -m "chore(cdn): pin sourceCodeUrl to commit"
+          git push origin HEAD:main

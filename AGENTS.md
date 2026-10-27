@@ -93,7 +93,26 @@ inexistant, `cdn4.zinmanga1.com` = 503 — le reste répond 200.
 ## Index
 
 - Entrée d'index : `sourceCodeUrl` pointe vers
-  `https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/...`.
+  `https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@<sha>/src/...`
+  — un **commit figé**, jamais `@main`.
+- **Pourquoi jamais `@main` (piège coûteux, déjà rencontré) :** l'app lit
+  l'index depuis `raw.githubusercontent.com` (frais, `max-age=300`) donc elle
+  voit bien « mise à jour disponible ». Mais elle télécharge ensuite le code
+  depuis jsDelivr, qui sert `@main` avec `s-maxage=43200` (12 h) /
+  `max-age=604800` (7 j) **et ignore la query string** : le `?_=<timestamp>`
+  ajouté par l'app pour forcer un cache-miss (`fetch_sources_list.dart`)
+  renvoie l'objet en cache. L'app retélécharge donc l'ancien code pendant des
+  heures, et l'utilisateur ne voit jamais la mise à jour. Une URL `@<sha>` est
+  immutable côté jsDelivr : nouveau commit = nouvelle URL = bon contenu
+  immédiatement, sans purge.
+- Le figage est automatique : `.github/workflows/pin-sources.yml` lance
+  `tools/pin_sources.mjs` à chaque push sur `main` et committe les index
+  réécrits (message `chore(cdn): pin sourceCodeUrl to commit`, garde
+  anti-boucle incluse). En local : `npm run pin` / `npm run pin:check`.
+- Purger jsDelivr (`purge-cdn.yml`) reste utile pour **l'index** lui-même, qui
+  est lu par l'app depuis `raw.githubusercontent.com` mais peut aussi être
+  consommé via jsDelivr. Ne jamais compter sur la purge pour les fichiers
+  source : c'est le figage qui les rend toujours frais.
 - Icônes : **locales** dans `assets/icons/`, référencées via
   `https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/...`.
   `tools/fetch_icons.mjs` résout le vrai favicon/apple-touch-icon (suit les
