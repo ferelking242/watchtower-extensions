@@ -44,6 +44,19 @@ NamiComi (FR/EN), HentaiHand (EN), HentaiEra, HentaiZap, Dragon Ball Multiverse.
 - NSFW : fichiers sous `src/nsfw/...`, `"isNsfw": true`, `itemType: 0` pour les
   galeries manga/image.
 
+## Covers : ne jamais réécrire tous les hôtes
+
+Plusieurs extensions (HariManga…) répartissent une même couverture sur
+plusieurs miroirs CDN. Réécrire *toutes* les URLs vers un seul hôte « sain »
+casse les covers déjà valides : les miroirs ne partagent pas le même catalogue
+(`/thumb/<slug>.webp` chez l'un, `/thumb/manga_<id>_image.jpg` chez l'autre), et
+une réécriture globale transforme un 200 en 404.
+
+Règle : garder l'URL émise par le site, et ne réécrire **que** les hôtes qui
+échouent de façon fiable (503 permanent, DNS inexistant). Mesurer avant de
+réécrire : `img-r2.2xstorage.com` = 503 permanent, `img-r3.2xstorage.com` = DNS
+inexistant, `cdn4.zinmanga1.com` = 503 — le reste répond 200.
+
 ## Libellés de qualité
 
 - Une entrée `quality` décrit une **résolution**, jamais le conteneur. Un flux
