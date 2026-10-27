@@ -82,11 +82,25 @@ const tagsFixture = `
   </div>`;
 response = { statusCode: 200, body: tagsFixture };
 const tags = await provider.getCustomList("tags", 1);
-// The tag grid is built from the source's own category set, not scraped: the
-// live /tags page is flaky, so the list must render with no network at all.
-assert.ok(tags.list.length > 0);
-assert.equal(tags.hasNextPage, false);
-assert.ok(tags.list.every((tag) => tag.link.startsWith("https://www.xnxx.com/search/")));
+// The tag grid walks the live /tags/<letter> index, so it paginates A..Z and
+// each entry carries a real /search link.
+assert.equal(tags.list.length, 2);
+assert.equal(tags.list[0].name, "Teen");
+assert.equal(tags.list[0].link, "https://www.xnxx.com/search/teen");
+assert.ok(tags.hasNextPage, "the alphabet continues past A");
+
+// A dead tag index must not blank the section: the built-in category set is
+// the fallback.
+clientError = new Error("connection reset");
+const fallbackTags = await provider.getCustomList("tags", 1);
+clientError = null;
+assert.ok(fallbackTags.list.length > 0);
+assert.equal(fallbackTags.hasNextPage, false);
+assert.ok(
+  fallbackTags.list.every((tag) =>
+    tag.link.startsWith("https://www.xnxx.com/search/")
+  ),
+);
 
 const pornstarFixture = `
   <div class="thumb-block thumb-cat">
@@ -117,6 +131,173 @@ await assert.rejects(provider._get("/hits/1"), /request failed.*timed out/);
 
 assert.ok(logs.some(({ message }) => message.includes("blocked by Cloudflare")));
 assert.ok(logs.some(({ message }) => message.includes("route=/hits/1 status=503")));
+
+// ── Pagination: logical page -> XNXX's zero-based path suffix ───────────────
+// The site's page 1 is the bare route, page 2 is `/1`. Passing the app's page
+// number straight through skipped a page on every request.
+assert.equal(provider._pagePath(1), "");
+assert.equal(provider._pagePath(2), "/1");
+assert.equal(provider._pagePath(5), "/4");
+assert.equal(provider._hitsPath(1), "/hits");
+assert.equal(provider._hitsPath(3), "/hits/2");
+assert.equal(provider._pagePathFromOne(1), "");
+assert.equal(provider._pagePathFromOne(2), "/1");
+
+// ── Search/filter routing: refinements are PATH segments, not query params ──
+// The legacy `?top`/`?order=` parameters were ignored server-side (identical
+// result sets), which is what made the sort filter look broken.
+const periodLengthQuality = [
+  { state: 0 }, // popular mode: Most hits
+  { state: 1 }, // search sort: Most viewed
+  { state: 0 }, // category: none
+  { state: 1 }, // period: year
+  { state: 2 }, // length: 10min+
+  { state: 2 }, // quality: fullhd
+  { state: 1 }, // viewed: hide
+];
+assert.equal(
+  provider._searchPath("big tits", periodLengthQuality, 1, "hits"),
+  "/search/hits/year/10min+/fullhd/hide_viewed_video/big+tits",
+);
+assert.equal(
+  provider._searchPath("teen", [], 3, ""),
+  "/search/teen/2",
+);
+assert.equal(
+  provider._searchPath("teen", [], 2, "random"),
+  "/search/random/teen/1",
+);
+assert.ok(
+  !provider._searchPath("teen", periodLengthQuality, 1, "").includes("?"),
+  "no query parameters are emitted",
+);
+// `big tits` must survive encoding as `big+tits` (the site's own separator).
+assert.ok(provider._searchPath("big tits", [], 1, "").includes("big+tits"));
+
+// A sort axis XNXX rejects (500) is dropped so the listing still renders.
+const originalGet = TestClient.prototype.get;
+TestClient.prototype.get = async function (url) {
+  if (String(url).includes("/search/hits/")) {
+    return { statusCode: 500, body: "Internal Error" };
+  }
+  return { statusCode: 200, body: fixture };
+};
+const retried = await provider.search("teen", 1, periodLengthQuality);
+TestClient.prototype.get = originalGet;
+assert.equal(retried.list.length, 2, "listing survives a rejected sort axis");
+assert.ok(
+  logs.some(({ message }) => message.includes("retrying: ")),
+);
+
+// ── Covers: XNXX ships a 1056x594 mozaique_listing next to the 600x337 `_t` ──
+assert.equal(
+  provider._hiResImage("https://cdn.example/abc/0/xn_10_t.jpg"),
+  "https://cdn.example/abc/0/mozaique_listing.jpg",
+);
+assert.equal(
+  provider._hiResImage("https://cdn.example/abc/0/mozaique_listing.jpg"),
+  "https://cdn.example/abc/0/mozaique_listing.jpg",
+);
+assert.equal(provider._hiResImage(""), "");
+
+// The /hits card keeps thumb + preview inside its `data-video` JSON, not on
+// the <img>, so a DOM parse that ignores it loses the artwork entirely.
+const hitsFixture = `
+  <div id="video-thumb-abc123" class="thumb-block video"
+    data-video='{"id":"abc123","sfwThumbUrl":"https://cdn.example/abc/0/xn_1_t.jpg","mozaiqueListing":"https://cdn.example/abc/0/mozaique_listing.jpg","previewVideo":"https://cdn.example/abc/0/preview.mp4"}'>
+    <div class="thumb"><a class="thumb-link" href="/video-abc123/a_video">
+      <img src="https://assets.example/blank.gif" data-src="https://cdn.example/abc/0/xn_1_t.jpg" />
+    </a></div>
+    <div class="thumb-under"><p><a href="/video-abc123/a_video" title="A video">A video</a></p>
+      <p class="metadata"><span class="right">1.2M</span> 12min</p></div>
+  </div>`;
+const hitsParsed = provider._parseVideoList(hitsFixture, 1, "hits");
+assert.equal(hitsParsed.list.length, 1);
+assert.equal(
+  hitsParsed.list[0].imageUrl,
+  "https://cdn.example/abc/0/mozaique_listing.jpg",
+);
+assert.equal(hitsParsed.list[0].previewUrl, "https://cdn.example/abc/0/preview.mp4");
+assert.equal(hitsParsed.list[0].description, "Duration: 12min");
+
+// `_pageHasNext` reads the site's own signals: a "Next" anchor, or /hits'
+// zero-based `data-page` markers.
+const nextPageHtml = '<ul class="pagination"><a class="no-page next" href="/search/teen/1">Next</a></ul>';
+assert.equal(
+  provider._pageHasNext(new Document(nextPageHtml), 1, hitsParsed.list, nextPageHtml),
+  true,
+);
+const lastPageHtml = '<ul class="pagination"><a href="/search/teen/222" class="last-page">223</a></ul>';
+assert.equal(
+  provider._pageHasNext(new Document(lastPageHtml), 223, [], lastPageHtml),
+  false,
+);
+const hitsPagerHtml = '<div class="pagination"><a class="current" data-page="0">1</a><a data-page="277">278</a></div>';
+assert.equal(provider._pageHasNext(new Document(hitsPagerHtml), 1, [], hitsPagerHtml), true);
+assert.equal(provider._pageHasNext(new Document(hitsPagerHtml), 278, [], hitsPagerHtml), false);
+
+// ── Pornstars: `thumb-channel-premium` is a verified badge, not a paywall ────
+// Every one of the 80 cards on /pornstars carries it; treating it as premium
+// emptied the whole section.
+const premiumStar = `
+  <div class="thumb-block thumb-cat thumb-channel-premium">
+    <div class="thumb"><a href="/pornstar/alex_adams69"><img src="https://cdn.example/abc/0/xn_10_t.jpg" /></a></div>
+    <p class="title"><a href="/pornstar/alex_adams69">Alex Adams</a></p>
+    <div class="uploader"><span class="free-plate">1,956</span></div>
+  </div>`;
+const stars = provider._parsePornstars(premiumStar, 1);
+assert.equal(stars.list.length, 1, "a verified channel is not filtered out");
+assert.equal(stars.list[0].name, "Alex Adams");
+assert.equal(stars.list[0].link, "https://www.xnxx.com/pornstar/alex_adams69");
+assert.equal(
+  stars.list[0].imageUrl,
+  "https://cdn.example/abc/0/mozaique_listing.jpg",
+);
+
+// ── History: the local rail must warm its cache before reading ───────────────
+// Persistence goes through the runtime's async localStorage helpers, not
+// SharedPreferences (whose setString writes to Isar and was silently dropped
+// from the extension worker).
+const localStore = {};
+context.getLocalStorage = async (origin, key) => localStore[key];
+context.setLocalStorage = async (origin, key, value) => {
+  localStore[key] = value;
+};
+const historyProvider = new context.XnxxForTest();
+TestClient.prototype.get = async function () {
+  return { statusCode: 200, body: fixture };
+};
+const emptyHistory = await historyProvider.getCustomList("history", 1);
+assert.equal(emptyHistory.list.length, 2, "remote /history still fills the rail");
+await historyProvider._saveHistoryItem({
+  name: "Saved video",
+  link: "https://www.xnxx.com/video-saved/saved",
+  imageUrl: "https://cdn.example/saved.jpg",
+  watchedAt: Date.now(),
+});
+const localHistory = await historyProvider.getCustomList("history", 1);
+TestClient.prototype.get = originalGet;
+assert.equal(localHistory.list[0].name, "Saved video", "local entry ranks first");
+assert.ok(
+  localHistory.list[0].description.startsWith("Vu le"),
+  `local entry is stamped with a watch date, got "${localHistory.list[0].description}"`,
+);
+
+// A fresh instance reads the persisted history back from localStorage: this is
+// what made "Historique" survive a restart. Clearing the static cache forces
+// the reload instead of reusing the in-memory copy.
+context.XnxxForTest._historyCache = undefined;
+const reloaded = new context.XnxxForTest();
+TestClient.prototype.get = async function () {
+  return { statusCode: 503, body: "Service unavailable" };
+};
+const reloadedHistory = await reloaded.getCustomList("history", 1);
+TestClient.prototype.get = originalGet;
+assert.equal(reloadedHistory.list[0].name, "Saved video");
+assert.equal(
+  reloadedHistory.list[0].link,
+  "https://www.xnxx.com/video-saved/saved",
+);
 
 // ── Recommendations: related videos are a JS literal on the detail page ──────
 clientError = null;

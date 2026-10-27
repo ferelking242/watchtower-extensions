@@ -7,7 +7,9 @@
       { "id": "history", "component": "showcase", "title": "Historique · reprendre", "accent": "#7C4DFF", "icon": "history" },
       { "id": "best_month", "component": "rankedWide", "title": "Le meilleur du mois", "accent": "#FFB300", "icon": "calendar_month", "seeAll": true },
       { "id": "pornstars", "component": "landscapeStacked", "title": "Pornstars", "accent": "#FFB300", "icon": "star", "seeAll": true, "cardStyle": "landscape" },
-      { "id": "tags", "component": "grid", "title": "Tags", "accent": "#00B8D4", "icon": "local_offer", "columns": 2, "rows": 3, "cardStyle": "tag", "seeAll": true }
+      { "id": "tags", "component": "grid", "title": "Tags", "accent": "#00B8D4", "icon": "local_offer", "columns": 2, "rows": 3, "cardStyle": "tag", "seeAll": true },
+      { "id": "best_previous", "component": "rankedWide", "title": "Le meilleur du mois dernier", "accent": "#8E24AA", "icon": "workspace_premium", "seeAll": true },
+      { "id": "suggestion_straight", "component": "collectionCards", "title": "Suggestions", "accent": "#F4511E", "icon": "auto_awesome" }
     ]
   },
   "browse": {

@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.5",
+  "version": "1.4.0",
   "login": true,
   "loginUrl": "https://www.xnxx.com/mobile/login",
   "forYou": false,
@@ -22,42 +22,69 @@ const watchtowerSources = [{
 
 class DefaultExtension extends MProvider {
   static get BASE_URL() { return "https://www.xnxx.com"; }
+  static get HISTORY_KEY() { return "xnxx_watch_history"; }
   get supportsLatest() { return true; }
 
+  // Watchtower's runtime does not expose a `localStorage` global; it exposes
+  // the async `getLocalStorage`/`setLocalStorage` helpers from JsUtils, which
+  // persist through the app's secure per-extension session store.
+  //
+  // SharedPreferences cannot be used for this: `setString` writes to Isar,
+  // which only the root isolate may open, so every write made by the extension
+  // worker was silently dropped and "Historique" stayed empty after a restart.
+  _storageAvailable() {
+    return typeof getLocalStorage === "function" &&
+      typeof setLocalStorage === "function";
+  }
+
   _storedHistory() {
-    try {
-      if (!Array.isArray(DefaultExtension._historyCache)) {
-        const preferences = new SharedPreferences();
-        const raw = typeof preferences.getString === "function"
-          ? preferences.getString("xnxx_watch_history", "")
-          : preferences.get("xnxx_watch_history");
-        const parsed = typeof raw === "string" ? JSON.parse(raw || "[]") : raw;
-        DefaultExtension._historyCache = Array.isArray(parsed)
-          ? parsed.filter(item => item && item.link && item.name)
-          : [];
-      }
+    if (Array.isArray(DefaultExtension._historyCache)) {
       return DefaultExtension._historyCache;
-    } catch (_) {
-      return Array.isArray(DefaultExtension._historyCache)
-        ? DefaultExtension._historyCache
-        : [];
     }
+    return DefaultExtension._historyPending || [];
+  }
+
+  // The listing is built from the cache synchronously, so a cold cache must be
+  // warmed before getCustomList("history") runs. Reading localStorage is async
+  // and cannot be awaited from the synchronous accessor above.
+  async _loadStoredHistory() {
+    if (Array.isArray(DefaultExtension._historyCache)) {
+      return DefaultExtension._historyCache;
+    }
+    if (!this._storageAvailable()) {
+      DefaultExtension._historyCache = [];
+      return DefaultExtension._historyCache;
+    }
+    try {
+      const raw = await getLocalStorage(
+        DefaultExtension.BASE_URL,
+        DefaultExtension.HISTORY_KEY,
+      );
+      const parsed = typeof raw === "string" ? JSON.parse(raw || "[]") : raw;
+      DefaultExtension._historyCache = Array.isArray(parsed)
+        ? parsed.filter(item => item && item.link && item.name)
+        : [];
+    } catch (error) {
+      extLog("warn", `XNXX history could not be read: ${error.message}`);
+      DefaultExtension._historyCache = [];
+    }
+    return DefaultExtension._historyCache;
   }
 
   async _saveHistoryItem(item) {
+    if (!this._storageAvailable()) return;
     try {
-      const entries = this._storedHistory().filter(entry => entry.link !== item.link);
+      const entries = (await this._loadStoredHistory())
+        .filter(entry => entry.link !== item.link);
       entries.unshift(item);
       const history = entries.slice(0, 60);
       DefaultExtension._historyCache = history;
-      const preferences = new SharedPreferences();
-      const value = JSON.stringify(history);
-      if (typeof preferences.setString === "function") {
-        await preferences.setString("xnxx_watch_history", value);
-      } else if (typeof preferences.set === "function") {
-        // The test harness exposes set(); Watchtower's runtime uses setString().
-        await preferences.set("xnxx_watch_history", value);
-      }
+      DefaultExtension._historyPending = history;
+      await setLocalStorage(
+        DefaultExtension.BASE_URL,
+        DefaultExtension.HISTORY_KEY,
+        JSON.stringify(history),
+      );
     } catch (error) {
       extLog("warn", `XNXX local history could not be saved: ${error.message}`);
     }
@@ -174,13 +201,74 @@ class DefaultExtension extends MProvider {
 
   _image(el) {
     if (!el) return "";
-    return el.attr("data-src") || el.attr("data-original") ||
-      el.attr("src") || el.attr("data-image") || "";
+    // `data-mzl` is XNXX's own full-size listing thumb; `data-src` is the
+    // low-resolution `_t` variant the browser swaps in while scrolling.
+    return el.attr("data-mzl") || el.attr("data-src") ||
+      el.attr("data-original") || el.attr("src") ||
+      el.attr("data-image") || "";
+  }
+
+  // The /hits feed does not put the thumb and preview on the <img>; it embeds
+  // them in the card's `data-video` JSON attribute instead.
+  _cardData(card) {
+    const raw = card && typeof card.attr === "function"
+      ? card.attr("data-video")
+      : "";
+    if (!raw) return {};
+    try {
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch (_) {
+      return {};
+    }
+  }
+
+  // XNXX paginates with a ZERO-based path suffix: logical page 1 is the bare
+  // route, page 2 is `/1`, page 3 is `/2`. The app asks for logical pages, so
+  // passing `page` straight through skipped a page on every call (page 2
+  // returned page 3's items and the first page was shown twice).
+  _pagePath(page) {
+    const logical = Number(page);
+    if (!Number.isFinite(logical) || logical <= 1) return "";
+    return `/${Math.floor(logical) - 1}`;
+  }
+
+  // Same rule for routes that carry a mandatory index (the pornstar list has
+  // no bare page 2 route: /pornstars/1 is page 2).
+  _pagePathFromOne(page) {
+    const logical = Number(page);
+    if (!Number.isFinite(logical) || logical <= 1) return "";
+    return `/${Math.floor(logical) - 1}`;
+  }
+
+  // /hits is zero-based too, but its first page is reachable at the bare route.
+  _hitsPath(page) {
+    return `/hits${this._pagePath(page)}`;
+  }
+
+  // XNXX's own cards use `_t` for the 600x337 listing thumbnail and ship a
+  // full-size `mozaique_listing` (1056x594) next to it. Watchtower upscales
+  // covers, so returning `_t` is what made every image look blurry.
+  _hiResImage(url) {
+    if (!url) return "";
+    const match = /^(.*\/)([^/]+)\.(jpe?g|png|webp)$/i.exec(url);
+    if (!match) return url;
+    const prefix = match[1];
+    const name = match[2];
+    if (/mozaique_(full|listing)$/i.test(name)) return url;
+    // Only XNXX's own generated names can be swapped; leave anything else
+    // (and already high-resolution art) untouched.
+    if (!/^(xn|xv|mozaique)_?\d*_?t?$/i.test(name)) return url;
+    return `${prefix}mozaique_listing.jpg`;
   }
 
   _hasPremiumMarker(el) {
     const classes = (el.attr("class") || "").toLowerCase();
-    return classes.includes("premium") || classes.includes("gold");
+    // `thumb-channel-premium` marks a verified channel — every one of the 80
+    // cards on /pornstars carries it — and `invert-if-premium` only flips a
+    // badge colour. Treating those as paywalls emptied the whole section.
+    if (/thumb-channel-premium|invert-if-premium/.test(classes)) return false;
+    return /\bpremium\b|\bgold\b/.test(classes);
   }
 
   /// XNXX's RPC names its MP4 fallbacks by resolution, but `mp4_high` is not
@@ -223,12 +311,25 @@ class DefaultExtension extends MProvider {
     return body;
   }
 
-  _pageHasNext(doc, page, pathPrefix, items) {
-    if (page >= 50) return false;
-    const next = `${pathPrefix}/${page + 1}`;
+  _pageHasNext(doc, page, items, html) {
+    // /search and /pornstars render a dedicated "Next" anchor on every page
+    // that has a successor and drop it on the last one; that check holds at
+    // any depth. The previous "page + 1" href guess stopped matching as soon
+    // as the route used a different page base, so pagination died after the
+    // first screen.
+    const raw = html || "";
+    if (/class="[^"]*\bnext\b[^"]*"/.test(raw)) return true;
     for (const anchor of this._elementsByTag(doc, "a")) {
-      const href = anchor.attr("href") || "";
-      if (href === next || href === `${next}?top`) return true;
+      if (/\bnext\b/.test((anchor.attr("class") || "").toLowerCase())) return true;
+    }
+    // /hits advertises its pages with zero-based `data-page` markers instead,
+    // so compare the highest advertised index with the current one.
+    const markers = [];
+    const markerRe = /data-page="(\d+)"/g;
+    let marker;
+    while ((marker = markerRe.exec(raw))) markers.push(Number(marker[1]));
+    if (markers.length) {
+      return Math.max(...markers) > Math.max(0, Number(page) - 1);
     }
     return items.length >= 30;
   }
@@ -297,10 +398,14 @@ class DefaultExtension extends MProvider {
       }
 
       const previewMatch = /\bdata-pvv=["']([^"']+)["']/i.exec(block);
+      const mzlMatch = /\bdata-mzl=["']([^"']+)["']/i.exec(block);
       const duration = /(\d+\s*(?:min|sec|h)\b)/i.exec(block);
+      const rawImage = mzlMatch ? mzlMatch[1] : image;
       items.push({
         name: name || "Untitled",
-        imageUrl: image.startsWith("//") ? `https:${image}` : image,
+        imageUrl: this._hiResImage(
+          rawImage.startsWith("//") ? `https:${rawImage}` : rawImage
+        ),
         previewUrl: previewMatch ? this._absolute(previewMatch[1]) : "",
         link: group.link,
         description: duration ? `Duration: ${duration[1]}` : ""
@@ -346,7 +451,8 @@ class DefaultExtension extends MProvider {
         this._elementsByClass(card, "duration")[0]
       );
       const duration = metadata.match(/(\d+\s*(?:min|sec|h))/i);
-      const preview = [
+      const data = this._cardData(card);
+      const preview = data.previewVideo || [
         ...images,
         ...this._elementsByTag(card, "div"),
         ...this._elementsByTag(card, "a"),
@@ -355,7 +461,9 @@ class DefaultExtension extends MProvider {
 
       items.push({
         name: this._text(titleAnchor) || "Untitled",
-        imageUrl: this._image(imageElement),
+        imageUrl: this._hiResImage(
+          data.mozaiqueListing || data.sfwThumbUrl || this._image(imageElement)
+        ),
         previewUrl: this._absolute(preview),
         link,
         description: duration ? `Duration: ${duration[1]}` : ""
@@ -379,13 +487,9 @@ class DefaultExtension extends MProvider {
       }
     }
 
-    const prefix = mode === "hits" ? "/hits" :
-      mode === "history" ? "/history" : `/search/${mode || ""}`;
-    let hasNext = mode === "hits"
-      ? this._pageHasNext(doc, page, "/hits", items)
-      : mode === "history"
-        ? false
-        : this._pageHasNext(doc, page, prefix.replace(/\/$/, ""), items);
+    const hasNext = mode === "history"
+      ? false
+      : this._pageHasNext(doc, page, items, html);
 
     return { list: items, hasNextPage: hasNext };
   }
@@ -411,15 +515,22 @@ class DefaultExtension extends MProvider {
       const count = this._text(this._elementsByClass(card, "uploader")[0]);
       items.push({
         name: this._text(title) || "Pornstar",
-        imageUrl: this._image(this._elementsByTag(card, "img")[0]),
+        imageUrl: this._hiResImage(this._image(this._elementsByTag(card, "img")[0])),
         link,
         description: count ? `${count} free videos` : "Free videos"
       });
     }
     return {
       list: items,
-      hasNextPage: this._pageHasNext(doc, page, "/pornstars", items)
+      hasNextPage: this._pageHasNext(doc, page, items, html)
     };
+  }
+
+  // The live tag index is `/tags/<letter>` (2000 tags per letter page). A
+  // bare `/tags` returns every letter at once, so the section paginates the
+  // alphabet instead of repeating one page.
+  _tagLetters() {
+    return "abcdefghijklmnopqrstuvwxyz".split("");
   }
 
   _parseTags(html) {
@@ -430,7 +541,11 @@ class DefaultExtension extends MProvider {
       : null;
     const tagRows = this._elementsByTag(tagRoot, "li");
     const rows = tagRows.length ? tagRows : this._elementsByTag(doc, "li");
+    // A letter page carries ~2000 tags; the home grid shows six. Cap the
+    // payload so the QuickJS bridge never marshals the whole index for a rail.
+    const maxTags = 240;
     for (const row of rows) {
+      if (items.length >= maxTags) break;
       const anchor = this._elementsByTag(row, "a").find(item =>
         (item.attr("href") || "").startsWith("/search/")
       );
@@ -444,12 +559,10 @@ class DefaultExtension extends MProvider {
         imageUrl: "",
         link: this._absolute(href),
         collectionId: `search_${href.slice("/search/".length).split(/[/?#]/)[0]}`,
-        description: count ? `${count} videos` : "Browse videos",
-        // The layout renderer may use this to create a staggered card.
-        metadata: { masonryKey: name.length + (count ? count.length : 0) }
+        description: count ? `${count} videos` : "Browse videos"
       });
     }
-    return { list: items, hasNextPage: false };
+    return items;
   }
 
   _monthSlug(monthsAgo = 1) {
@@ -468,8 +581,8 @@ class DefaultExtension extends MProvider {
       },
       {
         name: "African · Top",
-        link: this._absolute("/search/african?top&id=73997887"),
-        collectionId: "search_african_top",
+        link: this._absolute("/search/african"),
+        collectionId: "search_african",
         description: "Les vidéos African les plus populaires"
       },
       {
@@ -519,6 +632,75 @@ class DefaultExtension extends MProvider {
     return entry ? entry[1] : "";
   }
 
+  // XNXX's own search page refines a query with PATH segments, not query
+  // parameters: `/search/<period>/<length>/<quality>/<viewed>/<query>`. The
+  // legacy `?top`/`?order=` parameters were silently ignored server-side
+  // (identical 36/36 result sets), which is why the sort filter looked broken.
+  // Order matters; the keyword always comes last.
+  _filterSegments(filters) {
+    const segments = [];
+    const period = ["", "year", "month"][this._filterState(filters, 3)];
+    if (period) segments.push(period);
+    const length = [
+      "", "0-10min", "10min+", "10-20min", "20min+",
+    ][this._filterState(filters, 4)];
+    if (length) segments.push(length);
+    const quality = ["", "hd-only", "fullhd"][this._filterState(filters, 5)];
+    if (quality) segments.push(quality);
+    if (this._filterState(filters, 6) === 1) segments.push("hide_viewed_video");
+    return segments;
+  }
+
+  // `mode` selects XNXX's sort axis for the same keyword: Default keeps the
+  // relevance order, `hits` sorts by views, `random` shuffles.
+  _searchPath(keyword, filters, page, mode) {
+    const parts = [];
+    const normalized = String(mode || "").toLowerCase();
+    if (normalized === "hits" || normalized === "random") parts.push(normalized);
+    parts.push(...this._filterSegments(filters));
+    const encoded = encodeURIComponent(String(keyword || "").trim())
+      .replace(/%20/g, "+");
+    parts.push(encoded);
+    const joined = parts.filter(Boolean).join("/");
+    return `/search/${joined}${this._pagePath(page)}`;
+  }
+
+  // Search only ever ran with the filter set captured by `search()`. Sections
+  // that list a keyword (tags, suggestions) built their URL by hand and lost
+  // the refinement entirely.
+  //
+  // Some combinations are rejected server-side with a 500 "Internal Error"
+  // instead of an empty list (e.g. `/search/year/fullhd/<q>`). Rather than
+  // showing the user an error for a refinement they explicitly asked for, walk
+  // back the request: drop the sort axis, then the refinements, and keep the
+  // first listing that answers. A section must never fail to render.
+  async _searchListing(keyword, page, filters, mode) {
+    const attempts = [
+      { label: "full", mode, filters },
+      { label: "no-mode", mode: "", filters },
+      { label: "keyword-only", mode: "", filters: [] }
+    ];
+    let lastError;
+    for (const attempt of attempts) {
+      const path = this._searchPath(keyword, attempt.filters, page, attempt.mode);
+      try {
+        const { body } = await this._get(path);
+        if (attempt.label !== "full") {
+          extLog("warn", `XNXX search degraded to ${attempt.label} for "${keyword}"`);
+        }
+        return this._parseVideoList(body, page, keyword);
+      } catch (error) {
+        lastError = error;
+        if (attempt.label === "keyword-only") break;
+        extLog(
+          "warn",
+          `XNXX search attempt=${attempt.label} failed, retrying: ${error.message}`
+        );
+      }
+    }
+    throw lastError;
+  }
+
   async _get(path) {
     const url = this._absolute(path);
     let res;
@@ -539,9 +721,9 @@ class DefaultExtension extends MProvider {
     const mode = this._filterState(filters, 0);
     const category = this._filterCategory(filters);
     if (category) {
-      const query = encodeURIComponent(category).replace(/%20/g, "+");
-      const { body } = await this._get(`/search/${query}/${page}`);
-      return this._parseVideoList(body, page, query);
+      // A chosen category is a keyword search: keep the refinements the user
+      // picked so the browse screen and the home sections agree.
+      return this._searchListing(category, page, filters, "");
     }
     if (mode === 1) {
       const month = this._monthSlug();
@@ -551,14 +733,14 @@ class DefaultExtension extends MProvider {
       result.hasNextPage = result.list.length > 0 && page < 24;
       return result;
     }
-    const { body } = await this._get(`/hits/${page}`);
+    const { body } = await this._get(this._hitsPath(page));
     return this._parseVideoList(body, page, "hits");
   }
 
   async getLatestUpdates(page) {
     // XNXX does not expose a stable public "latest" route. Its /hits feed is
     // the same free, paginated catalog used by the legacy source contract.
-    const { body } = await this._get(`/hits/${page}`);
+    const { body } = await this._get(this._hitsPath(page));
     return this._parseVideoList(body, page, "hits");
   }
 
@@ -567,21 +749,16 @@ class DefaultExtension extends MProvider {
     const category = this._filterCategory(this._currentFilters);
     const rawQuery = (query || "").trim();
     if (!rawQuery) return this.getPopular(page);
-    const q = encodeURIComponent(
-      category ? `${rawQuery} ${category}` : rawQuery
-    ).replace(/%20/g, "+");
-    const sortState = this._filterState(filters, 1);
-    const sort = sortState === 1
-      ? "?top"
-      : sortState === 2
-        ? "?order=order-az-asc"
-        : "";
-    const { body } = await this._get(`/search/${q}/${page}${sort}`);
-    return this._parseVideoList(body, page, q);
+    const keyword = category ? `${rawQuery} ${category}` : rawQuery;
+    const mode = ["", "hits", "random"][this._filterState(this._currentFilters, 1)] || "";
+    return this._searchListing(keyword, page, this._currentFilters, mode);
   }
 
   async getCustomList(listId, page) {
     if (listId === "history") {
+      // Warm the localStorage-backed cache: the synchronous accessor below
+      // cannot await the read, and a cold cache used to render an empty rail.
+      await this._loadStoredHistory();
       let remote = [];
       try {
         const { body } = await this._get("/history");
@@ -612,24 +789,26 @@ class DefaultExtension extends MProvider {
     // month is resolved server-side here instead of through a layout month
     // selector, so no selector is needed on the home screen.
     if (listId === "best_month") {
-      const month = this._monthSlug();
-      const path = page <= 1 ? `/best/${month}` : `/best/${month}/${page}`;
-      const { body } = await this._get(path);
-      const result = this._parseVideoList(body, page, "best");
-      result.hasNextPage = result.list.length > 0 && page < 24;
-      return result;
+      return this._bestOfMonth(this._monthSlug(), page);
+    }
+    if (listId === "best_previous") {
+      // The previous month is resolved at call time so the section never goes
+      // stale the way a hard-coded "best_YYYY-MM" id would.
+      return this._bestOfMonth(this._monthSlug(2), page);
     }
     if (listId === "suggestion_straight") {
-      const suggestionPath = page <= 1
-        ? "/your-suggestions/straight"
-        : `/your-suggestions/straight/${page}`;
-      const { body } = await this._get(suggestionPath);
-      const suggested = this._parseVideoList(body, page, "suggestions");
-      if (suggested.list.length) return suggested;
-      // XNXX only fills its personal suggestions from browser-local activity.
-      // Give the collection a useful, paginated fallback when that data is absent.
-      const fallback = await this._get(`/search/straight/${page}`);
-      return this._parseVideoList(fallback.body, page, "straight");
+      // XNXX only fills /your-suggestions from browser-local activity, and its
+      // pagination route 404s. It is used as a single screen; the fallback
+      // keyword listing carries the paging.
+      const { body } = await this._get("/your-suggestions/straight");
+      const suggested = this._parseVideoList(body, 1, "suggestions");
+      if (suggested.list.length) {
+        suggested.hasNextPage = false;
+        return suggested;
+      }
+      const fallback = await this._searchListing("straight", page, []);
+      fallback.hasNextPage = true;
+      return fallback;
     }
     const bestMonth = /^best_(\d{4}-\d{2})$/.exec(listId);
     if (bestMonth) {
@@ -637,38 +816,53 @@ class DefaultExtension extends MProvider {
       if (monthNumber < 1 || monthNumber > 12) {
         throw new Error(`Invalid XNXX best-of month: ${bestMonth[1]}`);
       }
-      const path = page <= 1
-        ? `/best/${bestMonth[1]}`
-        : `/best/${bestMonth[1]}/${page}`;
-      const { body } = await this._get(path);
-      return this._parseVideoList(body, page, "best");
+      return this._bestOfMonth(bestMonth[1], page);
     }
     if (listId.startsWith("search_")) {
       const rawId = listId.slice("search_".length);
       const top = rawId.endsWith("_top");
-      const query = top ? rawId.slice(0, -4) : rawId;
-      const encoded = encodeURIComponent(query).replace(/%20/g, "+");
-      const pagePath = page <= 1 ? "" : `/${page}`;
-      const suffix = top ? "?top&id=73997887" : "";
-      const { body } = await this._get(`/search/${encoded}${pagePath}${suffix}`);
-      return this._parseVideoList(body, page, query);
+      const query = (top ? rawId.slice(0, -4) : rawId).replace(/_/g, " ");
+      // `?top` never reordered results server-side; the listing keeps its own
+      // keyword order and paginates with the zero-based suffix.
+      return this._searchListing(query, page, []);
     }
     if (listId === "pornstars") {
-      const path = page <= 1 ? "/pornstars" : `/pornstars/${page}`;
-      const { body } = await this._get(path);
+      const { body } = await this._get(`/pornstars${this._pagePathFromOne(page)}`);
       return this._parsePornstars(body, page);
     }
     if (listId === "tags") {
-      // Deterministic, offline list built from the source's own category set
-      // so the tag grid always renders (the live /tags page is flaky) while
-      // each entry still carries a real /search link for the tag component.
+      // The live tag index lives at /tags/<letter>; page 1 walks A..Z. A
+      // network failure falls back to the built-in category set so the grid
+      // never renders empty.
+      const letters = this._tagLetters();
+      const index = Math.max(1, Number(page) || 1) - 1;
+      const letter = letters[index];
+      if (letter) {
+        try {
+          const { body } = await this._get(`/tags/${letter}`);
+          const tags = this._parseTags(body);
+          if (tags.length) {
+            return { list: tags, hasNextPage: index < letters.length - 1 };
+          }
+        } catch (error) {
+          extLog("warn", `XNXX tag index unavailable: ${error.message}`);
+        }
+      }
       return { list: this._categoryTags(), hasNextPage: false };
     }
     if (listId === "hits") {
-      const { body } = await this._get(`/hits/${page}`);
+      const { body } = await this._get(this._hitsPath(page));
       return this._parseVideoList(body, page, "hits");
     }
     return this.getPopular(page);
+  }
+
+  async _bestOfMonth(month, page) {
+    // The best-of listing is zero-based as well: /best/<month>/1 is page 2.
+    const { body } = await this._get(`/best/${month}${this._pagePath(page)}`);
+    const result = this._parseVideoList(body, page, "best");
+    result.hasNextPage = result.list.length > 0 && page < 24;
+    return result;
   }
 
   async getDetail(url) {
@@ -683,7 +877,9 @@ class DefaultExtension extends MProvider {
       doc.selectFirst("h1.content-title")
     ) || metaTitle.replace(/\s+/g, " ").trim()
       || "XNXX";
-    const cover = doc.selectFirst('meta[property="og:image"]')?.attr("content") || "";
+    const cover = this._hiResImage(
+      doc.selectFirst('meta[property="og:image"]')?.attr("content") || ""
+    );
 
     if (url.includes("/pornstar/") || url.includes("/search/")) {
       const videos = this._parseVideoList(body, 1, "detail").list;
@@ -775,12 +971,14 @@ class DefaultExtension extends MProvider {
         this._text(page.selectFirst("h1.content-title")) ||
         metaTitle.replace(/\s+/g, " ").trim() ||
         "XNXX video";
-      const cover = page.selectFirst('meta[property="og:image"]')?.attr("content") || "";
-      // Fire-and-forget: this is a local SharedPreferences write, and awaiting
-      // it held up the return of `getVideoList` — i.e. the video URL the player
-      // is blocked on. The history entry is a nicety; it must never delay
-      // playback. `_saveHistoryItem` catches its own errors, so there is no
-      // unhandled rejection to worry about.
+      const cover = this._hiResImage(
+        page.selectFirst('meta[property="og:image"]')?.attr("content") || ""
+      );
+      // Fire-and-forget: this is a localStorage write through the app's
+      // session bridge, and awaiting it held up the return of `getVideoList`
+      // — i.e. the video URL the player is blocked on. The history entry is a
+      // nicety; it must never delay playback. `_saveHistoryItem` catches its
+      // own errors, so there is no unhandled rejection to worry about.
       this._saveHistoryItem({
         name: title,
         link: this._absolute(url),
@@ -1005,9 +1203,9 @@ class DefaultExtension extends MProvider {
         name: "Search sort",
         state: 0,
         values: [
-          { type_name: "SelectOption", name: "Recent", value: "recent" },
-          { type_name: "SelectOption", name: "Top", value: "top" },
-          { type_name: "SelectOption", name: "A-Z", value: "az" }
+          { type_name: "SelectOption", name: "Relevance", value: "default" },
+          { type_name: "SelectOption", name: "Most viewed", value: "hits" },
+          { type_name: "SelectOption", name: "Random", value: "random" }
         ]
       },
       {
@@ -1017,6 +1215,47 @@ class DefaultExtension extends MProvider {
         values: DefaultExtension.CATEGORIES.map(([name]) => ({
           type_name: "SelectOption", name, value: name
         }))
+      },
+      {
+        type_name: "SelectFilter",
+        name: "Period",
+        state: 0,
+        values: [
+          { type_name: "SelectOption", name: "Ever", value: "ever" },
+          { type_name: "SelectOption", name: "Year", value: "year" },
+          { type_name: "SelectOption", name: "Month", value: "month" }
+        ]
+      },
+      {
+        type_name: "SelectFilter",
+        name: "Length",
+        state: 0,
+        values: [
+          { type_name: "SelectOption", name: "All", value: "all" },
+          { type_name: "SelectOption", name: "0 - 10 min", value: "0-10min" },
+          { type_name: "SelectOption", name: "10 min +", value: "10min+" },
+          { type_name: "SelectOption", name: "10 - 20 min", value: "10-20min" },
+          { type_name: "SelectOption", name: "20 min +", value: "20min+" }
+        ]
+      },
+      {
+        type_name: "SelectFilter",
+        name: "Video quality",
+        state: 0,
+        values: [
+          { type_name: "SelectOption", name: "All", value: "all" },
+          { type_name: "SelectOption", name: "720P +", value: "hd-only" },
+          { type_name: "SelectOption", name: "1080P+", value: "fullhd" }
+        ]
+      },
+      {
+        type_name: "SelectFilter",
+        name: "Viewed videos",
+        state: 0,
+        values: [
+          { type_name: "SelectOption", name: "Show all", value: "show" },
+          { type_name: "SelectOption", name: "Hide", value: "hide" }
+        ]
       }
     ];
   }
