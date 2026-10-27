@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://www.harimanga.co.uk/image/icon/hari-icon-192x192.webp",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.4.4",
+    "version": "0.4.5",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -42,6 +42,19 @@ const watchtowerSources = [
 // ────────────────────────────────────────────────────────────────────────────
 
 const BASE_URL = "https://www.harimanga.co.uk";
+
+// Cover mirrors seen in HariManga markup. Most of them answer 200 for the URL
+// the site itself emitted, so they are left untouched; only the hosts that
+// reliably fail are rewritten. `img-r2.2xstorage.com` answers a permanent 503
+// ("Server busy") and `img-r3.2xstorage.com` is not resolvable, while
+// `cdn4.zinmanga1.com` also answers 503. A card pointing at any of them renders
+// as a placeholder with no way to recover, because the app only receives one
+// URL per item.
+const DEAD_COVER_HOSTS = {
+  "img-r2.2xstorage.com": "img-r1.2xstorage.com",
+  "img-r3.2xstorage.com": "img-r1.2xstorage.com",
+  "cdn4.zinmanga1.com": "cdn.zinmanga1.com",
+};
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
@@ -119,26 +132,19 @@ class DefaultExtension extends MProvider {
     return this.resolveUrl(this._preferWorkingCdnHost(imageUrl));
   }
 
-  // Harimanga spreads the same cover over several mirror hosts and marks the
-  // first one as the primary. One of them (`img-r2.2xstorage.com`) answers
-  // every request with a permanent 503 "Server busy, try again later", so a
-  // card pointing at it renders as a placeholder with no way to recover: the
-  // app only receives a single URL per item.
-  //
-  // Every mirror serves the same `/thumb/<slug>` paths, so rewrite a known-bad
-  // host to its healthy sibling before handing the URL to the app. Only the
-  // exact hostnames seen in the markup are rewritten, and only their host part
-  // is touched.
+  // HariManga spreads the same cover over several mirror hosts and mixes them
+  // in one page. Most mirrors serve the URL the site emitted, so it is kept
+  // as-is; only the known-bad hosts are redirected to a healthy sibling that
+  // serves the same `/thumb/<path>`. Rewriting every mirror onto a single host
+  // was wrong: the mirrors do not hold the same catalogue (some only serve
+  // `/thumb/manga_<id>_image.jpg`, others only `/thumb/<slug>.webp`), so a
+  // blanket rewrite turns working covers into 404s.
   _preferWorkingCdnHost(url) {
     if (!url) return url;
-    const DEAD_HOSTS = {
-      "img-r2.2xstorage.com": "img-r1.2xstorage.com",
-      "cdn4.zinmanga1.com": "cdn3.zinmanga1.com",
-    };
     return String(url).replace(
       /^(https?:\/\/)([^/]+)([\s\S]*)$/i,
       (match, scheme, host, rest) => {
-        const replacement = DEAD_HOSTS[host.toLowerCase()];
+        const replacement = DEAD_COVER_HOSTS[host.toLowerCase()];
         return replacement ? `${scheme}${replacement}${rest}` : match;
       }
     );
