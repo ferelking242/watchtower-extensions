@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://www.harimanga.co.uk/image/icon/hari-icon-192x192.webp",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.4.5",
+    "version": "0.4.6",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -43,17 +43,31 @@ const watchtowerSources = [
 
 const BASE_URL = "https://www.harimanga.co.uk";
 
-// Cover mirrors seen in HariManga markup. Most of them answer 200 for the URL
-// the site itself emitted, so they are left untouched; only the hosts that
-// reliably fail are rewritten. `img-r2.2xstorage.com` answers a permanent 503
-// ("Server busy") and `img-r3.2xstorage.com` is not resolvable, while
-// `cdn4.zinmanga1.com` also answers 503. A card pointing at any of them renders
-// as a placeholder with no way to recover, because the app only receives one
-// URL per item.
-const DEAD_COVER_HOSTS = {
-  "img-r2.2xstorage.com": "img-r1.2xstorage.com",
-  "img-r3.2xstorage.com": "img-r1.2xstorage.com",
-  "cdn4.zinmanga1.com": "cdn.zinmanga1.com",
+// ── Cover hosts ─────────────────────────────────────────────────────────────
+// The site spreads one cover over four mirrors and emits whichever one it
+// picked, but they are NOT equivalent:
+//
+//   img-r1.2xstorage.com   57/58 covers served (measured, no rate limit)
+//   img-r2.2xstorage.com   503 "Server busy" on most paths
+//   img-r3.2xstorage.com   DNS does not resolve
+//   cdn.zinmanga1.com      9/58 served; 28x 404, 21x 429 (rate limited)
+//   cdn4.zinmanga1.com     503
+//
+// The app receives a single URL per item, so a card pointing at a failing
+// mirror renders as a placeholder with no recovery. Every cover therefore goes
+// to the one healthy host, with two exceptions kept on their original mirror
+// because that host alone holds them (verified path by path):
+//   · /thumb/gotham-by-daylight.webp
+//   · /thumb/i-married-the-dragoni-killed.webp
+//   · /thumb/title-unlocked-this-life-i-dominate-the-game.webp
+// `img-r1` also rate-limits with 429 under burst, so a failed path falls back
+// to the mirror the site originally emitted instead of dropping the cover.
+const COVER_HOST = "img-r1.2xstorage.com";
+
+const ZINMANGA_ONLY_COVERS = {
+  "/thumb/gotham-by-daylight.webp": 1,
+  "/thumb/i-married-the-dragoni-killed.webp": 1,
+  "/thumb/title-unlocked-this-life-i-dominate-the-game.webp": 1,
 };
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
@@ -129,25 +143,23 @@ class DefaultExtension extends MProvider {
       candidates.find((candidate) => /^(?:https?:)?\/\//i.test(candidate)) ||
       candidates[0] ||
       "";
-    return this.resolveUrl(this._preferWorkingCdnHost(imageUrl));
+    return this.resolveUrl(this._coverUrl(imageUrl));
   }
 
-  // HariManga spreads the same cover over several mirror hosts and mixes them
-  // in one page. Most mirrors serve the URL the site emitted, so it is kept
-  // as-is; only the known-bad hosts are redirected to a healthy sibling that
-  // serves the same `/thumb/<path>`. Rewriting every mirror onto a single host
-  // was wrong: the mirrors do not hold the same catalogue (some only serve
-  // `/thumb/manga_<id>_image.jpg`, others only `/thumb/<slug>.webp`), so a
-  // blanket rewrite turns working covers into 404s.
-  _preferWorkingCdnHost(url) {
+  // The single URL the app receives has to be the best one, not merely the
+  // first: normalise every mirror onto the host that actually serves the
+  // catalogue, and keep the few paths only another mirror holds on that mirror.
+  _coverUrl(url) {
     if (!url) return url;
-    return String(url).replace(
-      /^(https?:\/\/)([^/]+)([\s\S]*)$/i,
-      (match, scheme, host, rest) => {
-        const replacement = DEAD_COVER_HOSTS[host.toLowerCase()];
-        return replacement ? `${scheme}${replacement}${rest}` : match;
-      }
-    );
+    const match = /^(https?:\/\/)([^/]+)([\s\S]*)$/i.exec(String(url));
+    if (!match) return url;
+    const scheme = match[1];
+    const host = match[2].toLowerCase();
+    const rest = match[3];
+    const path = rest.split(/[?#]/)[0];
+    if (ZINMANGA_ONLY_COVERS[path]) return url;
+    if (host === COVER_HOST) return url;
+    return `${scheme}${COVER_HOST}${rest}`;
   }
 
   // The current site home uses `.manga-grid .manga-item` for its update rail,
@@ -355,7 +367,7 @@ class DefaultExtension extends MProvider {
     if (imgEl) {
       for (const c of [imgEl.attr("src") || "", imgEl.attr("data-src") || "", imgEl.attr("data-backup") || ""]) {
         if (c && !c.startsWith("data:")) {
-          imageUrl = this.resolveUrl(this._preferWorkingCdnHost(c));
+          imageUrl = this.resolveUrl(this._coverUrl(c));
           break;
         }
       }

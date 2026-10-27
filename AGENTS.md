@@ -44,18 +44,35 @@ NamiComi (FR/EN), HentaiHand (EN), HentaiEra, HentaiZap, Dragon Ball Multiverse.
 - NSFW : fichiers sous `src/nsfw/...`, `"isNsfw": true`, `itemType: 0` pour les
   galeries manga/image.
 
-## Covers : ne jamais réécrire tous les hôtes
+## Covers : mesurer sans se faire piéger par le rate-limit
 
 Plusieurs extensions (HariManga…) répartissent une même couverture sur
-plusieurs miroirs CDN. Réécrire *toutes* les URLs vers un seul hôte « sain »
-casse les covers déjà valides : les miroirs ne partagent pas le même catalogue
-(`/thumb/<slug>.webp` chez l'un, `/thumb/manga_<id>_image.jpg` chez l'autre), et
-une réécriture globale transforme un 200 en 404.
+plusieurs miroirs CDN et le site choisit lui-même lequel il émet.
 
-Règle : garder l'URL émise par le site, et ne réécrire **que** les hôtes qui
-échouent de façon fiable (503 permanent, DNS inexistant). Mesurer avant de
-réécrire : `img-r2.2xstorage.com` = 503 permanent, `img-r3.2xstorage.com` = DNS
-inexistant, `cdn4.zinmanga1.com` = 503 — le reste répond 200.
+Piège mesuré : en interrogeant les hôtes en rafale, `cdn.zinmanga1.com`
+ressortait à 9/58 covers (28× 404, 21× 429) face à 57/58 pour
+`img-r1.2xstorage.com` — de quoi conclure que le second est le seul sain. C'est
+faux : en répétant les mêmes requêtes espacées (1,5 s, 5 passes), les **deux**
+hôtes servent exactement les mêmes chemins, avec 5/5 sur les covers valides. Les
+404/429 venaient du rythme des requêtes, pas de l'hôte. Un hôte ne se juge
+qu'avec des requêtes espacées et répétées, et il faut comparer les hôtes sur les
+**mêmes chemins** plutôt que sur des totaux pris à des moments différents.
+
+Ce qui est réellement établi :
+
+| constat | statut |
+|---|---|
+| `img-r3.2xstorage.com` | DNS inexistant (définitif) |
+| `img-r2.2xstorage.com` | 503 « Server busy » fréquent |
+| `cdn4.zinmanga1.com` | 503 |
+| `img-r1` vs `cdn.zinmanga1` | même catalogue, mêmes 404 sur les mêmes 3 chemins |
+| `kimetsu-no-yaiba`, `tomo-chan-wa-onnanoko`, `a-peace-loving-vampire…` | absents sur **les deux** hôtes — 404 définitif, non réparable par le choix d'hôte |
+
+Corollaire : un harness qui ne télécharge pas les images ne prouve rien.
+`tools/dump_covers.mjs` (Node + cheerio) validait 20/20 covers alors que l'app
+affichait des placeholders, parce qu'il se contentait de vérifier que `imageUrl`
+n'était pas vide. Le seul verdict fiable est une requête HTTP réelle sur chaque
+URL émise, à cadence espacée.
 
 ## Libellés de qualité
 
