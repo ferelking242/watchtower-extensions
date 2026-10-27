@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://www.harimanga.co.uk/image/icon/hari-icon-192x192.webp",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.4.3",
+    "version": "0.4.4",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -116,7 +116,32 @@ class DefaultExtension extends MProvider {
       candidates.find((candidate) => /^(?:https?:)?\/\//i.test(candidate)) ||
       candidates[0] ||
       "";
-    return this.resolveUrl(imageUrl);
+    return this.resolveUrl(this._preferWorkingCdnHost(imageUrl));
+  }
+
+  // Harimanga spreads the same cover over several mirror hosts and marks the
+  // first one as the primary. One of them (`img-r2.2xstorage.com`) answers
+  // every request with a permanent 503 "Server busy, try again later", so a
+  // card pointing at it renders as a placeholder with no way to recover: the
+  // app only receives a single URL per item.
+  //
+  // Every mirror serves the same `/thumb/<slug>` paths, so rewrite a known-bad
+  // host to its healthy sibling before handing the URL to the app. Only the
+  // exact hostnames seen in the markup are rewritten, and only their host part
+  // is touched.
+  _preferWorkingCdnHost(url) {
+    if (!url) return url;
+    const DEAD_HOSTS = {
+      "img-r2.2xstorage.com": "img-r1.2xstorage.com",
+      "cdn4.zinmanga1.com": "cdn3.zinmanga1.com",
+    };
+    return String(url).replace(
+      /^(https?:\/\/)([^/]+)([\s\S]*)$/i,
+      (match, scheme, host, rest) => {
+        const replacement = DEAD_HOSTS[host.toLowerCase()];
+        return replacement ? `${scheme}${replacement}${rest}` : match;
+      }
+    );
   }
 
   // The current site home uses `.manga-grid .manga-item` for its update rail,
@@ -323,7 +348,10 @@ class DefaultExtension extends MProvider {
     let imageUrl = "";
     if (imgEl) {
       for (const c of [imgEl.attr("src") || "", imgEl.attr("data-src") || "", imgEl.attr("data-backup") || ""]) {
-        if (c && !c.startsWith("data:")) { imageUrl = this.resolveUrl(c); break; }
+        if (c && !c.startsWith("data:")) {
+          imageUrl = this.resolveUrl(this._preferWorkingCdnHost(c));
+          break;
+        }
       }
     }
 
