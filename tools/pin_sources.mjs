@@ -69,6 +69,23 @@ function changedSourceFiles() {
   }
 }
 
+// Versions déclarées par l'index au commit précédent, par type. Sert à
+// rattraper le cas où seule la version d'une entrée d'index est modifiée (sans
+// toucher `src/`) : sans ce garde-fou, l'index annoncerait une nouvelle version
+// en pointant encore sur l'ancien code — exactement le blocage constaté.
+function previousVersions(type) {
+  try {
+    const raw = git(["show", `HEAD~1:index/${type}.json`]);
+    const map = new Map();
+    for (const entry of JSON.parse(raw)) {
+      map.set(entry.id ?? entry.name, entry.version);
+    }
+    return map;
+  } catch {
+    return null;
+  }
+}
+
 const sha = resolveSha();
 if (!/^[0-9a-f]{7,40}$/i.test(sha)) {
   console.error(`pin_sources: commit invalide (« ${sha} »)`);
@@ -124,22 +141,37 @@ for (const type of INDEX_TYPES) {
   if (!Array.isArray(entries)) continue;
 
   const replacements = [];
+  const before = pinEverything ? null : previousVersions(type);
   for (const entry of entries) {
     const url = typeof entry.sourceCodeUrl === "string" ? entry.sourceCodeUrl : "";
     const match = url.match(entryUrl);
     if (!match) continue;
     const [, revision, relativeSource] = match;
 
+    // `--check` vérifie l'invariant qui compte : la révision doit être un
+    // commit figé. Un SHA plus ancien que HEAD est normal — seuls les fichiers
+    // modifiés sont refigés — donc ce n'est pas un problème.
+    if (CHECK_ONLY) {
+      if (!isPinned(revision)) {
+        console.error(
+          `✗ ${type}.json / ${entry.name || entry.id} : révision mutable « ${revision} »`,
+        );
+        problems++;
+      }
+      continue;
+    }
+
     if (isPinned(revision)) {
       // Déjà figé et le fichier n'a pas bougé : rien à faire.
       if (revision === sha) continue;
-      if (!pinEverything && !changed.has(relativeSource)) continue;
-    } else if (CHECK_ONLY) {
-      console.error(
-        `✗ ${type}.json / ${entry.name || entry.id} : révision mutable « ${revision} »`,
-      );
-      problems++;
-      continue;
+      if (!pinEverything && !changed.has(relativeSource)) {
+        // Sauf si la version annoncée par l'index a changé sans que `src/` ne
+        // soit touché : il faut alors refiger pour ne pas figer une nouvelle
+        // version sur l'ancien code.
+        const key = entry.id ?? entry.name;
+        const bumped = before?.get(key) !== undefined && before.get(key) !== entry.version;
+        if (!bumped) continue;
+      }
     }
 
     replacements.push({
@@ -149,7 +181,10 @@ for (const type of INDEX_TYPES) {
   }
 
   if (replacements.length === 0) {
-    console.log(`✓ ${type}.json : rien à figer`);
+    // En mode `--check`, l'absence de réécriture ne veut pas dire « tout va
+    // bien » (des révisions mutables ont pu être signalées plus haut) : on
+    // n'affiche donc pas de ✓ trompeur.
+    if (!CHECK_ONLY) console.log(`✓ ${type}.json : rien à figer`);
     continue;
   }
 
