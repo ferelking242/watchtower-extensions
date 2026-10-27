@@ -222,6 +222,13 @@ if (CHECK_ONLY) {
   process.exit(0);
 }
 
+// Un index illisible est signalé plus haut : sans ce garde-fou, le script
+// sortirait en 0 (« rien à figer ») et la CI laisserait passer un index cassé.
+if (problems > 0) {
+  console.error(`\n${problems} index illisible(s) — rien n'a pu être figé.`);
+  process.exit(1);
+}
+
 if (totalPinned === 0) {
   console.log("\nRien à figer.");
   process.exit(0);
