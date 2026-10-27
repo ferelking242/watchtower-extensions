@@ -69,11 +69,21 @@ jobs:
 
       - name: Figer les URL sur ${{ github.sha }}
         if: steps.guard.outputs.skip == 'false'
-        run: node tools/pin_sources.mjs --sha="${{ github.sha }}"
+        run: |
+          # pin_sources.mjs sort en 10 quand il a réécrit des URL : ce n'est pas
+          # une erreur, donc on le tolère explicitement. Toute autre valeur
+          # non nulle fait bien échouer le job.
+          set +e
+          node tools/pin_sources.mjs --sha="${{ github.sha }}"
+          code=$?
+          if [ "$code" -ne 0 ] && [ "$code" -ne 10 ]; then
+            echo "pin_sources a échoué (code $code)"
+            exit "$code"
+          fi
 
       - name: Vérifier que les URL sont bien figées
         if: steps.guard.outputs.skip == 'false'
-        run: node tools/pin_sources.mjs --check --sha="${{ github.sha }}"
+        run: node tools/pin_sources.mjs --check --all
 
       - name: Committer et pousser si nécessaire
         if: steps.guard.outputs.skip == 'false'
