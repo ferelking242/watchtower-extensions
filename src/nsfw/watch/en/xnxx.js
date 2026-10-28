@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.5.1",
+  "version": "1.5.2",
   "login": true,
   "loginUrl": "https://www.xnxx.com/mobile/login",
   "forYou": false,
@@ -370,7 +370,11 @@ class DefaultExtension extends MProvider {
     // grouped by link before anything is committed.
     const items = [];
     if (!html) return items;
-    const anchorRe = /<a\b[^>]*\bhref=["']([^"']*\/video-\d+[^"']*)["'][^>]*>([\s\S]{0,600}?)<\/a>/gi;
+    // Video ids are ALPHANUMERIC (`/video-17pt1bb8/...`), never bare digits:
+    // a `\d+` here matched nothing on the live site, so the fallback that was
+    // supposed to rescue a failed DOM parse returned zero items and the user
+    // saw "Aucun résultat" on a page full of videos.
+    const anchorRe = /<a\b[^>]*\bhref=["']([^"']*\/video-[A-Za-z0-9]+[^"']*)["'][^>]*>([\s\S]{0,600}?)<\/a>/gi;
     const groups = new Map();
     const blockBounds = [];
     let match;
@@ -438,6 +442,36 @@ class DefaultExtension extends MProvider {
     return items;
   }
 
+  // XNXX ships some thumbs as markup inside a script, not as live DOM:
+  //   <script>document.write(xv.thumbs.replaceThumbUrl('<img src="...">'))</script>
+  // A spec-compliant HTML5 parser (the app's Dart `package:html`) treats the
+  // whole script body as raw TEXT, so `getElementsByTagName("img")` returns
+  // nothing and every /pornstars card rendered without a cover. The markup
+  // inside the script still carries the real URL, so read it as a string.
+  _scriptBlocks(html) {
+    const blocks = [];
+    const scriptRe = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
+    let match;
+    while ((match = scriptRe.exec(html || ""))) {
+      const body = match[1];
+      if (body.includes("<img") || body.includes("<a ")) blocks.push(body);
+    }
+    return blocks;
+  }
+
+  // Profile art is keyed by slug (`id="pic_alex_adams69"`), so a script block
+  // can be matched back to the card whose `/pornstar/<slug>` link it belongs
+  // to even though it is not a DOM child of that card.
+  _scriptThumbForSlug(blocks, slug) {
+    if (!slug) return "";
+    for (const block of blocks) {
+      if (!block.includes(slug)) continue;
+      const img = /<img\b[^>]*\b(?:src|data-src)=["']([^"']+)["']/i.exec(block);
+      if (img && img[1] && !/blank\.gif/i.test(img[1])) return img[1];
+    }
+    return "";
+  }
+
   _parseVideoList(html, page, mode) {
     const doc = new Document(html);
     const items = [];
@@ -493,7 +527,12 @@ class DefaultExtension extends MProvider {
         description: duration ? `Duration: ${duration[1]}` : ""
       });
     }
-    if (!items.length) {
+    // Recover whenever the DOM path yielded nothing usable — not only when it
+    // found no cards at all. On the live site the app's parser resolved 33
+    // `.thumb-block` shells but zero `/video-` anchors inside them, so the old
+    // `!items.length` guard never fired and the page rendered as "Aucun
+    // résultat" while `_parseVideoCardsRegex` could see every link.
+    if (!items.length || videoLinksFound === 0) {
       // HTML fallback so a failing embedded DOM engine can never turn a
       // working page into an empty result set.
       const recovered = this._parseVideoCardsRegex(html);
@@ -630,6 +669,9 @@ class DefaultExtension extends MProvider {
     const doc = new Document(html);
     const items = [];
     const seen = {};
+    // Every cover on this page is emitted through `document.write`, so it is
+    // raw text rather than a DOM node; read the script bodies once up front.
+    const scriptBlocks = this._scriptBlocks(html);
     for (const card of this._elementsByClass(doc, "thumb-block")) {
       const anchors = this._elementsByTag(card, "a");
       const anchor = anchors.find(item =>
@@ -645,9 +687,18 @@ class DefaultExtension extends MProvider {
         anchors.find(item => (item.attr("title") || "").trim()) ||
         anchor;
       const count = this._text(this._elementsByClass(card, "uploader")[0]);
+      // The card itself exposes no <img> to a spec-compliant parser, so fall
+      // back to the script block whose `pic_<slug>` id matches this profile.
+      const slug = (link.split("/pornstar/")[1] || "").split(/[/?#]/)[0];
+      const domCover = this._coverImage(
+        this._image(this._elementsByTag(card, "img")[0])
+      );
+      const scriptCover = this._coverImage(
+        this._scriptThumbForSlug(scriptBlocks, slug)
+      );
       items.push({
         name: this._text(title) || "Pornstar",
-        imageUrl: this._coverImage(this._image(this._elementsByTag(card, "img")[0])),
+        imageUrl: domCover || scriptCover,
         link,
         description: count ? `${count} free videos` : "Free videos"
       });

@@ -532,4 +532,66 @@ assert.equal(provider._parseVideoListJson(sparseListing, 1).list.length, 1);
 // Non-JSON bodies (an HTML error page) must not be mistaken for a listing.
 assert.equal(provider._parseVideoListJson("<html></html>", 1), null);
 
+// ── Regression: alphanumeric video ids in the regex fallback ────────────────
+// Live ids are `/video-17pt1bb8/...`; a `\d+` matcher found none, so the
+// safety net that rescues a failed DOM parse returned zero items and the app
+// showed "Aucun résultat" on a page full of videos.
+const alnumFixture = `
+  <div class="thumb-block">
+    <a href="/video-17pt1bb8/at_the_club"><img data-mzl="https://img.example/a.jpg" /></a>
+    <div class="thumb-under"><a title="At the Club" href="/video-17pt1bb8/at_the_club">At the Club</a></div>
+  </div>
+  <div class="thumb-block">
+    <a href="/video-hbwy3c6/hot_step_mom"><img data-mzl="https://img.example/b.jpg" /></a>
+    <div class="thumb-under"><a title="Hot Step Mom" href="/video-hbwy3c6/hot_step_mom">Hot Step Mom</a></div>
+  </div>`;
+const recoveredAlnum = provider._parseVideoCardsRegex(alnumFixture);
+assert.equal(recoveredAlnum.length, 2, "regex fallback must accept alphanumeric ids");
+assert.equal(recoveredAlnum[0].link, "https://www.xnxx.com/video-17pt1bb8/at_the_club");
+assert.equal(recoveredAlnum[1].name, "Hot Step Mom");
+
+// A page whose cards resolve but expose no `/video-` anchor (the app logged
+// `thumbBlocks=33 videoLinks=0`) must still recover through the fallback.
+const shellsFixture = `
+  <div class="thumb-block"><div class="thumb-inside"></div></div>
+  <div class="thumb-block"><div class="thumb-inside"></div></div>
+  <a href="/video-1ckwbrf4/me_and_bro"><img data-mzl="https://img.example/c.jpg" /></a>
+  <a title="Me and Bro" href="/video-1ckwbrf4/me_and_bro">Me and Bro</a>`;
+const shellParsed = provider._parseVideoList(shellsFixture, 1, "search");
+assert.equal(shellParsed.list.length, 1, "cards without anchors must fall back to raw HTML");
+assert.equal(shellParsed.list[0].link, "https://www.xnxx.com/video-1ckwbrf4/me_and_bro");
+
+// ── Regression: profile covers live inside `document.write` scripts ─────────
+// A spec-compliant HTML parser (the app's) sees script bodies as raw text, so
+// every /pornstars card rendered with an empty cover.
+const scriptCoverFixture = `
+  <div class="thumb-block thumb-cat thumb-channel-premium" id="profile_alex_adams69">
+    <div class="thumb-inside">
+      <div class="thumb"><a href="/pornstar/alex_adams69"></a></div>
+      <p class="title"><a href="/pornstar/alex_adams69">Alex Adams</a></p>
+    </div>
+    <div class="uploader"><a href="/pornstar/alex_adams69"><span>1,958</span></a></div>
+    <script>document.write(xv.thumbs.replaceThumbUrl('<picture><img src="https://thumb.example/alex.jpg" id="pic_alex_adams69" /></picture>'));</script>
+  </div>`;
+const scriptPornstars = provider._parsePornstars(scriptCoverFixture, 1);
+assert.equal(scriptPornstars.list.length, 1);
+assert.equal(scriptPornstars.list[0].name, "Alex Adams");
+assert.equal(
+  scriptPornstars.list[0].imageUrl,
+  "https://thumb.example/alex.jpg",
+  "the cover must be recovered from the document.write payload",
+);
+assert.equal(scriptPornstars.list[0].description, "1,958 free videos");
+
+// The harness must model the raw-text rule, otherwise this class of bug is
+// invisible: markup inside <script> is text, never a node.
+const rawTextDoc = new Document(
+  `<div class="card"><script>document.write('<img src="https://x/y.jpg" />')</script></div>`,
+);
+assert.equal(
+  rawTextDoc.getElementsByTagName("img").length,
+  0,
+  "harness must treat <script> bodies as raw text like a real parser",
+);
+
 console.log("XNXX regression checks passed (listing parsing, Cloudflare, HTTP, network, recommendations, comments, getVideoList, profile listing).");

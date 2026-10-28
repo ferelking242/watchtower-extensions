@@ -279,6 +279,13 @@ function parseHtml(html) {
     if (value) stack[stack.length - 1].children.push(new HtmlNode("text", stack[stack.length - 1], value));
   };
 
+  // A real HTML parser treats <script>/<style> bodies as RAW TEXT: markup
+  // inside them is never turned into elements. XNXX relies on this — profile
+  // thumbs are emitted with `document.write('<img ...>')`, so the app's
+  // spec-compliant parser sees no <img> at all. Modelling that here keeps the
+  // harness honest; without it, this test passes while the app shows blanks.
+  const RAW_TEXT_TAGS = new Set(["script", "style"]);
+
   while ((match = tokenExpression.exec(source))) {
     appendText(source.slice(cursor, match.index));
     cursor = tokenExpression.lastIndex;
@@ -295,7 +302,24 @@ function parseHtml(html) {
     node.tagName = tagName;
     node.attrs = parseAttributes(match[2] || "");
     parent.children.push(node);
-    if (!VOID_TAGS.has(tagName) && !/\/\s*>$/.test(token)) stack.push(node);
+    if (!VOID_TAGS.has(tagName) && !/\/\s*>$/.test(token)) {
+      stack.push(node);
+      if (RAW_TEXT_TAGS.has(tagName)) {
+        // Consume everything up to the matching close tag as one text node.
+        const closeExpression = new RegExp(`</${tagName}\\s*>`, "i");
+        const rest = source.slice(cursor);
+        const closeMatch = closeExpression.exec(rest);
+        const raw = closeMatch ? rest.slice(0, closeMatch.index) : rest;
+        appendText(raw);
+        if (closeMatch) {
+          cursor += closeMatch.index + closeMatch[0].length;
+          tokenExpression.lastIndex = cursor;
+          stack.pop();
+        } else {
+          cursor = source.length;
+        }
+      }
+    }
   }
   appendText(source.slice(cursor));
   return root;
