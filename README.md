@@ -264,12 +264,47 @@
   | `sizeBytes` | number | Poids du fichier JavaScript téléchargé |
   | `rating` | number | Note entre `0` et `5` |
   | `reviewCount` | number | Nombre d'avis associés à la note |
+  | `tags` | string[] | Classement dans les rayons du Marketplace (voir ci-dessous) |
+  | `addedAt` | string | Date `YYYY-MM-DD` d'ajout au catalogue, dérivée de l'historique git |
 
   Ces champs sont optionnels pour rester compatibles avec les dépôts existants.
   Watchtower conserve une description et une taille lisibles lorsqu'un index
   ancien ne les renseigne pas. Les notes doivent rester basées sur la qualité
   réelle de la source : disponibilité, stabilité, couverture et qualité des
   résultats, pas sur le nombre de téléchargements.
+
+  ### Tags du Marketplace
+
+  Les rayons du Marketplace (« Populaire à lire », « Manhwa », « Sources
+  françaises »…) sont construits à partir du champ `tags`. Ce champ est
+  **généré**, jamais écrit à la main :
+
+  ```bash
+  node tools/generate_tags.mjs          # régénère les tags
+  node tools/generate_tags.mjs --check  # vérifie sans écrire (utilisé en CI)
+  ```
+
+  Les tags proviennent de faits déjà présents dans le dépôt :
+
+  | Axe | Source |
+  |-----|--------|
+  | Contenu (`watch`, `read`, `manga`, `manhwa`, `webtoon`, `novel`, `anime`, `movies`…) | catalogue d'appartenance (`itemType`) + options réellement déclarées dans `getFilterList()` |
+  | Genre (`action`, `fantasy`, `science-fiction`, `romance`…) | options de genre réellement déclarées dans `getFilterList()` |
+  | Langue (`french`, `english`, `multilingual`…) | champs `lang` et `langs` |
+  | Mise en avant (`featured`) | champ `forYou` uniquement |
+
+  Deux règles volontaires :
+
+  - Le nom de domaine, le titre de la source ou une marque ne suffisent **jamais**
+    à classer une extension. Un nom français n'implique pas le français, et un
+    site nommé « ManhwaDex » n'est pas classé manhwa pour autant.
+  - `popular` et `trending` ne sont **jamais** écrits : le catalogue ne contient
+    aucune statistique d'usage réelle. Les rayons « Populaire » de l'application
+    utilisent un classement déterministe documenté côté Watchtower.
+
+  Le vocabulaire autorisé est défini dans `tools/catalog_taxonomy.mjs`, miroir de
+  `lib/models/catalog_taxonomy.dart` dans Watchtower. Un tag inconnu, dupliqué
+  ou incohérent avec le type de contenu fait échouer `npm run validate`.
 
   ### Types de contenu (`itemType`)
 

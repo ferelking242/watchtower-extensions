@@ -18,7 +18,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-07-16"
   },
   {
     "name": "Watch Mock",
@@ -39,7 +44,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-07-16"
   },
   {
     "name": "NetflixMirror",
@@ -64,7 +74,12 @@
     "apiUrl": "https://www.netflixmirror.com",
     "langs": [
       "all"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Torrentio",
@@ -89,7 +104,12 @@
     "apiUrl": "https://torrentio.strem.fun",
     "langs": [
       "all"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AniWorld",
@@ -110,7 +130,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "german"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "SerienStream",
@@ -131,7 +156,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "german"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AllAnime",
@@ -153,7 +183,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.allanime.day/api"
+    "apiUrl": "https://api.allanime.day/api",
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AniChan",
@@ -174,7 +209,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Anikoto",
@@ -195,7 +235,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimeFlix",
@@ -216,7 +261,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimeGG",
@@ -237,7 +287,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimeHeaven",
@@ -258,7 +313,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimeKai",
@@ -279,7 +339,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimePahe",
@@ -304,7 +369,12 @@
     "apiUrl": "https://animepahe.ru/api",
     "langs": [
       "en"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimeParadise",
@@ -326,7 +396,25 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.animeparadise.moe"
+    "apiUrl": "https://api.animeparadise.moe",
+    "tags": [
+      "watch",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "thriller",
+      "slice-of-life",
+      "mecha",
+      "sports",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimeSuge",
@@ -347,7 +435,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimeZZ",
@@ -368,7 +461,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AsiansGoneWild",
@@ -389,7 +487,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "CrunchyList (CR Mirror)",
@@ -414,7 +517,12 @@
     "apiUrl": "https://crunchy.metaoe.live",
     "langs": [
       "en"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "FlixGaze",
@@ -435,7 +543,14 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "movies",
+      "series",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Gogoanime",
@@ -456,7 +571,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "GoGoAnime",
@@ -477,7 +597,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "GoTVSeries",
@@ -502,7 +627,13 @@
     "apiUrl": "https://gotvseries.top",
     "langs": [
       "en"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "english",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HiAnime",
@@ -523,7 +654,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JuicyAsians",
@@ -544,7 +680,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Kaido",
@@ -565,7 +706,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "KickAssAnime",
@@ -586,7 +732,27 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "movies",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "thriller",
+      "historical",
+      "slice-of-life",
+      "mecha",
+      "sports",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LokLok / MovieBox",
@@ -608,7 +774,14 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://h5-api.aoneroom.com"
+    "apiUrl": "https://h5-api.aoneroom.com",
+    "tags": [
+      "watch",
+      "movies",
+      "series",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "9anime",
@@ -633,7 +806,12 @@
     "apiUrl": "https://9animetv.to/ajax",
     "langs": [
       "en"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "9AnimeTv",
@@ -654,7 +832,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "SubsPlease",
@@ -676,7 +859,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://subsplease.org/api"
+    "apiUrl": "https://subsplease.org/api",
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Sudatchi",
@@ -697,7 +885,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Zoro / Aniwatch",
@@ -722,7 +915,12 @@
     "apiUrl": "https://aniwatch.or.at",
     "langs": [
       "en"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimeFénix",
@@ -743,7 +941,20 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "movies",
+      "science-fiction",
+      "romance",
+      "drama",
+      "horror",
+      "thriller",
+      "slice-of-life",
+      "mecha",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimeFLV",
@@ -764,7 +975,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JKAnime",
@@ -785,7 +1001,17 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "science-fiction",
+      "romance",
+      "drama",
+      "thriller",
+      "mecha",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "TioAnime",
@@ -806,7 +1032,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Adkami",
@@ -831,7 +1062,13 @@
     "apiUrl": "https://www.adkami.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ADN",
@@ -856,7 +1093,13 @@
     "apiUrl": "https://animationdigitalnetwork.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Allostreaming",
@@ -881,7 +1124,13 @@
     "apiUrl": "https://allostreaming.one",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Anime-Kami",
@@ -906,7 +1155,13 @@
     "apiUrl": "https://anime-kami.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimeKo",
@@ -931,7 +1186,13 @@
     "apiUrl": "https://animeko.co",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Anime-Sama",
@@ -956,7 +1217,12 @@
     "apiUrl": "https://anime-sama.to",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Anime-Sama (FR)",
@@ -985,7 +1251,13 @@
     "uiLayout": "ui-layouts/animesama2.json",
     "uiLayoutVersion": "1.0.0",
     "account": true,
-    "loginUrl": "https://animes-sama.fr/login"
+    "loginUrl": "https://animes-sama.fr/login",
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimeSite",
@@ -1010,7 +1282,13 @@
     "apiUrl": "https://animesite.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimesUltra",
@@ -1035,7 +1313,13 @@
     "apiUrl": "https://animesultra.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Anime-Ultime",
@@ -1060,7 +1344,13 @@
     "apiUrl": "https://www.anime-ultime.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimeVostFR",
@@ -1085,7 +1375,13 @@
     "apiUrl": "https://animevostfr.tv",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimeZone",
@@ -1110,7 +1406,12 @@
     "apiUrl": "https://www.animezone.ch",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AniStream",
@@ -1135,7 +1436,13 @@
     "apiUrl": "https://anistream.xyz",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Cinefuse",
@@ -1160,7 +1467,13 @@
     "apiUrl": "https://cinefuse.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Cinego",
@@ -1185,7 +1498,13 @@
     "apiUrl": "https://cinego.xyz",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "CinePulse",
@@ -1210,7 +1529,13 @@
     "apiUrl": "https://cinepulse.top",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Cinestream",
@@ -1235,7 +1560,13 @@
     "apiUrl": "https://cinestream.io",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Coflix",
@@ -1260,7 +1591,13 @@
     "apiUrl": "https://coflix.re",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Cpasbien",
@@ -1285,7 +1622,13 @@
     "apiUrl": "https://cpasbien.gl",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "CpasMal",
@@ -1310,7 +1653,13 @@
     "apiUrl": "https://cpasmal.ac",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Darkino",
@@ -1335,7 +1684,13 @@
     "apiUrl": "https://darkino.one",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Vobma",
@@ -1360,7 +1715,12 @@
     "apiUrl": "https://vobma.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Echo du Marteau",
@@ -1385,7 +1745,12 @@
     "apiUrl": "https://echodumarteau.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Empire-Streaming",
@@ -1410,7 +1775,13 @@
     "apiUrl": "https://empire-streaming.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Enma",
@@ -1435,7 +1806,13 @@
     "apiUrl": "https://enma.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Filmoflix",
@@ -1460,7 +1837,13 @@
     "apiUrl": "https://filmoflix.co",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Franime",
@@ -1485,7 +1868,13 @@
     "apiUrl": "https://franime.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "French-Anime",
@@ -1510,7 +1899,13 @@
     "apiUrl": "https://french-anime.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "French-Manga",
@@ -1535,7 +1930,13 @@
     "apiUrl": "https://w16.french-manga.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "French-Stream",
@@ -1545,9 +1946,9 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000067.png",
     "typeSource": "single",
     "itemType": 1,
- "version": "1.0.3",
- "uiLayout": "ui-layouts/frenchstream.json",
- "uiLayoutVersion": "1.0.1",
+    "version": "1.0.3",
+    "uiLayout": "ui-layouts/frenchstream.json",
+    "uiLayoutVersion": "1.0.1",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@55fb89c855fa51900d9ecc49199ab62a7c529db4/src/watch/fr/frenchstream.js",
     "isManga": false,
     "isNsfw": false,
@@ -1562,7 +1963,13 @@
     "apiUrl": "https://french-stream.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "FrFlix",
@@ -1587,7 +1994,13 @@
     "apiUrl": "https://frflix.mov",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "FStream TV",
@@ -1612,7 +2025,13 @@
     "apiUrl": "https://fstv.rest",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Fynd Films",
@@ -1637,7 +2056,13 @@
     "apiUrl": "https://www.fyndfilms.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HDSS",
@@ -1662,7 +2087,25 @@
     "apiUrl": "https://www.hdss.to",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "animation",
+      "documentary",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "thriller",
+      "historical",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JetAnimes",
@@ -1687,7 +2130,13 @@
     "apiUrl": "https://jetanimes.co",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Leizy",
@@ -1712,7 +2161,13 @@
     "apiUrl": "https://leizy.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LibertyLand",
@@ -1737,7 +2192,13 @@
     "apiUrl": "https://libertyland.tv",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LyokoPlay",
@@ -1762,7 +2223,13 @@
     "apiUrl": "https://www.lyokoplay.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Mangas.io",
@@ -1787,7 +2254,13 @@
     "apiUrl": "https://www.mangas.io",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Mavanimes",
@@ -1812,7 +2285,13 @@
     "apiUrl": "https://mavanimes.co",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MavAnimes (Alt)",
@@ -1837,7 +2316,13 @@
     "apiUrl": "https://mavanimes.cc",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MonStream",
@@ -1862,7 +2347,13 @@
     "apiUrl": "https://monstream.org",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Movix",
@@ -1884,7 +2375,27 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.themoviedb.org/3"
+    "apiUrl": "https://api.themoviedb.org/3",
+    "tags": [
+      "watch",
+      "animation",
+      "movies",
+      "series",
+      "documentary",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "thriller",
+      "historical",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Neko-Sama",
@@ -1909,7 +2420,13 @@
     "apiUrl": "https://www.neko-sama.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Neko-san",
@@ -1934,7 +2451,13 @@
     "apiUrl": "https://neko-san.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Noctaflix",
@@ -1959,7 +2482,13 @@
     "apiUrl": "https://noctaflix.lol",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Nova-Stream",
@@ -1984,7 +2513,13 @@
     "apiUrl": "https://novastream.top",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Nunflix",
@@ -2009,7 +2544,13 @@
     "apiUrl": "https://nunflix.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "VF24",
@@ -2034,7 +2575,12 @@
     "apiUrl": "https://vf24.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "PapaduStream",
@@ -2059,7 +2605,13 @@
     "apiUrl": "https://papadustream.college",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Papystreaming",
@@ -2084,7 +2636,13 @@
     "apiUrl": "https://papystreaming.sh",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Plutonflix",
@@ -2109,7 +2667,13 @@
     "apiUrl": "https://plutonflix.org",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Pstream",
@@ -2134,7 +2698,13 @@
     "apiUrl": "https://pstream.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "SadisFlixs",
@@ -2159,7 +2729,13 @@
     "apiUrl": "https://sadisflixs.pro",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Seko-Stream",
@@ -2184,7 +2760,13 @@
     "apiUrl": "https://seko-stream.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Streamay",
@@ -2209,7 +2791,13 @@
     "apiUrl": "https://streamay.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "StreamComplet",
@@ -2234,7 +2822,13 @@
     "apiUrl": "https://www.streamcomplet.blue",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "StreamFlix",
@@ -2259,7 +2853,13 @@
     "apiUrl": "https://streamflix.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "StreamingDivX",
@@ -2284,7 +2884,13 @@
     "apiUrl": "https://www.streamingdivx.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Streamvf",
@@ -2309,7 +2915,13 @@
     "apiUrl": "https://streamvf.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "SushiAnime",
@@ -2334,7 +2946,13 @@
     "apiUrl": "https://sushianime.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "TAnime",
@@ -2359,7 +2977,13 @@
     "apiUrl": "https://tanime.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "TenshiTV",
@@ -2384,7 +3008,13 @@
     "apiUrl": "https://tenshi.tv",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ToonAnime",
@@ -2409,7 +3039,13 @@
     "apiUrl": "https://v8.toonanime.co",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Toonix",
@@ -2434,7 +3070,13 @@
     "apiUrl": "https://toonix.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "VFStream",
@@ -2459,7 +3101,13 @@
     "apiUrl": "https://films.vfstream.eu",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "VoirAnime",
@@ -2484,7 +3132,13 @@
     "apiUrl": "https://www.voiranime.io",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "VoirAnime.sh",
@@ -2509,7 +3163,13 @@
     "apiUrl": "https://voiranime.sh",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "VoirAnime HD",
@@ -2534,7 +3194,13 @@
     "apiUrl": "https://v6.voiranime.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "VoirDrama.cc",
@@ -2559,7 +3225,12 @@
     "apiUrl": "https://voirdrama.site",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "VoirDrama",
@@ -2584,7 +3255,12 @@
     "apiUrl": "https://voirdrama.to",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "VoirFilm",
@@ -2609,7 +3285,13 @@
     "apiUrl": "https://voirfilm.pe",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "VoirFilm HD",
@@ -2634,7 +3316,13 @@
     "apiUrl": "https://voirfilm.cz",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "VoirSeries",
@@ -2659,7 +3347,13 @@
     "apiUrl": "https://voirseries.io",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "VOSTAnimey",
@@ -2684,7 +3378,13 @@
     "apiUrl": "https://vostanimey.su",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Vostfree",
@@ -2709,7 +3409,19 @@
     "apiUrl": "https://ipv4.vostfree.ws",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "drama",
+      "horror",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Wiflix",
@@ -2734,7 +3446,13 @@
     "apiUrl": "https://www.wiflix.bond",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Wooflix",
@@ -2759,7 +3477,13 @@
     "apiUrl": "https://wooflix.io",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "YassFlix",
@@ -2784,7 +3508,13 @@
     "apiUrl": "https://yassflix.cc",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Zone-Telechargement",
@@ -2809,7 +3539,13 @@
     "apiUrl": "https://www.zone-telechargement.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimeWorld",
@@ -2830,7 +3566,20 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "anime",
+      "movies",
+      "fantasy",
+      "science-fiction",
+      "horror",
+      "thriller",
+      "slice-of-life",
+      "mecha",
+      "italian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "SexKBJ",
@@ -2851,7 +3600,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "korean"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "SexTB",
@@ -2872,7 +3626,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "korean"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "XKorean",
@@ -2893,7 +3652,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "korean"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimeKhor",
@@ -2918,7 +3682,14 @@
     "langs": [
       "en",
       "id"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "multilingual",
+      "english",
+      "indonesian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Autoembed",
@@ -2940,7 +3711,14 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://tom.autoembed.cc"
+    "apiUrl": "https://tom.autoembed.cc",
+    "tags": [
+      "watch",
+      "movies",
+      "series",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "DonghuaStream",
@@ -2966,7 +3744,15 @@
       "en",
       "zh",
       "ar"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "multilingual",
+      "english",
+      "chinese",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "DonghuaWorld",
@@ -2994,7 +3780,17 @@
       "ar",
       "fr",
       "de"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "multilingual",
+      "french",
+      "english",
+      "german",
+      "arabic",
+      "indonesian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Free IPTV",
@@ -3016,7 +3812,15 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://iptv-org.github.io/api"
+    "apiUrl": "https://iptv-org.github.io/api",
+    "tags": [
+      "watch",
+      "movies",
+      "documentary",
+      "sports",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Internet Archive Films",
@@ -3038,7 +3842,19 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://archive.org/advancedsearch.php"
+    "apiUrl": "https://archive.org/advancedsearch.php",
+    "tags": [
+      "watch",
+      "animation",
+      "documentary",
+      "action",
+      "science-fiction",
+      "drama",
+      "comedy",
+      "horror",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "KissKH",
@@ -3059,7 +3875,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "KissKH Drama",
@@ -3086,7 +3907,16 @@
       "id",
       "th",
       "vi"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "multilingual",
+      "english",
+      "thai",
+      "indonesian",
+      "vietnamese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Miraculum",
@@ -3108,7 +3938,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://internal.miraculum.ml"
+    "apiUrl": "https://internal.miraculum.ml",
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MovieBox",
@@ -3130,7 +3965,27 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://h5-api.aoneroom.com"
+    "apiUrl": "https://h5-api.aoneroom.com",
+    "tags": [
+      "watch",
+      "anime",
+      "animation",
+      "movies",
+      "documentary",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "thriller",
+      "historical",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MovieBox App",
@@ -3152,7 +4007,27 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api3.aoneroom.com"
+    "apiUrl": "https://api3.aoneroom.com",
+    "tags": [
+      "watch",
+      "anime",
+      "animation",
+      "movies",
+      "documentary",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "thriller",
+      "historical",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MovieFR",
@@ -3174,7 +4049,15 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://jgzm.iuk9.com"
+    "apiUrl": "https://jgzm.iuk9.com",
+    "tags": [
+      "watch",
+      "anime",
+      "movies",
+      "series",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Short of the Week",
@@ -3195,7 +4078,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Torrentio Anime (Torrent)",
@@ -3216,7 +4104,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "TV5Monde+",
@@ -3238,7 +4131,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://www.tv5mondeplus.com"
+    "apiUrl": "https://www.tv5mondeplus.com",
+    "tags": [
+      "watch",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Rakuten Viki",
@@ -3271,7 +4169,21 @@
       "ko",
       "zh",
       "ja"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "multilingual",
+      "french",
+      "english",
+      "spanish",
+      "german",
+      "italian",
+      "portuguese",
+      "japanese",
+      "korean",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "1PornTV",
@@ -3292,7 +4204,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Aki-H",
@@ -3313,7 +4230,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Beeg",
@@ -3334,7 +4256,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Eporner",
@@ -3355,7 +4282,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ESHentai",
@@ -3376,7 +4308,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "FreePornVideos",
@@ -3397,7 +4334,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "haho.moe",
@@ -3418,7 +4360,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hanime1.me",
@@ -3439,7 +4386,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hanime.tv",
@@ -3461,7 +4413,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.hanime.tv"
+    "apiUrl": "https://api.hanime.tv",
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hentai0",
@@ -3482,7 +4439,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hentai2W",
@@ -3503,7 +4465,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hentaibros",
@@ -3524,7 +4491,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HentaiCity",
@@ -3545,7 +4517,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HentaiCloud",
@@ -3566,7 +4543,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HentaiFox.tv",
@@ -3587,7 +4569,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HentaiFreak",
@@ -3608,7 +4595,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hentaigasm",
@@ -3629,7 +4621,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HentaiMama",
@@ -3650,7 +4647,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HentaiMoon",
@@ -3671,7 +4673,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hentaini",
@@ -3692,7 +4699,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hentai Ocean",
@@ -3713,7 +4725,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HentaiPlay",
@@ -3734,7 +4751,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hentaisea",
@@ -3755,7 +4777,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hentaiser",
@@ -3776,7 +4803,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hentai.SH",
@@ -3797,7 +4829,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HentaiStream",
@@ -3818,7 +4855,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "hentai.tv",
@@ -3840,7 +4882,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://hentai.tv"
+    "apiUrl": "https://hentai.tv",
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HentaiVideoWorld",
@@ -3861,7 +4908,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HentaiWorld",
@@ -3882,7 +4934,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hentaverse",
@@ -3903,7 +4960,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HMV Mania",
@@ -3924,7 +4986,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HStream.moe",
@@ -3946,7 +5013,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://hstream.moe"
+    "apiUrl": "https://hstream.moe",
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Iwara",
@@ -3968,7 +5040,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.iwara.tv"
+    "apiUrl": "https://api.iwara.tv",
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "KissHentaiz",
@@ -3989,7 +5066,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MuchoHentai",
@@ -4010,7 +5092,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MyHentaiMovie",
@@ -4031,7 +5118,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "OceanVeil",
@@ -4052,7 +5144,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "OnlyHentaiStuff",
@@ -4073,7 +5170,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "oppai.stream",
@@ -4094,7 +5196,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "PornDos",
@@ -4115,7 +5222,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "PornHub",
@@ -4138,7 +5250,12 @@
     "requiresAccount": false,
     "hasDRM": false,
     "uiLayout": "ui-layouts/pornhub.json",
-    "uiLayoutVersion": "1.3.1"
+    "uiLayoutVersion": "1.3.1",
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "RedTube",
@@ -4159,7 +5276,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "RexPorn",
@@ -4194,7 +5316,12 @@
       "tags"
     ],
     "uiLayout": "ui-layouts/rexporn.json",
-    "uiLayoutVersion": "1.2.1"
+    "uiLayoutVersion": "1.2.1",
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "SpankBang",
@@ -4215,7 +5342,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "TNAFlix",
@@ -4236,7 +5368,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Tube8",
@@ -4257,7 +5394,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "TXXX",
@@ -4278,7 +5420,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "UnderHentai",
@@ -4299,7 +5446,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "VidHentai",
@@ -4320,7 +5472,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "WatchHentai",
@@ -4341,7 +5498,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "WowXXX",
@@ -4362,7 +5524,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Xanimeporn",
@@ -4383,7 +5550,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "xHamster",
@@ -4406,7 +5578,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "XNXX",
@@ -4443,7 +5620,12 @@
     "loginUrl": "https://www.xnxx.com/mobile/login",
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "XVideos",
@@ -4464,7 +5646,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "YouPerv",
@@ -4485,7 +5672,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "YouPorn",
@@ -4506,7 +5698,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Zhentube",
@@ -4527,7 +5724,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "7MMTV",
@@ -4548,7 +5750,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ABJav",
@@ -4569,7 +5776,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AVPorner",
@@ -4590,7 +5802,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "BestJapanesePornTV",
@@ -4611,7 +5828,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "BestJavPorn",
@@ -4632,7 +5854,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JapanWhores",
@@ -4653,7 +5880,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JAVBestTV",
@@ -4674,7 +5906,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JAVBraze",
@@ -4695,7 +5932,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JAVComCo",
@@ -4716,7 +5958,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JAVDoe",
@@ -4737,7 +5984,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JAVFun",
@@ -4758,7 +6010,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JAVGiga",
@@ -4779,7 +6036,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JAV.guru",
@@ -4800,7 +6062,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JAVHDToday",
@@ -4821,7 +6088,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JAVKing",
@@ -4842,7 +6114,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JAVLeak",
@@ -4863,7 +6140,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JAVMost",
@@ -4884,7 +6166,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JAVsb",
@@ -4905,7 +6192,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JAVTasty",
@@ -4926,7 +6218,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "JAVWine",
@@ -4947,7 +6244,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "KissJAV",
@@ -4968,7 +6270,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MaxJav",
@@ -4989,7 +6296,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MissAV",
@@ -5013,7 +6325,12 @@
     "loginUrl": "https://missav.ws/en/login",
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MyThav",
@@ -5034,7 +6351,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NJAV",
@@ -5055,7 +6377,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "RJAV",
@@ -5076,7 +6403,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "SupJav",
@@ -5097,7 +6429,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "TokyoMotion",
@@ -5118,7 +6455,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "VJav",
@@ -5139,7 +6481,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ZeroJav",
@@ -5160,7 +6507,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "123AV",
@@ -5181,7 +6533,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "RedGIFs",
@@ -5203,7 +6560,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.redgifs.com"
+    "apiUrl": "https://api.redgifs.com",
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "VIVAMAXph",
@@ -5224,7 +6586,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Moviesda",
@@ -5245,7 +6612,11 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "360资源",
@@ -5266,7 +6637,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "91Porn",
@@ -5287,7 +6663,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "蜜柑计划 (Mikan Project)",
@@ -5312,7 +6693,12 @@
     "apiUrl": "https://mikanani.me",
     "langs": [
       "zh"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "小米UC资源站",
@@ -5333,7 +6719,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "樱花动漫 (YHDM)",
@@ -5358,7 +6749,12 @@
     "apiUrl": "https://www.yhdmp.cc",
     "langs": [
       "zh"
-    ]
+    ],
+    "tags": [
+      "watch",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "01tube",
@@ -5379,7 +6775,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "143porn",
@@ -5400,7 +6801,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "3movs",
@@ -5421,7 +6827,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "4k69",
@@ -5442,7 +6853,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "4kporn",
@@ -5463,7 +6879,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "69pedia",
@@ -5484,7 +6905,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "8kporner",
@@ -5505,7 +6931,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "8muses",
@@ -5526,7 +6957,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "absoluporn",
@@ -5547,7 +6983,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "abxxx",
@@ -5568,7 +7009,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "adultmagazine",
@@ -5589,7 +7035,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "adultphotosets",
@@ -5610,7 +7061,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "aipornfeed",
@@ -5631,7 +7087,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "allclassic",
@@ -5652,7 +7113,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "allporncomic",
@@ -5673,7 +7139,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "allpornstream",
@@ -5694,7 +7165,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "amigosporn",
@@ -5715,7 +7191,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "analdin",
@@ -5736,7 +7217,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "animeidhentai",
@@ -5757,7 +7243,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "anyporn",
@@ -5778,7 +7269,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "AnySex",
@@ -5799,7 +7295,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "ashemaletube",
@@ -5820,7 +7321,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "asianude4u",
@@ -5841,7 +7347,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "asiaontop",
@@ -5862,7 +7373,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "aznude",
@@ -5883,7 +7399,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "babehub",
@@ -5904,7 +7425,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "babesource",
@@ -5925,7 +7451,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "balancetanude",
@@ -5946,7 +7477,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "bananamovies",
@@ -5967,7 +7503,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "bbcrec",
@@ -5988,7 +7529,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "beurettesvideo",
@@ -6009,7 +7555,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "bibamax",
@@ -6030,7 +7581,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "bigbuttshub",
@@ -6051,7 +7607,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "bingato",
@@ -6072,7 +7633,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "bobvoyeur",
@@ -6093,7 +7659,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "bonporn",
@@ -6114,7 +7685,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "boundhub",
@@ -6135,7 +7711,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "brazz",
@@ -6156,7 +7737,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "brazzers3x",
@@ -6177,7 +7763,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "brazzpw",
@@ -6198,7 +7789,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "cake",
@@ -6219,7 +7815,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "cartoonpornvideos",
@@ -6240,7 +7841,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "celebjihad",
@@ -6261,7 +7867,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "cherrygasp",
@@ -6282,7 +7893,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "clipsage",
@@ -6303,7 +7919,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "collectionofbestporn",
@@ -6324,7 +7945,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "crazyshit",
@@ -6345,7 +7971,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "cumlouder",
@@ -6366,7 +7997,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "czechvideo",
@@ -6387,7 +8023,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "daftporn",
@@ -6408,7 +8049,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "darknessporn",
@@ -6429,7 +8075,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "definebabe",
@@ -6450,7 +8101,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "deflr",
@@ -6471,7 +8127,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "desihub",
@@ -6492,7 +8153,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "DrTuber",
@@ -6513,7 +8179,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "e621",
@@ -6534,7 +8205,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "efukt",
@@ -6555,7 +8231,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "ehentai",
@@ -6576,7 +8257,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "EmpFlix",
@@ -6597,7 +8283,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "EroMe",
@@ -6618,7 +8309,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "eroprofile",
@@ -6639,7 +8335,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "erotelki",
@@ -6660,7 +8361,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "f95zone",
@@ -6681,7 +8387,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "fakings",
@@ -6702,7 +8413,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "familyporn",
@@ -6723,7 +8439,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "fapnado",
@@ -6744,7 +8465,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "fapnfuck",
@@ -6765,7 +8491,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "fikfap",
@@ -6786,7 +8517,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "freaktok",
@@ -6807,7 +8543,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "freeonestube",
@@ -6828,7 +8569,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "freepornsex",
@@ -6849,7 +8595,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "freomovie",
@@ -6870,7 +8621,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "fsiblog",
@@ -6891,7 +8647,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "fullporner",
@@ -6912,7 +8673,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "fullxxxmovies",
@@ -6933,7 +8699,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "fuq",
@@ -6954,7 +8725,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "fuqster",
@@ -6975,7 +8751,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "furaffinity",
@@ -6996,7 +8777,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "fuxnxx",
@@ -7017,7 +8803,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "fuxxx",
@@ -7038,7 +8829,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "fyptt",
@@ -7059,7 +8855,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "gfycat_porn",
@@ -7080,7 +8881,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "gifhq",
@@ -7101,7 +8907,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "girlatlas",
@@ -7122,7 +8933,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "girlstop",
@@ -7143,7 +8959,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "gonewild",
@@ -7164,7 +8985,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "hanime",
@@ -7185,7 +9011,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "hdeasyporn",
@@ -7206,7 +9037,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "hdporn92",
@@ -7227,7 +9063,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "HDzog",
@@ -7248,7 +9089,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "heavyfetish",
@@ -7269,7 +9115,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "heavyr",
@@ -7290,7 +9141,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "hentai2read",
@@ -7311,7 +9167,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "hentaifap",
@@ -7332,7 +9193,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "hentaifox",
@@ -7353,7 +9219,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "hentaihaven",
@@ -7374,7 +9245,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "hentaiparadise",
@@ -7395,7 +9271,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "hentaiparadisefr",
@@ -7416,7 +9297,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "hentaizone",
@@ -7437,7 +9323,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "histoirehentai",
@@ -7458,7 +9349,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "histoiresdesexe",
@@ -7479,7 +9375,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "hitomila",
@@ -7500,7 +9401,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "hitprn",
@@ -7521,7 +9427,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "horny69",
@@ -7542,7 +9453,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "hqfap",
@@ -7563,7 +9479,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "humoron",
@@ -7584,7 +9505,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "hypnotube",
@@ -7605,7 +9531,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "IcePornCasting",
@@ -7626,7 +9557,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "iciporno",
@@ -7647,7 +9583,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "ilikecomix",
@@ -7668,7 +9609,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "imagefap",
@@ -7689,7 +9635,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "inhumanity",
@@ -7710,7 +9661,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "inporn",
@@ -7731,7 +9687,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "inxxx",
@@ -7752,7 +9713,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "inzesttube",
@@ -7773,7 +9739,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "ixxx",
@@ -7794,7 +9765,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "javtrailers",
@@ -7815,7 +9791,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "jerkmotion",
@@ -7836,7 +9817,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "jjgirls",
@@ -7857,7 +9843,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "justporn",
@@ -7878,7 +9869,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "kemono",
@@ -7899,7 +9895,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "krx18",
@@ -7920,7 +9921,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "kwiky",
@@ -7941,7 +9947,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "ladybanana",
@@ -7962,7 +9973,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "latestleaks",
@@ -7983,7 +9999,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "latestpornvideo",
@@ -8004,7 +10025,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "leakyourporn",
@@ -8025,7 +10051,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "lecoinporno",
@@ -8046,7 +10077,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "letmejerk",
@@ -8067,7 +10103,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "letsjerk",
@@ -8088,7 +10129,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "mangoporn",
@@ -8109,7 +10155,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "maruchihentai",
@@ -8130,7 +10181,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "maturetube",
@@ -8151,7 +10207,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "milfnut",
@@ -8172,7 +10233,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "mitaku",
@@ -8193,7 +10259,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "monporno",
@@ -8214,7 +10285,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "morehardporn",
@@ -8235,7 +10311,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "motherless",
@@ -8256,7 +10337,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "mrsexe",
@@ -8277,7 +10363,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "multporn",
@@ -8298,7 +10389,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "mustvideos",
@@ -8319,7 +10415,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "myclub",
@@ -8340,7 +10441,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "mydesi",
@@ -8361,7 +10467,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "mygoodporn",
@@ -8382,7 +10493,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "myhentaigallery",
@@ -8403,7 +10519,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "mypornerleak",
@@ -8424,7 +10545,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "naughtymachinima",
@@ -8445,7 +10571,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "neporn",
@@ -8466,7 +10597,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "netfapx",
@@ -8487,7 +10623,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "netfapxnet",
@@ -8508,7 +10649,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "nhentai",
@@ -8529,7 +10675,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "noodlemagazine",
@@ -8550,7 +10701,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "nsfw",
@@ -8571,7 +10727,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "nsfwmonster",
@@ -8592,7 +10753,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "nsfwxxx",
@@ -8613,7 +10779,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "nudegals",
@@ -8634,7 +10805,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "nudemodelz",
@@ -8655,7 +10831,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "nudevista",
@@ -8676,7 +10857,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "NuVid",
@@ -8697,7 +10883,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "ogfap",
@@ -8718,7 +10909,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "ogporn",
@@ -8739,7 +10935,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "okxxx",
@@ -8760,7 +10961,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "onlyscroll",
@@ -8781,7 +10987,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pandamovies",
@@ -8802,7 +11013,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "paradisehill",
@@ -8823,7 +11039,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "peachr",
@@ -8844,7 +11065,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "PerfectGirls",
@@ -8865,7 +11091,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "phunforum",
@@ -8886,7 +11117,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pichunter",
@@ -8907,7 +11143,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "picsx",
@@ -8928,7 +11169,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pictoa",
@@ -8949,7 +11195,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pimpandhost",
@@ -8970,7 +11221,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "planetsuzy",
@@ -8991,7 +11247,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pmatehunter",
@@ -9012,7 +11273,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pmvhaven",
@@ -9033,7 +11299,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "poopeegirls",
@@ -9054,7 +11325,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "porcore",
@@ -9075,7 +11351,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "porn00",
@@ -9096,7 +11377,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Porn300",
@@ -9117,7 +11403,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "porn3dx",
@@ -9138,7 +11429,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "porn4days",
@@ -9159,7 +11455,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornbae",
@@ -9180,7 +11481,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornbaker",
@@ -9201,7 +11507,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornbb",
@@ -9222,7 +11533,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornbusy",
@@ -9243,7 +11559,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "porndig",
@@ -9264,7 +11585,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "porndish",
@@ -9285,7 +11611,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "porndoe",
@@ -9306,7 +11637,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornedup",
@@ -9327,7 +11663,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "porneec",
@@ -9348,7 +11689,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornez",
@@ -9369,7 +11715,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "porngo",
@@ -9390,7 +11741,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornhat",
@@ -9411,7 +11767,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornhd4k",
@@ -9432,7 +11793,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornhd8k",
@@ -9453,7 +11819,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornhoarder",
@@ -9474,7 +11845,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornlib",
@@ -9495,7 +11871,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornmd",
@@ -9516,7 +11897,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornmike",
@@ -9537,7 +11923,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornmz",
@@ -9558,7 +11949,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornocarioca",
@@ -9579,7 +11975,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornodingue",
@@ -9600,7 +12001,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornodrome",
@@ -9621,7 +12027,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornomanoir",
@@ -9642,7 +12053,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "PornOne",
@@ -9663,7 +12079,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornovideoshub",
@@ -9684,7 +12105,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornovore",
@@ -9705,7 +12131,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornpaw",
@@ -9726,7 +12157,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornpics",
@@ -9747,7 +12183,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornslash",
@@ -9768,7 +12209,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "porntape",
@@ -9789,7 +12235,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "porntok",
@@ -9810,7 +12261,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "porntop",
@@ -9831,7 +12287,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "PornTrex",
@@ -9852,7 +12313,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornve",
@@ -9873,7 +12339,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "PornVibe",
@@ -9894,7 +12365,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornvideobb",
@@ -9915,7 +12391,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornwex",
@@ -9936,7 +12417,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornx",
@@ -9957,7 +12443,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pornxp",
@@ -9978,7 +12469,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "pussyspace",
@@ -9999,7 +12495,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "realgirls",
@@ -10020,7 +12521,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "reddclips",
@@ -10041,7 +12547,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "redditube",
@@ -10062,7 +12573,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "reddpics",
@@ -10083,7 +12599,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "redgifs",
@@ -10104,7 +12625,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "reelsmunkey",
@@ -10125,7 +12651,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "reference-sexe",
@@ -10146,7 +12677,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "revebebe",
@@ -10167,7 +12703,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "roadsexe",
@@ -10188,7 +12729,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "ruenu",
@@ -10209,7 +12755,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "rule34",
@@ -10230,7 +12781,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "rule34video",
@@ -10251,7 +12807,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "saintporn",
@@ -10272,7 +12833,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "severeporn",
@@ -10293,7 +12859,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "sexcom",
@@ -10314,7 +12885,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "sexefelin",
@@ -10335,7 +12911,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "sexreels",
@@ -10356,7 +12937,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "sextvx",
@@ -10377,7 +12963,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "sexu",
@@ -10398,7 +12989,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "sexygirlspics",
@@ -10419,7 +13015,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "sfmcompile",
@@ -10440,7 +13041,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "shesfreaky",
@@ -10461,7 +13067,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "shortsxxx",
@@ -10482,7 +13093,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "sinparty",
@@ -10503,7 +13119,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Siska",
@@ -10524,7 +13145,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "skyporn",
@@ -10545,7 +13171,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "slushe",
@@ -10566,7 +13197,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "slushy",
@@ -10587,7 +13223,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "socialmediagirls",
@@ -10608,7 +13249,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "SpankBang",
@@ -10629,7 +13275,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "speedporn",
@@ -10650,7 +13301,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "streamporn",
@@ -10671,7 +13327,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "swipefap",
@@ -10692,7 +13353,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "sxyland",
@@ -10713,7 +13379,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "sxymilf",
@@ -10734,7 +13405,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "sxypix",
@@ -10755,7 +13431,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "tap4porn",
@@ -10776,7 +13457,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "tarenoi",
@@ -10797,7 +13483,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "taxi69",
@@ -10818,7 +13509,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "thefappeningblog",
@@ -10839,7 +13535,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "thisvid",
@@ -10860,7 +13561,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "thumbzilla",
@@ -10881,7 +13587,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "tikcx",
@@ -10902,7 +13613,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "tikporn",
@@ -10923,7 +13639,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "TNAFlix",
@@ -10944,7 +13665,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "tonpornodujour",
@@ -10965,7 +13691,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "trannytube",
@@ -10986,7 +13717,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "transjizz",
@@ -11007,7 +13743,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "trashporn",
@@ -11028,7 +13769,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "trendyporn",
@@ -11049,7 +13795,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "trixhentai",
@@ -11070,7 +13821,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "tubepornclassic",
@@ -11091,7 +13847,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "tubesafari",
@@ -11112,7 +13873,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Upornia",
@@ -11133,7 +13899,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "usersporn",
@@ -11154,7 +13925,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "veporn",
@@ -11175,7 +13951,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "videopornotaboo",
@@ -11196,7 +13977,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "vipinay",
@@ -11217,7 +14003,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "voissa",
@@ -11238,7 +14029,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "vrsmash",
@@ -11259,7 +14055,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "w1mp",
@@ -11280,7 +14081,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "waptap",
@@ -11301,7 +14107,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "watchporn",
@@ -11322,7 +14133,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "watchxxxfree",
@@ -11343,7 +14159,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "webchoc",
@@ -11364,7 +14185,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "whoreshub",
@@ -11385,7 +14211,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "x-manga",
@@ -11406,7 +14237,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "XCafe",
@@ -11427,7 +14263,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xfree",
@@ -11448,7 +14289,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xfreehd",
@@ -11469,7 +14315,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xfrenchies",
@@ -11490,7 +14341,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xfuntaxy",
@@ -11511,7 +14367,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xkeezmovies",
@@ -11532,7 +14393,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xmegadrive",
@@ -11553,7 +14419,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xmoviesforyou",
@@ -11574,7 +14445,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xpaja",
@@ -11595,7 +14471,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xpee",
@@ -11616,7 +14497,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xrenoi",
@@ -11637,7 +14523,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xstoryfr",
@@ -11658,7 +14549,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xtapes",
@@ -11679,7 +14575,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xtg",
@@ -11700,7 +14601,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xvgold",
@@ -11721,7 +14627,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xxfollow",
@@ -11742,7 +14653,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xxtok",
@@ -11763,7 +14679,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xxvideoss",
@@ -11784,7 +14705,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xxxfiles",
@@ -11805,7 +14731,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xxxtik",
@@ -11826,7 +14757,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xxxtube",
@@ -11847,7 +14783,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "yespornvip",
@@ -11868,7 +14809,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "yesporplease",
@@ -11889,7 +14835,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "YouJizz",
@@ -11910,7 +14861,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "yourdailypornvideos",
@@ -11931,7 +14887,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "yourporn",
@@ -11952,7 +14913,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "zhornyhub",
@@ -11973,7 +14939,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "1Anime",
@@ -11994,7 +14965,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "AniCine",
@@ -12015,7 +14991,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "AniDoor",
@@ -12036,7 +15017,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "AniFlix",
@@ -12057,7 +15043,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "AnimeDex",
@@ -12078,7 +15069,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "AnimeOnsen",
@@ -12099,7 +15095,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "AnimeSilo",
@@ -12120,7 +15121,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "AniWave",
@@ -12141,7 +15147,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "AniZone",
@@ -12162,7 +15173,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "ARTE",
@@ -12183,7 +15199,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "french"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Bingr",
@@ -12204,7 +15225,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Boomflix",
@@ -12225,7 +15251,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "CineStream",
@@ -12246,7 +15277,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "DramaCool",
@@ -12267,7 +15303,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Filmzie",
@@ -12288,7 +15329,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "FireAnime",
@@ -12309,7 +15355,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "HydraHD",
@@ -12330,7 +15381,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "KissAsian",
@@ -12351,7 +15407,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "MeguAnimes",
@@ -12372,7 +15433,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Miruro",
@@ -12393,7 +15459,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "MKissa",
@@ -12414,7 +15485,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "NEPU",
@@ -12435,7 +15511,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "OnionPlay",
@@ -12456,7 +15537,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "PopcornFlix",
@@ -12477,7 +15563,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Rive",
@@ -12498,7 +15589,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Tubi",
@@ -12519,7 +15615,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Vidbox",
@@ -12540,7 +15641,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "GoPlay",
@@ -12561,7 +15667,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "TropiStream",
@@ -12582,7 +15693,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "french"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "AniPool",
@@ -12603,7 +15719,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "AnimeXin",
@@ -12624,7 +15745,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "AniPool",
@@ -12645,7 +15771,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Asiaflix",
@@ -12666,7 +15797,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "DonghuaStream",
@@ -12687,7 +15823,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Einthusan",
@@ -12708,7 +15849,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "GoPlayDrama",
@@ -12729,7 +15875,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "LManime",
@@ -12750,7 +15901,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "LuciferDonghua",
@@ -12771,7 +15927,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Playary",
@@ -12792,6 +15953,11 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-10-08"
   }
 ]

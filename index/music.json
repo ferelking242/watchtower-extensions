@@ -19,7 +19,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://animethemes.moe/api"
+    "apiUrl": "https://animethemes.moe/api",
+    "tags": [
+      "music",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Bandcamp",
@@ -40,7 +45,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "music",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "SoundCloud",
@@ -61,7 +71,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "music",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Deezer",
@@ -83,7 +98,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.deezer.com"
+    "apiUrl": "https://api.deezer.com",
+    "tags": [
+      "music",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MLP France — Chansons",
@@ -109,7 +129,15 @@
     "langs": [
       "fr",
       "en"
-    ]
+    ],
+    "tags": [
+      "music",
+      "multilingual",
+      "french",
+      "english",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Karaoke Mugen",
@@ -143,7 +171,22 @@
       "zh",
       "ko",
       "ru"
-    ]
+    ],
+    "tags": [
+      "music",
+      "multilingual",
+      "french",
+      "english",
+      "spanish",
+      "german",
+      "italian",
+      "portuguese",
+      "japanese",
+      "korean",
+      "chinese",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "listen.moe",
@@ -170,7 +213,15 @@
       "ja",
       "en",
       "ko"
-    ]
+    ],
+    "tags": [
+      "music",
+      "multilingual",
+      "english",
+      "japanese",
+      "korean"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Miraculum Music",
@@ -192,7 +243,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://Amexd.b-cdn.net"
+    "apiUrl": "https://Amexd.b-cdn.net",
+    "tags": [
+      "music",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "YouTube Music",
@@ -213,7 +269,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "music",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "id": 3001,
@@ -235,7 +296,12 @@
       "Audio Provider"
     ],
     "description": "Métadonnées complètes (titres, albums, artistes, playlists) et lecture audio via l'API Spotify.",
-    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/spotify.smplug"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/spotify.smplug",
+    "tags": [
+      "music",
+      "multilingual"
+    ],
+    "addedAt": "2026-07-06"
   },
   {
     "id": 3002,
@@ -256,7 +322,12 @@
       "Audio Provider"
     ],
     "description": "Lecture de fichiers locaux et distants en qualité lossless FLAC. Aucun compte requis.",
-    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/flac.smplug"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/flac.smplug",
+    "tags": [
+      "music",
+      "multilingual"
+    ],
+    "addedAt": "2026-07-06"
   },
   {
     "id": 3003,
@@ -278,7 +349,12 @@
       "Audio Provider"
     ],
     "description": "Catalogue complet via l'API MusicKit. Métadonnées et lecture audio pour les abonnés Apple Music.",
-    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/applemusic.smplug"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/applemusic.smplug",
+    "tags": [
+      "music",
+      "multilingual"
+    ],
+    "addedAt": "2026-07-06"
   },
   {
     "id": 3004,
@@ -300,7 +376,12 @@
       "Audio Provider"
     ],
     "description": "Accès au catalogue mondial via l'API Deezer. Métadonnées complètes et streaming haute qualité.",
-    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/deezer.smplug"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/deezer.smplug",
+    "tags": [
+      "music",
+      "multilingual"
+    ],
+    "addedAt": "2026-07-06"
   },
   {
     "id": 3005,
@@ -322,7 +403,12 @@
       "Audio Provider"
     ],
     "description": "Accès gratuit au catalogue YouTube Music. Aucun compte requis pour la plupart des fonctionnalités.",
-    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/youtubemusic.smplug"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/youtubemusic.smplug",
+    "tags": [
+      "music",
+      "multilingual"
+    ],
+    "addedAt": "2026-07-06"
   },
   {
     "id": 3006,
@@ -343,7 +429,12 @@
       "Metadata Provider"
     ],
     "description": "Base de données musicale open source. Métadonnées enrichies, ISRC, et scrobbling via ListenBrainz.",
-    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/musicbrainz.smplug"
+    "upstream": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/musicbrainz.smplug",
+    "tags": [
+      "music",
+      "multilingual"
+    ],
+    "addedAt": "2026-07-06"
   },
   {
     "name": "AnimeSongLyrics",
@@ -364,7 +455,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "music",
+      "english"
+    ],
+    "addedAt": "2026-07-16"
   },
   {
     "name": "AnisonCharts",
@@ -385,7 +481,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "music",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "AnisongDB",
@@ -406,7 +507,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "music",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "AnimeSongLyrics",
@@ -427,7 +533,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "music",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "LyricalNonsense",
@@ -448,7 +559,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "music",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "OpeningsMoe",
@@ -469,7 +585,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "music",
+      "english"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Musicdex",
@@ -490,7 +611,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "music",
+      "multilingual"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Squidify",
@@ -511,6 +637,11 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "music",
+      "multilingual"
+    ],
+    "addedAt": "2026-10-08"
   }
 ]

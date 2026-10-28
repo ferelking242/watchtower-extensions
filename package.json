@@ -5,6 +5,9 @@
   "description": "Watchtower extensions repository — CI validation scripts",
   "scripts": {
     "validate": "node tools/validate-extensions.mjs",
+    "test:taxonomy": "node tools/test_catalog_taxonomy.mjs",
+    "tags": "node tools/generate_tags.mjs",
+    "tags:check": "node tools/generate_tags.mjs --check",
     "pin": "node tools/pin_sources.mjs --all",
     "pin:check": "node tools/pin_sources.mjs --check --all",
     "test:frenchstream": "node tools/test-frenchstream.mjs",

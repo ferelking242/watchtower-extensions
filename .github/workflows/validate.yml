@@ -20,6 +20,8 @@ jobs:
           node-version: '20'
       - name: Validate extensions
         run: npm run validate
+      - name: Test marketplace taxonomy
+        run: npm run test:taxonomy
       - name: Test Eporner parser
         run: npm run test:eporner
       - name: Test IMHentai parser

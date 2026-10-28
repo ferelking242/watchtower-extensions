@@ -18,7 +18,31 @@
     "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "manga",
+      "manhwa",
+      "manhua",
+      "webtoon",
+      "comics",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "thriller",
+      "historical",
+      "slice-of-life",
+      "mecha",
+      "sports",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "3asq",
@@ -39,7 +63,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Anyone Manga",
@@ -60,7 +89,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ArabManhwa",
@@ -81,7 +115,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Arab Toons",
@@ -102,7 +141,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ArbxComix",
@@ -123,7 +167,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Area Manga",
@@ -144,7 +193,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AriaToon",
@@ -165,7 +219,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Brown Manga",
@@ -186,7 +245,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Despair Manga",
@@ -207,7 +271,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Dilar",
@@ -228,7 +297,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Empire Webtoon",
@@ -249,7 +323,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hijala",
@@ -270,7 +349,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Kawii Manga",
@@ -291,7 +375,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaCloud",
@@ -312,7 +401,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaDar",
@@ -333,7 +427,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaHub",
@@ -354,7 +453,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Mangalek",
@@ -375,7 +479,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Mangalink",
@@ -396,7 +505,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaLionz",
@@ -417,7 +531,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaSpark",
@@ -438,7 +557,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Manga Starz",
@@ -459,7 +583,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaSwat",
@@ -480,7 +609,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaTek",
@@ -501,7 +635,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaTuk",
@@ -522,7 +661,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Manhatic",
@@ -543,7 +687,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NeverScans",
@@ -564,7 +713,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Oduto - Boruto",
@@ -585,7 +739,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Onma",
@@ -606,7 +765,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Rocks Manga",
@@ -627,7 +791,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "StellarSaber",
@@ -648,7 +817,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "TeamX",
@@ -669,7 +843,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Yokai",
@@ -690,7 +869,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AllManga",
@@ -712,7 +896,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.allanime.day/api"
+    "apiUrl": "https://api.allanime.day/api",
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Asura Scans",
@@ -733,7 +922,23 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "slice-of-life",
+      "sports",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Atsumaru",
@@ -754,7 +959,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ComicsAll",
@@ -775,7 +985,13 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "comics",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Comix",
@@ -797,7 +1013,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://comix.to/api/v2/"
+    "apiUrl": "https://comix.to/api/v2/",
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Coolmic",
@@ -818,7 +1039,12 @@
     "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Cubari",
@@ -839,7 +1065,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Diva Scans",
@@ -860,7 +1091,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Dynasty Scans",
@@ -882,7 +1118,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://dynasty-scans.com"
+    "apiUrl": "https://dynasty-scans.com",
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Flame Comics",
@@ -903,7 +1144,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "GlobalComix",
@@ -925,7 +1171,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://globalcomix.com"
+    "apiUrl": "https://globalcomix.com",
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Goda",
@@ -946,7 +1197,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Harimanga",
@@ -969,7 +1225,29 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "manhwa",
+      "manhua",
+      "webtoon",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "thriller",
+      "historical",
+      "slice-of-life",
+      "mecha",
+      "sports",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hiperdex",
@@ -990,7 +1268,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hive Scans",
@@ -1011,7 +1294,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "King of Shojo",
@@ -1032,7 +1320,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LikeManga",
@@ -1053,7 +1346,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Lily Manga",
@@ -1074,7 +1372,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Lunar Manga",
@@ -1095,7 +1398,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Manga Ball",
@@ -1116,7 +1424,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaDNA",
@@ -1137,7 +1450,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaFire",
@@ -1158,7 +1476,12 @@
     "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaForFree",
@@ -1179,7 +1502,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaForFree.net",
@@ -1200,7 +1528,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaFox",
@@ -1221,7 +1554,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaFreak",
@@ -1242,7 +1580,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaKatana",
@@ -1263,7 +1606,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Mangapark",
@@ -1284,7 +1632,29 @@
     "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "manga",
+      "manhwa",
+      "manhua",
+      "webtoon",
+      "comics",
+      "action",
+      "adventure",
+      "fantasy",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "thriller",
+      "historical",
+      "slice-of-life",
+      "mecha",
+      "sports",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Mangapill",
@@ -1305,7 +1675,30 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "manga",
+      "manhwa",
+      "manhua",
+      "novel",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "thriller",
+      "historical",
+      "slice-of-life",
+      "mecha",
+      "sports",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MANGA Plus by SHUEISHA",
@@ -1327,7 +1720,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://jumpg-webapi.tokyo-cdn.com"
+    "apiUrl": "https://jumpg-webapi.tokyo-cdn.com",
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MANGA Plus Creators",
@@ -1348,7 +1746,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaTaro",
@@ -1369,7 +1772,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaToon",
@@ -1390,7 +1798,12 @@
     "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ManhwaZ",
@@ -1411,7 +1824,27 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "manhwa",
+      "webtoon",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "historical",
+      "slice-of-life",
+      "mecha",
+      "sports",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ReadComicOnline",
@@ -1432,7 +1865,25 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "manga",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "thriller",
+      "historical",
+      "slice-of-life",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Toomics",
@@ -1453,7 +1904,12 @@
     "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Weeb Central",
@@ -1474,7 +1930,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaKakalot",
@@ -1495,7 +1956,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaSee",
@@ -1516,7 +1982,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Anime-Sama",
@@ -1541,7 +2012,12 @@
     "apiUrl": "https://anime-sama.to",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AralosBD",
@@ -1566,7 +2042,13 @@
     "apiUrl": "https://aralosbd.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Astral Manga",
@@ -1591,7 +2073,13 @@
     "apiUrl": "https://astral-manga.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Banana Scan",
@@ -1616,7 +2104,13 @@
     "apiUrl": "https://harmony-scan.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "BentoBento",
@@ -1641,7 +2135,13 @@
     "apiUrl": "https://bentobento.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Big Solo",
@@ -1666,7 +2166,13 @@
     "apiUrl": "https://bigsolo.org",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "BlueSolo",
@@ -1691,7 +2197,13 @@
     "apiUrl": "https://bluesolo.org",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Chaos Trad",
@@ -1716,7 +2228,13 @@
     "apiUrl": "https://chaostrad.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "CrunchyScan",
@@ -1741,7 +2259,13 @@
     "apiUrl": "https://crunchyscan.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Dassou Scan",
@@ -1766,7 +2290,13 @@
     "apiUrl": "https://dassouscan.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Epsilon Scan",
@@ -1791,7 +2321,13 @@
     "apiUrl": "https://epsilonscan.to",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "FMTeam",
@@ -1816,7 +2352,13 @@
     "apiUrl": "https://fmteam.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Furyo Squad",
@@ -1841,7 +2383,13 @@
     "apiUrl": "https://www.furyosociety.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hana Book",
@@ -1866,7 +2414,13 @@
     "apiUrl": "https://www.hana-book.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hentai Origines",
@@ -1891,7 +2445,13 @@
     "apiUrl": "https://hentai-origines.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hentai Scan Reader",
@@ -1916,7 +2476,13 @@
     "apiUrl": "https://hentai.scanreader.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hentai Scantrad",
@@ -1941,7 +2507,13 @@
     "apiUrl": "https://hentai.scantrad-vf.cc",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hentai Zone",
@@ -1966,7 +2538,13 @@
     "apiUrl": "https://hentaizone.xyz",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Histoire d'Hentai",
@@ -1991,7 +2569,13 @@
     "apiUrl": "https://hhentai.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Japscan",
@@ -2016,7 +2600,13 @@
     "apiUrl": "https://www.japscan.lol",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Kiwiya Scans",
@@ -2041,7 +2631,13 @@
     "apiUrl": "https://kiwiyascans.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Lanor Trad",
@@ -2066,7 +2662,13 @@
     "apiUrl": "https://lanortrad.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Lel Manga",
@@ -2091,7 +2693,13 @@
     "apiUrl": "https://www.lelmanga.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LelScan",
@@ -2116,7 +2724,13 @@
     "apiUrl": "https://lelscans.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LelScanVF",
@@ -2141,7 +2755,13 @@
     "apiUrl": "https://www.lelscanfr.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Les Poroïniens",
@@ -2166,7 +2786,13 @@
     "apiUrl": "https://lesporoiniens.org",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Leviathan Scans",
@@ -2187,7 +2813,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Manga Corporation",
@@ -2212,7 +2843,13 @@
     "apiUrl": "https://manga-corporation.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaHub FR",
@@ -2237,7 +2874,13 @@
     "apiUrl": "https://mangahub.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Manga Kawaii",
@@ -2262,7 +2905,13 @@
     "apiUrl": "https://www.mangakawaii.io",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Manga Moins",
@@ -2287,7 +2936,13 @@
     "apiUrl": "https://mangamoins.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Manga Nova",
@@ -2312,7 +2967,13 @@
     "apiUrl": "https://www.manga-nova.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Manga Scantrad",
@@ -2337,7 +2998,13 @@
     "apiUrl": "https://manga-scantrad.io",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Mangas Origines",
@@ -2362,7 +3029,13 @@
     "apiUrl": "https://mangas-origines.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Mangas Scans",
@@ -2387,7 +3060,13 @@
     "apiUrl": "https://mangas-scans.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MLP France Comics",
@@ -2413,7 +3092,15 @@
     "langs": [
       "fr",
       "en"
-    ]
+    ],
+    "tags": [
+      "read",
+      "multilingual",
+      "french",
+      "english",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Ono",
@@ -2438,7 +3125,13 @@
     "apiUrl": "https://www.ono.live",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Ortega Scans",
@@ -2463,7 +3156,13 @@
     "apiUrl": "https://ortegascans.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Pantheon Scan",
@@ -2488,7 +3187,13 @@
     "apiUrl": "https://pantheon-scan.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Perf Scan",
@@ -2513,7 +3218,13 @@
     "apiUrl": "https://perf-scan.xyz",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Phenix Scans",
@@ -2538,7 +3249,13 @@
     "apiUrl": "https://phenix-scans.co",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Pornhwa FR",
@@ -2563,7 +3280,13 @@
     "apiUrl": "https://pornhwa.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Poseidon Scans",
@@ -2588,7 +3311,13 @@
     "apiUrl": "https://poseidon-scans.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Raijin Scans",
@@ -2613,7 +3342,13 @@
     "apiUrl": "https://raijin-scans.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Rimu Scans",
@@ -2638,7 +3373,13 @@
     "apiUrl": "https://rimuscan.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Scan Hentai Menu",
@@ -2663,7 +3404,13 @@
     "apiUrl": "https://x-manga.org",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Scan-Manga",
@@ -2688,7 +3435,13 @@
     "apiUrl": "https://m.scan-manga.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Team ScanR",
@@ -2713,7 +3466,13 @@
     "apiUrl": "https://teamscanr.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Scan Reader",
@@ -2738,7 +3497,13 @@
     "apiUrl": "https://scanreader.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Scans FR",
@@ -2763,7 +3528,13 @@
     "apiUrl": "https://scansfr.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Scantrad One Piece",
@@ -2784,7 +3555,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Scantrad Union",
@@ -2809,7 +3585,13 @@
     "apiUrl": "https://scantrad-union.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Scan-VF",
@@ -2834,7 +3616,13 @@
     "apiUrl": "https://www.scan-vf.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Siren Scans FR",
@@ -2859,7 +3647,13 @@
     "apiUrl": "https://sirenscans.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Soft Epsilon Scan",
@@ -2884,7 +3678,13 @@
     "apiUrl": "https://epsilonsoft.to",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Sushi Scan",
@@ -2909,7 +3709,13 @@
     "apiUrl": "https://sushiscan.net",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Sushi Scan FR",
@@ -2934,7 +3740,13 @@
     "apiUrl": "https://sushiscan.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ToonFR",
@@ -2959,7 +3771,13 @@
     "apiUrl": "https://toonfr.com",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Twatt",
@@ -2984,7 +3802,13 @@
     "apiUrl": "https://twatt.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Yaoi Scan",
@@ -3009,7 +3833,13 @@
     "apiUrl": "https://yaoiscan.fr",
     "langs": [
       "fr"
-    ]
+    ],
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaWorld",
@@ -3030,7 +3860,20 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "manga",
+      "manhwa",
+      "manhua",
+      "fantasy",
+      "science-fiction",
+      "horror",
+      "slice-of-life",
+      "mecha",
+      "italian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "WeLoMa",
@@ -3051,7 +3894,25 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "historical",
+      "slice-of-life",
+      "mecha",
+      "sports",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Comick",
@@ -3116,7 +3977,47 @@
       "el",
       "sr",
       "da"
-    ]
+    ],
+    "tags": [
+      "read",
+      "manga",
+      "manhwa",
+      "manhua",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "thriller",
+      "historical",
+      "slice-of-life",
+      "mecha",
+      "sports",
+      "multilingual",
+      "french",
+      "english",
+      "spanish",
+      "german",
+      "italian",
+      "portuguese",
+      "japanese",
+      "korean",
+      "chinese",
+      "arabic",
+      "russian",
+      "turkish",
+      "thai",
+      "indonesian",
+      "hindi",
+      "vietnamese",
+      "polish",
+      "dutch"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaDex",
@@ -3190,7 +4091,30 @@
       "tr",
       "uk",
       "vi"
-    ]
+    ],
+    "tags": [
+      "read",
+      "multilingual",
+      "french",
+      "english",
+      "spanish",
+      "german",
+      "italian",
+      "portuguese",
+      "japanese",
+      "korean",
+      "chinese",
+      "arabic",
+      "russian",
+      "turkish",
+      "thai",
+      "indonesian",
+      "hindi",
+      "vietnamese",
+      "polish",
+      "dutch"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Mangafire",
@@ -3220,7 +4144,34 @@
       "es-la",
       "pt",
       "pt-br"
-    ]
+    ],
+    "tags": [
+      "read",
+      "manga",
+      "manhwa",
+      "manhua",
+      "novel",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "thriller",
+      "slice-of-life",
+      "mecha",
+      "sports",
+      "multilingual",
+      "french",
+      "english",
+      "spanish",
+      "portuguese",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Webtoons",
@@ -3250,7 +4201,31 @@
       "es",
       "zh",
       "de"
-    ]
+    ],
+    "tags": [
+      "read",
+      "action",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "thriller",
+      "historical",
+      "slice-of-life",
+      "sports",
+      "multilingual",
+      "french",
+      "english",
+      "spanish",
+      "german",
+      "chinese",
+      "thai",
+      "indonesian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AsmHentai",
@@ -3271,7 +4246,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "E-Hentai",
@@ -3293,7 +4273,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.e-hentai.org/api.php"
+    "apiUrl": "https://api.e-hentai.org/api.php",
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hentai2Read",
@@ -3314,7 +4299,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HentaiFox",
@@ -3335,7 +4325,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "IMHentai",
@@ -3356,7 +4351,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Luscious",
@@ -3378,7 +4378,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://www.luscious.net/api/graphql"
+    "apiUrl": "https://www.luscious.net/api/graphql",
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Manhwa18.cc",
@@ -3399,7 +4404,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Multporn",
@@ -3420,7 +4430,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NHentai",
@@ -3442,7 +4457,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://nhentai.net/api"
+    "apiUrl": "https://nhentai.net/api",
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Pururin",
@@ -3463,7 +4483,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ReadHentai",
@@ -3484,7 +4509,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Tsumino",
@@ -3506,7 +4536,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://www.tsumino.com/api"
+    "apiUrl": "https://www.tsumino.com/api",
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaDex (unlocked)",
@@ -3576,7 +4611,30 @@
       "tr",
       "uk",
       "vi"
-    ]
+    ],
+    "tags": [
+      "read",
+      "multilingual",
+      "french",
+      "english",
+      "spanish",
+      "german",
+      "italian",
+      "portuguese",
+      "japanese",
+      "korean",
+      "chinese",
+      "arabic",
+      "russian",
+      "turkish",
+      "thai",
+      "indonesian",
+      "hindi",
+      "vietnamese",
+      "polish",
+      "dutch"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Mangalib",
@@ -3598,7 +4656,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.mangalib.me/api"
+    "apiUrl": "https://api.mangalib.me/api",
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "新新漫画",
@@ -3619,7 +4682,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "拷贝漫画",
@@ -3641,7 +4709,12 @@
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.mangacopy.com"
+    "apiUrl": "https://api.mangacopy.com",
+    "tags": [
+      "read",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "动漫之家",
@@ -3662,7 +4735,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "古风漫画",
@@ -3683,7 +4761,13 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "manhua",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "漫画柜",
@@ -3704,7 +4788,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "SayManhwa",
@@ -3729,7 +4818,13 @@
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://saymanhwa.com"
+    "apiUrl": "https://saymanhwa.com",
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-10-01"
   },
   {
     "name": "Honeytoon",
@@ -3754,7 +4849,13 @@
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://honeytoon.com"
+    "apiUrl": "https://honeytoon.com",
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-10-01"
   },
   {
     "name": "NovelCool",
@@ -3779,7 +4880,13 @@
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://fr.novelcool.com"
+    "apiUrl": "https://fr.novelcool.com",
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-10-01"
   },
   {
     "name": "Niadd",
@@ -3804,7 +4911,13 @@
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://fr.niadd.com"
+    "apiUrl": "https://fr.niadd.com",
+    "tags": [
+      "read",
+      "french",
+      "featured"
+    ],
+    "addedAt": "2026-10-01"
   },
   {
     "name": "Comic Fury (FR)",
@@ -3825,7 +4938,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "CommitStrip (FR)",
@@ -3846,7 +4964,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "Dragon Ball Multiverse (FR)",
@@ -3867,7 +4990,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "3Hentai (FR)",
@@ -3888,7 +5016,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "HentaiEnvy (FR)",
@@ -3909,7 +5042,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "The Library of Ohara (FR)",
@@ -3930,7 +5068,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "xkcd (FR)",
@@ -3951,7 +5094,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-10-08"
   },
   {
     "name": "HentaiEra (FR)",
@@ -3972,7 +5120,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-10-09"
   },
   {
     "name": "HentaiZap (FR)",
@@ -3993,7 +5146,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-10-09"
   },
   {
     "name": "PornPics (FR)",
@@ -4014,7 +5172,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-10-09"
   },
   {
     "name": "PornPics",
@@ -4035,7 +5198,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-10-09"
   },
   {
     "name": "HentaiHand",
@@ -4056,7 +5224,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-10-09"
   },
   {
     "name": "NamiComi (FR)",
@@ -4077,7 +5250,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-10-09"
   },
   {
     "name": "NamiComi",
@@ -4098,7 +5276,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-10-09"
   },
   {
     "name": "XCOMIC",
@@ -4165,6 +5348,29 @@
       "lt",
       "sr",
       "other"
-    ]
+    ],
+    "tags": [
+      "read",
+      "multilingual",
+      "french",
+      "english",
+      "spanish",
+      "german",
+      "italian",
+      "portuguese",
+      "japanese",
+      "korean",
+      "chinese",
+      "arabic",
+      "russian",
+      "turkish",
+      "thai",
+      "indonesian",
+      "hindi",
+      "vietnamese",
+      "polish",
+      "dutch"
+    ],
+    "addedAt": "2026-10-09"
   }
 ]

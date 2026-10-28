@@ -67,6 +67,10 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Régénérer les tags du catalogue
+        if: steps.guard.outputs.skip == 'false'
+        run: node tools/generate_tags.mjs
+
       - name: Figer les URL sur ${{ github.sha }}
         if: steps.guard.outputs.skip == 'false'
         run: |

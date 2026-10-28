@@ -18,7 +18,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "multilingual"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ArNovel",
@@ -39,7 +44,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Azora",
@@ -60,7 +70,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "dilar tube",
@@ -81,7 +96,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Free Kol Novel",
@@ -102,7 +122,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HizoManga",
@@ -123,7 +148,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ملوك الروايات",
@@ -144,7 +174,22 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "drama",
+      "comedy",
+      "horror",
+      "historical",
+      "slice-of-life",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Markazriwayat",
@@ -165,7 +210,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novel4Up",
@@ -186,7 +236,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novels Paradise",
@@ -207,7 +262,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Olaoe.cyou",
@@ -228,7 +288,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Rewayat Club",
@@ -249,7 +314,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Riwyat",
@@ -270,7 +340,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Sunovels",
@@ -291,7 +366,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "arabic"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "FirstKissNovel",
@@ -312,7 +392,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AllNovel",
@@ -333,7 +418,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AllNovelFull",
@@ -354,7 +444,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Annas Archive",
@@ -375,7 +470,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Arcane Translations",
@@ -396,7 +496,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Archive Of Our Own",
@@ -417,7 +522,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Srank Manga",
@@ -438,7 +548,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Baka-Tsuki",
@@ -459,7 +574,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Belle Reservoir",
@@ -480,7 +600,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "BoxNovel",
@@ -501,7 +626,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Cherry Mist Cafe",
@@ -522,7 +652,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Chrysanthemum Garden",
@@ -543,7 +678,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Citrus Aurora",
@@ -564,7 +704,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Coral Boutique",
@@ -585,7 +730,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "CPUnovel",
@@ -606,7 +756,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Crimson Scrolls",
@@ -627,7 +782,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Daoist Quest",
@@ -648,7 +808,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "DaoNovel",
@@ -669,7 +834,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "DaoTranslate",
@@ -690,7 +860,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Divine Dao Library",
@@ -711,7 +886,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Dearest Rosalie",
@@ -732,7 +912,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Dragonholic",
@@ -753,7 +938,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Dragon Tea",
@@ -774,7 +964,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Dream Big Translations",
@@ -795,7 +990,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Dusk Blossoms",
@@ -816,7 +1016,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ElloTL",
@@ -837,7 +1042,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Eternalune",
@@ -858,7 +1068,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Etude Translations",
@@ -879,7 +1094,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "FanNovel",
@@ -900,7 +1120,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Fans Translations",
@@ -921,7 +1146,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Fenrir Realm",
@@ -942,7 +1172,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Fiction Zone",
@@ -963,7 +1198,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Foxaholic",
@@ -984,7 +1224,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Foxteller",
@@ -1005,7 +1250,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Faq Wiki",
@@ -1026,7 +1276,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Free Web Novel",
@@ -1047,7 +1302,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Galaxy Translations",
@@ -1068,7 +1328,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Genesis",
@@ -1089,7 +1354,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Guavaread",
@@ -1110,7 +1380,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hiraeth Translation",
@@ -1131,7 +1406,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HotNovelPub",
@@ -1152,7 +1432,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hyacinth in Bloom",
@@ -1173,7 +1458,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Indra Translations",
@@ -1194,7 +1484,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Inkitt",
@@ -1215,7 +1510,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "iNovelTranslation",
@@ -1236,7 +1536,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Ippotranslations",
@@ -1257,7 +1562,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "KDT Novels",
@@ -1278,7 +1588,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Keopi Translations",
@@ -1299,7 +1614,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "KnoxT",
@@ -1320,7 +1640,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Lazy Girl Translations",
@@ -1341,7 +1666,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LeafStudio",
@@ -1362,7 +1692,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Lib Read",
@@ -1383,7 +1718,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LightNovelCave",
@@ -1404,7 +1744,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LightNovelPlus",
@@ -1425,7 +1770,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LightNovelPub Vip",
@@ -1446,7 +1796,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Light Novel Translations",
@@ -1467,7 +1822,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Light Novel Updates",
@@ -1488,7 +1848,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Lily on the Valley",
@@ -1509,7 +1874,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LightNovelHeaven",
@@ -1530,7 +1900,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LnMTL",
@@ -1551,7 +1926,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LNORI",
@@ -1572,7 +1952,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Ltnovel",
@@ -1593,7 +1978,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LulloBox",
@@ -1614,7 +2004,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LunarLetters",
@@ -1635,7 +2030,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Meownovel",
@@ -1656,7 +2056,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Moonlight Novels",
@@ -1677,7 +2082,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MostNovel",
@@ -1698,7 +2108,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MTL-Novel",
@@ -1719,7 +2134,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MTL Novel",
@@ -1740,7 +2160,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MVLEMPYR",
@@ -1761,7 +2186,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MysticalSeries",
@@ -1782,7 +2212,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NeoSekai Translations",
@@ -1803,7 +2238,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Nitro Manga",
@@ -1824,7 +2264,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "novelsOnline",
@@ -1845,7 +2290,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NobleMTL",
@@ -1866,7 +2316,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Noice Translations",
@@ -1887,7 +2342,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novel Updates",
@@ -1908,7 +2368,25 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "novel",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "slice-of-life",
+      "mecha",
+      "sports",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novel Arrow",
@@ -1929,7 +2407,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novel Bin",
@@ -1950,7 +2433,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novelbuddy",
@@ -1971,7 +2459,27 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "novel",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "thriller",
+      "historical",
+      "slice-of-life",
+      "mecha",
+      "sports",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelCool",
@@ -1992,7 +2500,12 @@
     "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelFire",
@@ -2013,7 +2526,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelFull",
@@ -2034,7 +2552,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novel Hall",
@@ -2055,7 +2578,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelHi",
@@ -2076,7 +2604,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelHub",
@@ -2097,7 +2630,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelLib",
@@ -2118,7 +2656,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novelight",
@@ -2139,7 +2682,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelMultiverse",
@@ -2160,7 +2708,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novel Ninja",
@@ -2181,7 +2734,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelRest",
@@ -2202,7 +2760,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelsKnight",
@@ -2223,7 +2786,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelTranslate",
@@ -2244,7 +2812,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Panda Machine Translations",
@@ -2265,7 +2838,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Pastel Tales",
@@ -2286,7 +2864,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "PawRead",
@@ -2307,7 +2890,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Penguin Squad",
@@ -2328,7 +2916,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Prizma",
@@ -2349,7 +2942,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Rainofsnow",
@@ -2370,7 +2968,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Ranobes",
@@ -2391,7 +2994,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Ranovel",
@@ -2412,7 +3020,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Read Fanfic",
@@ -2433,7 +3046,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Read From Net",
@@ -2454,7 +3072,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ReadNovelFull",
@@ -2475,7 +3098,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Re:Library",
@@ -2496,7 +3124,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Requiem Translations",
@@ -2517,7 +3150,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Royal Road",
@@ -2538,7 +3176,21 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "action",
+      "adventure",
+      "fantasy",
+      "science-fiction",
+      "romance",
+      "mystery",
+      "drama",
+      "comedy",
+      "horror",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Salmon Latte",
@@ -2559,7 +3211,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Scribble Hub",
@@ -2580,7 +3237,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "SleepyTranslations",
@@ -2601,7 +3263,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "SonicMTL",
@@ -2622,7 +3289,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "StorySeedling",
@@ -2643,7 +3315,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Sweet Escape",
@@ -2664,7 +3341,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "System Translation",
@@ -2685,7 +3367,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "TranslatinOtaku",
@@ -2706,7 +3393,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Translation Weaver",
@@ -2727,7 +3419,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Universal Novel",
@@ -2748,7 +3445,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Vandy Translate",
@@ -2769,7 +3471,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Violet Lily",
@@ -2790,7 +3497,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "VyNovel",
@@ -2811,7 +3523,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Web Novel Translations",
@@ -2832,7 +3549,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Webnovel",
@@ -2853,7 +3575,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "WebNovelLover",
@@ -2874,7 +3601,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Web Novel Pub",
@@ -2895,7 +3627,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "White Moonlight Novels",
@@ -2916,7 +3653,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Witch Cult Translations",
@@ -2937,7 +3679,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Wook's Teahouse",
@@ -2958,7 +3705,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "WordExcerpt",
@@ -2979,7 +3731,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Wordrain69",
@@ -3000,7 +3757,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "WTR-LAB",
@@ -3021,7 +3783,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Wuxiafox",
@@ -3042,7 +3809,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Wuxiabox",
@@ -3063,7 +3835,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Wuxia Space",
@@ -3084,7 +3861,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "WuxiaV",
@@ -3105,7 +3887,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Wuxia World",
@@ -3126,7 +3913,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "WuxiaWorld.Site",
@@ -3147,7 +3939,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Zetro Translation",
@@ -3168,7 +3965,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "english"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AllNovelRead",
@@ -3189,7 +3991,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "AnimesHoy12",
@@ -3210,7 +4017,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hasu Translations",
@@ -3231,7 +4043,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LightNovelDaily",
@@ -3252,7 +4069,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MTL Novel (ES)",
@@ -3273,7 +4095,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NOVA",
@@ -3294,7 +4121,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novelas Ligera",
@@ -3315,7 +4147,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novelyra",
@@ -3336,7 +4173,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Oasis Translations",
@@ -3357,7 +4199,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Pancho Translations",
@@ -3378,7 +4225,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ReinoWuxia",
@@ -3399,7 +4251,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "SkyNovels",
@@ -3420,7 +4277,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "TC & Sega",
@@ -3441,7 +4303,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Traducciones Amistosas",
@@ -3462,7 +4329,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "TuNovelaLigera",
@@ -3483,7 +4355,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Yuuki Tls",
@@ -3504,7 +4381,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "spanish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Chireads",
@@ -3525,7 +4407,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "HarkenEliwood",
@@ -3546,7 +4433,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "KissWood",
@@ -3567,7 +4459,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Ligh Novel FR",
@@ -3588,7 +4485,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MassNovel",
@@ -3609,7 +4511,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MTL Novel (FR)",
@@ -3630,7 +4537,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelDeGlace",
@@ -3651,7 +4563,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelFrance",
@@ -3672,7 +4589,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novel France+",
@@ -3693,7 +4615,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novhell",
@@ -3714,7 +4641,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Re:Zero Web Novel FR",
@@ -3735,7 +4667,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Warrior Legend Trad",
@@ -3756,7 +4693,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "WorldNovel",
@@ -3777,7 +4719,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "WuxiaLnScantrad",
@@ -3798,7 +4745,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Xiaowaz",
@@ -3819,7 +4771,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "french"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Baca Light Novel",
@@ -3840,7 +4797,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "indonesian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "IndoWebNovel",
@@ -3861,7 +4823,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "indonesian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MeioNovel",
@@ -3882,7 +4849,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "indonesian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Vanovel",
@@ -3903,7 +4875,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "indonesian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MTL Novel (ID)",
@@ -3924,7 +4901,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "indonesian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelBookID",
@@ -3945,7 +4927,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "indonesian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "SakuraNovel",
@@ -3966,7 +4953,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "indonesian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Sekte Novel",
@@ -3987,7 +4979,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "indonesian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "WBNovel",
@@ -4008,7 +5005,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "indonesian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "kakuyomu",
@@ -4029,7 +5031,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Syosetu",
@@ -4050,7 +5057,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "japanese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Agitoon",
@@ -4071,7 +5083,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "korean"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Fortune Eternal",
@@ -4092,7 +5109,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "korean"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novelki",
@@ -4113,7 +5135,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "polish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Better Novels",
@@ -4134,7 +5161,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "portuguese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Blog do Amon Novels",
@@ -4155,7 +5187,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "portuguese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Central Novel",
@@ -4176,7 +5213,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "portuguese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Illusia",
@@ -4197,7 +5239,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "portuguese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Kiniga",
@@ -4218,7 +5265,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "portuguese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "LaNovels",
@@ -4239,7 +5291,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "portuguese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Light Novel Brasil",
@@ -4260,7 +5317,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "portuguese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MTL Novel (PT)",
@@ -4281,7 +5343,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "portuguese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novel Mania",
@@ -4302,7 +5369,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "portuguese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Tsundoku Traduções",
@@ -4323,7 +5395,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "portuguese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Автор Тудей",
@@ -4344,7 +5421,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Bllate (API)",
@@ -4365,7 +5447,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Bookhamster",
@@ -4386,7 +5473,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Bookriver",
@@ -4407,7 +5499,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Erolate (API)",
@@ -4428,7 +5525,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "EzNovels",
@@ -4449,7 +5551,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ficbook",
@@ -4470,7 +5577,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Свободный Мир Ранобэ",
@@ -4491,7 +5603,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Jaomix",
@@ -4512,7 +5629,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MTL Novel (RU)",
@@ -4533,7 +5655,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Neobook",
@@ -4554,7 +5681,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelCool (RU)",
@@ -4575,7 +5707,12 @@
     "login": true,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Ranobes (RU)",
@@ -4596,7 +5733,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Renovels",
@@ -4617,7 +5759,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "RanobeLib",
@@ -4638,7 +5785,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "RanobeHub",
@@ -4659,7 +5811,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "РанобэРФ",
@@ -4680,7 +5837,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Rulate (API)",
@@ -4701,7 +5863,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelTL",
@@ -4722,7 +5889,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ТопЛиба",
@@ -4743,7 +5915,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Целлюлоза",
@@ -4764,7 +5941,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "russian"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novel Lucky",
@@ -4785,7 +5967,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "thai"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novel PDF",
@@ -4806,7 +5993,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "thai"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Araz Novel",
@@ -4827,7 +6019,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "turkish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "E-KİTAPLAR",
@@ -4848,7 +6045,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "turkish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "EpikNovel",
@@ -4869,7 +6071,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "turkish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "kakikata",
@@ -4890,7 +6097,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "turkish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Kodeks Library",
@@ -4911,7 +6123,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "turkish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "MangaTR",
@@ -4932,7 +6149,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "turkish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NABİ SCANS",
@@ -4953,7 +6175,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "turkish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Namevt",
@@ -4974,7 +6201,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "turkish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novel oku",
@@ -4995,7 +6227,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "turkish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "NovelTR",
@@ -5016,7 +6253,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "turkish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Ragnar Scans",
@@ -5037,7 +6279,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "turkish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "ThNovels",
@@ -5058,7 +6305,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "turkish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "TurkceLightNovels",
@@ -5079,7 +6331,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "turkish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "WebNovelOku",
@@ -5100,7 +6357,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "turkish"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "BakaInUA",
@@ -5121,7 +6383,11 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Смаколики",
@@ -5142,7 +6408,11 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Light Novel VN",
@@ -5163,7 +6433,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "vietnamese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Hako",
@@ -5184,7 +6459,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "vietnamese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Nettruyen",
@@ -5205,7 +6485,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "vietnamese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "TruyenSS",
@@ -5226,7 +6511,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "vietnamese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "69书吧",
@@ -5247,7 +6537,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "爱下电子书",
@@ -5268,7 +6563,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "linovel",
@@ -5289,7 +6589,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Linovelib",
@@ -5310,7 +6615,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Linovelib(繁體)",
@@ -5331,7 +6641,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Novel543",
@@ -5352,7 +6667,12 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   },
   {
     "name": "Quanben",
@@ -5373,6 +6693,11 @@
     "login": false,
     "forYou": false,
     "requiresAccount": false,
-    "hasDRM": false
+    "hasDRM": false,
+    "tags": [
+      "read",
+      "chinese"
+    ],
+    "addedAt": "2026-09-02"
   }
 ]

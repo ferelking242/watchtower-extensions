@@ -16,6 +16,7 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { sourceLoginFlag } from "./source_manifest.mjs";
+import { validateTags } from "./catalog_taxonomy.mjs";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const problems = [];
@@ -163,6 +164,69 @@ console.log("▶ source URLs pinned to a commit");
     );
   } else {
     console.log("   all source URLs pinned to a commit");
+  }
+}
+
+// ── 2b. Marketplace taxonomy: tags must exist, be canonical and coherent ─────
+// A tag is what the Marketplace shelves are built from, so a typo or an
+// invented category must fail here rather than silently produce an empty
+// shelf in the app.
+console.log("▶ marketplace tags");
+{
+  let tagged = 0;
+  let tagTotal = 0;
+  for (const rel of jsonFiles.filter((file) => file.startsWith("index/"))) {
+    if (rel === "index/plugins.json") continue;
+    const entries = JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
+    if (!Array.isArray(entries)) continue;
+    for (const entry of entries) {
+      if (!Array.isArray(entry.tags) || entry.tags.length === 0) {
+        problems.push(
+          `TAGS: ${rel} / ${entry.name || entry.id} has no tags — run: node tools/generate_tags.mjs`,
+        );
+        continue;
+      }
+      tagged++;
+      tagTotal += entry.tags.length;
+      for (const problem of validateTags(entry.tags, {
+        itemType: entry.itemType,
+      })) {
+        problems.push(`TAGS: ${rel} / ${entry.name || entry.id}: ${problem}`);
+      }
+      if (
+        entry.addedAt !== undefined &&
+        !/^\d{4}-\d{2}-\d{2}$/.test(String(entry.addedAt))
+      ) {
+        problems.push(
+          `TAGS: ${rel} / ${entry.name || entry.id} addedAt must be YYYY-MM-DD`,
+        );
+      }
+    }
+  }
+  console.log(`   ${tagged} entries tagged (${tagTotal} tags)`);
+
+  // `popular`/`trending` claim a popularity signal the catalogue does not have.
+  for (const rel of jsonFiles.filter((file) => file.startsWith("index/"))) {
+    const raw = fs.readFileSync(path.join(ROOT, rel), "utf8");
+    if (/"tags"\s*:\s*\[[^\]]*"(?:popular|trending)"/.test(raw)) {
+      problems.push(
+        `TAGS: ${rel} claims "popular"/"trending" — the catalogue has no popularity signal`,
+      );
+    }
+  }
+
+  // The generated tags must match what generate_tags.mjs would write.
+  try {
+    execFileSync(process.execPath, ["tools/generate_tags.mjs", "--check"], {
+      cwd: ROOT,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+    console.log("   tags are in sync with the catalogue");
+  } catch (e) {
+    problems.push(
+      `TAGS SYNC: ${String(e.stdout || e.stderr || e.message).trim().split("\n").slice(-3).join(" ")}`,
+    );
   }
 }
 

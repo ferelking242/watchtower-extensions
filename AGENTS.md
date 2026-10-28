@@ -188,6 +188,38 @@ partager légitimement (`MTL Novel` + `MTL Novel (FR/ES/…)`, `Linovelib` +
 - Toujours re-vérifier après : `md5` unique par marque, formes 32–512 px carré,
   fichiers > 300 o, puis `npm run validate`.
 
+## Tags du Marketplace
+
+Le champ `tags` de chaque entrée d'index alimente les rayons du Marketplace.
+Il est **généré**, jamais écrit à la main :
+
+```bash
+node tools/generate_tags.mjs          # régénère les tags + addedAt
+node tools/generate_tags.mjs --check  # vérifie sans écrire (utilisé en CI)
+```
+
+- Vocabulaire : `tools/catalog_taxonomy.mjs`, miroir de
+  `lib/models/catalog_taxonomy.dart` dans Watchtower. Les deux fichiers doivent
+  rester en phase : ajouter un tag d'un côté sans l'autre casse `npm run
+  validate` (le Dart refuse un tag inconnu, le JS aussi).
+- Les tags viennent de faits déjà présents dans le dépôt : catalogue
+  d'appartenance (`itemType`), options réellement déclarées dans
+  `getFilterList()`, champs `lang`/`langs`, et `forYou` pour `featured`. Le nom
+  de domaine, le titre ou une marque ne classent **jamais** une extension — un
+  nom français n'implique pas le français.
+- `popular` et `trending` ne sont **jamais** écrits : le catalogue ne contient
+  aucune statistique d'usage réelle. Les rayons « Populaire » de l'application
+  utilisent un ordre déterministe documenté côté Watchtower.
+- `addedAt` est dérivé de l'historique git (`index/<type>.json`). Un clone
+  superficiel ne renvoie donc aucune date : le champ est alors omis, jamais
+  inventé.
+- `npm run test:taxonomy` teste le vocabulaire et vérifie le catalogue réel ;
+  `npm run tags:check` échoue si un index n'est pas à jour. Les deux tournent
+  dans `.github/workflows/validate.yml`, et `pin-sources.yml` régénère les tags
+  avant de figer les URL.
+- Les tags sont **rétrocompatibles** : le champ est optionnel, une entrée qui
+  n'en a pas reste valide, et l'application retombe sur `itemType` + langue.
+
 ## Push
 
 Remote : `https://github.com/ferelking242/watchtower-extensions.git` (branche
