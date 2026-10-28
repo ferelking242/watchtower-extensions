@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.4.1",
+  "version": "1.5.0",
   "login": true,
   "loginUrl": "https://www.xnxx.com/mobile/login",
   "forYou": false,
@@ -92,7 +92,7 @@ class DefaultExtension extends MProvider {
 
   _historyDescription(timestamp) {
     const date = new Date(timestamp);
-    if (Number.isNaN(date.getTime())) return "Reprise locale disponible";
+    if (Number.isNaN(date.getTime())) return "Déjà regardé";
     return `Vu le ${date.toLocaleString("fr-FR", {
       day: "2-digit", month: "short", year: "numeric",
       hour: "2-digit", minute: "2-digit"
@@ -246,20 +246,44 @@ class DefaultExtension extends MProvider {
     return `/hits${this._pagePath(page)}`;
   }
 
-  // XNXX's own cards use `_t` for the 600x337 listing thumbnail and ship a
-  // full-size `mozaique_listing` (1056x594) next to it. Watchtower upscales
-  // covers, so returning `_t` is what made every image look blurry.
-  _hiResImage(url) {
+  // XNXX publishes three renditions of the same still:
+  //   xn_10_t.jpg          600x337, ONE frame  -> card cover
+  //   mozaique_listing.jpg 1056x594, a 3x3 MOSAIC of nine frames
+  //   mozaique_full.jpg   2080x1170, ONE frame -> detail hero
+  // `mozaique_listing` was used as the card cover, so every card showed a
+  // grid of nine pictures from the video instead of a single one. Cards keep
+  // the single-frame thumb (the app upscales it); only the detail hero takes
+  // the 2080x1170 still, where zooming needs the extra pixels.
+  _coverImage(url) {
     if (!url) return "";
-    const match = /^(.*\/)([^/]+)\.(jpe?g|png|webp)$/i.exec(url);
-    if (!match) return url;
-    const prefix = match[1];
-    const name = match[2];
-    if (/mozaique_(full|listing)$/i.test(name)) return url;
-    // Only XNXX's own generated names can be swapped; leave anything else
-    // (and already high-resolution art) untouched.
-    if (!/^(xn|xv|mozaique)_?\d*_?t?$/i.test(name)) return url;
-    return `${prefix}mozaique_listing.jpg`;
+    // Already a single frame (`xn_1_t.jpg`, `xv_2_t.jpg`): keep the site's pick.
+    const name = this._stillName(url);
+    if (/^(xn|xv)_\d+_t$/i.test(name)) return url;
+    return this._swapFrame(url, "xn_10_t.jpg", /^mozaique_(listing|full)$/i);
+  }
+
+  _fullImage(url) {
+    if (!url) return "";
+    return this._swapFrame(
+      url,
+      "mozaique_full.jpg",
+      /^(xn|xv)_\d+_t$|^mozaique_listing$/i
+    );
+  }
+
+  _stillName(url) {
+    const match = /^(.*\/)([^/?#.]+)(?:\.[a-z0-9]{2,5})?([?#].*)?$/i.exec(url || "");
+    return match ? match[2] : "";
+  }
+
+  // Only XNXX's own generated still names are interchangeable; anything else
+  // (uploader art, avatars) is returned untouched.
+  _swapFrame(url, target, ...accepted) {
+    if (!url) return "";
+    const name = this._stillName(url);
+    if (!name || !accepted.some(pattern => pattern.test(name))) return url;
+    const match = /^(.*\/)([^/?#.]+)(?:\.[a-z0-9]{2,5})?([?#].*)?$/i.exec(url);
+    return `${match[1]}${target}${match[4] || ""}`;
   }
 
   _hasPremiumMarker(el) {
@@ -403,7 +427,7 @@ class DefaultExtension extends MProvider {
       const rawImage = mzlMatch ? mzlMatch[1] : image;
       items.push({
         name: name || "Untitled",
-        imageUrl: this._hiResImage(
+        imageUrl: this._coverImage(
           rawImage.startsWith("//") ? `https:${rawImage}` : rawImage
         ),
         previewUrl: previewMatch ? this._absolute(previewMatch[1]) : "",
@@ -461,8 +485,8 @@ class DefaultExtension extends MProvider {
 
       items.push({
         name: this._text(titleAnchor) || "Untitled",
-        imageUrl: this._hiResImage(
-          data.mozaiqueListing || data.sfwThumbUrl || this._image(imageElement)
+        imageUrl: this._coverImage(
+          data.sfwThumbUrl || data.mozaiqueListing || this._image(imageElement)
         ),
         previewUrl: this._absolute(preview),
         link,
@@ -515,7 +539,7 @@ class DefaultExtension extends MProvider {
       const count = this._text(this._elementsByClass(card, "uploader")[0]);
       items.push({
         name: this._text(title) || "Pornstar",
-        imageUrl: this._hiResImage(this._image(this._elementsByTag(card, "img")[0])),
+        imageUrl: this._coverImage(this._image(this._elementsByTag(card, "img")[0])),
         link,
         description: count ? `${count} free videos` : "Free videos"
       });
@@ -571,39 +595,30 @@ class DefaultExtension extends MProvider {
     return `${Math.floor(total / 12)}-${String((total % 12) + 1).padStart(2, "0")}`;
   }
 
-  _dailySelections() {
-    return [
-      {
-        name: "Suggestions Straight",
-        link: this._absolute("/your-suggestions/straight"),
-        collectionId: "suggestion_straight",
-        description: "Une sélection personnalisée"
-      },
-      {
-        name: "African · Top",
-        link: this._absolute("/search/african"),
-        collectionId: "search_african",
-        description: "Les vidéos African les plus populaires"
-      },
-      {
-        name: "Teen",
-        link: this._absolute("/search/Teen"),
-        collectionId: "search_teen",
-        description: "Parcourir les vidéos Teen"
-      },
-      {
-        name: "Amateur",
-        link: this._absolute("/search/amateur"),
-        collectionId: "search_amateur",
-        description: "Parcourir les vidéos Amateur"
-      },
-      {
-        name: "MILF",
-        link: this._absolute("/search/milf"),
-        collectionId: "search_milf",
-        description: "Parcourir les vidéos MILF"
+  // XNXX's real daily feed lives at /todays-selection and is paginated like
+  // /hits. It is used as-is, so the section shows videos (with covers) rather
+  // than a hand-written list of links.
+  async _todaysSelection(page) {
+    const { body } = await this._get(`/todays-selection${this._pagePath(page)}`);
+    return this._parseVideoList(body, page, "daily");
+  }
+
+  // A tag row carries no artwork, so a tag card rendered as a bare gradient
+  // tile. Borrow the cover of the tag's first video instead. Bounded to the
+  // tiles a grid actually shows: every extra cover is one more request, and
+  // hammering the listing endpoint is what gets a session rate-limited.
+  async _enrichTagCovers(tags, limit = 6) {
+    const targets = tags.slice(0, limit).filter(tag => !tag.imageUrl);
+    await Promise.all(targets.map(async tag => {
+      try {
+        const { body } = await this._get(tag.link);
+        const first = this._parseVideoList(body, 1, "tag-cover").list[0];
+        if (first && first.imageUrl) tag.imageUrl = first.imageUrl;
+      } catch (error) {
+        extLog("warn", `XNXX tag cover unavailable tag=${tag.name}: ${error.message}`);
       }
-    ].map(item => ({ ...item, imageUrl: "" }));
+    }));
+    return tags;
   }
 
   _categoryTags() {
@@ -783,7 +798,7 @@ class DefaultExtension extends MProvider {
       return { list, hasNextPage: false };
     }
     if (listId === "daily") {
-      return { list: this._dailySelections(), hasNextPage: false };
+      return this._todaysSelection(page);
     }
     // The layout shows "Le meilleur du mois" as a plain ranked section: the
     // month is resolved server-side here instead of through a layout month
@@ -842,13 +857,17 @@ class DefaultExtension extends MProvider {
           const { body } = await this._get(`/tags/${letter}`);
           const tags = this._parseTags(body);
           if (tags.length) {
+            await this._enrichTagCovers(tags);
             return { list: tags, hasNextPage: index < letters.length - 1 };
           }
         } catch (error) {
           extLog("warn", `XNXX tag index unavailable: ${error.message}`);
         }
       }
-      return { list: this._categoryTags(), hasNextPage: false };
+      return {
+        list: await this._enrichTagCovers(this._categoryTags()),
+        hasNextPage: false
+      };
     }
     if (listId === "hits") {
       const { body } = await this._get(this._hitsPath(page));
@@ -877,7 +896,7 @@ class DefaultExtension extends MProvider {
       doc.selectFirst("h1.content-title")
     ) || metaTitle.replace(/\s+/g, " ").trim()
       || "XNXX";
-    const cover = this._hiResImage(
+    const cover = this._fullImage(
       doc.selectFirst('meta[property="og:image"]')?.attr("content") || ""
     );
 
@@ -971,7 +990,7 @@ class DefaultExtension extends MProvider {
         this._text(page.selectFirst("h1.content-title")) ||
         metaTitle.replace(/\s+/g, " ").trim() ||
         "XNXX video";
-      const cover = this._hiResImage(
+      const cover = this._coverImage(
         page.selectFirst('meta[property="og:image"]')?.attr("content") || ""
       );
       // Fire-and-forget: this is a localStorage write through the app's

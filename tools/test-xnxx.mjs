@@ -189,16 +189,38 @@ assert.ok(
   logs.some(({ message }) => message.includes("retrying: ")),
 );
 
-// ── Covers: XNXX ships a 1056x594 mozaique_listing next to the 600x337 `_t` ──
+// ── Covers: `mozaique_listing` is a 3x3 MOSAIC, not a single picture ────────
+// XNXX's 1056x594 `mozaique_listing` stitches nine frames of the video into a
+// grid, so using it as a card cover showed a different picture in every cell.
+// Cards keep the 600x337 single-frame `_t`; the detail hero may use the
+// 2080x1170 single-frame `mozaique_full`.
 assert.equal(
-  provider._hiResImage("https://cdn.example/abc/0/xn_10_t.jpg"),
-  "https://cdn.example/abc/0/mozaique_listing.jpg",
+  provider._coverImage("https://cdn.example/abc/0/xn_10_t.jpg"),
+  "https://cdn.example/abc/0/xn_10_t.jpg",
 );
 assert.equal(
-  provider._hiResImage("https://cdn.example/abc/0/mozaique_listing.jpg"),
-  "https://cdn.example/abc/0/mozaique_listing.jpg",
+  provider._coverImage("https://cdn.example/abc/0/mozaique_listing.jpg"),
+  "https://cdn.example/abc/0/xn_10_t.jpg",
 );
-assert.equal(provider._hiResImage(""), "");
+assert.equal(
+  provider._coverImage("https://cdn.example/abc/0/mozaique_full.jpg"),
+  "https://cdn.example/abc/0/xn_10_t.jpg",
+);
+assert.equal(
+  provider._fullImage("https://cdn.example/abc/0/xn_10_t.jpg"),
+  "https://cdn.example/abc/0/mozaique_full.jpg",
+);
+assert.equal(
+  provider._fullImage("https://cdn.example/abc/0/mozaique_listing.jpg"),
+  "https://cdn.example/abc/0/mozaique_full.jpg",
+);
+// Non-XNXX artwork is never rewritten.
+assert.equal(
+  provider._coverImage("https://cdn.example/uploader/avatar.png"),
+  "https://cdn.example/uploader/avatar.png",
+);
+assert.equal(provider._coverImage(""), "");
+assert.equal(provider._fullImage(""), "");
 
 // The /hits card keeps thumb + preview inside its `data-video` JSON, not on
 // the <img>, so a DOM parse that ignores it loses the artwork entirely.
@@ -215,7 +237,7 @@ const hitsParsed = provider._parseVideoList(hitsFixture, 1, "hits");
 assert.equal(hitsParsed.list.length, 1);
 assert.equal(
   hitsParsed.list[0].imageUrl,
-  "https://cdn.example/abc/0/mozaique_listing.jpg",
+  "https://cdn.example/abc/0/xn_1_t.jpg",
 );
 assert.equal(hitsParsed.list[0].previewUrl, "https://cdn.example/abc/0/preview.mp4");
 assert.equal(hitsParsed.list[0].description, "Duration: 12min");
@@ -251,7 +273,7 @@ assert.equal(stars.list[0].name, "Alex Adams");
 assert.equal(stars.list[0].link, "https://www.xnxx.com/pornstar/alex_adams69");
 assert.equal(
   stars.list[0].imageUrl,
-  "https://cdn.example/abc/0/mozaique_listing.jpg",
+  "https://cdn.example/abc/0/xn_10_t.jpg",
 );
 
 // ── History: the local rail must warm its cache before reading ───────────────

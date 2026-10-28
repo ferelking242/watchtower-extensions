@@ -2,21 +2,92 @@
   "schemaVersion": 1,
   "home": {
     "sections": [
-      { "id": "hits", "component": "spotlight", "title": "À la une", "accent": "#FF3D71", "icon": "trending_up", "seeAll": true },
-      { "id": "daily", "component": "collectionCards", "title": "Sélection du jour", "accent": "#237F78" },
-      { "id": "history", "component": "showcase", "title": "Historique · reprendre", "accent": "#7C4DFF", "icon": "history" },
-      { "id": "best_month", "component": "rankedWide", "title": "Le meilleur du mois", "accent": "#FFB300", "icon": "calendar_month", "seeAll": true },
-      { "id": "pornstars", "component": "landscapeStacked", "title": "Pornstars", "accent": "#FFB300", "icon": "star", "seeAll": true, "cardStyle": "landscape" },
-      { "id": "tags", "component": "grid", "title": "Tags", "accent": "#00B8D4", "icon": "local_offer", "columns": 2, "rows": 3, "cardStyle": "tag", "seeAll": true },
-      { "id": "best_previous", "component": "rankedWide", "title": "Le meilleur du mois dernier", "accent": "#8E24AA", "icon": "workspace_premium", "seeAll": true },
-      { "id": "suggestion_straight", "component": "collectionCards", "title": "Suggestions", "accent": "#F4511E", "icon": "auto_awesome" }
+      {
+        "id": "hits",
+        "component": "spotlight",
+        "title": "À la une",
+        "accent": "#FF3D71",
+        "icon": "trending_up",
+        "seeAll": true
+      },
+      {
+        "id": "daily",
+        "component": "landscapeStacked",
+        "title": "Sélection du jour",
+        "accent": "#237F78",
+        "icon": "today",
+        "seeAll": true
+      },
+      {
+        "id": "history",
+        "component": "showcase",
+        "title": "Historique",
+        "accent": "#7C4DFF",
+        "icon": "history"
+      },
+      {
+        "id": "best_month",
+        "component": "rankedWide",
+        "title": "Le meilleur du mois",
+        "accent": "#FFB300",
+        "icon": "calendar_month",
+        "seeAll": true
+      },
+      {
+        "id": "best_previous",
+        "component": "rankedWide",
+        "title": "Le meilleur du mois dernier",
+        "accent": "#8E24AA",
+        "icon": "workspace_premium",
+        "seeAll": true
+      },
+      {
+        "id": "suggestion_straight",
+        "component": "landscapeStacked",
+        "title": "Suggestions",
+        "accent": "#F4511E",
+        "icon": "auto_awesome",
+        "seeAll": true
+      },
+      {
+        "id": "pornstars",
+        "component": "landscapeStacked",
+        "title": "Pornstars",
+        "accent": "#FFB300",
+        "icon": "star",
+        "seeAll": true,
+        "cardStyle": "landscape"
+      },
+      {
+        "id": "tags",
+        "component": "grid",
+        "title": "Tags",
+        "accent": "#00B8D4",
+        "icon": "local_offer",
+        "columns": 2,
+        "rows": 3,
+        "cardStyle": "tag",
+        "seeAll": true
+      }
     ]
   },
   "browse": {
-    "popular": { "component": "grid", "columns": 3, "cardStyle": "thumbnail" },
-    "latest":  { "component": "grid", "columns": 3, "cardStyle": "thumbnail" },
-    "search":  {
-      "results": { "component": "grid", "columns": 3, "cardStyle": "thumbnail" },
+    "popular": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 3,
+        "cardStyle": "thumbnail"
+      },
       "filters": "chips"
     }
   },
@@ -25,5 +96,8 @@
     "episodeList": "compact",
     "showRecommendations": false
   },
-  "player": { "mode": "standard", "touchToPreview": true }
+  "player": {
+    "mode": "standard",
+    "touchToPreview": true
+  }
 }
