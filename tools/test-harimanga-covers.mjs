@@ -77,8 +77,18 @@ const layout = JSON.parse(
 );
 assert.deepEqual(
   layout.home.sections.map((section) => section.id),
-  ["popular", "latest"],
-  "the first screen should not fan out into nine parallel cover shelves",
+  [
+    "spotlight",
+    "popular",
+    "latest",
+    "trending",
+    "top_rated",
+    "new",
+    "category_romance",
+    "category_action",
+    "completed",
+  ],
+  "all nine Harimanga home shelves must remain available",
 );
 
 console.log("Harimanga cover mirror regression checks passed.");
