@@ -44,29 +44,26 @@ const watchtowerSources = [
 const BASE_URL = "https://www.harimanga.co.uk";
 
 // ── Cover hosts ─────────────────────────────────────────────────────────────
-// The site distributes covers across several mirrors. A tight burst of image
-// requests can trigger CDN rejection, so keep catalogue URLs on the two mirrors
-// confirmed to serve the same paths and shard them deterministically. This
-// spreads concurrent shelves across hosts without changing a cover's cache key
-// between requests:
+// The site distributes covers across several mirrors. Keep the broad catalogue
+// on the two mirrors confirmed to share paths; use cdn2/cdn3 only for exact paths
+// verified there because those mirrors do not contain every cover.
 //
 //   img-r1.2xstorage.com  serves the catalogue
 //   cdn.zinmanga1.com     serves the same paths as img-r1
 //
-// Other mirrors emitted by the site are intermittent or unavailable. This
-// does NOT recover covers the site itself does not host: some paths return 404
-// on every mirror (e.g. /thumb/kimetsu-no-yaiba.webp).
-//
-// The three paths below exist only on the Zinmanga mirror:
-//   · /thumb/gotham-by-daylight.webp
-//   · /thumb/i-married-the-dragoni-killed.webp
-//   · /thumb/title-unlocked-this-life-i-dominate-the-game.webp
+//   cdn2/cdn3.zinmanga1.com  verified copies of selected catalogue covers
 const COVER_HOSTS = ["img-r1.2xstorage.com", "cdn.zinmanga1.com"];
-
-const ZINMANGA_ONLY_COVERS = {
-  "/thumb/gotham-by-daylight.webp": 1,
-  "/thumb/i-married-the-dragoni-killed.webp": 1,
-  "/thumb/title-unlocked-this-life-i-dominate-the-game.webp": 1,
+const COVER_HOST_OVERRIDES = {
+  // These paths are only present on the first Zinmanga mirror.
+  "/thumb/gotham-by-daylight.webp": ["cdn.zinmanga1.com"],
+  "/thumb/i-married-the-dragoni-killed.webp": ["cdn.zinmanga1.com"],
+  "/thumb/title-unlocked-this-life-i-dominate-the-game.webp": ["cdn.zinmanga1.com"],
+  // Verified on both cdn2 and cdn3; these paths are absent on some other mirrors.
+  "/thumb/tales-of-demons-and-gods.webp": ["cdn2.zinmanga1.com", "cdn3.zinmanga1.com"],
+  "/thumb/solo-leveling.webp": ["cdn2.zinmanga1.com", "cdn3.zinmanga1.com"],
+  "/thumb/the-beginning-after-the-end.webp": ["cdn2.zinmanga1.com", "cdn3.zinmanga1.com"],
+  "/thumb/one-piece.webp": ["cdn2.zinmanga1.com", "cdn3.zinmanga1.com"],
+  "/thumb/kimetsu-no-yaiba.webp": ["cdn2.zinmanga1.com", "cdn3.zinmanga1.com"],
 };
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
@@ -159,16 +156,13 @@ class DefaultExtension extends MProvider {
     const suffix = suffixIndex === -1 ? "" : rest.slice(suffixIndex);
     const path = rawPath.replace(/\/{2,}/g, "/") || "/";
 
-    let hostIndex = 1;
-    if (!ZINMANGA_ONLY_COVERS[path]) {
-      let hash = 0;
-      for (let i = 0; i < path.length; i++) {
-        hash = (hash * 31 + path.charCodeAt(i)) % 2147483647;
-      }
-      hostIndex = hash % COVER_HOSTS.length;
+    const hosts = COVER_HOST_OVERRIDES[path] || COVER_HOSTS;
+    let hash = 0;
+    for (let i = 0; i < path.length; i++) {
+      hash = (hash * 31 + path.charCodeAt(i)) % 2147483647;
     }
 
-    return `${scheme}${COVER_HOSTS[hostIndex]}${path}${suffix}`;
+    return `${scheme}${hosts[hash % hosts.length]}${path}${suffix}`;
   }
 
   // The current site home uses `.manga-grid .manga-item` for its update rail,
@@ -593,7 +587,9 @@ class DefaultExtension extends MProvider {
         const parsed = this.parseMangaFromHomeItem(items[i]);
         if (parsed.name && parsed.link) list.push(parsed);
       }
-      return { list, hasNextPage: false };
+      // Spotlight is a single hero card. Returning the whole update grid here
+      // caused dozens of image requests to start together on the home screen.
+      return { list: list.slice(0, 1), hasNextPage: false };
     }
 
     const categorySlug = listId.startsWith("category_")

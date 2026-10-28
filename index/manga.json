@@ -1215,7 +1215,7 @@
     "version": "0.4.10",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@e1fdaf80e5bdf64be5706032326413881af9a474/src/manga/en/harimanga.js",
     "uiLayout": "ui-layouts/harimanga.json",
-    "uiLayoutVersion": "1.2.0",
+    "uiLayoutVersion": "1.2.1",
     "isManga": true,
     "isNsfw": false,
     "hasCloudflare": false,

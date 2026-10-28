@@ -44,7 +44,23 @@ assert.deepEqual(
   ["cdn.zinmanga1.com", "img-r1.2xstorage.com"],
 );
 
-// These paths are only present on Zinmanga and must never be sharded away.
+// These real paths have verified copies on cdn2/cdn3 and must avoid the
+// app-blocked r1/cdn mirrors for the most popular covers.
+for (const path of [
+  "/thumb/tales-of-demons-and-gods.webp",
+  "/thumb/solo-leveling.webp",
+  "/thumb/the-beginning-after-the-end.webp",
+  "/thumb/one-piece.webp",
+  "/thumb/kimetsu-no-yaiba.webp",
+]) {
+  const expectedHosts = ["cdn2.zinmanga1.com", "cdn3.zinmanga1.com"];
+  const first = provider._coverUrl(`https://img-r1.2xstorage.com${path}`);
+  assert.ok(expectedHosts.includes(new URL(first).host));
+  assert.equal(first, provider._coverUrl(`https://cdn.zinmanga1.com${path}`));
+}
+
+// These paths are only present on the first Zinmanga mirror and must not be
+// sharded to another host.
 for (const special of [
   "/thumb/gotham-by-daylight.webp",
   "/thumb/i-married-the-dragoni-killed.webp",
@@ -55,5 +71,14 @@ for (const special of [
     "cdn.zinmanga1.com",
   );
 }
+
+const layout = JSON.parse(
+  fs.readFileSync(path.join(root, "ui-layouts/harimanga.json"), "utf8"),
+);
+assert.deepEqual(
+  layout.home.sections.map((section) => section.id),
+  ["popular", "latest"],
+  "the first screen should not fan out into nine parallel cover shelves",
+);
 
 console.log("Harimanga cover mirror regression checks passed.");
