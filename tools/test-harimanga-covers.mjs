@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import vm from "node:vm";
+import { fileURLToPath } from "node:url";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const extensionSource = fs.readFileSync(
+  path.join(root, "src/manga/en/harimanga.js"),
+  "utf8",
+);
+
+const context = {
+  MProvider: class {},
+  SharedPreferences: class {
+    get() {
+      return null;
+    }
+  },
+};
+vm.runInNewContext(
+  `${extensionSource}\nglobalThis.HarimangaForTest = DefaultExtension;`,
+  context,
+);
+const provider = new context.HarimangaForTest();
+
+// Mirrors selected for the same path must be stable across calls and source hosts.
+const pathA = "/thumb/a-good-cover.webp";
+const stableA = provider._coverUrl(`https://cdn2.zinmanga1.com//${pathA}`);
+assert.equal(stableA, provider._coverUrl(`https://img-r2.2xstorage.com${pathA}`));
+assert.equal(stableA, provider._coverUrl(`https://img-r1.2xstorage.com${pathA}`));
+assert.equal(new URL(stableA).pathname, pathA);
+
+// The path-based sharding distributes a normal catalogue rather than forcing
+// every cover onto one CDN host.
+const hosts = new Set();
+for (let i = 0; i < 40; i++) {
+  const result = provider._coverUrl(`https://img-r2.2xstorage.com/thumb/cover-${i}.webp`);
+  hosts.add(new URL(result).host);
+}
+assert.deepEqual(
+  [...hosts].sort(),
+  ["cdn.zinmanga1.com", "img-r1.2xstorage.com"],
+);
+
+// These paths are only present on Zinmanga and must never be sharded away.
+for (const special of [
+  "/thumb/gotham-by-daylight.webp",
+  "/thumb/i-married-the-dragoni-killed.webp",
+  "/thumb/title-unlocked-this-life-i-dominate-the-game.webp",
+]) {
+  assert.equal(
+    new URL(provider._coverUrl(`https://img-r1.2xstorage.com${special}`)).host,
+    "cdn.zinmanga1.com",
+  );
+}
+
+console.log("Harimanga cover mirror regression checks passed.");

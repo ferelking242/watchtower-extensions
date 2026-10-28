@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://www.harimanga.co.uk/image/icon/hari-icon-192x192.webp",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.4.8",
+    "version": "0.4.9",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -44,27 +44,24 @@ const watchtowerSources = [
 const BASE_URL = "https://www.harimanga.co.uk";
 
 // ── Cover hosts ─────────────────────────────────────────────────────────────
-// The site emits each cover on one of four mirrors. Checked by fetching the
-// exact URLs the site produced, with 1.5 s between requests (a tight burst
-// returns 429 and makes any host look broken):
+// The site distributes covers across several mirrors. A tight burst of image
+// requests can trigger CDN rejection, so keep catalogue URLs on the two mirrors
+// confirmed to serve the same paths and shard them deterministically. This
+// spreads concurrent shelves across hosts without changing a cover's cache key
+// between requests:
 //
-//   img-r1.2xstorage.com   serves the catalogue
-//   img-r2.2xstorage.com   503 "Server busy"
-//   img-r3.2xstorage.com   DNS does not resolve
-//   cdn.zinmanga1.com      serves the same paths as img-r1
-//   cdn4.zinmanga1.com     503
+//   img-r1.2xstorage.com  serves the catalogue
+//   cdn.zinmanga1.com     serves the same paths as img-r1
 //
-// Normalising onto `img-r1` keeps the app from depending on the two hosts that
-// are down. It does NOT recover covers the site itself does not host: a few
-// paths 404 on every mirror (e.g. /thumb/kimetsu-no-yaiba.webp), and no rewrite
-// can fix those.
+// Other mirrors emitted by the site are intermittent or unavailable. This
+// does NOT recover covers the site itself does not host: some paths return 404
+// on every mirror (e.g. /thumb/kimetsu-no-yaiba.webp).
 //
-// The three paths below are kept on the mirror the site emitted, because only
-// that mirror holds them:
+// The three paths below exist only on the Zinmanga mirror:
 //   · /thumb/gotham-by-daylight.webp
 //   · /thumb/i-married-the-dragoni-killed.webp
 //   · /thumb/title-unlocked-this-life-i-dominate-the-game.webp
-const COVER_HOST = "img-r1.2xstorage.com";
+const COVER_HOSTS = ["img-r1.2xstorage.com", "cdn.zinmanga1.com"];
 
 const ZINMANGA_ONLY_COVERS = {
   "/thumb/gotham-by-daylight.webp": 1,
@@ -148,20 +145,30 @@ class DefaultExtension extends MProvider {
     return this.resolveUrl(this._coverUrl(imageUrl));
   }
 
-  // The single URL the app receives has to be the best one, not merely the
-  // first: normalise every mirror onto the host that actually serves the
-  // catalogue, and keep the few paths only another mirror holds on that mirror.
+  // Keep all URLs on the two known-good mirrors and shard by path so repeated
+  // appearances of the same cover stay cacheable while parallel shelves do not
+  // all hit a single host.
   _coverUrl(url) {
     if (!url) return url;
     const match = /^(https?:\/\/)([^/]+)([\s\S]*)$/i.exec(String(url));
     if (!match) return url;
     const scheme = match[1];
-    const host = match[2].toLowerCase();
     const rest = match[3];
-    const path = rest.split(/[?#]/)[0];
-    if (ZINMANGA_ONLY_COVERS[path]) return url;
-    if (host === COVER_HOST) return url;
-    return `${scheme}${COVER_HOST}${rest}`;
+    const suffixIndex = rest.search(/[?#]/);
+    const rawPath = suffixIndex === -1 ? rest : rest.slice(0, suffixIndex);
+    const suffix = suffixIndex === -1 ? "" : rest.slice(suffixIndex);
+    const path = rawPath.replace(/\/{2,}/g, "/") || "/";
+
+    let hostIndex = 1;
+    if (!ZINMANGA_ONLY_COVERS[path]) {
+      let hash = 0;
+      for (let i = 0; i < path.length; i++) {
+        hash = (hash * 31 + path.charCodeAt(i)) % 2147483647;
+      }
+      hostIndex = hash % COVER_HOSTS.length;
+    }
+
+    return `${scheme}${COVER_HOSTS[hostIndex]}${path}${suffix}`;
   }
 
   // The current site home uses `.manga-grid .manga-item` for its update rail,

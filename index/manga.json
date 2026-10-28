@@ -956,7 +956,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/manga-2000000046.webp",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.4.8",
+    "version": "0.4.9",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@ed1198b4ea5a86e6efab95a9e10c1131eb6d6eb4/src/manga/en/harimanga.js",
     "uiLayout": "ui-layouts/harimanga.json",
     "uiLayoutVersion": "1.2.0",
