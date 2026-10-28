@@ -204,3 +204,33 @@ git push origin main
 Si le push est refusé en interactif (« Password for … »), c'est que l'URL du
 remote embarque le `ghu_` : la remplacer comme ci-dessus. Toujours `git fetch`
 puis `git rebase origin/main` avant de pousser, `main` bouge vite.
+
+## XNXX — renditions de vignettes (piège)
+
+XNXX publie trois renditions du **même** arrêt sur image, et deux d'entre elles
+ne sont pas ce que leur nom suggère :
+
+| Fichier | Taille | Contenu |
+| --- | --- | --- |
+| `xn_10_t.jpg` | 600x337 | **une seule** image — vignette de carte |
+| `mozaique_listing.jpg` | 1056x594 | **mosaïque 3x3** de neuf images |
+| `mozaique_full.jpg` | 2080x1170 | **une seule** image — hero de fiche |
+
+`mozaique_listing` a déjà été utilisé comme couverture « haute résolution » :
+chaque carte affichait alors une grille de neuf images du clip. Les cartes
+doivent garder la vignette mono-image ; seul le hero de la fiche peut prendre
+`mozaique_full` (netteté au zoom). Vérifier un doute avec un détecteur de
+coutures (écart |x+1 − x−1| au tiers de la largeur : ~10x la médiane sur une
+mosaïque, ~1x sur une image unique).
+
+Helpers : `_coverImage()` (cartes), `_fullImage()` (fiche), `_swapFrame()`.
+`data-video`/`data-mzl` annoncent souvent `mozaique_listing` : c'est
+`_coverImage()` qui rétablit la mono-image.
+
+## XNXX — sections d'accueil
+
+`/todays-selection` est la vraie sélection du jour (paginée comme `/hits`) ;
+`/your-suggestions/straight` n'est rempli que par l'activité locale du
+navigateur et renvoie 0 carte en pratique (repli sur la recherche `straight`).
+Les tags n'ont aucune illustration côté site : `_enrichTagCovers()` emprunte la
+couverture de la première vidéo, bornée aux tuiles affichées.
