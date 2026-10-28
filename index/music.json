@@ -24,7 +24,7 @@
       "music",
       "english"
     ],
-    "addedAt": "2026-09-02"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "Bandcamp",
@@ -50,7 +50,7 @@
       "music",
       "english"
     ],
-    "addedAt": "2026-09-02"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "SoundCloud",
@@ -76,7 +76,7 @@
       "music",
       "english"
     ],
-    "addedAt": "2026-09-02"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "Deezer",
@@ -103,7 +103,7 @@
       "music",
       "french"
     ],
-    "addedAt": "2026-09-02"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "MLP France — Chansons",
@@ -137,7 +137,7 @@
       "english",
       "featured"
     ],
-    "addedAt": "2026-09-02"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "Karaoke Mugen",
@@ -186,7 +186,7 @@
       "chinese",
       "russian"
     ],
-    "addedAt": "2026-09-02"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "listen.moe",
@@ -221,7 +221,7 @@
       "japanese",
       "korean"
     ],
-    "addedAt": "2026-09-02"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "Miraculum Music",
@@ -248,7 +248,7 @@
       "music",
       "multilingual"
     ],
-    "addedAt": "2026-09-02"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "YouTube Music",
@@ -274,7 +274,7 @@
       "music",
       "multilingual"
     ],
-    "addedAt": "2026-09-02"
+    "addedAt": "2026-10-28"
   },
   {
     "id": 3001,
@@ -301,7 +301,7 @@
       "music",
       "multilingual"
     ],
-    "addedAt": "2026-07-06"
+    "addedAt": "2026-10-28"
   },
   {
     "id": 3002,
@@ -327,7 +327,7 @@
       "music",
       "multilingual"
     ],
-    "addedAt": "2026-07-06"
+    "addedAt": "2026-10-28"
   },
   {
     "id": 3003,
@@ -354,7 +354,7 @@
       "music",
       "multilingual"
     ],
-    "addedAt": "2026-07-06"
+    "addedAt": "2026-10-28"
   },
   {
     "id": 3004,
@@ -381,7 +381,7 @@
       "music",
       "multilingual"
     ],
-    "addedAt": "2026-07-06"
+    "addedAt": "2026-10-28"
   },
   {
     "id": 3005,
@@ -408,7 +408,7 @@
       "music",
       "multilingual"
     ],
-    "addedAt": "2026-07-06"
+    "addedAt": "2026-10-28"
   },
   {
     "id": 3006,
@@ -434,7 +434,7 @@
       "music",
       "multilingual"
     ],
-    "addedAt": "2026-07-06"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "AnimeSongLyrics",
@@ -460,7 +460,7 @@
       "music",
       "english"
     ],
-    "addedAt": "2026-07-16"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "AnisonCharts",
@@ -486,7 +486,7 @@
       "music",
       "english"
     ],
-    "addedAt": "2026-10-08"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "AnisongDB",
@@ -512,7 +512,7 @@
       "music",
       "english"
     ],
-    "addedAt": "2026-10-08"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "AnimeSongLyrics",
@@ -538,7 +538,7 @@
       "music",
       "english"
     ],
-    "addedAt": "2026-10-08"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "LyricalNonsense",
@@ -564,7 +564,7 @@
       "music",
       "english"
     ],
-    "addedAt": "2026-10-08"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "OpeningsMoe",
@@ -590,7 +590,7 @@
       "music",
       "english"
     ],
-    "addedAt": "2026-10-08"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "Musicdex",
@@ -616,7 +616,7 @@
       "music",
       "multilingual"
     ],
-    "addedAt": "2026-10-08"
+    "addedAt": "2026-10-28"
   },
   {
     "name": "Squidify",
@@ -642,6 +642,6 @@
       "music",
       "multilingual"
     ],
-    "addedAt": "2026-10-08"
+    "addedAt": "2026-10-28"
   }
 ]
