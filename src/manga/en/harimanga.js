@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://www.harimanga.co.uk/image/icon/hari-icon-192x192.webp",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.4.6",
+    "version": "0.4.7",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -44,24 +44,26 @@ const watchtowerSources = [
 const BASE_URL = "https://www.harimanga.co.uk";
 
 // ── Cover hosts ─────────────────────────────────────────────────────────────
-// The site spreads one cover over four mirrors and emits whichever one it
-// picked, but they are NOT equivalent:
+// The site emits each cover on one of four mirrors. Checked by fetching the
+// exact URLs the site produced, with 1.5 s between requests (a tight burst
+// returns 429 and makes any host look broken):
 //
-//   img-r1.2xstorage.com   57/58 covers served (measured, no rate limit)
-//   img-r2.2xstorage.com   503 "Server busy" on most paths
+//   img-r1.2xstorage.com   serves the catalogue
+//   img-r2.2xstorage.com   503 "Server busy"
 //   img-r3.2xstorage.com   DNS does not resolve
-//   cdn.zinmanga1.com      9/58 served; 28x 404, 21x 429 (rate limited)
+//   cdn.zinmanga1.com      serves the same paths as img-r1
 //   cdn4.zinmanga1.com     503
 //
-// The app receives a single URL per item, so a card pointing at a failing
-// mirror renders as a placeholder with no recovery. Every cover therefore goes
-// to the one healthy host, with two exceptions kept on their original mirror
-// because that host alone holds them (verified path by path):
+// Normalising onto `img-r1` keeps the app from depending on the two hosts that
+// are down. It does NOT recover covers the site itself does not host: a few
+// paths 404 on every mirror (e.g. /thumb/kimetsu-no-yaiba.webp), and no rewrite
+// can fix those.
+//
+// The three paths below are kept on the mirror the site emitted, because only
+// that mirror holds them:
 //   · /thumb/gotham-by-daylight.webp
 //   · /thumb/i-married-the-dragoni-killed.webp
 //   · /thumb/title-unlocked-this-life-i-dominate-the-game.webp
-// `img-r1` also rate-limits with 429 under burst, so a failed path falls back
-// to the mirror the site originally emitted instead of dropping the cover.
 const COVER_HOST = "img-r1.2xstorage.com";
 
 const ZINMANGA_ONLY_COVERS = {
