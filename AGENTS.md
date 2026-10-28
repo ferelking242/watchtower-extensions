@@ -270,3 +270,37 @@ Helpers : `_coverImage()` (cartes), `_fullImage()` (fiche), `_swapFrame()`.
 navigateur et renvoie 0 carte en pratique (repli sur la recherche `straight`).
 Les tags n'ont aucune illustration côté site : `_enrichTagCovers()` emprunte la
 couverture de la première vidéo, bornée aux tuiles affichées.
+
+## XNXX — profils (pornstar / porn-maker / channel)
+
+La page profil livre une grille **vide** : le HTML contient 100 `.thumb-block`
+fantômes et les vraies cartes arrivent d'un endpoint JSON
+`/{profil}/{videos|video}/best/{page0based}` qui répond
+`{ videos, nb_videos, nb_per_page, current_page }`. Parser le HTML renvoie donc
+toujours 0 vidéo — d'où `_parseVideoListJson()`.
+
+`_profileListPath()` retire d'abord un index de page déjà présent
+(`/videos/best/1` → `/videos/best`), sinon on obtient `/videos/best/1/2`, 404.
+Le titre vit dans `h2#profile-info-title .profile-username`, le portrait dans
+le littéral `"profile_picture"` (jamais l'`og:image`, qui est une vignette).
+
+Côté app, l'onglet « Films » d'une fiche personne pagine avec le listId
+`profile_<hex du chemin>` (hex plutôt que base64 : ni `Buffer` ni `atob` ne sont
+garantis par le pont QuickJS).
+
+## XNXX — recherche et filtres
+
+La recherche raffine par **segments de chemin**, pas par query string :
+`/search/<tri>/<période>/<durée>/<qualité>/<masqué>/<mot-clé>`. Les anciens
+`?top`/`?order=` étaient ignorés côté serveur (résultats identiques), ce qui
+faisait passer le tri pour cassé. Certaines combinaisons sont rejetées en 500
+(`/search/year/fullhd/<q>`) : `_searchListing()` dégrade en repli (sans tri, puis
+mot-clé seul) pour qu'une section n'échoue jamais à s'afficher.
+
+## XNXX — historique
+
+`/history` n'est rempli que par la session connectée du navigateur (0 carte sans
+compte). L'historique réel est **local** : `_saveHistoryItem()` écrit à chaque
+lecture, `getCustomList("history")` fusionne le local et le distant. Le stockage
+passe par `getLocalStorage`/`setLocalStorage` (store de session de l'app), pas
+`SharedPreferences` (écriture Isar depuis le worker = silencieusement perdue).
