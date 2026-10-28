@@ -139,6 +139,17 @@ for (const rel of jsonFiles.filter((file) => file.startsWith("ui-layouts/"))) {
     if (section.seeAll !== undefined && typeof section.seeAll !== "boolean") {
       problems.push(`LAYOUT: ${rel} section ${section.id || "(missing)"} seeAll must be boolean`);
     }
+    // Optional presentation hint for the page a "see all" tile opens. The app
+    // reads it generically, so any extension may use it; only the known page
+    // kinds are accepted here.
+    if (section.seeAllPage !== undefined) {
+      const known = new Set(["tags"]);
+      if (!known.has(section.seeAllPage)) {
+        problems.push(
+          `LAYOUT: ${rel} section ${section.id || "(missing)"} uses unknown seeAllPage ${section.seeAllPage}`,
+        );
+      }
+    }
   }
 }
 console.log("   layout structure is valid");

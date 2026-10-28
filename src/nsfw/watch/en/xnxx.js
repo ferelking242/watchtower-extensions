@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.5.0",
+  "version": "1.5.1",
   "login": true,
   "loginUrl": "https://www.xnxx.com/mobile/login",
   "forYou": false,
@@ -518,6 +518,114 @@ class DefaultExtension extends MProvider {
     return { list: items, hasNextPage: hasNext };
   }
 
+  // Profile pages (pornstar / porn-maker / channel) ship an EMPTY video grid:
+  // the markup holds 100 placeholder `.thumb-block` shells and the real cards
+  // arrive from a JSON listing endpoint. Parsing the HTML therefore always
+  // yielded zero videos. The endpoint is
+  //   /{profile}/{videos|video}/best/{page0based}[/{main_cat}]
+  // and answers `{ videos, nb_videos, nb_per_page, current_page }`, where
+  // `videos` is sometimes an array and sometimes a sparse object.
+  //
+  // A URL that already carries a listing route (`.../videos/best/2`) is used
+  // as-is; anything else is rewritten, so both a bare profile link and a
+  // paginated one resolve. Every field is normalised because the endpoint
+  // renames the title between payloads (`tf` on the listing, `t` elsewhere)
+  // and only some cards carry a thumb (`i` vs `il`/`if`/`ip`).
+  _isProfileListingUrl(url) {
+    try {
+      return /\/videos?\//.test(new URL(url, `${DefaultExtension.BASE_URL}/`).pathname);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  _profileListPath(url, page) {
+    const index = Math.max(0, (Number(page) || 1) - 1);
+    let path = url || "";
+    try {
+      path = new URL(path, `${DefaultExtension.BASE_URL}/`).pathname;
+    } catch (_) {}
+    // Drop the trailing page index first: `/videos/best/1` and `/videos/new/1`
+    // already carry one, and appending a second would produce
+    // `/videos/best/1/2`, which 404s.
+    path = path.replace(/\/+$/, "").replace(/\/\d+$/, "");
+    // Keep a sort already present (`/videos/new`); otherwise default to `best`.
+    if (!/\/videos?\/[a-z]+$/i.test(path)) {
+      if (!this._isProfileListingUrl(path)) path = `${path}/videos/best`;
+      else path = `${path}/best`;
+    }
+    return `${path}/${index}`;
+  }
+
+  _toHex(text) {
+    let out = "";
+    for (const char of String(text || "")) {
+      out += char.codePointAt(0).toString(16).padStart(4, "0");
+    }
+    return out;
+  }
+
+  _fromHex(hex) {
+    const raw = String(hex || "");
+    if (!raw || raw.length % 4 !== 0 || !/^[0-9a-f]+$/i.test(raw)) return "";
+    let out = "";
+    for (let index = 0; index < raw.length; index += 4) {
+      out += String.fromCodePoint(parseInt(raw.slice(index, index + 4), 16));
+    }
+    return out;
+  }
+
+  _parseVideoListJson(body, page) {
+    let payload;
+    try {
+      payload = JSON.parse(String(body || "").trim());
+    } catch (_) {
+      return null;
+    }
+    if (!payload || typeof payload !== "object" || !payload.videos) return null;
+    const raw = Array.isArray(payload.videos)
+      ? payload.videos
+      : Object.values(payload.videos);
+    const items = [];
+    const seen = {};
+    for (const video of raw) {
+      if (!video || typeof video !== "object") continue;
+      const eid = String(video.eid || "").trim();
+      if (!eid) continue;
+      // `u` is a `/prof-video-click/...` redirect, not the player URL. The
+      // canonical watch URL is `/video-{eid}/{slug}`; when `u` is missing the
+      // bare `/video-{eid}` still opens the player.
+      const slug = String(video.u || "").split("/").filter(Boolean).pop() || "";
+      const link = this._absolute(
+        `/video-${eid}${slug ? `/${slug}` : ""}`
+      );
+      if (seen[link]) continue;
+      seen[link] = true;
+      const name = this._decodeEntities(
+        String(video.tf || video.t || "").trim()
+      ).replace(/\s+/g, " ");
+      const thumb = video.i || video.il || video.if || video.ip || "";
+      const duration = String(video.d || "").trim();
+      items.push({
+        name: name || "Untitled",
+        imageUrl: this._coverImage(this._absolute(thumb)),
+        previewUrl: this._absolute(video.ipu || ""),
+        link,
+        description: duration ? `Duration: ${duration}` : ""
+      });
+    }
+    const total = Number(payload.nb_videos) || 0;
+    const perPage = Number(payload.nb_per_page) || items.length || 1;
+    const current = Number(payload.current_page);
+    const index = Number.isFinite(current) ? current : Math.max(0, (Number(page) || 1) - 1);
+    return {
+      list: items,
+      hasNextPage: total > 0
+        ? (index + 1) * perPage < total
+        : items.length > 0
+    };
+  }
+
   _parsePornstars(html, page) {
     const doc = new Document(html);
     const items = [];
@@ -565,9 +673,11 @@ class DefaultExtension extends MProvider {
       : null;
     const tagRows = this._elementsByTag(tagRoot, "li");
     const rows = tagRows.length ? tagRows : this._elementsByTag(doc, "li");
-    // A letter page carries ~2000 tags; the home grid shows six. Cap the
-    // payload so the QuickJS bridge never marshals the whole index for a rail.
-    const maxTags = 240;
+    // A letter page carries ~2000 tags. 60 is the useful window: the home
+    // rail renders 6, the "see all" grid pages 60 at a time, and the cover
+    // pass only enriches what is returned here — so a larger cap would just
+    // marshal more rows and fetch more covers for tiles nobody sees.
+    const maxTags = 60;
     for (const row of rows) {
       if (items.length >= maxTags) break;
       const anchor = this._elementsByTag(row, "a").find(item =>
@@ -604,20 +714,28 @@ class DefaultExtension extends MProvider {
   }
 
   // A tag row carries no artwork, so a tag card rendered as a bare gradient
-  // tile. Borrow the cover of the tag's first video instead. Bounded to the
-  // tiles a grid actually shows: every extra cover is one more request, and
-  // hammering the listing endpoint is what gets a session rate-limited.
-  async _enrichTagCovers(tags, limit = 6) {
+  // tile. Borrow the cover of the tag's first video instead. Bounded twice:
+  // only the tiles that are actually shown are fetched, and the fetches run
+  // through a small pool — firing one request per tag at once is what gets a
+  // session rate-limited (and XNXX answers 429 on the listing endpoint).
+  async _enrichTagCovers(tags, limit = 24, concurrency = 4) {
     const targets = tags.slice(0, limit).filter(tag => !tag.imageUrl);
-    await Promise.all(targets.map(async tag => {
-      try {
-        const { body } = await this._get(tag.link);
-        const first = this._parseVideoList(body, 1, "tag-cover").list[0];
-        if (first && first.imageUrl) tag.imageUrl = first.imageUrl;
-      } catch (error) {
-        extLog("warn", `XNXX tag cover unavailable tag=${tag.name}: ${error.message}`);
+    let cursor = 0;
+    const worker = async () => {
+      while (cursor < targets.length) {
+        const tag = targets[cursor++];
+        try {
+          const { body } = await this._get(tag.link);
+          const first = this._parseVideoList(body, 1, "tag-cover").list[0];
+          if (first && first.imageUrl) tag.imageUrl = first.imageUrl;
+        } catch (error) {
+          extLog("warn", `XNXX tag cover unavailable tag=${tag.name}: ${error.message}`);
+        }
       }
-    }));
+    };
+    await Promise.all(
+      Array.from({ length: Math.min(concurrency, targets.length) }, worker)
+    );
     return tags;
   }
 
@@ -841,6 +959,17 @@ class DefaultExtension extends MProvider {
       // keyword order and paginates with the zero-based suffix.
       return this._searchListing(query, page, []);
     }
+    if (listId.startsWith("profile_")) {
+      // `profile_<hex of the profile path>`. Hex avoids depending on `Buffer`
+      // or `atob`, neither of which the QuickJS bridge guarantees.
+      const path = this._fromHex(listId.slice("profile_".length));
+      if (!path || !/^\/(porn|channel|profile|studio)/i.test(path)) {
+        return { list: [], hasNextPage: false };
+      }
+      const { body } = await this._get(this._profileListPath(path, page));
+      const parsed = this._parseVideoListJson(body, page);
+      return parsed || { list: [], hasNextPage: false };
+    }
     if (listId === "pornstars") {
       const { body } = await this._get(`/pornstars${this._pagePathFromOne(page)}`);
       return this._parsePornstars(body, page);
@@ -857,7 +986,10 @@ class DefaultExtension extends MProvider {
           const { body } = await this._get(`/tags/${letter}`);
           const tags = this._parseTags(body);
           if (tags.length) {
-            await this._enrichTagCovers(tags);
+            // Cover every returned tag: the grid shows 60 cards and a card
+            // without a cover is a blank tile. Bounded at 60 with a
+            // concurrency of 6, the pass takes ~2s; unbounded would rate-limit.
+            await this._enrichTagCovers(tags, 60, 6);
             return { list: tags, hasNextPage: index < letters.length - 1 };
           }
         } catch (error) {
@@ -893,23 +1025,62 @@ class DefaultExtension extends MProvider {
     const title = this._text(
       doc.selectFirst("h1.page-title") ||
       doc.selectFirst("h2.page-title") ||
-      doc.selectFirst("h1.content-title")
+      doc.selectFirst("h1.content-title") ||
+      // Profile pages have neither: the name sits in
+      // `<h2 id="profile-info-title"><span class="profile-username">`.
+      doc.selectFirst("h2#profile-info-title") ||
+      doc.selectFirst(".profile-username") ||
+      doc.selectFirst("h1#profile-info-title")
     ) || metaTitle.replace(/\s+/g, " ").trim()
       || "XNXX";
     const cover = this._fullImage(
       doc.selectFirst('meta[property="og:image"]')?.attr("content") || ""
     );
 
-    if (url.includes("/pornstar/") || url.includes("/search/")) {
+    // Profile pages (pornstar / porn-maker / channel) render an empty grid:
+    // their videos live behind a JSON listing endpoint, so the HTML parse
+    // always produced zero episodes. A tag page (`/search/...`) still ships
+    // its cards inline, so only the profile branch changes.
+    const isProfile = /\/porn(s)?tar\/|\/porn-maker\/|\/channel(s)?\//.test(url);
+    if (isProfile) {
+      const { body: listing } = await this._get(
+        this._profileListPath(url, 1)
+      );
+      const parsed = this._parseVideoListJson(listing, 1);
+      const videos = parsed ? parsed.list : this._parseVideoList(listing, 1, "detail").list;
+      // The profile portrait is not an `og:image` on these pages; it lives in
+      // the page config. Without it the person hero falls back to a video
+      // still, which is why the page looked like a random clip.
+      const portrait = this._decodeEntities(
+        (body.match(/"profile_picture":"([^"]+)"/) || [])[1] || ""
+      ).replace(/\\\//g, "/");
+      return {
+        name: title,
+        imageUrl: cover || portrait || videos[0]?.imageUrl || "",
+        description: "Free videos from this porn star",
+        genre: [],
+        episodes: videos.map(video => ({
+          name: video.name,
+          url: video.link,
+          thumbnailUrl: video.imageUrl,
+          duration: (video.description || "").replace(/^Duration:\s*/, "")
+        }))
+      };
+    }
+
+    if (url.includes("/search/")) {
       const videos = this._parseVideoList(body, 1, "detail").list;
       return {
         name: title,
         imageUrl: cover || videos[0]?.imageUrl || "",
-        description: url.includes("/pornstar/")
-          ? "Free videos from this porn star"
-          : "Videos for this tag",
+        description: "Videos for this tag",
         genre: [],
-        episodes: videos.map(video => ({ name: video.name, url: video.link }))
+        episodes: videos.map(video => ({
+          name: video.name,
+          url: video.link,
+          thumbnailUrl: video.imageUrl,
+          duration: (video.description || "").replace(/^Duration:\s*/, "")
+        }))
       };
     }
 

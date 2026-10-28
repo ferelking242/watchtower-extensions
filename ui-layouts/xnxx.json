@@ -67,7 +67,8 @@
         "columns": 2,
         "rows": 3,
         "cardStyle": "tag",
-        "seeAll": true
+        "seeAll": true,
+        "seeAllPage": "tags"
       }
     ]
   },

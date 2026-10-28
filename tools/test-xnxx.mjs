@@ -438,4 +438,98 @@ assert.equal(byQuality["Auto"], "https://hls.example/master.m3u8");
 assert.equal(byQuality["360p"], "https://mp4.example/video_360p.mp4");
 assert.equal(byQuality["240p"], "https://mp4.example/video_240p.mp4");
 
-console.log("XNXX regression checks passed (listing parsing, Cloudflare, HTTP, network, recommendations, comments, getVideoList).");
+// ── Profile pages: videos come from the JSON listing endpoint ────────────────
+// Regression guard: a pornstar/porn-maker/channel page ships an empty video
+// grid (100 placeholder shells, no cards) and fills it from
+// `/{profile}/videos/best/{page0based}`. Parsing the HTML therefore always
+// produced zero episodes and the person page looked broken.
+const profileHtml = `
+<html><head><title>Alex Adams</title></head><body>
+<h2 id="profile-info-title"><strong><span class="profile-username">Alex Adams</span></strong></h2>
+<script>window.xv.conf={"data":{"user":{"profile_picture":"https:\\/\\/profile-cdn77.xnxx-cdn.com\\/abc\\/2\\/pp_big.jpg"}}};</script>
+<div id="psvideos"><div class="mozaique"><div class="thumb-block"><div class="thumb-inside"></div></div></div></div>
+</body></html>`;
+
+const profileListing = JSON.stringify({
+  nb_videos: 1321,
+  nb_per_page: 50,
+  current_page: 0,
+  videos: [
+    {
+      id: 1,
+      eid: "tylzxd8",
+      u: "/prof-video-click/pornstar/alex_adams69/iffetddf38d/blonde_teen_step_sister_babysits",
+      i: "https://thumb-cdn77.xnxx-cdn.com/96d496ff/0/xn_4_t.jpg",
+      ipu: "https://thumb-cdn77.xnxx-cdn.com/96d496ff/0/preview.mp4",
+      tf: "Blonde Teen Step Sister Babysits",
+      d: "18min"
+    }
+  ]
+});
+const profilePaths = [];
+TestClient.prototype.get = async function (url) {
+  profilePaths.push(String(url));
+  if (String(url).endsWith("/videos/best/0")) {
+    return { statusCode: 200, body: profileListing };
+  }
+  return { statusCode: 200, body: profileHtml };
+};
+const profileDetail = await provider.getDetail("https://www.xnxx.com/pornstar/alex_adams69");
+TestClient.prototype.get = savedGet;
+assert.equal(profileDetail.name, "Alex Adams");
+// The portrait is not an `og:image` here; it comes from the page config.
+assert.equal(
+  profileDetail.imageUrl,
+  "https://profile-cdn77.xnxx-cdn.com/abc/2/pp_big.jpg"
+);
+assert.equal(profileDetail.episodes.length, 1);
+assert.equal(
+  profileDetail.episodes[0].url,
+  "https://www.xnxx.com/video-tylzxd8/blonde_teen_step_sister_babysits"
+);
+assert.equal(profileDetail.episodes[0].duration, "18min");
+assert.ok(
+  profilePaths.some((url) => url.endsWith("/pornstar/alex_adams69/videos/best/0")),
+  "the profile listing endpoint must be requested"
+);
+
+// A profile URL that already carries a listing route must be reused, and the
+// page number stays zero-based so page 2 is `/videos/best/1`.
+assert.equal(
+  provider._profileListPath("/pornstar/alex_adams69/videos/best/1", 3),
+  "/pornstar/alex_adams69/videos/best/2"
+);
+assert.equal(
+  provider._profileListPath("/porn-maker/alex_adams", 1),
+  "/porn-maker/alex_adams/videos/best/0"
+);
+
+// `profile_<hex path>` is the paged list id the app uses for the person page.
+const profileListId = `profile_${[..."/pornstar/alex_adams69"]
+  .map((char) => char.codePointAt(0).toString(16).padStart(4, "0"))
+  .join("")}`;
+TestClient.prototype.get = async function () {
+  return { statusCode: 200, body: profileListing };
+};
+const profilePage = await provider.getCustomList(profileListId, 1);
+TestClient.prototype.get = savedGet;
+assert.equal(profilePage.list.length, 1);
+assert.equal(profilePage.hasNextPage, true);
+assert.equal(profilePage.list[0].name, "Blonde Teen Step Sister Babysits");
+// A malformed id must fail closed rather than fetch an arbitrary route.
+const rejected = await provider.getCustomList("profile_zzzz", 1);
+assert.equal(rejected.list.length, 0);
+assert.equal(rejected.hasNextPage, false);
+
+// `videos` is a sparse object on some sort orders, not an array.
+const sparseListing = JSON.stringify({
+  nb_videos: 3,
+  nb_per_page: 50,
+  current_page: 0,
+  videos: { "0": { eid: "aaa", tf: "First", d: "5min" } }
+});
+assert.equal(provider._parseVideoListJson(sparseListing, 1).list.length, 1);
+// Non-JSON bodies (an HTML error page) must not be mistaken for a listing.
+assert.equal(provider._parseVideoListJson("<html></html>", 1), null);
+
+console.log("XNXX regression checks passed (listing parsing, Cloudflare, HTTP, network, recommendations, comments, getVideoList, profile listing).");
