@@ -210,9 +210,13 @@ node tools/generate_tags.mjs --check  # vérifie sans écrire (utilisé en CI)
 - `popular` et `trending` ne sont **jamais** écrits : le catalogue ne contient
   aucune statistique d'usage réelle. Les rayons « Populaire » de l'application
   utilisent un ordre déterministe documenté côté Watchtower.
-- `addedAt` est dérivé de l'historique git (`index/<type>.json`). Un clone
-  superficiel ne renvoie donc aucune date : le champ est alors omis, jamais
-  inventé.
+- `addedAt` est dérivé de l'historique git (`index/<type>.json`) **une seule
+  fois**, à la première apparition de l'entrée : le champ est ensuite immuable et
+  n'est jamais réécrit. C'est indispensable car la CI clone en profondeur 2
+  (`pin-sources.yml`) et verrait la révision courante comme date de création de
+  toutes les entrées. Une entrée déjà datée ne déclenche donc aucune lecture
+  d'historique, et un clone superficiel ne renvoie simplement aucune date pour
+  une entrée nouvelle : le champ est alors omis, jamais inventé.
 - `npm run test:taxonomy` teste le vocabulaire et vérifie le catalogue réel ;
   `npm run tags:check` échoue si un index n'est pas à jour. Les deux tournent
   dans `.github/workflows/validate.yml`, et `pin-sources.yml` régénère les tags

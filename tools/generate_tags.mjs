@@ -265,7 +265,14 @@ for (const type of INDEX_TYPES) {
   const entries = JSON.parse(raw);
   if (!Array.isArray(entries)) continue;
 
-  const addedDates = addedAtMap(type, entries.map((entry) => entry.id));
+  // Only entries with no date yet need the git walk, and it is skipped
+  // entirely once the whole index is dated: the steady state costs nothing.
+  const undated = entries
+    .filter((entry) => entry.addedAt === undefined)
+    .map((entry) => entry.id);
+  const addedDates = undated.length
+    ? addedAtMap(type, undated)
+    : new Map();
   const spans = entrySpans(raw);
   const lines = raw.split("\n");
   const replacements = [];
@@ -276,9 +283,13 @@ for (const type of INDEX_TYPES) {
       ? filterLabels(filterListBody(fs.readFileSync(sourceFile, "utf8")))
       : [];
     const tags = tagsFor(entry, labels);
-    // History is optional: a shallow clone yields no date, and an absent date
-    // must never be treated as "remove the committed one".
-    const addedAt = addedDates.get(entry.id);
+    // `addedAt` is immutable once written. Git history is only consulted for an
+    // entry that has no date yet, because a shallow CI clone (fetch-depth: 2)
+    // sees the entry's current revision as its first appearance and would
+    // otherwise rewrite every date to today.
+    const addedAt = entry.addedAt === undefined
+      ? addedDates.get(entry.id)
+      : undefined;
     tagCount += tags.length;
 
     const tagsChanged =

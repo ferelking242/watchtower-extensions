@@ -265,7 +265,7 @@
   | `rating` | number | Note entre `0` et `5` |
   | `reviewCount` | number | Nombre d'avis associés à la note |
   | `tags` | string[] | Classement dans les rayons du Marketplace (voir ci-dessous) |
-  | `addedAt` | string | Date `YYYY-MM-DD` d'ajout au catalogue, dérivée de l'historique git |
+  | `addedAt` | string | Date `YYYY-MM-DD` d'ajout au catalogue, dérivée de l'historique git et **immuable** une fois écrite |
 
   Ces champs sont optionnels pour rester compatibles avec les dépôts existants.
   Watchtower conserve une description et une taille lisibles lorsqu'un index
