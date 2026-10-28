@@ -1213,7 +1213,7 @@
     "typeSource": "single",
     "itemType": 0,
     "version": "0.4.10",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@e1fdaf80e5bdf64be5706032326413881af9a474/src/manga/en/harimanga.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@a70bed27fd012f6bc1b6ec32bff918a073debc66/src/manga/en/harimanga.js",
     "uiLayout": "ui-layouts/harimanga.json",
     "uiLayoutVersion": "1.2.1",
     "isManga": true,
