@@ -263,6 +263,30 @@ Helpers : `_coverImage()` (cartes), `_fullImage()` (fiche), `_swapFrame()`.
 `data-video`/`data-mzl` annoncent souvent `mozaique_listing` : c'est
 `_coverImage()` qui rétablit la mono-image.
 
+## XNXX — pièges de parsing (liens et vignettes)
+
+Deux pièges ont produit un écran « Aucun résultat » / des cartes sans image
+alors que le HTML était complet :
+
+1. **Ids vidéo alphanumériques.** Les liens sont `/video-17pt1bb8/...`, jamais
+   `/video-123`. Un motif `\/video-\d+` (chiffres seuls) ne matche **rien** :
+   `_parseVideoCardsRegex()` est le filet de secours qui doit sauver un parse
+   DOM vide, donc un `\d+` le rendait inopérant. Utiliser `[A-Za-z0-9]+`.
+
+2. **Corps de `<script>` = texte brut.** Un parseur HTML5 conforme (le
+   `package:html` de l'app) ne crée **aucun** nœud pour le markup à l'intérieur
+   d'un `<script>`/`<style>`. Or `/pornstars` émet chaque vignette via
+   `<script>document.write(xv.thumbs.replaceThumbUrl('<img src="...">'))</script>` :
+   `getElementsByTagName("img")` renvoie 0 et les 80 cartes s'affichent sans
+   cover. Les lire en chaîne avec `_scriptBlocks()` + `_scriptThumbForSlug()`
+   (la vignette porte `id="pic_<slug>"`, qui la relie à sa carte).
+
+Conséquence sur les tests : le harnais `tools/html_document.mjs` doit modéliser
+la règle raw-text (il la respecte désormais), sinon il parse les balises
+internes au `<script>` et les tests passent au vert pendant que l'app échoue.
+De même, `_parseVideoList()` lance le fallback dès que `videoLinksFound === 0`
+(pas seulement quand zéro carte est trouvée) : l'app voyait 33 cartes et 0 lien.
+
 ## XNXX — sections d'accueil
 
 `/todays-selection` est la vraie sélection du jour (paginée comme `/hits`) ;
