@@ -295,6 +295,24 @@ navigateur et renvoie 0 carte en pratique (repli sur la recherche `straight`).
 Les tags n'ont aucune illustration côté site : `_enrichTagCovers()` emprunte la
 couverture de la première vidéo, bornée aux tuiles affichées.
 
+## Le pont DOM QuickJS est synchrone — borner les parcours
+
+Sur l'appareil, chaque lecture de nœud/attribut du DOM (`getElementsByTagName`,
+`.attr`, `.text`, `getElementById`…) traverse le pont Dart en **synchrone**. Le
+harnais Node, lui, est en processus : il ne montre pas ce coût (une page de tags
+de 184 Ko / 2077 `<li>` s'y parcourt en 23 ms, contre des centaines d'appels
+bloquants sur l'appareil). Un parcours DOM sur une grosse page dépasse donc le
+budget d'exécution de 15 s, et comme **toutes** les sections de l'accueil
+partagent un runtime unique, le dépassement emporte aussi les sections qui
+chargeaient en parallèle (c'est ce qui vidait « Suggestions » quand « Tags »
+bouclait).
+
+Règle : sur une page volumineuse, extraire les lignes en **regex** sur le HTML
+(`_parseVideoCardsRegex`, `_parseTagsRegex`) et ne garder le parcours DOM qu'en
+repli. Idem pour une passe multi-pages : `_enrichTagCovers()` ne couvre que les
+tuiles affichées et lit chaque couverture en regex, sans reconstruire un
+`Document` par tag.
+
 ## XNXX — profils (pornstar / porn-maker / channel)
 
 La page profil livre une grille **vide** : le HTML contient 100 `.thumb-block`
