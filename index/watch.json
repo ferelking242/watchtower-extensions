@@ -5594,7 +5594,7 @@
     "typeSource": "single",
     "itemType": 1,
     "version": "1.5.4",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@7705cba6aaf75278fbb28a1f757bbf1873b0377c/src/nsfw/watch/en/xnxx.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@22fd7112d6dba88892faa14ebbf5305fc45b12b4/src/nsfw/watch/en/xnxx.js",
     "uiLayout": "ui-layouts/xnxx.json",
     "uiLayoutVersion": "1.4.3",
     "isManga": false,
