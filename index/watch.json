@@ -5292,7 +5292,7 @@
     "typeSource": "single",
     "itemType": 1,
     "version": "1.2.7",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@3cfd5372674334527c0c070c0ca57cad78c38439/src/nsfw/watch/en/rexporn.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@c3dd1588f5a3739b55c802bff0102eeefeef504e/src/nsfw/watch/en/rexporn.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
