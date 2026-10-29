@@ -405,6 +405,41 @@ for (const rel of jsonFiles.filter((file) => catalogueItemType[file] !== undefin
 }
 console.log("   itemType values match their catalogue");
 
+// ── 3c. Index entries must stay uniquely addressable ────────────────────────
+// The app keys its catalogue by `id`, so a repeated id would make two distinct
+// sources indistinguishable. A repeated display *name* is legal — `SpankBang`
+// ships both `spankbang.js` and `spankbang_new.js`, `AnimeSongLyrics` has an
+// old and a rewritten source — but it is worth surfacing so the maintainers can
+// confirm the pair is intentional rather than a copy-paste accident.
+console.log("▶ index id uniqueness");
+const idsSeen = new Map();
+const namesSeen = new Map();
+let duplicateNames = 0;
+for (const rel of jsonFiles.filter((file) => catalogueItemType[file] !== undefined)) {
+  const entries = JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
+  if (!Array.isArray(entries)) continue;
+  for (const entry of entries) {
+    const id = entry.id;
+    if (idsSeen.has(id)) {
+      problems.push(
+        `DUPLICATE ID: ${id} appears in both ${idsSeen.get(id)} and ${rel} (${entry.name || "?"})`,
+      );
+    } else {
+      idsSeen.set(id, rel);
+    }
+    const key = `${rel}|${String(entry.name || "").trim().toLowerCase()}`;
+    if (namesSeen.has(key)) duplicateNames++;
+    namesSeen.set(key, entry.id);
+  }
+}
+if (duplicateNames > 0) {
+  console.log(
+    `   ⚠ ${duplicateNames} display name(s) used by more than one entry in the same catalogue`,
+  );
+} else {
+  console.log("   every entry id is unique");
+}
+
 // ── 4. Index versions in sync with JS manifests ─────────────────────────────
 console.log("▶ index version sync (sync_versions.mjs --dry-run)");
 try {
