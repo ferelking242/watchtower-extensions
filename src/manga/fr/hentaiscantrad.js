@@ -8,7 +8,7 @@ const watchtowerSources = [{
       "typeSource": "single",
       "itemType": 0,
       "isManga": true,
-      "version": "0.2.0",
+      "version": "0.2.1",
       "login": false,
       "forYou": true,
       "pkgPath": "manga/fr/hentaiscantrad.js",

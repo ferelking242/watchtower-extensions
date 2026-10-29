@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://www.harimanga.co.uk/image/icon/hari-icon-192x192.webp",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.4.12",
+    "version": "0.4.13",
     "login": false,
     "forYou": false,
     "dateFormat": "",
