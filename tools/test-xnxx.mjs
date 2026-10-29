@@ -102,6 +102,36 @@ assert.ok(
   ),
 );
 
+// The live index markup is `<ul id="tags"><li><a href="/search/x">x</a>
+// <strong>1,234</strong></li>...`. Parsing it must not depend on the QuickJS
+// DOM bridge: a letter page carries ~2000 rows, and walking them through the
+// bridge overran the 15 s runtime budget and blanked the whole home.
+const liveShapeFixture =
+  `<input id="filter-tags-input" />` +
+  `<ul id="tags">` +
+  `<li><a href="/search/a-escondidas">a escondidas</a><strong>241,372</strong></li>` +
+  `<li><a href="/search/a2m">a2m</a><strong>939</strong></li>` +
+  `<li><a href="/search/abuela">abuela</a><strong>5,641</strong></li>` +
+  `</ul>`;
+const liveShapeTags = provider._parseTags(liveShapeFixture);
+assert.equal(liveShapeTags.length, 3, "all three live rows parse");
+assert.equal(liveShapeTags[0].name, "a escondidas");
+assert.equal(
+  liveShapeTags[0].link,
+  "https://www.xnxx.com/search/a-escondidas",
+);
+assert.equal(liveShapeTags[0].collectionId, "search_a-escondidas");
+assert.equal(liveShapeTags[0].description, "241,372 videos");
+assert.equal(liveShapeTags[2].description, "5,641 videos");
+
+// A malformed/absent DOM must not stop the regex path from reading the rows.
+const domIndependent = provider._parseTagsRegex(
+  `<ul id="tags"><li><a href="/search/zzz">zzz</a></li></ul>`,
+);
+assert.equal(domIndependent.length, 1);
+assert.equal(domIndependent[0].name, "zzz");
+assert.equal(domIndependent[0].description, "Browse videos");
+
 const pornstarFixture = `
   <div class="thumb-block thumb-cat">
     <a href="/pornstar/example-star" title="Example Star">Example Star</a>

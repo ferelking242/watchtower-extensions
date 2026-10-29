@@ -5593,7 +5593,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000191.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.5.2",
+    "version": "1.5.3",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@2c59baa15bd5b946d5eae967dd770deead961794/src/nsfw/watch/en/xnxx.js",
     "uiLayout": "ui-layouts/xnxx.json",
     "uiLayoutVersion": "1.4.1",

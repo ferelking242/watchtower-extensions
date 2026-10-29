@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.5.2",
+  "version": "1.5.3",
   "login": true,
   "loginUrl": "https://www.xnxx.com/mobile/login",
   "forYou": false,
@@ -717,6 +717,15 @@ class DefaultExtension extends MProvider {
   }
 
   _parseTags(html) {
+    // DOM-independent first, for the same reason as [_parseVideoCardsRegex]:
+    // a letter page carries ~2000 <li> and the QuickJS DOM bridge needs one
+    // blocking round-trip per node/attribute read. Walking it cost hundreds of
+    // sync bridge calls, overran the 15 s runtime budget, and — because every
+    // home section shares that one runtime — took the whole home down with it.
+    // Reading the rows straight out of the markup keeps the section cheap.
+    const regexTags = this._parseTagsRegex(html);
+    if (regexTags.length) return regexTags;
+
     const doc = new Document(html);
     const items = [];
     const tagRoot = typeof doc.getElementById === "function"
@@ -739,6 +748,32 @@ class DefaultExtension extends MProvider {
       const count = this._text(this._elementsByTag(row, "strong")[0]);
       const name = this._text(anchor);
       if (!name) continue;
+      items.push({
+        name,
+        imageUrl: "",
+        link: this._absolute(href),
+        collectionId: `search_${href.slice("/search/".length).split(/[/?#]/)[0]}`,
+        description: count ? `${count} videos` : "Browse videos"
+      });
+    }
+    return items;
+  }
+
+  _parseTagsRegex(html) {
+    const items = [];
+    if (!html) return items;
+    const scope = /<ul[^>]*\bid=["']tags["'][^>]*>([\s\S]*?)<\/ul>/i.exec(html);
+    const region = scope ? scope[1] : html;
+    const rowRe = /<li[^>]*>\s*<a\b[^>]*\bhref=["'](\/search\/[^"']+)["'][^>]*>([\s\S]*?)<\/a>\s*(?:<strong[^>]*>([\s\S]*?)<\/strong>)?/gi;
+    const maxTags = 60;
+    let match;
+    while ((match = rowRe.exec(region)) && items.length < maxTags) {
+      const href = match[1];
+      const name = this._decodeEntities(String(match[2]).replace(/<[^>]+>/g, " "))
+        .replace(/\s+/g, " ").trim();
+      if (!name) continue;
+      const count = this._decodeEntities(String(match[3] || ""))
+        .replace(/\s+/g, " ").trim();
       items.push({
         name,
         imageUrl: "",
@@ -777,7 +812,11 @@ class DefaultExtension extends MProvider {
         const tag = targets[cursor++];
         try {
           const { body } = await this._get(tag.link);
-          const first = this._parseVideoList(body, 1, "tag-cover").list[0];
+          // Regex extraction, not `_parseVideoList`: the latter builds a
+          // Document and walks it through the bridge for a whole search page,
+          // and doing that once per tag is what made this pass expensive. One
+          // cover is all that is wanted here.
+          const first = this._parseVideoCardsRegex(body)[0];
           if (first && first.imageUrl) tag.imageUrl = first.imageUrl;
         } catch (error) {
           extLog("warn", `XNXX tag cover unavailable tag=${tag.name}: ${error.message}`);
@@ -981,14 +1020,21 @@ class DefaultExtension extends MProvider {
       return this._bestOfMonth(this._monthSlug(2), page);
     }
     if (listId === "suggestion_straight") {
-      // XNXX only fills /your-suggestions from browser-local activity, and its
-      // pagination route 404s. It is used as a single screen; the fallback
-      // keyword listing carries the paging.
-      const { body } = await this._get("/your-suggestions/straight");
-      const suggested = this._parseVideoList(body, 1, "suggestions");
-      if (suggested.list.length) {
-        suggested.hasNextPage = false;
-        return suggested;
+      // XNXX only fills /your-suggestions from browser-local activity, so an
+      // anonymous session gets 0 cards there. Its pagination route also 404s.
+      // Try it once (a logged-in user does get a real feed), then fall back to
+      // the keyword listing. Both legs are guarded: this section shares the
+      // home runtime with seven others, and an uncaught throw here left the
+      // rail blank while the rest of the page rendered fine.
+      try {
+        const { body } = await this._get("/your-suggestions/straight");
+        const suggested = this._parseVideoList(body, 1, "suggestions");
+        if (suggested.list.length) {
+          suggested.hasNextPage = false;
+          return suggested;
+        }
+      } catch (error) {
+        extLog("warn", `XNXX suggestions feed unavailable: ${error.message}`);
       }
       const fallback = await this._searchListing("straight", page, []);
       fallback.hasNextPage = true;
@@ -1037,10 +1083,13 @@ class DefaultExtension extends MProvider {
           const { body } = await this._get(`/tags/${letter}`);
           const tags = this._parseTags(body);
           if (tags.length) {
-            // Cover every returned tag: the grid shows 60 cards and a card
-            // without a cover is a blank tile. Bounded at 60 with a
-            // concurrency of 6, the pass takes ~2s; unbounded would rate-limit.
-            await this._enrichTagCovers(tags, 60, 6);
+            // Enrich only the tiles the home rail actually renders (3 rows x
+            // 2 columns). Every cover is a full page fetch, and the app runs
+            // all home sections on one runtime with a 15 s budget: a 60-tag
+            // pass (~60 requests) blew that budget and took the whole home
+            // down with it. A tag tile without art still renders as a
+            // labelled gradient card, so a small cap costs nothing visible.
+            await this._enrichTagCovers(tags, 8, 4);
             return { list: tags, hasNextPage: index < letters.length - 1 };
           }
         } catch (error) {
@@ -1048,7 +1097,7 @@ class DefaultExtension extends MProvider {
         }
       }
       return {
-        list: await this._enrichTagCovers(this._categoryTags()),
+        list: await this._enrichTagCovers(this._categoryTags(), 8, 4),
         hasNextPage: false
       };
     }

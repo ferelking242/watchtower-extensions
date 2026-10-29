@@ -19,13 +19,6 @@
         "seeAll": true
       },
       {
-        "id": "history",
-        "component": "showcase",
-        "title": "Historique",
-        "accent": "#7C4DFF",
-        "icon": "history"
-      },
-      {
         "id": "best_month",
         "component": "rankedWide",
         "title": "Le meilleur du mois",
