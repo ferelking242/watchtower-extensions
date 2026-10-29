@@ -188,6 +188,27 @@ partager légitimement (`MTL Novel` + `MTL Novel (FR/ES/…)`, `Linovelib` +
 - Toujours re-vérifier après : `md5` unique par marque, formes 32–512 px carré,
   fichiers > 300 o, puis `npm run validate`.
 
+### Logos des plugins (`index/plugins.json` → `assets/plugins/`)
+
+Les plugins de musique suivaient la même règle de fausse icône, mais rien ne la
+vérifiait : `com.spotube.deezer` et `com.spotube.spotify` publiaient le **même
+binaire** (`md5 476b3dbe54`), donc Deezer affichait le logo Spotify dans le
+Marketplace. `com.spotube.youtube-music` pointait en plus vers un
+`assets/logo.png` inexistant (`404`), et `flac` vers un PNG **entièrement
+transparent** (150 o, alpha 0 partout) qui rendait un carré vide.
+
+- Chaque plugin publie son logo dans `assets/plugins/<slug>.png`, référencé via
+  `https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/plugins/<slug>.png`.
+  Ne pas pointer vers le dépôt `spotube-plugin-*` : le logo doit rester
+  disponible même si le dépôt amont disparaît.
+- Reprendre le **vrai** logo quand le bundle `.smplug` en contient un
+  (`plugins/<slug>.smplug` → `logo.png`), sinon générer un logo brandé unique
+  (tuile colorée + glyphe) au format **256×256 PNG** avec Pillow.
+- `tools/validate-extensions.mjs` refuse deux plugins qui partagent le même
+  `md5` (« PLUGIN ICON ») et tout logo absent ; `tools/test_catalog_taxonomy.mjs`
+  couvre la même règle en test unitaire. Lancer `npm run validate` et
+  `npm run test:taxonomy` avant de committer une modification d'icône.
+
 ## Tags du Marketplace
 
 Le champ `tags` de chaque entrée d'index alimente les rayons du Marketplace.

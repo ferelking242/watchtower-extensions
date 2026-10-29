@@ -9,6 +9,7 @@
  * Run: node tools/test_catalog_taxonomy.mjs
  */
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import {
@@ -219,6 +220,32 @@ test("the 'featured' tag only comes from the forYou opt-in", () => {
         );
       }
     }
+  }
+});
+
+test("every plugin publishes its own distinct logo", () => {
+  const file = path.join(ROOT, "index", "plugins.json");
+  if (!fs.existsSync(file)) return;
+  const doc = JSON.parse(fs.readFileSync(file, "utf8"));
+  const plugins = Array.isArray(doc.plugins) ? doc.plugins : [];
+  const byHash = new Map();
+  for (const plugin of plugins) {
+    assert.ok(
+      typeof plugin.icon === "string" && plugin.icon.length > 0,
+      `${plugin.id} has no icon`,
+    );
+    const marker = "assets/plugins/";
+    if (!plugin.icon.includes(marker)) continue;
+    const rel = plugin.icon.slice(plugin.icon.indexOf(marker));
+    const asset = path.join(ROOT, rel);
+    assert.ok(fs.existsSync(asset), `${plugin.id} icon asset is missing: ${rel}`);
+    const hash = createHash("md5").update(fs.readFileSync(asset)).digest("hex");
+    const previous = byHash.get(hash);
+    assert.ok(
+      previous === undefined,
+      `${plugin.id} and ${previous} ship the same logo — each plugin needs its own`,
+    );
+    byHash.set(hash, plugin.id);
   }
 });
 
