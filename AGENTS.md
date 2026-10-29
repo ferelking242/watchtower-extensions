@@ -295,6 +295,28 @@ navigateur et renvoie 0 carte en pratique (repli sur la recherche `straight`).
 Les tags n'ont aucune illustration côté site : `_enrichTagCovers()` emprunte la
 couverture de la première vidéo, bornée aux tuiles affichées.
 
+## XNXX — une carte se trouve par son id, pas par son ancre
+
+Les journaux de l'app affichaient `thumbBlocks=36 videoLinks=0` : le DOM voyait
+36 cartes mais aucun lien dedans, et le repli regex rendait 0 lui aussi. Deux
+pièges, tous deux dans `_parseVideoCardsRegex` :
+
+1. Un plafond `([\s\S]{0,600}?)<\/a>` supposait qu'une ancre se referme en
+   moins de 600 caractères. La carte réelle enveloppe un `<img>` à ~15
+   attributs (~900 caractères) : la page servie à l'app, plus volumineuse que
+   celle du harnais, dépassait le plafond et ne produisait **aucune** carte.
+2. La carte n'est pas définie par son ancre mais par sa coquille :
+   `<div class="thumb-block" data-eid="1gsa3edd">` (recherche),
+   `<div id="video-thumb-hbwy3c6" data-video='{"id":"hbwy3c6"…'>` (/hits) ou
+   `<div id="video_1gsa3edd">`. Quand l'ancre manque, la carte existe quand même.
+
+Le parseur découpe donc le document sur les marqueurs d'id — sans plafond de
+longueur — puis reconstruit le lien depuis l'id quand l'ancre est absente.
+XNXX **redirige en 301** `/video-<id>` (n'importe quel slug, ex. `/video-<id>/x`)
+vers l'URL canonique, donc un lien reconstruit reste lisible. Les slashes
+échappés (`https:\/\/…`) sont normalisés. Corollaire : ne jamais conditionner la
+découverte d'une carte à la présence ou à la taille de son ancre.
+
 ## Le pont DOM QuickJS est synchrone — borner les parcours
 
 Sur l'appareil, chaque lecture de nœud/attribut du DOM (`getElementsByTagName`,
