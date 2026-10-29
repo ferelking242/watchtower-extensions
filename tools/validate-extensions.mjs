@@ -13,6 +13,7 @@
  * pushes/PRs on it. Run locally with:  node tools/validate-extensions.mjs
  */
 import { execFileSync } from "node:child_process";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { sourceLoginFlag } from "./source_manifest.mjs";
@@ -319,6 +320,52 @@ for (const rel of jsonFiles.filter((file) => file.startsWith("index/"))) {
   }
 }
 console.log(`   ${iconEntries - missingIcons}/${iconEntries} entries have local icons`);
+
+// ── 5b. Plugin icons must be distinct ───────────────────────────────────────
+// Every music plugin used to ship the same `assets/logo.png` copied from the
+// Spotify repository, so Deezer, Apple Music and YouTube Music all displayed
+// the Spotify mark. Identical bytes across two plugins means one of them is
+// wrong, which is only visible once the icons are compared by content.
+console.log("▶ plugin icon distinctness");
+{
+  const pluginIndex = path.join(ROOT, "index", "plugins.json");
+  if (fs.existsSync(pluginIndex)) {
+    const doc = JSON.parse(fs.readFileSync(pluginIndex, "utf8"));
+    const plugins = Array.isArray(doc.plugins) ? doc.plugins : [];
+    const byHash = new Map();
+    const iconBase = "assets/plugins/";
+    for (const plugin of plugins) {
+      const icon = typeof plugin.icon === "string" ? plugin.icon : "";
+      if (!icon) {
+        problems.push(
+          `PLUGIN ICON: ${plugin.id} has no icon — every plugin needs its own logo`,
+        );
+        continue;
+      }
+      if (!icon.includes("/" + iconBase)) continue;
+      const rel = icon.slice(icon.indexOf(iconBase));
+      const file = path.join(ROOT, rel);
+      if (!fs.existsSync(file)) {
+        problems.push(`PLUGIN ICON: ${plugin.id} asset is missing: ${rel}`);
+        continue;
+      }
+      const hash = crypto
+        .createHash("md5")
+        .update(fs.readFileSync(file))
+        .digest("hex");
+      const previous = byHash.get(hash);
+      if (previous) {
+        problems.push(
+          `PLUGIN ICON: ${plugin.id} and ${previous} ship the same image — ` +
+            `each plugin needs its own branded logo`,
+        );
+      } else {
+        byHash.set(hash, plugin.id);
+      }
+    }
+    console.log(`   ${byHash.size} distinct plugin logo(s) across ${plugins.length} plugin(s)`);
+  }
+}
 
 // ── 4. Every extension must declare getSourcePreferences ────────────────────
 console.log("▶ getSourcePreferences() presence");
