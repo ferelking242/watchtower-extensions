@@ -8,7 +8,7 @@ const watchtowerSources = [
     "iconUrl": "https://www.harimanga.co.uk/image/icon/hari-icon-192x192.webp",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.4.11",
+    "version": "0.4.12",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -44,27 +44,22 @@ const watchtowerSources = [
 const BASE_URL = "https://www.harimanga.co.uk";
 
 // ── Cover hosts ─────────────────────────────────────────────────────────────
-// The site distributes covers across several mirrors. Keep the broad catalogue
-// on the two mirrors confirmed to share paths; use cdn2/cdn3 only for exact paths
-// verified there because those mirrors do not contain every cover.
+// The site already picks a working mirror per cover and emits it in the card
+// markup (`data-backup`/`src`/`data-src`). Trust it and do not rewrite the host.
 //
-//   img-r1.2xstorage.com  serves the catalogue
-//   cdn.zinmanga1.com     serves the same paths as img-r1
+// A previous version sharded every cover across
+// ["img-r1.2xstorage.com", "cdn.zinmanga1.com"], assuming the two shared paths.
+// Measured against the live mirrors, that assumption is false:
 //
-//   cdn2/cdn3.zinmanga1.com  verified copies of selected catalogue covers
-const COVER_HOSTS = ["img-r1.2xstorage.com", "cdn.zinmanga1.com"];
-const COVER_HOST_OVERRIDES = {
-  // These paths are only present on the first Zinmanga mirror.
-  "/thumb/gotham-by-daylight.webp": ["cdn.zinmanga1.com"],
-  "/thumb/i-married-the-dragoni-killed.webp": ["cdn.zinmanga1.com"],
-  "/thumb/title-unlocked-this-life-i-dominate-the-game.webp": ["cdn.zinmanga1.com"],
-  // Verified on both cdn2 and cdn3; these paths are absent on some other mirrors.
-  "/thumb/tales-of-demons-and-gods.webp": ["cdn2.zinmanga1.com", "cdn3.zinmanga1.com"],
-  "/thumb/solo-leveling.webp": ["cdn2.zinmanga1.com", "cdn3.zinmanga1.com"],
-  "/thumb/the-beginning-after-the-end.webp": ["cdn2.zinmanga1.com", "cdn3.zinmanga1.com"],
-  "/thumb/one-piece.webp": ["cdn2.zinmanga1.com", "cdn3.zinmanga1.com"],
-  "/thumb/kimetsu-no-yaiba.webp": ["cdn2.zinmanga1.com", "cdn3.zinmanga1.com"],
-};
+//   /thumb/alexandrite-knight.webp   img-r1 -> 200, cdn -> 404
+//   /thumb/roses-and-champagnee.webp img-r1 -> 200, cdn -> 404
+//   /thumb/hair-growth-maniac.webp   img-r1 -> 200, cdn -> 404
+//   /thumb/canopy-vault.webp         img-r1 -> 200, cdn -> 404
+//
+// cdn.zinmanga1.com only carries a small slice of the catalogue, so ~half the
+// covers landed on a host that answers 404 — the placeholder the user sees.
+// The emitted URLs themselves are reliable: 14/14 site-emitted `data-backup`
+// URLs answered 200. Do not reintroduce host sharding here.
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
@@ -139,30 +134,7 @@ class DefaultExtension extends MProvider {
       candidates.find((candidate) => /^(?:https?:)?\/\//i.test(candidate)) ||
       candidates[0] ||
       "";
-    return this.resolveUrl(this._coverUrl(imageUrl));
-  }
-
-  // Keep all URLs on the two known-good mirrors and shard by path so repeated
-  // appearances of the same cover stay cacheable while parallel shelves do not
-  // all hit a single host.
-  _coverUrl(url) {
-    if (!url) return url;
-    const match = /^(https?:\/\/)([^/]+)([\s\S]*)$/i.exec(String(url));
-    if (!match) return url;
-    const scheme = match[1];
-    const rest = match[3];
-    const suffixIndex = rest.search(/[?#]/);
-    const rawPath = suffixIndex === -1 ? rest : rest.slice(0, suffixIndex);
-    const suffix = suffixIndex === -1 ? "" : rest.slice(suffixIndex);
-    const path = rawPath.replace(/\/{2,}/g, "/") || "/";
-
-    const hosts = COVER_HOST_OVERRIDES[path] || COVER_HOSTS;
-    let hash = 0;
-    for (let i = 0; i < path.length; i++) {
-      hash = (hash * 31 + path.charCodeAt(i)) % 2147483647;
-    }
-
-    return `${scheme}${hosts[hash % hosts.length]}${path}${suffix}`;
+    return this.resolveUrl(imageUrl);
   }
 
   // The current site home uses `.manga-grid .manga-item` for its update rail,
@@ -366,15 +338,7 @@ class DefaultExtension extends MProvider {
 
     // Cover image
     const imgEl = doc.selectFirst("div.summary_image img");
-    let imageUrl = "";
-    if (imgEl) {
-      for (const c of [imgEl.attr("src") || "", imgEl.attr("data-src") || "", imgEl.attr("data-backup") || ""]) {
-        if (c && !c.startsWith("data:")) {
-          imageUrl = this.resolveUrl(this._coverUrl(c));
-          break;
-        }
-      }
-    }
+    const imageUrl = this.imageUrlFromElement(imgEl);
 
     // Title
     const titleEl = doc.selectFirst("div.post-title h1");
