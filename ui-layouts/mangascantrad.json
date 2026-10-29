@@ -1,0 +1,113 @@
+{
+ "schemaVersion": 1,
+ "home": {
+  "sections": [
+   {
+    "id": "spotlight",
+    "component": "spotlight",
+    "title": "✨ À la une",
+    "accent": "primary",
+    "icon": "auto_awesome",
+    "seeAll": true
+   },
+   {
+    "id": "popular",
+    "component": "ranked",
+    "title": "🔥 Les plus lus",
+    "accent": "error",
+    "icon": "trending_up",
+    "seeAll": true
+   },
+   {
+    "id": "latest",
+    "component": "compactRow",
+    "title": "🆕 Dernières sorties",
+    "accent": "tertiary",
+    "icon": "fiber_new",
+    "seeAll": true
+   },
+   {
+    "id": "category_romance",
+    "component": "compactRow",
+    "title": "💕 Romance",
+    "accent": "#E91E63",
+    "icon": "favorite",
+    "seeAll": true
+   },
+   {
+    "id": "category_shonen",
+    "component": "compactRow",
+    "title": "⚔️ Shonen",
+    "accent": "#42A5F5",
+    "icon": "bolt",
+    "seeAll": true
+   },
+   {
+    "id": "category_action",
+    "component": "compactRow",
+    "title": "💥 Action",
+    "accent": "#FF7043",
+    "icon": "local_fire_department",
+    "seeAll": true
+   },
+   {
+    "id": "category_fantaisie",
+    "component": "compactRow",
+    "title": "🧙 Fantaisie",
+    "accent": "#AB47BC",
+    "icon": "auto_fix_high",
+    "seeAll": true
+   },
+   {
+    "id": "category_seinen",
+    "component": "compactRow",
+    "title": "🩸 Seinen",
+    "accent": "#8D6E63",
+    "icon": "person",
+    "seeAll": true
+   },
+   {
+    "id": "category_isekai",
+    "component": "compactRow",
+    "title": "🌀 Isekai",
+    "accent": "#26C6DA",
+    "icon": "public",
+    "seeAll": true
+   },
+   {
+    "id": "new",
+    "component": "grid",
+    "title": "🌱 Nouveautés",
+    "accent": "secondary",
+    "icon": "auto_awesome",
+    "columns": 3,
+    "rows": 2,
+    "cardStyle": "poster",
+    "seeAll": true
+   }
+  ]
+ },
+ "browse": {
+  "popular": {
+   "component": "grid",
+   "columns": 3,
+   "cardStyle": "poster"
+  },
+  "latest": {
+   "component": "grid",
+   "columns": 3,
+   "cardStyle": "poster"
+  },
+  "search": {
+   "results": {
+    "component": "grid",
+    "columns": 3,
+    "cardStyle": "poster"
+   },
+   "filters": "chips"
+  }
+ },
+ "player": {
+  "mode": "standard"
+ }
+}

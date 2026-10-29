@@ -2488,15 +2488,15 @@
     "name": "Hentai Scantrad",
     "id": 2000000089,
     "lang": "fr",
-    "baseUrl": "https://hentai.scantrad-vf.cc",
+    "baseUrl": "https://hentai-scantrad.org",
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/manga-2000000089.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.1.0",
+    "version": "0.2.0",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@55fb89c855fa51900d9ecc49199ab62a7c529db4/src/manga/fr/hentaiscantrad.js",
     "isManga": true,
     "isNsfw": false,
-    "hasCloudflare": false,
+    "hasCloudflare": true,
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Scans manga FR — Madara/WordPress (NSFW)",
@@ -2504,7 +2504,7 @@
     "forYou": true,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://hentai.scantrad-vf.cc",
+    "apiUrl": "https://hentai-scantrad.org",
     "langs": [
       "fr"
     ],
@@ -2983,11 +2983,11 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/manga-2000000105.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "0.1.0",
+    "version": "0.2.0",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@55fb89c855fa51900d9ecc49199ab62a7c529db4/src/manga/fr/mangascantrad.js",
     "isManga": true,
     "isNsfw": false,
-    "hasCloudflare": false,
+    "hasCloudflare": true,
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "notes": "Scans manga FR — Madara/WordPress",
@@ -3004,7 +3004,9 @@
       "french",
       "featured"
     ],
-    "addedAt": "2026-09-02"
+    "addedAt": "2026-09-02",
+    "uiLayout": "ui-layouts/mangascantrad.json",
+    "uiLayoutVersion": "1.0.0"
   },
   {
     "name": "Mangas Origines",
