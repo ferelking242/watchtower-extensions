@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.pornhub.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.4.1",
+  "version": "1.4.2",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/pornhub.js",
@@ -149,7 +149,7 @@ class DefaultExtension extends MProvider {
     return match ? this._cleanUrl(match[1]) : "";
   }
 
-  _fallbackList(html, page) {
+  _fallbackList(html, page, kind) {
     const source = String(html || "");
     const items = [];
     const seen = {};
@@ -191,22 +191,26 @@ class DefaultExtension extends MProvider {
 
     return {
       list: items,
-      hasNextPage: items.length >= 20 && page < 50
+      hasNextPage: kind === "search" ? false : items.length >= 20 && page < 50
     };
   }
 
-  _hasNextPage(doc, page, items) {
+  _hasNextPage(doc, page, items, kind) {
     if (items.length === 0 || page >= 50) return false;
     for (const anchor of doc.select("a[rel='next'], .pagination a, .pagination3 a, .paginationGated a")) {
-      const href = anchor.attr("href") || "";
-      if (anchor.attr("rel") === "next") return true;
-      const match = href.match(/[?&]page=(\d+)/);
+      if ((anchor.attr("rel") || "").toLowerCase() === "next") return true;
+      if ((anchor.attr("class") || "").toLowerCase().includes("disabled")) continue;
+      const match = (anchor.attr("href") || "").match(/[?&]page=(\d+)/);
       if (match && Number(match[1]) > page) return true;
     }
+    // Pornhub renders a pagination widget only when a search result set spans
+    // several pages, so a search page without one is the last page. The
+    // homepage feed never renders one and keeps serving further batches.
+    if (kind === "search") return false;
     return items.length >= 20;
   }
 
-  _parseList(html, page) {
+  _parseList(html, page, kind) {
     const doc = new Document(html);
     const items = [];
     const seen = {};
@@ -249,7 +253,7 @@ class DefaultExtension extends MProvider {
 
     if (items.length === 0) {
       extLog('info', `PornHub._parseList: 0 cards url=${this._lastUrl} html_len=${String(html || "").length}`);
-      const fallback = this._fallbackList(html, page);
+      const fallback = this._fallbackList(html, page, kind);
       if (fallback.list.length === 0 && this._isGatePage(html)) {
         // Age/region-block page: surface the exact URL as the last token so the
         // app's inline access panel opens it and the user validates once.
@@ -262,19 +266,23 @@ class DefaultExtension extends MProvider {
 
     return {
       list: items,
-      hasNextPage: this._hasNextPage(doc, page, items)
+      hasNextPage: this._hasNextPage(doc, page, items, kind)
     };
   }
 
+  // Pornhub retired the `/video?o=<order>` browse route: it now 302-redirects
+  // to the homepage, so any listing built on it comes back empty. The homepage
+  // feed (`/?o=<order>&page=<n>`) still honours the ordering codes and
+  // paginates, and `/video/search` is the only other live listing surface.
   async _list(order, page) {
-    const url = `${DefaultExtension.BASE_URL}/video?o=${order}&page=${page}`;
-    return this._parseList(await this._get(url), page);
+    const url = `${DefaultExtension.BASE_URL}/?o=${order}&page=${page}`;
+    return this._parseList(await this._get(url), page, "feed");
   }
 
-  async _listPath(path, page) {
-    const separator = path.includes("?") ? "&" : "?";
-    const url = `${DefaultExtension.BASE_URL}${path}${separator}page=${page}`;
-    return this._parseList(await this._get(url), page);
+  async _searchList(query, page, order) {
+    const suffix = order ? `&o=${order}` : "";
+    const url = `${DefaultExtension.BASE_URL}/video/search?search=${encodeURIComponent(query)}${suffix}&page=${page}`;
+    return this._parseList(await this._get(url), page, "search");
   }
 
   async getPopular(page) {
@@ -282,16 +290,13 @@ class DefaultExtension extends MProvider {
   }
 
   async getLatestUpdates(page) {
-    // "o=n" (newest) was retired by Pornhub and now 404s for every client;
-    // "tr" (trending, current) is the closest live ordering.
-    return this._list("tr", page);
+    return this._list("mr", page);
   }
 
   async search(query, page) {
     const value = String(query || "").trim();
     if (!value) return this.getPopular(page);
-    const url = `${DefaultExtension.BASE_URL}/video/search?search=${encodeURIComponent(value)}&page=${page}`;
-    return this._parseList(await this._get(url), page);
+    return this._searchList(value, page, "mr");
   }
 
   static get GATE_PATTERN() {
@@ -517,8 +522,8 @@ class DefaultExtension extends MProvider {
     if (listId === "recommended") return this._list("tr", page);
     if (listId === "trending") return this._list("ht", page);
     if (listId === "top") return this._list("mv", page);
-    if (listId === "new") return this._list("tr", page); // "o=n" was retired server-side (404)
-    if (listId === "shorts") return this._listPath("/shorties", page);
+    if (listId === "new") return this._list("mr", page);
+    if (listId === "shorts") return this._searchList("short", page, "mr");
     if (listId === "catalogue") return this._list("mv", page);
 
     if (listId === "categories") {
@@ -546,7 +551,7 @@ class DefaultExtension extends MProvider {
         list: PORNHUB_LANGUAGES.map(([name, slug]) =>
           this._collectionItem(
             name,
-            `/language/${slug}`,
+            `/video/search?search=${encodeURIComponent(slug)}`,
             "Browse videos in this language",
             `language_${slug}`
           )
@@ -559,25 +564,23 @@ class DefaultExtension extends MProvider {
         list: this._collectionItems(
           PORNHUB_PLAYLISTS,
           "playlist",
-          slug => `/video?o=${encodeURIComponent(slug)}`
+          slug => `/video/search?search=${encodeURIComponent(slug)}`
         ),
         hasNextPage: false
       };
     }
 
     if (listId.startsWith("category_")) {
-      const category = listId.slice("category_".length);
-      return this._listPath(`/video/search?search=${encodeURIComponent(category)}`, page);
+      return this._searchList(listId.slice("category_".length), page, "mr");
     }
     if (listId.startsWith("tag_")) {
-      const tag = listId.slice("tag_".length);
-      return this._listPath(`/video/search?search=${encodeURIComponent(tag)}`, page);
+      return this._searchList(listId.slice("tag_".length), page, "mr");
     }
     if (listId.startsWith("language_")) {
-      return this._listPath(`/language/${listId.slice("language_".length)}`, page);
+      return this._searchList(listId.slice("language_".length), page, "mr");
     }
     if (listId.startsWith("playlist_")) {
-      return this._listPath(`/video?o=${listId.slice("playlist_".length)}`, page);
+      return this._searchList(listId.slice("playlist_".length), page, "mr");
     }
 
     return this.getPopular(page);
