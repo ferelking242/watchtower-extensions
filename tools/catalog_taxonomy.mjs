@@ -39,6 +39,7 @@ export const CONTENT_TAGS = [
   "movies",
   "series",
   "documentary",
+  "jav",
   "music",
   "game",
 ];
@@ -249,6 +250,10 @@ const WATCH_CONTENT_LABELS = {
   documentary: "documentary",
   documentaries: "documentary",
   documentaire: "documentary",
+  jav: "jav",
+  "japanese av": "jav",
+  "japanese adult": "jav",
+  "japanese adult video": "jav",
 };
 
 /** Medium a catalogue's itemType belongs to. */

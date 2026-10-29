@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      {
+        "id": "popular",
+        "component": "spotlight",
+        "title": "Most Popular",
+        "accent": "#FE628E",
+        "icon": "whatshot",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "latest",
+        "component": "showcase",
+        "title": "Latest",
+        "accent": "tertiary",
+        "icon": "fiber_new",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "pornstars",
+        "component": "creatorRow",
+        "title": "Pornstars",
+        "accent": "#B388FF",
+        "icon": "star",
+        "seeAll": true
+      },
+      {
+        "id": "studios",
+        "component": "studioExplorer",
+        "title": "Studios",
+        "accent": "#7C4DFF",
+        "icon": "business",
+        "seeAll": true
+      },
+      {
+        "id": "categories",
+        "component": "grid",
+        "title": "Categories",
+        "accent": "#64D8CB",
+        "icon": "category",
+        "seeAll": true,
+        "columns": 3,
+        "rows": 3,
+        "gridOrder": "column",
+        "scrollDirection": "horizontal",
+        "cardStyle": "thumbnail"
+      }
+    ]
+  },
+  "browse": {
+    "popular": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 3,
+        "cardStyle": "thumbnail"
+      },
+      "filters": "chips"
+    }
+  },
+  "detail": {
+    "hero": "backdrop",
+    "episodeList": "compact",
+    "showRecommendations": false
+  },
+  "player": {
+    "mode": "standard"
+  }
+}
