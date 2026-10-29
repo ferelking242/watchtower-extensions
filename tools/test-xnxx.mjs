@@ -665,4 +665,79 @@ assert.equal(
   "harness must treat <script> bodies as raw text like a real parser",
 );
 
+// ── Tag covers ───────────────────────────────────────────────────────────────
+// A tag row carries no artwork, so the cover is borrowed from the tag's first
+// video. That fetch is expensive (one page per tag), which is why the result is
+// stored: without the store, a 60-tag page re-fetched every cover on every open
+// and the "see all" grid showed art on the first few tags only.
+{
+  const routed = [];
+  const store = new Map();
+  class RoutingClient {
+    async get(url) {
+      routed.push(url);
+      const slug = decodeURIComponent(url).split("/search/")[1] || "unknown";
+      return {
+        statusCode: 200,
+        body: `<div class="thumb-block" data-eid="aa11">
+                 <img data-src="//img.example/${slug}.jpg" />
+                 <a title="${slug}" href="/video-aa11/${slug}">${slug}</a>
+               </div>`,
+      };
+    }
+  }
+  const ctx = {
+    MProvider: class {},
+    Document,
+    Client: RoutingClient,
+    SharedPreferences: class {},
+    extLog: () => {},
+    URL,
+    getLocalStorage: async (base, key) => store.get(`${base}:${key}`) ?? null,
+    setLocalStorage: async (base, key, value) => { store.set(`${base}:${key}`, value); },
+  };
+  vm.runInNewContext(
+    `${extensionSource}\nglobalThis.XnxxForTest = DefaultExtension;`,
+    ctx,
+  );
+  const p = new ctx.XnxxForTest();
+
+  const tag = (name, slug) => ({
+    name,
+    link: `https://www.xnxx.com/search/${slug}`,
+    imageUrl: "",
+    collectionId: `search_${slug}`,
+  });
+  const tags = [tag("Anal", "anal"), tag("Asian", "asian"), tag("BBW", "bbw")];
+
+  const first = await p._enrichTagCovers(tags, 60, 4);
+  assert.ok(
+    first.every((t) => t.imageUrl.startsWith("https://img.example/")),
+    "every tag on the page gets a cover, not just the first few",
+  );
+  assert.equal(routed.length, 3, "each unknown tag costs exactly one fetch");
+  assert.equal(store.get("https://www.xnxx.com:xnxx_tag_covers") !== undefined, true,
+    "covers are persisted for the next visit");
+
+  // Second page: same tags, nothing cached in the instance — must come from the
+  // store, so no new request is made.
+  const again = [tag("Anal", "anal"), tag("Asian", "asian"), tag("BBW", "bbw")];
+  await p._enrichTagCovers(again, 60, 4);
+  assert.equal(routed.length, 3, "a known tag is never fetched twice");
+  assert.equal(again[0].imageUrl, "https://img.example/anal.jpg");
+
+  // A new tag is the only thing that should hit the network.
+  const mixed = [tag("Anal", "anal"), tag("Cum", "cum")];
+  await p._enrichTagCovers(mixed, 60, 4);
+  assert.equal(routed.length, 4, "only the unknown tag is fetched");
+  assert.equal(mixed[1].imageUrl, "https://img.example/cum.jpg");
+
+  assert.equal(p._tagSlug({ collectionId: "search_big_tits" }), "big_tits");
+  assert.equal(
+    p._tagSlug({ link: "https://www.xnxx.com/search/big+ass/2" }),
+    "big+ass",
+    "link slugs stop at the first path separator and keep their encoding",
+  );
+}
+
 console.log("XNXX regression checks passed (listing parsing, Cloudflare, HTTP, network, recommendations, comments, getVideoList, profile listing).");

@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.5.4",
+  "version": "1.5.5",
   "login": true,
   "loginUrl": "https://www.xnxx.com/mobile/login",
   "forYou": false,
@@ -827,15 +827,81 @@ class DefaultExtension extends MProvider {
   }
 
   // A tag row carries no artwork, so a tag card rendered as a bare gradient
-  // tile. Borrow the cover of the tag's first video instead. Bounded twice:
-  // only the tiles that are actually shown are fetched, and the fetches run
-  // through a small pool — firing one request per tag at once is what gets a
-  // session rate-limited (and XNXX answers 429 on the listing endpoint).
-  async _enrichTagCovers(tags, limit = 24, concurrency = 4) {
+  // tile. Borrow the cover of the tag's first video instead, and remember it:
+  // a tag's cover is stable, so each tag is fetched once and served from the
+  // store on every later visit. Without that store, covering a 60-tag page
+  // cost 60 requests on every open — which is why this pass was capped at 8
+  // tiles, and why the "see all" grid showed covers on the first eight tags
+  // only. Bounded twice: a small pool (one request per tag at once gets the
+  // session rate-limited and XNXX answers 429) and a wall-clock deadline.
+  static get TAG_COVERS_KEY() { return "xnxx_tag_covers"; }
+
+  _tagSlug(tag) {
+    const id = String((tag && tag.collectionId) || "");
+    if (id.startsWith("search_")) return id.slice("search_".length);
+    const link = String((tag && tag.link) || "");
+    const at = link.indexOf("/search/");
+    return at >= 0
+      ? link.slice(at + "/search/".length).split(/[/?#]/)[0]
+      : "";
+  }
+
+  async _loadTagCovers() {
+    if (DefaultExtension._tagCoverCache) {
+      return DefaultExtension._tagCoverCache;
+    }
+    if (!this._storageAvailable()) {
+      DefaultExtension._tagCoverCache = {};
+      return DefaultExtension._tagCoverCache;
+    }
+    try {
+      const raw = await getLocalStorage(
+        DefaultExtension.BASE_URL,
+        DefaultExtension.TAG_COVERS_KEY,
+      );
+      const parsed = typeof raw === "string" ? JSON.parse(raw || "{}") : raw;
+      DefaultExtension._tagCoverCache =
+        parsed && typeof parsed === "object" ? parsed : {};
+    } catch (error) {
+      extLog("warn", `XNXX tag covers could not be read: ${error.message}`);
+      DefaultExtension._tagCoverCache = {};
+    }
+    return DefaultExtension._tagCoverCache;
+  }
+
+  async _saveTagCovers(covers) {
+    DefaultExtension._tagCoverCache = covers;
+    if (!this._storageAvailable()) return;
+    try {
+      await setLocalStorage(
+        DefaultExtension.BASE_URL,
+        DefaultExtension.TAG_COVERS_KEY,
+        JSON.stringify(covers),
+      );
+    } catch (error) {
+      extLog("warn", `XNXX tag covers could not be saved: ${error.message}`);
+    }
+  }
+
+  async _enrichTagCovers(tags, limit = 60, concurrency = 8, budgetMs = 20000) {
+    // Known covers are applied first and for free, so a revisit only fetches
+    // the tags that are genuinely new.
+    const cached = await this._loadTagCovers();
+    for (const tag of tags) {
+      if (tag.imageUrl) continue;
+      const cover = cached[this._tagSlug(tag)];
+      if (cover) tag.imageUrl = cover;
+    }
+
     const targets = tags.slice(0, limit).filter(tag => !tag.imageUrl);
+    if (!targets.length) return tags;
+
+    const deadline = Date.now() + budgetMs;
+    const fresh = {};
     let cursor = 0;
     const worker = async () => {
       while (cursor < targets.length) {
+        if (Date.now() > deadline) return;
         const tag = targets[cursor++];
         try {
           const { body } = await this._get(tag.link);
@@ -844,7 +910,10 @@ class DefaultExtension extends MProvider {
           // and doing that once per tag is what made this pass expensive. One
           // cover is all that is wanted here.
           const first = this._parseVideoCardsRegex(body)[0];
-          if (first && first.imageUrl) tag.imageUrl = first.imageUrl;
+          if (first && first.imageUrl) {
+            tag.imageUrl = first.imageUrl;
+            fresh[this._tagSlug(tag)] = first.imageUrl;
+          }
         } catch (error) {
           extLog("warn", `XNXX tag cover unavailable tag=${tag.name}: ${error.message}`);
         }
@@ -853,6 +922,11 @@ class DefaultExtension extends MProvider {
     await Promise.all(
       Array.from({ length: Math.min(concurrency, targets.length) }, worker)
     );
+
+    const keys = Object.keys(fresh);
+    if (keys.length) {
+      await this._saveTagCovers(Object.assign({}, cached, fresh));
+    }
     return tags;
   }
 
@@ -1110,13 +1184,13 @@ class DefaultExtension extends MProvider {
           const { body } = await this._get(`/tags/${letter}`);
           const tags = this._parseTags(body);
           if (tags.length) {
-            // Enrich only the tiles the home rail actually renders (3 rows x
-            // 2 columns). Every cover is a full page fetch, and the app runs
-            // all home sections on one runtime with a 15 s budget: a 60-tag
-            // pass (~60 requests) blew that budget and took the whole home
-            // down with it. A tag tile without art still renders as a
-            // labelled gradient card, so a small cap costs nothing visible.
-            await this._enrichTagCovers(tags, 8, 4);
+            // Cover the whole returned page, not just the home rail's first
+            // tiles: the "see all" grid renders all 60, so a cap here is what
+            // left every tag past the eighth without artwork. The per-tag
+            // fetch is paid once ever thanks to the cover store; the deadline
+            // inside _enrichTagCovers keeps a cold page inside the runtime
+            // budget and leaves the remainder to the next visit.
+            await this._enrichTagCovers(tags, 60, 8);
             return { list: tags, hasNextPage: index < letters.length - 1 };
           }
         } catch (error) {
@@ -1124,7 +1198,7 @@ class DefaultExtension extends MProvider {
         }
       }
       return {
-        list: await this._enrichTagCovers(this._categoryTags(), 8, 4),
+        list: await this._enrichTagCovers(this._categoryTags(), 60, 8),
         hasNextPage: false
       };
     }
