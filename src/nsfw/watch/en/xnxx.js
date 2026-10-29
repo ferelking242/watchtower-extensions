@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.5.3",
+  "version": "1.5.4",
   "login": true,
   "loginUrl": "https://www.xnxx.com/mobile/login",
   "forYou": false,
@@ -363,79 +363,106 @@ class DefaultExtension extends MProvider {
     // runtime builds Element nodes through a Dart bridge, and when that bridge
     // fails to resolve `.thumb-block` (client quirk, markup drift, empty doc)
     // the DOM-based path above silently produces zero items and the user sees
-    // "Aucun résultat" on a working page. Recover links straight from the HTML.
+    // "Aucun résultat" on a working page. Recover cards straight from the HTML.
     //
-    // Cards carry the SAME /video-… href twice (thumbnail link, then title
-    // link); the title attribute only exists on the second one, so anchors are
-    // grouped by link before anything is committed.
+    // Cards are keyed on the video ID, NOT on an anchor: the live site renders
+    // each card as `<div class="thumb-block" data-eid="1gsa3edd">` whose inner
+    // `<a href="/video-1gsa3edd/slug">` is sometimes absent (and whose slashes
+    // are sometimes JSON-escaped). Anchoring on the shell means a card is found
+    // even when its link is missing or escaped, and the link is then rebuilt
+    // from the id — XNXX 301-redirects `/video-<id>/x` to the canonical page.
     const items = [];
     if (!html) return items;
-    // Video ids are ALPHANUMERIC (`/video-17pt1bb8/...`), never bare digits:
-    // a `\d+` here matched nothing on the live site, so the fallback that was
+    // Every card shape on the site starts with ONE of these markers, all of
+    // which carry the same alphanumeric video id:
+    //   <div id="video_1gsa3edd" … data-eid="1gsa3edd" …>          (search)
+    //   <div id="video-thumb-hbwy3c6" … data-video='{"id":"hbwy3c6"…'>  (hits)
+    //   <a href="/video-1gsa3edd/slug">                            (anywhere)
+    // The video id is ALPHANUMERIC (`/video-17pt1bb8/…`), never bare digits: a
+    // `\d+` here matched nothing on the live site, so the fallback that was
     // supposed to rescue a failed DOM parse returned zero items and the user
     // saw "Aucun résultat" on a page full of videos.
-    const anchorRe = /<a\b[^>]*\bhref=["']([^"']*\/video-[A-Za-z0-9]+[^"']*)["'][^>]*>([\s\S]{0,600}?)<\/a>/gi;
-    const groups = new Map();
-    const blockBounds = [];
+    const idRe = new RegExp(
+      "data-eid=[\"']([A-Za-z0-9]{4,})[\"']" +
+      "|data-video=['\"][^>]{0,140}?[\"']id[\"']\\s*:\\s*[\"']([A-Za-z0-9]{4,})[\"']" +
+      "|id=[\"']video[-_](?:thumb-)?([A-Za-z0-9]{4,})[\"']" +
+      "|\\/video-(?!thumb)([A-Za-z0-9]{5,})",
+      "gi"
+    );
+    const order = [];
+    const cards = new Map();
     let match;
-    while ((match = anchorRe.exec(html))) {
-      const link = this._absolute(match[1]);
-      if (!link) continue;
-      if (!groups.has(link)) {
-        groups.set(link, { link, first: match, anchors: [] });
+    while ((match = idRe.exec(html))) {
+      const id = match[1] || match[2] || match[3] || match[4];
+      if (!id) continue;
+      // The first sighting is the card's opening marker; later ones are the
+      // same id repeated in the href/title/preview script.
+      if (!cards.has(id)) {
+        cards.set(id, { id, at: match.index });
+        order.push(id);
       }
-      groups.get(link).anchors.push(match);
     }
+    if (!order.length) return items;
 
-    const starts = [...groups.values()].map(group => group.first.index);
-    let index = 0;
-    for (const group of groups.values()) {
-      const blockEnd = index + 1 < starts.length ? starts[index + 1] : Math.min(html.length, group.first.index + 8000);
-      const block = html.slice(group.first.index, blockEnd);
-      index++;
+    // Split the document on those sightings: everything from one id up to the
+    // next belongs to that card. The last card gets a bounded tail so a page
+    // with no following card cannot swallow the whole document.
+    order.forEach((id, index) => {
+      const start = cards.get(id).at;
+      const end = index + 1 < order.length
+        ? cards.get(order[index + 1]).at
+        : Math.min(html.length, start + 12000);
+      cards.get(id).block = html.slice(start, end);
+    });
 
-      // Title: the `title` attr first, else any tag-free inner text of the grouped anchors.
+    const seen = {};
+    for (const id of order) {
+      const card = cards.get(id);
+      const block = card.block;
+      // The href keeps the real slug when the anchor is present; otherwise the
+      // bare id is enough because XNXX redirects any slug to the canonical one.
+      let link = this._absolute(`/video-${id}`);
+      const href = /<a\b[^>]*\bhref=["']([^"']*video-[^"']*)["']/i.exec(block);
+      if (href) {
+        const candidate = this._absolute(href[1].replace(/\\\//g, "/"));
+        if (candidate) link = candidate;
+      }
+      if (!link || seen[link]) continue;
+      seen[link] = true;
+
+      // Title: the `title` attr of the title anchor first, else its inner text.
       let name = "";
-      for (const candidate of group.anchors) {
-        const attr = /(^|\s)title=["']([^"']*)["']/.exec(candidate[0]);
-        if (attr && attr[2].trim()) {
-          name = this._decodeEntities(attr[2]).replace(/\s+/g, " ").trim();
-          break;
+      const titleAttr = /\btitle=["']([^"']{3,})["']/i.exec(block);
+      if (titleAttr) {
+        name = this._decodeEntities(titleAttr[1]).replace(/\s+/g, " ").trim();
+      }
+      if (!name) {
+        const thumbUnder = /<div\b[^>]*class=["'][^"']*thumb-under[^"']*["'][^>]*>([\s\S]*?)<\/div>/i.exec(block);
+        const scope = thumbUnder ? thumbUnder[1] : block;
+        const text = /<a\b[^>]*>([\s\S]*?)<\/a>/i.exec(scope);
+        if (text) {
+          name = this._decodeEntities(String(text[1]).replace(/<[^>]+>/g, " "))
+            .replace(/\s+/g, " ")
+            .trim();
         }
       }
-      for (const candidate of group.anchors) {
-        if (name) break;
-        const text = this._decodeEntities(String(candidate[2]).replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
-        if (text.length >= 4) name = text;
-      }
 
-      // Image: first lazy-load thumb inside the grouped anchor internals
-      // (the plain `src` is a blank placeholder on xnxx), else the nearest
-      // one after the anchor in the block.
-      let image = "";
-      for (const candidate of group.anchors) {
-        const img = /<img\b[^>]*\b(?:data-src|data-original)=["']([^"']+)["']/i.exec(candidate[0]);
-        if (img) {
-          image = img[1];
-          break;
-        }
-      }
-      if (!image) {
-        const img = /<img\b[^>]*\b(?:data-src|data-original|src)=["']([^"']+)["']/i.exec(block);
-        if (img) image = img[1];
-      }
-
-      const previewMatch = /\bdata-pvv=["']([^"']+)["']/i.exec(block);
-      const mzlMatch = /\bdata-mzl=["']([^"']+)["']/i.exec(block);
+      // Image: the mozaique listing beats the raw frame; both are attributes of
+      // the card's <img>, so read them off the block.
+      const mzl = /\bdata-mzl=["']([^"']+)["']/i.exec(block);
+      const sfw = /\bdata-sfwthumb=["']([^"']+)["']/i.exec(block);
+      const src = /<img\b[^>]*\bdata-src=["']([^"']+)["']/i.exec(block);
+      const rawImage = mzl ? mzl[1] : (sfw ? sfw[1] : (src ? src[1] : ""));
+      const preview = /\bdata-pvv=["']([^"']+)["']/i.exec(block);
       const duration = /(\d+\s*(?:min|sec|h)\b)/i.exec(block);
-      const rawImage = mzlMatch ? mzlMatch[1] : image;
+      const normalized = rawImage ? rawImage.replace(/\\\//g, "/") : "";
       items.push({
         name: name || "Untitled",
         imageUrl: this._coverImage(
-          rawImage.startsWith("//") ? `https:${rawImage}` : rawImage
+          normalized.startsWith("//") ? `https:${normalized}` : normalized
         ),
-        previewUrl: previewMatch ? this._absolute(previewMatch[1]) : "",
-        link: group.link,
+        previewUrl: preview ? this._absolute(preview[1].replace(/\\\//g, "/")) : "",
+        link,
         description: duration ? `Duration: ${duration[1]}` : ""
       });
     }

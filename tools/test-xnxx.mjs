@@ -591,6 +591,47 @@ const shellParsed = provider._parseVideoList(shellsFixture, 1, "search");
 assert.equal(shellParsed.list.length, 1, "cards without anchors must fall back to raw HTML");
 assert.equal(shellParsed.list[0].link, "https://www.xnxx.com/video-1ckwbrf4/me_and_bro");
 
+// ── Regression: a card whose anchor wraps a huge <img> ──────────────────────
+// The live card renders its anchor around a ~15-attribute <img> (≈900 chars of
+// markup). The old extractor only accepted anchors that closed within 600
+// characters, so a page whose markup ran longer than the harness's copy (the
+// app logged 36 shells and 0 links) yielded nothing and search showed "Aucun
+// résultat". Card discovery must not depend on anchor length.
+const longAnchorFixture = `
+  <div class="thumb-block" data-eid="1gsa3edd">
+    <a href="/video-1gsa3edd/naked_massage" title="Naked Massage"><img ${'data-x="y" '.repeat(120)} data-src="https://img.example/long.jpg" />Naked Massage</a>
+  </div>`;
+const longAnchorParsed = provider._parseVideoCardsRegex(longAnchorFixture);
+assert.equal(longAnchorParsed.length, 1, "a >600-char anchor must still yield its card");
+assert.equal(longAnchorParsed[0].link, "https://www.xnxx.com/video-1gsa3edd/naked_massage");
+assert.equal(longAnchorParsed[0].name, "Naked Massage");
+
+// A shell with NO anchor at all (the app logged `thumbBlocks=36 videoLinks=0`):
+// the id lives on the wrapper, and the link is rebuilt from it — XNXX 301s
+// `/video-<id>` to the canonical page, so the card stays playable.
+const noAnchorFixture = `
+  <div id="video_1gsa3edd" data-id="88659482" data-eid="1gsa3edd" class="thumb-block with-uploader">
+    <div class="thumb-inside"><div class="thumb"><img data-mzl="https://img.example/nb.jpg" data-pvv="https://img.example/nb.mp4" /></div></div>
+    <div class="thumb-under"><p><a title="Rebuilt Link">Rebuilt Link</a></p><p class="metadata">19min</p></div>
+  </div>`;
+const noAnchorParsed = provider._parseVideoCardsRegex(noAnchorFixture);
+assert.equal(noAnchorParsed.length, 1, "an anchor-less card must be rebuilt from its id");
+assert.equal(noAnchorParsed[0].link, "https://www.xnxx.com/video-1gsa3edd");
+assert.equal(noAnchorParsed[0].name, "Rebuilt Link");
+assert.equal(noAnchorParsed[0].imageUrl, "https://img.example/nb.jpg");
+
+// `data-video='{"id":"…"}'` shells (the /hits markup) carry the id in JSON,
+// and JSON-escaped slashes (`https:\/\/…`) appear when a page is embedded.
+const jsonShellFixture = `
+  <div id="video-thumb-hbwy3c6" class="thumb-block video"
+       data-video='{"id":"hbwy3c6","mozaiqueListing":"https:\\/\\/img.example\\/json.jpg"}'>
+    <a href="\\/video-hbwy3c6\\/hot_step_mom">Hot Step Mom</a>
+  </div>`;
+const jsonShellParsed = provider._parseVideoCardsRegex(jsonShellFixture);
+assert.equal(jsonShellParsed.length, 1, "a JSON data-video shell must be discovered");
+assert.equal(jsonShellParsed[0].link, "https://www.xnxx.com/video-hbwy3c6/hot_step_mom");
+assert.equal(jsonShellParsed[0].name, "Hot Step Mom");
+
 // ── Regression: profile covers live inside `document.write` scripts ─────────
 // A spec-compliant HTML parser (the app's) sees script bodies as raw text, so
 // every /pornstars card rendered with an empty cover.
