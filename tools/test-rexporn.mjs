@@ -43,6 +43,31 @@ class TestClient {
           </div>`,
       };
     }
+    // Player markup fixtures. The site renamed the element that carries the
+    // quality list from `#player` to `#sync`; both must resolve to sources.
+    if (pathname === "/watch/player-sync-test") {
+      return {
+        statusCode: 200,
+        body: `
+          <div class="viewmov" data-id="12960">
+            <div class="psync">
+              <div id="sync" data-s="serv-1" data-n="cdn-1" data-id="12960"
+                   data-q="720p;x;720p;x;1699999999;tok720,1080p;x;1080p;x;1699999999;tok1080"></div>
+            </div>
+          </div>`,
+      };
+    }
+    if (pathname === "/watch/player-legacy-test") {
+      return {
+        statusCode: 200,
+        body: `
+          <div id="player" data-q="720p;x;720p;x;1699999999;tok720"
+               data-n="cdn-legacy" data-id="12960"></div>`,
+      };
+    }
+    if (pathname === "/watch/no-player-test") {
+      return { statusCode: 200, body: `<div class="viewmov" data-id="1"></div>` };
+    }
     const slug = pathname.split("/").filter(Boolean)[0];
     return {
       statusCode: 200,
@@ -122,6 +147,37 @@ const parsed = provider._parseList(
   "category",
 );
 assert.equal(parsed.list[0].imageUrl, "https://images.example/preview.jpg");
+
+// Player markup: the quality list moved from `#player` to `#sync`. Reading a
+// hard-coded id returned 0 videos after the rename, which broke both playback
+// and download, so pin the attribute-anchored behaviour for both shapes.
+const syncSources = await provider.getVideoList(
+  "https://www.rexporn.st/watch/player-sync-test",
+);
+assert.equal(syncSources.length, 2, "current #sync player markup yields sources");
+assert.ok(
+  syncSources.every((s) => s.url.startsWith("https://cdn-1.vstor.top/whpvid/")),
+  "sources use the data-n host and whpvid path",
+);
+assert.ok(
+  syncSources.some((s) => s.url.endsWith("/12960.mp4")),
+  "720p source has no quality suffix",
+);
+assert.ok(
+  syncSources.some((s) => s.url.endsWith("/12960_1080p.mp4")),
+  "1080p source carries the quality suffix",
+);
+
+const legacySources = await provider.getVideoList(
+  "https://www.rexporn.st/watch/player-legacy-test",
+);
+assert.equal(legacySources.length, 1, "legacy #player markup still yields sources");
+assert.ok(legacySources[0].url.includes("cdn-legacy.vstor.top"));
+
+const missingSources = await provider.getVideoList(
+  "https://www.rexporn.st/watch/no-player-test",
+);
+assert.equal(missingSources.length, 0, "a page without a player payload yields no sources");
 
 console.log(
   "RexPorn regression checks passed (category routing, pornstar/studio profiles, episodes, thumbnails).",

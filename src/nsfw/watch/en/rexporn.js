@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.rexporn.st/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.6",
+  "version": "1.2.7",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/rexporn.js",
@@ -473,19 +473,36 @@ class DefaultExtension extends MProvider {
     const html = res.body;
     const videos = [];
 
-    const playerTag = (html.match(/<div[^>]+id="player"[^>]*>/) || [])[0] || "";
-    const dataQMatch  = playerTag.match(/data-q="([^"]+)"/);
-    const dataNMatch  = playerTag.match(/data-n="([^"]+)"/);
-    const dataIdMatch = playerTag.match(/data-id="([^"]+)"/);
+    // The player payload is not tied to a fixed element id. It used to sit on
+    // `#player`; the site now ships it on `#sync`, which is what its own
+    // ssync.js reads back (getElementById('sync')). Hard-coding `#player` is
+    // why this returned 0 videos after the rename — and 0 videos is what makes
+    // both playback and download fail. Anchor on the `data-q` attribute, which
+    // is what actually identifies the player element, and read the sibling
+    // attributes from that same tag so a `data-id` elsewhere on the page cannot
+    // be paired with it. Whole-page fallbacks cover a tag split across lines.
+    const qAt = html.indexOf('data-q="');
+    let playerTag = "";
+    if (qAt >= 0) {
+      const open = html.lastIndexOf("<", qAt);
+      const close = html.indexOf(">", qAt);
+      if (open >= 0 && close > open) playerTag = html.slice(open, close + 1);
+    }
+    const playerAttr = (name) => {
+      const scoped = playerTag.match(new RegExp(`${name}="([^"]+)"`));
+      if (scoped) return scoped[1];
+      const anywhere = html.match(new RegExp(`${name}="([^"]+)"`));
+      return anywhere ? anywhere[1] : "";
+    };
 
-    if (!dataQMatch || !dataNMatch || !dataIdMatch) {
-      extLog('warn', "RexPorn.getVideoList: missing data-q/n/id in player tag");
+    const dataQ = playerAttr("data-q");
+    const dataN = playerAttr("data-n");
+    const vid   = parseInt(playerAttr("data-id"), 10);
+
+    if (!dataQ || !dataN || !Number.isFinite(vid)) {
+      extLog('warn', "RexPorn.getVideoList: missing data-q/n/id in player markup");
       return videos;
     }
-
-    const dataQ = dataQMatch[1];
-    const dataN = dataNMatch[1];
-    const vid   = parseInt(dataIdMatch[1], 10);
     const folder = Math.floor(vid / 1000) * 1000;
     const vPut  = folder + "/" + vid;
 
