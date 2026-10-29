@@ -19,6 +19,14 @@
         "seeAll": true
       },
       {
+        "id": "history",
+        "component": "landscapeStacked",
+        "title": "Historique",
+        "accent": "#7C4DFF",
+        "icon": "history",
+        "seeAll": true
+      },
+      {
         "id": "best_month",
         "component": "rankedWide",
         "title": "Le meilleur du mois",
