@@ -219,11 +219,12 @@ assert.ok(
   logs.some(({ message }) => message.includes("retrying: ")),
 );
 
-// ── Covers: `mozaique_listing` is a 3x3 MOSAIC, not a single picture ────────
-// XNXX's 1056x594 `mozaique_listing` stitches nine frames of the video into a
-// grid, so using it as a card cover showed a different picture in every cell.
-// Cards keep the 600x337 single-frame `_t`; the detail hero may use the
-// 2080x1170 single-frame `mozaique_full`.
+// ── Covers: both `mozaique_*` renditions are sprite sheets ─────────────────
+// XNXX's 1104x624 `mozaique_listing` stitches nine frames of the video into a
+// 3x3 grid and the 1920x1080 `mozaique_full` stitches a hundred into a 10x10
+// grid, so neither is a picture: as a card cover or a detail hero they showed
+// a different frame in every cell. XNXX exposes no single-frame rendition
+// larger than `_t`, so both the card and the hero keep that one frame.
 assert.equal(
   provider._coverImage("https://cdn.example/abc/0/xn_10_t.jpg"),
   "https://cdn.example/abc/0/xn_10_t.jpg",
@@ -238,11 +239,15 @@ assert.equal(
 );
 assert.equal(
   provider._fullImage("https://cdn.example/abc/0/xn_10_t.jpg"),
-  "https://cdn.example/abc/0/mozaique_full.jpg",
+  "https://cdn.example/abc/0/xn_10_t.jpg",
 );
 assert.equal(
   provider._fullImage("https://cdn.example/abc/0/mozaique_listing.jpg"),
-  "https://cdn.example/abc/0/mozaique_full.jpg",
+  "https://cdn.example/abc/0/xn_10_t.jpg",
+);
+assert.equal(
+  provider._fullImage("https://cdn.example/abc/0/mozaique_full.jpg"),
+  "https://cdn.example/abc/0/xn_10_t.jpg",
 );
 // Non-XNXX artwork is never rewritten.
 assert.equal(
