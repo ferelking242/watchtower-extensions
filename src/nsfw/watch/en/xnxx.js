@@ -246,14 +246,17 @@ class DefaultExtension extends MProvider {
     return `/hits${this._pagePath(page)}`;
   }
 
-  // XNXX publishes three renditions of the same still:
-  //   xn_10_t.jpg          600x337, ONE frame  -> card cover
-  //   mozaique_listing.jpg 1056x594, a 3x3 MOSAIC of nine frames
-  //   mozaique_full.jpg   2080x1170, ONE frame -> detail hero
-  // `mozaique_listing` was used as the card cover, so every card showed a
-  // grid of nine pictures from the video instead of a single one. Cards keep
-  // the single-frame thumb (the app upscales it); only the detail hero takes
-  // the 2080x1170 still, where zooming needs the extra pixels.
+  // XNXX publishes two renditions of the same still:
+  //   xn_10_t.jpg          368x208, ONE frame
+  //   mozaique_listing.jpg 1104x624, a 3x3 MOSAIC of nine frames
+  //   mozaique_full.jpg   1920x1080, a 10x10 MOSAIC of a hundred frames
+  // Both `mozaique_*` files are sprite sheets, not pictures: rendered as a
+  // cover they show a grid of frames from the video ("plusieurs images
+  // collées"). The old detail hero used `mozaique_full` on the assumption it
+  // was one big frame — it is the 10x10 sheet, so the series cover and every
+  // download card inherited the grid. XNXX exposes no single-frame rendition
+  // larger than `_t`, so both the card and the hero keep that one frame and
+  // the app upscales it.
   _coverImage(url) {
     if (!url) return "";
     // Already a single frame (`xn_1_t.jpg`, `xv_2_t.jpg`): keep the site's pick.
@@ -264,11 +267,9 @@ class DefaultExtension extends MProvider {
 
   _fullImage(url) {
     if (!url) return "";
-    return this._swapFrame(
-      url,
-      "mozaique_full.jpg",
-      /^(xn|xv)_\d+_t$|^mozaique_listing$/i
-    );
+    // Never hand back a sprite sheet as the hero cover: `mozaique_full` is a
+    // 10x10 mosaic. Fall back to the single-frame thumb.
+    return this._coverImage(url);
   }
 
   _stillName(url) {
