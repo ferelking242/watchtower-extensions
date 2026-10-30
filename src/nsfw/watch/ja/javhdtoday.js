@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javhd.today/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.6",
+  "version": "1.0.7",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javhdtoday.js",
@@ -87,7 +87,7 @@ class DefaultExtension extends MProvider {
   getSourcePreferences() { return []; }
 
   _wtHeaders(url) { return this.getHeaders ? this.getHeaders(url) : {}; }
-  _wtPeople(html, base) {
+  _wtPeople(html, base, rx) {
     const doc = new Document(html);
     const out = [];
     const seen = {};
@@ -96,13 +96,16 @@ class DefaultExtension extends MProvider {
       if (!href || href.charAt(0) === "#" || /^javascript:/i.test(href)) continue;
       let path;
       try { path = new URL(href, base).pathname; } catch (e) { continue; }
-      const m = path.match(/^\/(?:[a-z]{2}\/)?(pornstars?|models?|actress(?:es)?|performers?|studios?|channels?|makers?)\/([^\/?#]+)/i);
+      const m = path.match(rx);
       if (!m) continue;
+      const slug = decodeURIComponent(m[1] || path.split("/").filter(Boolean).pop() || "");
+      const NAV_RX = /^(?:all|page|popular|rated|subscribed|videos?|new|hot|recent|latest|top|best|browse|uncensored|censored|index)$/i;
+      if (!slug || NAV_RX.test(slug) || /^\d+$/.test(slug) || slug.indexOf("$") >= 0) continue;
       const key = m[1].toLowerCase().replace(/s$/, "") + "/" + m[2];
       if (seen[key]) continue;
       seen[key] = 1;
       const img = a.selectFirst("img");
-      const name = ((a.attr("title") || (img ? img.attr("alt") : "") || a.text) || "").trim();
+      const name = ((a.attr("title") || (img ? img.attr("alt") : "") || a.text || slug) || "").trim();
       if (!name) continue;
       const link = href.charAt(0) === "h" ? href : new URL(href, base).href;
       const imageUrl = img ? (img.attr("data-src") || img.attr("src") || "") : "";
@@ -126,7 +129,7 @@ class DefaultExtension extends MProvider {
       if (seen[path]) continue;
       seen[path] = 1;
       const img = a.selectFirst("img");
-      const name = ((a.attr("title") || (img ? img.attr("alt") : "") || a.text) || "").trim();
+      const name = ((a.attr("title") || (img ? img.attr("alt") : "") || a.text || slug) || "").trim();
       if (!name) continue;
       const imageUrl = img ? (img.attr("data-src") || img.attr("src") || "") : "";
       out.push({ name: name, imageUrl: imageUrl, link: u.href });
@@ -137,15 +140,18 @@ class DefaultExtension extends MProvider {
     const p = Number(page) > 1 ? Number(page) : 1;
     const base = this.source && this.source.baseUrl ? this.source.baseUrl : "";
     const sections = {
-      "pornstars": "https://javhd.today/pornstar",
-      "channels": "https://javhd.today/channels/",
-      "categories": "https://javhd.today/categories/",
+      "pornstars": ["https://javhd.today/pornstar/", "^/pornstar/([^/?#]+)"],
+      "channels": ["https://javhd.today/channels/", "^/channels?/([^/?#]+)"],
+    
     };
     if (sections[listId]) {
-      let pageUrl = sections[listId];
-      if (p > 1) pageUrl += (pageUrl.indexOf("?") >= 0 ? "&" : "?") + "page=" + p;
+      const url = sections[listId][0];
+      const rx = new RegExp(sections[listId][1], "i");
+      const pageUrl = url.indexOf("?") >= 0
+        ? url + "page=" + p
+        : url + (url.endsWith("/") ? "page/" + p + "/" : "?page=" + p);
       const res = await new Client().get(pageUrl, this._wtHeaders(pageUrl));
-      const people = this._wtPeople(res.body, pageUrl);
+      const people = this._wtPeople(res.body, pageUrl, rx);
       if (people.length) return { list: people, hasNextPage: people.length >= 240 };
       const own = this._parse(res.body, pageUrl);
       if (own && own.list && own.list.length) return own;

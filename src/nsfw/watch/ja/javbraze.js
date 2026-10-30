@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javbraze.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javbraze.js",
@@ -83,6 +83,89 @@ class DefaultExtension extends MProvider {
     if (videos.length === 0) { const f = html.match(/file\s*:\s*["']([^"']+)["']/); if (f) videos.push({ url: f[1], quality: "JWPlayer", originalUrl: f[1], headers: this.getHeaders(url) }); }
     return videos;
   }
+  _wtHeaders(url) { return this.getHeaders ? this.getHeaders(url) : {}; }
+  _wtPeople(html, base, rx) {
+    const doc = new Document(html);
+    const out = [];
+    const seen = {};
+    for (const a of doc.select("a")) {
+      const href = (a.attr("href") || "").trim();
+      if (!href || href.charAt(0) === "#" || /^javascript:/i.test(href)) continue;
+      let path;
+      try { path = new URL(href, base).pathname; } catch (e) { continue; }
+      const m = path.match(rx);
+      if (!m) continue;
+      const slug = decodeURIComponent(m[1] || path.split("/").filter(Boolean).pop() || "");
+      const NAV_RX = /^(?:all|page|popular|rated|subscribed|videos?|new|hot|recent|latest|top|best|browse|uncensored|censored|index)$/i;
+      if (!slug || NAV_RX.test(slug) || /^\d+$/.test(slug) || slug.indexOf("$") >= 0) continue;
+      const key = slug.toLowerCase();
+      if (seen[key]) continue;
+      seen[key] = 1;
+      const img = a.selectFirst("img");
+      const name = ((a.attr("title") || (img ? img.attr("alt") : "") || a.text || slug) || "").trim();
+      if (!name) continue;
+      const link = href.charAt(0) === "h" ? href : new URL(href, base).href;
+      const imageUrl = img ? (img.attr("data-src") || img.attr("src") || "") : "";
+      out.push({ name: name, imageUrl: imageUrl, link: link });
+      if (out.length >= 240) break;
+    }
+    return out;
+  }
+  _wtVideos(html, base) {
+    const doc = new Document(html);
+    const out = [];
+    const seen = {};
+    for (const a of doc.select("a")) {
+      const href = (a.attr("href") || "").trim();
+      if (!href || href.charAt(0) === "#" || /^javascript:/i.test(href)) continue;
+      let u;
+      try { u = new URL(href, base); } catch (e) { continue; }
+      const path = u.pathname;
+      if (!/(\/video|\/videos|\/watch|-\d{2,}\/|-\d{2,}$|\/[a-z0-9]{5,}-\d{2,}|\/\d{4,}\/|dm\d+\/|\.html$)/i.test(path)) continue;
+      if (/\/(tags?|categor|genres?|models?|pornstars?|actress|performers?|idols?|channels?|studios?|makers?|labels?|series)\//i.test(path)) continue;
+      if (seen[path]) continue;
+      seen[path] = 1;
+      const img = a.selectFirst("img");
+      const name = ((a.attr("title") || (img ? img.attr("alt") : "") || a.text || slug) || "").trim();
+      if (!name) continue;
+      const imageUrl = img ? (img.attr("data-src") || img.attr("src") || "") : "";
+      out.push({ name: name, imageUrl: imageUrl, link: u.href });
+    }
+    return out;
+  }
+  async getCustomList(listId, page) {
+    const p = Number(page) > 1 ? Number(page) : 1;
+    const base = this.source && this.source.baseUrl ? this.source.baseUrl : "";
+    const sections = {
+      "pornstars": ["https://javbraze.com/pornstar/videos/", "^/pornstar/([^/?#]+)"],
+    };
+    if (sections[listId]) {
+      const url = sections[listId][0];
+      const rx = new RegExp(sections[listId][1], "i");
+      const pageUrl = url.indexOf("?") >= 0
+        ? url + "page=" + p
+        : url + (url.endsWith("/") ? "page/" + p + "/" : "?page=" + p);
+      const res = await new Client().get(pageUrl, this._wtHeaders(pageUrl));
+      const people = this._wtPeople(res.body, pageUrl, rx);
+      if (people.length) return { list: people, hasNextPage: people.length >= 240 };
+      const own = this._parse(res.body, pageUrl);
+      if (own && own.list && own.list.length) return own;
+      return { list: [], hasNextPage: false };
+    }
+    if (listId && listId.indexOf("profile_") === 0) {
+      const hex = listId.slice(8);
+      let path = "";
+      for (let i = 0; i + 4 <= hex.length; i += 4) path += String.fromCharCode(parseInt(hex.substr(i, 4), 16));
+      const pageUrl = path.charAt(0) === "h" ? path : base + path;
+      const res = await new Client().get(pageUrl, this._wtHeaders(pageUrl));
+      const own = this._parse(res.body, pageUrl);
+      let list = own && own.list && own.list.length ? own.list : [];
+      if (!list.length) list = this._wtVideos(res.body, pageUrl);
+      return { list: list, hasNextPage: false };
+    }
+    throw new Error("Unknown custom list: " + listId);
+  }
+
   getFilterList() { return []; }
   getSourcePreferences() { return []; }
 }

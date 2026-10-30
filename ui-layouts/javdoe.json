@@ -27,27 +27,6 @@
         "accent": "#B388FF",
         "icon": "star",
         "seeAll": true
-      },
-      {
-        "id": "channels",
-        "component": "studioExplorer",
-        "title": "Channels",
-        "accent": "#7986CB",
-        "icon": "business",
-        "seeAll": true
-      },
-      {
-        "id": "categories",
-        "component": "grid",
-        "title": "Categories",
-        "accent": "#64D8CB",
-        "icon": "category",
-        "seeAll": true,
-        "columns": 3,
-        "rows": 3,
-        "gridOrder": "column",
-        "scrollDirection": "horizontal",
-        "cardStyle": "thumbnail"
       }
     ]
   },

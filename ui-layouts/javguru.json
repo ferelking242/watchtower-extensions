@@ -24,7 +24,7 @@
         "id": "tags",
         "component": "grid",
         "title": "Tags",
-        "accent": "#4DD0E1",
+        "accent": "#64D8CB",
         "icon": "tag",
         "seeAll": true,
         "columns": 3,
@@ -32,6 +32,14 @@
         "gridOrder": "column",
         "scrollDirection": "horizontal",
         "cardStyle": "thumbnail"
+      },
+      {
+        "id": "actresses",
+        "component": "creatorRow",
+        "title": "Actresses",
+        "accent": "#B388FF",
+        "icon": "star",
+        "seeAll": true
       }
     ]
   },
