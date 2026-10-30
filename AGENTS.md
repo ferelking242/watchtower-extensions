@@ -389,3 +389,62 @@ compte). L'historique réel est **local** : `_saveHistoryItem()` écrit à chaqu
 lecture, `getCustomList("history")` fusionne le local et le distant. Le stockage
 passe par `getLocalStorage`/`setLocalStorage` (store de session de l'app), pas
 `SharedPreferences` (écriture Isar depuis le worker = silencieusement perdue).
+
+## 1PornTV — sélecteurs, lecteur, sections et couvertures
+
+Le HTML du site porte plusieurs pièges mesurés. Corrigés au fil des versions
+(1.2.0 : lecteur/tags/pornstars/pagination ; 1.3.0 : couvertures studios,
+réseaux, UA de session) :
+
+- **`<source>` en simple quote.** Le lecteur émet
+  `<source src='…/x_720m.mp4/' type='video/mp4' label="720p">` : `src` est en
+  quotes simples, `label` en quotes doubles. Un regex `src="…"` ne matche rien,
+  `getVideoList` retournait `[]` et la vidéo ne se lançait jamais. Le regex doit
+  accepter les deux (`src=["']…["']`).
+- **Attribut `class` dupliqué.** Les tags s'écrivent
+  `<a class="btn_tag" class="link" href="/categories/…/">`. Un parseur ne garde
+  que le **dernier** `class`, donc `.btn_tag` ne matche jamais. Cibler par
+  `href` (`.hidden_tags a[href*='/categories/']`), jamais par la classe.
+- **Ligne « Pornstars » hors `.hidden_tags`.** Elle est sœur de `.hidden_tags`
+  dans `.block-details` : un sélecteur scopé sur `.hidden_tags` renvoie zéro
+  pornstar. Cibler `.block-details a[href*='/models/']`.
+- **Studios = `.list-sponsors`.** L'A-Z `/sites/title-az/` contient aussi les
+  liens de langue (`/pt/sites/title-az/`), les onglets de tri
+  (`/sites/top-rated/`) et la sidebar « Top Sites ». Prendre
+  `.list-sponsors .headline` + `.list-sponsors .box` (12 studios/page), pas tous
+  les `a[href*='/sites/']`.
+- **Couverture studio = 1re vignette de sa vidéo.** Le site ne publie **aucun
+  logo** de studio : la seule image disponible pour la carte est la vignette de
+  la vidéo la plus récente du studio, premier `.item` du `.box` qui suit le
+  `.headline`. Titres et boîtes sont parcourus **en ordre de document** (pas
+  zippés par index) : une boîte manquante décalerait sinon toutes les
+  couvertures suivantes d'un studio.
+- **`/networks/` est un 404.** Il n'existe pas de page index des réseaux ; la
+  seule source est le menu déroulant `.sites__list a.sites__item` présent dans
+  l'en-tête de chaque page (15 réseaux), lu depuis `/latest-updates/`.
+  `/networks/<slug>/` (page d'un réseau) existe et liste bien ses vidéos.
+- **`hasNextPage` par pagination réelle.** `.pagination a` contenant `/<n>/` ;
+  un seuil sur le nombre d'items annonçait `hasNext` sur une dernière page de
+  24 et bouclait sur la même page. `/sites/title-az/` pagine en `/<n>/` (86
+  pages) ; `/categories/` (360) et `/tags/` (1984) tiennent sur une page.
+- **Pas d'`User-Agent` figé dans `getHeaders`.** Le site est derrière un
+  *managed challenge* Cloudflare dont `cf_clearance` est lié au User-Agent
+  exact du moteur qui l'a résolu. Forcer une chaîne desktop Chrome écrasait l'UA
+  de session à chaque requête (la couche HTTP ne remplit l'UA que si la requête
+  n'en porte pas), donc le clearance ne correspondait plus et couvertures/vidéos
+  restaient en 403. Laisser l'app envoyer l'UA de session.
+- **Couvertures `img.1porn.tv` : le fix est côté app, pas côté extension.**
+  `img.1porn.tv` renvoie `403` + `cf-mitigated: challenge` à tout client natif,
+  **avec ou sans Referer/Origin/Cookie** ; la racine `https://img.1porn.tv/`
+  répond un *managed challenge* qui se résout tout seul en < 1 s puis rend
+  l'image en `200`. Le fix est dans
+  `lib/modules/widgets/custom_extended_image_provider.dart` : quand la
+  couverture est sur un hôte différent de celui de la page déclarée (ici
+  `img.1porn.tv` vs `www.1porn.tv`), le fetch in-page doit partir de **l'origine
+  de l'image** et non de la page déclarée — sinon la requête est cross-origin,
+  le CDN ne renvoie pas d'`Access-Control-Allow-Origin` et le navigateur rejette
+  la réponse (`TypeError: Failed to fetch`) alors que les octets ont été servis.
+  Les posters hébergés sur `www.1porn.tv` (`/contents/models/...`) passent par
+  le même chemin. `hasCloudflare` peut rester `false` : ce flag ne gate pas ce
+  repli, qui se déclenche sur la **réponse** (403 + marqueur CF), pas sur le
+  manifeste.
