@@ -68,6 +68,16 @@ class TestClient {
     if (pathname === "/watch/no-player-test") {
       return { statusCode: 200, body: `<div class="viewmov" data-id="1"></div>` };
     }
+    // The live site degrades the page for non-browser clients: HTTP 200 with
+    // "Video is not available" and no `data-q`. The player payload then only
+    // exists in a real WebView session.
+    if (pathname === "/watch/webview-only-test") {
+      return {
+        statusCode: 200,
+        body: `<div class="viewmov" data-id="12960">
+          <h2>Video is not available</h2></div>`,
+      };
+    }
     const slug = pathname.split("/").filter(Boolean)[0];
     return {
       statusCode: 200,
@@ -82,11 +92,23 @@ class TestClient {
   }
 }
 
+const webviewCalls = [];
+// The WebView bridge is only present on platforms that can render the page.
+// It returns the live player element's outerHTML, exactly like the real
+// `evaluateJavascriptViaWebview` handler does.
+const evaluateJavascriptViaWebview = async (url, headers, scripts) => {
+  webviewCalls.push({ url, headers, scripts });
+  if (!url.includes("webview-only-test")) return "";
+  return `<div id="sync" data-s="serv-1" data-n="cdn-webview" data-id="12960"
+    data-q="720p;x;720p;x;1699999999;tok720,1080p;x;1080p;x;1699999999;tok1080"></div>`;
+};
+
 const context = {
   MProvider: class {},
   Document,
   Client: TestClient,
   extLog: (level, message) => logs.push({ level, message }),
+  evaluateJavascriptViaWebview,
 };
 vm.runInNewContext(
   `${extensionSource}\nglobalThis.RexPornForTest = DefaultExtension;`,
@@ -178,6 +200,26 @@ const missingSources = await provider.getVideoList(
   "https://www.rexporn.st/watch/no-player-test",
 );
 assert.equal(missingSources.length, 0, "a page without a player payload yields no sources");
+
+// The live site withholds `data-q` from HTTP clients and only ships it in a
+// real browser session. The extension must fall back to the WebView bridge and
+// build the sources from the player element it returns.
+const webviewSources = await provider.getVideoList(
+  "https://www.rexporn.st/watch/webview-only-test",
+);
+assert.equal(webviewSources.length, 2, "WebView fallback yields sources when HTTP has none");
+assert.ok(
+  webviewSources.every((s) => s.url.startsWith("https://cdn-webview.vstor.top/whpvid/")),
+  "WebView sources use the data-n host",
+);
+assert.ok(
+  webviewCalls.some((c) => c.url.includes("webview-only-test")),
+  "the WebView bridge is invoked for a page with no HTTP payload",
+);
+assert.ok(
+  !webviewCalls.some((c) => c.url.includes("player-sync-test")),
+  "a page that already carries the payload never opens a WebView",
+);
 
 console.log(
   "RexPorn regression checks passed (category routing, pornstar/studio profiles, episodes, thumbnails).",

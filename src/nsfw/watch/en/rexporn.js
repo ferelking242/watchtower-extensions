@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.rexporn.st/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.7",
+  "version": "1.2.8",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/rexporn.js",
@@ -86,6 +86,15 @@ class DefaultExtension extends MProvider {
     return {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
       "Referer": pageUrl || "https://www.rexporn.st/"
+    };
+  }
+
+  // A top-level browser navigation sends neither `Origin` nor an XHR-flavoured
+  // `Referer`; replaying the API headers here would look like a scripted client
+  // and get the degraded page back.
+  getBrowserHeaders() {
+    return {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
     };
   }
 
@@ -468,48 +477,41 @@ class DefaultExtension extends MProvider {
   }
 
   // ── Video sources ─────────────────────────────────────────────────────────
-  async getVideoList(url) {
-    const res  = await new Client().get(url, { headers: this.getPageHeaders(url) });
-    const html = res.body;
-    const videos = [];
 
-    // The player payload is not tied to a fixed element id. It used to sit on
-    // `#player`; the site now ships it on `#sync`, which is what its own
-    // ssync.js reads back (getElementById('sync')). Hard-coding `#player` is
-    // why this returned 0 videos after the rename — and 0 videos is what makes
-    // both playback and download fail. Anchor on the `data-q` attribute, which
-    // is what actually identifies the player element, and read the sibling
-    // attributes from that same tag so a `data-id` elsewhere on the page cannot
-    // be paired with it. Whole-page fallbacks cover a tag split across lines.
+  // The player payload is not tied to a fixed element id. It used to sit on
+  // `#player`; the site now ships it on `#sync`, which is what its own
+  // ssync.js reads back (getElementById('sync')). Hard-coding `#player` is why
+  // this returned 0 videos after the rename. Anchor on the `data-q` attribute,
+  // which is what actually identifies the player element, and read the sibling
+  // attributes from that same tag so a `data-id` elsewhere on the page cannot
+  // be paired with it.
+  _playerTagFromHtml(html) {
+    if (!html) return "";
     const qAt = html.indexOf('data-q="');
-    let playerTag = "";
-    if (qAt >= 0) {
-      const open = html.lastIndexOf("<", qAt);
-      const close = html.indexOf(">", qAt);
-      if (open >= 0 && close > open) playerTag = html.slice(open, close + 1);
-    }
-    const playerAttr = (name) => {
-      const scoped = playerTag.match(new RegExp(`${name}="([^"]+)"`));
-      if (scoped) return scoped[1];
-      const anywhere = html.match(new RegExp(`${name}="([^"]+)"`));
-      return anywhere ? anywhere[1] : "";
+    if (qAt < 0) return "";
+    const open = html.lastIndexOf("<", qAt);
+    const close = html.indexOf(">", qAt);
+    return (open >= 0 && close > open) ? html.slice(open, close + 1) : "";
+  }
+
+  _sourcesFromPlayerTag(playerTag, pageUrl) {
+    const videos = [];
+    if (!playerTag) return videos;
+
+    const attr = (name) => {
+      const m = playerTag.match(new RegExp(`${name}="([^"]+)"`));
+      return m ? m[1] : "";
     };
 
-    const dataQ = playerAttr("data-q");
-    const dataN = playerAttr("data-n");
-    const vid   = parseInt(playerAttr("data-id"), 10);
+    const dataQ = attr("data-q");
+    const dataN = attr("data-n");
+    const vid   = parseInt(attr("data-id"), 10);
+    if (!dataQ || !dataN || !Number.isFinite(vid)) return videos;
 
-    if (!dataQ || !dataN || !Number.isFinite(vid)) {
-      extLog('warn', "RexPorn.getVideoList: missing data-q/n/id in player markup");
-      return videos;
-    }
     const folder = Math.floor(vid / 1000) * 1000;
     const vPut  = folder + "/" + vid;
 
-    const qualOrder  = ["1080p", "720p", "480p", "360p", "240p", "2160p"];
-    const qualEntries = dataQ.split(",");
-
-    for (const qStr of qualEntries) {
+    for (const qStr of dataQ.split(",")) {
       const parts = qStr.replace(/&nbsp;/g, " ").replace(/\u00a0/g, " ").split(";");
       if (parts.length < 6) continue;
       const res   = parts[0].trim();
@@ -523,16 +525,73 @@ class DefaultExtension extends MProvider {
       const videoUrl = `https://${dataN}.vstor.top/whpvid/${ts}/${token}/${vPut}/${vid}${prefix}.mp4`;
       videos.push({
         url: videoUrl, quality: label || res, originalUrl: videoUrl,
-        headers: this.getVideoHeaders(url)
+        headers: this.getVideoHeaders(pageUrl)
       });
     }
 
+    const qualOrder = ["1080p", "720p", "480p", "360p", "240p", "2160p"];
     videos.sort((a, b) => {
       const ai = qualOrder.findIndex(q => a.quality.includes(q.replace("p", "")));
       const bi = qualOrder.findIndex(q => b.quality.includes(q.replace("p", "")));
       return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
     });
-    extLog('info', `RexPorn.getVideoList: ${videos.length} videos`);
+    return videos;
+  }
+
+  // The site serves the player payload only to a real browser session: a plain
+  // HTTP client gets a degraded page ("Video is not available") with no
+  // `data-q`, on every quality, for every video. Reload the page in the app's
+  // WebView — it runs the site's own scripts on the user's device and network —
+  // and read the live player element's outerHTML from there. This is the only
+  // way to obtain the signed quality list, so playback works whenever the site
+  // would play in a browser.
+  async _playerTagViaWebview(url) {
+    if (typeof evaluateJavascriptViaWebview !== "function") return "";
+    const script = `(function(){
+      var tries = 0;
+      var timer = setInterval(function(){
+        tries++;
+        var el = document.getElementById('sync') || document.getElementById('player');
+        if (!el) { var c = document.querySelectorAll('[data-q]'); if (c.length) el = c[0]; }
+        var q = el ? el.getAttribute('data-q') : '';
+        if (q || tries >= 40) {
+          clearInterval(timer);
+          try { window.flutter_inappwebview.callHandler('setResponse', el ? el.outerHTML : ''); }
+          catch (e) {}
+        }
+      }, 500);
+    })();`;
+    try {
+      const out = await evaluateJavascriptViaWebview(url, this.getBrowserHeaders(), [script]);
+      return out || "";
+    } catch (e) {
+      extLog('warn', `RexPorn.getVideoList: WebView fallback failed: ${e.message || e}`);
+      return "";
+    }
+  }
+
+  async getVideoList(url) {
+    let html = "";
+    try {
+      const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+      html = res.body || "";
+    } catch (e) {
+      extLog('warn', `RexPorn.getVideoList: HTTP fetch failed: ${e.message || e}`);
+    }
+
+    let videos = this._sourcesFromPlayerTag(this._playerTagFromHtml(html), url);
+
+    if (videos.length === 0) {
+      extLog('info', "RexPorn.getVideoList: no payload over HTTP, retrying via WebView");
+      const tag = await this._playerTagViaWebview(url);
+      videos = this._sourcesFromPlayerTag(this._playerTagFromHtml(tag), url);
+    }
+
+    if (videos.length === 0) {
+      extLog('warn', "RexPorn.getVideoList: missing data-q/n/id in player markup");
+    } else {
+      extLog('info', `RexPorn.getVideoList: ${videos.length} videos`);
+    }
     return videos;
   }
 
