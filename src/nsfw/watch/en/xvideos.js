@@ -16,12 +16,39 @@ const watchtowerSources = [{
 
 class DefaultExtension extends MProvider {
   static get BASE_URL() { return "https://www.xvideos.com"; }
+  // XVideos is published under country mirrors that serve the exact same
+  // markup and share the media CDN. On many EU networks (and through the app's
+  // Cloudflare worker proxy, which answers the canonical host with a tiny
+  // "Please visit https://www.xvideos.com" stub) the canonical host returns an
+  // empty block page, so every rail, tag, category and search result came back
+  // empty. The mirrors are used as fallback transports below.
+  static get MIRRORS() {
+    return ["https://www.xvideos.es", "https://fr.xvideos.com"];
+  }
+  // Cloudflare Worker that forwards a request and answers
+  // `{statusCode, headers, body}` (the same contract the web build relies on).
+  static get PROXY_URL() {
+    return "https://watchtower-proxy.aivos-dev.workers.dev/proxy";
+  }
 
   get supportsLatest() { return true; }
 
+  // Origin that answered the last request. Links are still emitted against the
+  // canonical `BASE_URL` so the catalog stays portable, but a second pass
+  // rewrites them onto the origin the device can actually reach.
+  _activeHost() {
+    return this._hostOverride || DefaultExtension.BASE_URL;
+  }
+
+  _toActiveHost(value) {
+    const host = this._hostOverride;
+    if (!host || !value) return value;
+    return String(value).split(DefaultExtension.BASE_URL).join(host);
+  }
+
   getHeaders(url) {
     return {
-      "Referer": `${DefaultExtension.BASE_URL}/`,
+      "Referer": `${this._activeHost()}/`,
       "User-Agent": "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36",
       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,*/*;q=0.8",
       "Accept-Language": "en,en-US;q=0.8"
@@ -29,19 +56,153 @@ class DefaultExtension extends MProvider {
   }
 
   // ── HTTP ─────────────────────────────────────────────────────────────────
-  // Returns the response body as a string; every caller scrapes markup or
-  // JSON from it. A 4xx/5xx is surfaced as an error so a section fails
-  // visibly instead of rendering an empty rail from an error page.
-  async _get(path) {
-    const url = /^https?:/i.test(path)
-      ? path
-      : `${DefaultExtension.BASE_URL}${path.startsWith("/") ? "" : "/"}${path}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    const status = Number(res && (res.statusCode || res.status));
-    if (Number.isFinite(status) && status >= 400) {
-      throw new Error(`XVideos returned HTTP ${status} for ${this._pathOf(url)}`);
+  // A blocked host answers a *stub* page (HTTP 200, ~80 bytes, "Please visit
+  // https://www.xvideos.com"). It cannot be told apart from real markup by the
+  // status code, so the transport layer sniffs it and moves on to the next
+  // mirror.
+  _isStubBody(body) {
+    const text = String(body || "");
+    if (text.length > 4000) return false;
+    if (/please visit|veuillez visiter|visitar|besuchen|visitez|visita|bezoek|请访问|not available in your (country|region)/i
+      .test(text)) {
+      return true;
     }
-    return String((res && res.body) || "");
+    // The block page is localised, so the wording is not reliable on its own.
+    // Every real XVideos page is tens of KB and carries listing markup; a tiny
+    // HTML page that only advertises an XVideos host is a stub whatever its
+    // language. JSON listing endpoints are exempt: they are small and mention
+    // XVideos in their URLs but are legitimate.
+    return text.length < 1000 &&
+      /^\s*</.test(text) &&
+      /xvideos/i.test(text) &&
+      !/thumb-block|<video|mozaique|id=["']tags["']|id=["']video[-_]/i.test(text);
+  }
+
+  // Pull a working mirror out of the blocked page itself: XVideos prints the
+  // visitor's country domain on the stub (e.g. "Please visit
+  // https://www.xvideos.com"). It is the most likely mirror to answer.
+  _findMirrorInBody(body) {
+    const match = /https?:\/\/[a-z0-9.-]*xvideos[a-z0-9.-]*/i.exec(String(body || ""));
+    if (!match) return null;
+    const candidate = match[0].replace(/\/+$/, "");
+    if (candidate === DefaultExtension.BASE_URL) return null;
+    return candidate;
+  }
+
+  _transports() {
+    const list = [{ kind: "direct", host: DefaultExtension.BASE_URL }];
+    for (const host of DefaultExtension.MIRRORS) {
+      list.push({ kind: "direct", host });
+    }
+    list.push({ kind: "proxy", host: DefaultExtension.BASE_URL });
+    return list;
+  }
+
+  async _directFetch(host, route, headers) {
+    const url = `${host}${route}`;
+    const res = await new Client().get(url, headers);
+    return { url, statusCode: res && (res.statusCode || res.status), body: res && res.body };
+  }
+
+  async _proxyFetch(host, route, headers) {
+    const target = `${host}${route}`;
+    const res = await new Client().post(
+      DefaultExtension.PROXY_URL,
+      { "Content-Type": "application/json", "Accept": "application/json" },
+      { method: "GET", url: target, headers }
+    );
+    if (!res || typeof res.body !== "string") {
+      throw new Error("XVideos proxy returned an invalid response");
+    }
+    let payload;
+    try {
+      payload = JSON.parse(res.body);
+    } catch (_) {
+      throw new Error("XVideos proxy returned unparseable JSON");
+    }
+    if (payload && payload.error) {
+      throw new Error(`XVideos proxy error: ${payload.error}`);
+    }
+    return { url: target, statusCode: payload && payload.statusCode, body: payload && payload.body };
+  }
+
+  // Returns the response body as a string; every caller scrapes markup or JSON
+  // from it. The canonical host is tried first, then the country mirrors, then
+  // the worker proxy. A 4xx/5xx or a block stub moves on to the next transport;
+  // only when every transport is refused is the failure surfaced.
+  async _get(path) {
+    let route = String(path || "");
+    if (/^https?:\/\//i.test(route)) {
+      try { const parsed = new URL(route); route = parsed.pathname + parsed.search; } catch (_) { /* keep as-is */ }
+    }
+    if (!route.startsWith("/")) route = `/${route}`;
+
+    let lastError;
+    let lastReason = "network";
+    let lastStatus = 0;
+    let haveReason = false;
+    let advertisedHost = null;
+    for (const transport of this._transports()) {
+      const headers = this.getHeaders(`${transport.host}/`);
+      try {
+        const res = transport.kind === "proxy"
+          ? await this._proxyFetch(transport.host, route, headers)
+          : await this._directFetch(transport.host, route, headers);
+        const body = String(res.body || "");
+        const status = Number(res.statusCode);
+        if (body.trim() && !this._isStubBody(body) &&
+            (!Number.isFinite(status) || status < 400)) {
+          if (transport.host !== DefaultExtension.BASE_URL) {
+            // Serve everything from the origin that answered so detail and
+            // playback requests follow the same route.
+            this._hostOverride = transport.host;
+            extLog("info", `XVideos using transport=${transport.kind} host=${transport.host} route=${route}`);
+          }
+          return body;
+        }
+        const reason = this._isStubBody(body) ? "blocked-stub"
+          : Number.isFinite(status) && status >= 400 ? "http"
+            : "empty-body";
+        if (!haveReason) {
+          lastReason = reason;
+          lastStatus = Number.isFinite(status) ? status : 0;
+          haveReason = true;
+        }
+        if (reason === "blocked-stub" && !advertisedHost) {
+          advertisedHost = this._findMirrorInBody(body);
+        }
+      } catch (error) {
+        if (!lastError) lastError = error;
+      }
+    }
+
+    if (advertisedHost && !DefaultExtension.MIRRORS.includes(advertisedHost)) {
+      // One last shot at the mirror the block page advertised.
+      try {
+        const res = await this._directFetch(advertisedHost, route, this.getHeaders(`${advertisedHost}/`));
+        const body = String(res.body || "");
+        if (body.trim() && !this._isStubBody(body)) {
+          this._hostOverride = advertisedHost;
+          extLog("info", `XVideos using advertised host=${advertisedHost} route=${route}`);
+          return body;
+        }
+      } catch (_) { /* fall through to the error below */ }
+    }
+
+    if (lastReason === "http") {
+      throw new Error(`XVideos returned HTTP ${lastStatus} for ${route}`);
+    }
+    if (lastReason === "empty-body") {
+      throw new Error(`XVideos returned an empty response for ${route}`);
+    }
+    if (lastReason === "blocked-stub") {
+      extLog("warn", `XVideos blocked on this network route=${route}`);
+      throw new Error(
+        `XVideos is blocked on this network (route ${route}). The direct site and every mirror were refused.`
+      );
+    }
+    extLog("error", `XVideos network request failed route=${route} error=${lastError && lastError.message}`);
+    throw new Error(`XVideos request failed for ${route}: ${lastError && lastError.message}`);
   }
 
   // ── Small helpers ────────────────────────────────────────────────────────
@@ -50,7 +211,7 @@ class DefaultExtension extends MProvider {
     if (!raw) return "";
     if (/^https?:/i.test(raw)) return raw;
     if (raw.startsWith("//")) return `https:${raw}`;
-    return `${DefaultExtension.BASE_URL}${raw.startsWith("/") ? "" : "/"}${raw}`;
+    return `${this._activeHost()}${raw.startsWith("/") ? "" : "/"}${raw}`;
   }
 
   _pathOf(url) {
@@ -174,7 +335,7 @@ class DefaultExtension extends MProvider {
     if (parts.length >= 2) {
       const eid = parts[parts.length - 2];
       const slug = parts[parts.length - 1];
-      return `${DefaultExtension.BASE_URL}/video.${eid}/${slug}`;
+      return `${this._activeHost()}/video.${eid}/${slug}`;
     }
     return this._absolute(link);
   }
@@ -342,7 +503,7 @@ class DefaultExtension extends MProvider {
       if (!eid) continue;
       const name = this._decodeEntities(String(video.tf || video.t || "").trim()).replace(/\s+/g, " ");
       const slug = String(video.u || "").split("/").filter(Boolean).pop() || "video";
-      const link = `${DefaultExtension.BASE_URL}/video.${eid}/${slug}`;
+      const link = `${this._activeHost()}/video.${eid}/${slug}`;
       if (seen[link]) continue;
       seen[link] = true;
       const duration = String(video.d || "").trim();
@@ -593,6 +754,17 @@ class DefaultExtension extends MProvider {
     if (id === "categories" || id === "category") {
       const html = await this._get("/");
       return { list: this._parseCategories(html), hasNextPage: false };
+    }
+
+    // "Explorer" — the browse entry points of the site (categories first, then
+    // the most used tags) as one discovery rail.
+    if (id === "explore" || id === "discover") {
+      const html = await this._get("/");
+      const tags = await this._tagsPage(1);
+      return {
+        list: this._parseCategories(html).concat(tags.list.slice(0, 12)),
+        hasNextPage: false,
+      };
     }
 
     // `tag_<slug>` — one tag's video listing, zero-based pages.

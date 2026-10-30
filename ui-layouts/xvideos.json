@@ -62,11 +62,28 @@
       },
       {
         "id": "categories",
-        "component": "categoryPills",
+        "component": "landscape",
         "title": "Catégories",
         "accent": "#26A69A",
         "icon": "category",
-        "seeAll": false
+        "columns": 2,
+        "rows": 2,
+        "params": {
+          "layout": "grid"
+        },
+        "seeAll": true
+      },
+      {
+        "id": "explore",
+        "component": "grid",
+        "title": "Explorer",
+        "accent": "#42A5F5",
+        "icon": "explore",
+        "columns": 2,
+        "rows": 3,
+        "cardStyle": "tag",
+        "seeAll": true,
+        "seeAllPage": "tags"
       }
     ]
   },

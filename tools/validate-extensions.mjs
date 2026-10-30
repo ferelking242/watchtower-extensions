@@ -101,8 +101,11 @@ console.log(`   ${sourceEntries} source entries checked`);
 // ── 2a. Validate the declarative UI contract ─────────────────────────────────
 console.log("▶ UI layout structure");
 // Mirror the home-context ids and aliases from
-// watchtower/lib/models/layout_component_registry.dart. Gallery card ids are
-// separate slot values and must not be accepted here as section renderers.
+// watchtower/lib/models/layout_component_registry.dart. The registry appends
+// one home-context definition per gallery card (`LayoutComponentRegistry.all`),
+// so a gallery card id is a valid section renderer too — that is how a layout
+// asks for a specific presentation, e.g. `landscape` with
+// `params.layout: "grid"` for a two-row grid of half-height landscape cards.
 const supportedLayoutComponents = new Set([
   "spotlight", "carousel", "banner", "hero", "ranked", "newHot", "new_hot",
   "rankedWide", "showcase", "creatorRow", "landscapeStacked", "backdropWide",
@@ -110,6 +113,60 @@ const supportedLayoutComponents = new Set([
   "catalogue", "discoverGrid", "category", "categoryPills", "doubleFeature",
   "editorialSplit", "masonry", "feed", "collectionCards", "playlistCarousel",
   "compactRow", "compact", "historyRow", "metadataPoster", "statusPoster",
+  // Gallery card ids accepted as section renderers (home context).
+  "animated-discovery", "app-genre-tile", "badge-strip", "carousel-card",
+  "censored-badge", "collection", "collection-rail", "compact-episode",
+  "continue-watching", "continue-watching-item", "discovery", "episode",
+  "episode-carousel", "episode-list", "episode-list-item", "episode-preview",
+  "episode-progress", "episode-thumbnail", "expandable-movie",
+  "expanded-movie", "featured", "featured-discovery", "featured-episode",
+  "featured-movie-rail", "genre-grid-section", "home-airecommender",
+  "home-genre-tile", "home-hero-banner", "home-language-grid",
+  "home-mini-player", "home-my-list", "home-popular-rail", "home-read-rail",
+  "home-spotlight-rail", "hover-movie", "interactive-movie", "landscape",
+  "landscape-discovery", "landscape-genre-row", "landscape-playlist",
+  "landscape-rail", "landscape-showcase", "language-badge", "latest-episode",
+  "manga-banner", "manga-card", "manga-category-ranking", "manga-chapter",
+  "manga-chapter-badge", "manga-chapter-group", "manga-chapter-list",
+  "manga-chapter-navigation", "manga-chapter-next", "manga-chapter-progress",
+  "manga-chapter-range", "manga-chapter-release", "manga-chapter-search",
+  "manga-chapter-timeline", "manga-chapter-volume",
+  "manga-character-relations", "manga-collection-showcase",
+  "manga-collection-tracker", "manga-demographics", "manga-double-page",
+  "manga-edition-language", "manga-featured", "manga-followers",
+  "manga-format", "manga-franchise-universes", "manga-frequency",
+  "manga-genre", "manga-genres", "manga-global-stats", "manga-item-stats",
+  "manga-language-news", "manga-languages", "manga-latest-release",
+  "manga-latest-update", "manga-linked-series", "manga-list-tile",
+  "manga-new-chapter", "manga-page", "manga-page-preview",
+  "manga-page-progress", "manga-page-strip", "manga-popularity",
+  "manga-publishers", "manga-quick-access", "manga-ranking", "manga-reader",
+  "manga-reader-chapter-list", "manga-reader-floating",
+  "manga-reader-history", "manga-reader-settings", "manga-reading-direction",
+  "manga-reading-mode", "manga-reading-progress", "manga-relation-list",
+  "manga-relation-type", "manga-release-timeline", "manga-reports",
+  "manga-resume", "manga-same-universe", "manga-scan-group",
+  "manga-serialization", "manga-special-edition", "manga-spotlight",
+  "manga-stats-grid", "manga-status", "manga-tags", "manga-themes",
+  "manga-top3", "manga-trending-list", "manga-universe-chronology",
+  "manga-universe-map", "manga-universe-showcase", "manga-universe-timeline",
+  "manga-upcoming-volume", "manga-update-row", "manga-volume",
+  "manga-volume-list", "manga-volume-preview", "manga-vote",
+  "media-banner-rail", "media-details-modal", "media-grid", "media-hero",
+  "media-landscape", "media-preview", "media-progress", "media-quick-view",
+  "media-ranked", "movie-detail", "movie-details", "movie-details-modal",
+  "movie-preview", "movie-quick-view", "next-episode", "next-episode-hero",
+  "now-playing", "numbered", "popular", "poster", "poster-card-compact",
+  "poster-rail", "progress-media", "progress-media-card-chip",
+  "progress-media-card-percent", "ranked-card", "ranked-discovery",
+  "ranked-media", "ranked-rail", "recently-watched", "recommendation",
+  "resume-watching", "saga-discovery", "season", "season-banner",
+  "season-detail", "season-episode", "season-selector", "series-banner",
+  "series-episode", "series-episode-list", "series-grid", "similar-media",
+  "spotlight-card", "spotlight-discovery", "subtitle-badge", "tag",
+  "three-column-swipe", "tmdb-featured-stack", "tmdb-hero-carousel",
+  "top-movies", "top-rated", "trending", "up-next", "up-next-compact",
+  "watch-again", "watch-progress", "watch-providers-rail",
 ]);
 for (const rel of jsonFiles.filter((file) => file.startsWith("ui-layouts/"))) {
   const layout = JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
