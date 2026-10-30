@@ -448,3 +448,24 @@ réseaux, UA de session) :
   le même chemin. `hasCloudflare` peut rester `false` : ce flag ne gate pas ce
   repli, qui se déclenche sur la **réponse** (403 + marqueur CF), pas sur le
   manifeste.
+## XVideos — répertoires et pagination
+
+Les pages d'index (`/pornstars-index`, `/channels-index`) rendent des cartes
+`<div id="profile_<slug">` avec `.profile-name` et `.profile-counts`. Les liens
+`/models/<slug>` sont la même fiche que `/pornstars/<slug>` : on normalise vers
+`/pornstars/` pour que l'écran personne de l'app les reconnaisse.
+
+Les grilles vidéo des fiches sont **vides** dans le HTML ; les cartes viennent de
+`/<kind>/<slug>/videos/best/<page0>` en JSON (`videos` tantôt tableau, tantôt
+objet creux — d'où le double parsing).
+
+La pagination est **zéro-basée** : page logique 1 = route nue, page 2 = `/1`.
+L'onglet « Nouveautés » *est* la racine `/` ; `/new/1` est la page 2 et `/new/`
+répond 404 — l'ancien mapping sautait donc la page la plus récente. Le classement
+`/best/<mois>` pagine avec des liens numérotés `data-page` (pas de bouton
+« next »), ce que `_hasNextPage()` doit couvrir.
+
+Côté lecture, l'endpoint `/html5player/getvideo/<eid>/<cdn>` renvoie souvent
+`mp4_high` et `mp4_low` **identiques** (`mp4_sd.mp4`) : on déduplique par URL et
+on nomme la qualité d'après le fichier plutôt que de proposer deux fois la même
+source.

@@ -2,7 +2,7 @@
   "name": "watchtower-extensions",
   "version": "1.0.0",
   "private": true,
-  "description": "Watchtower extensions repository — CI validation scripts",
+  "description": "Watchtower extensions repository \u2014 CI validation scripts",
   "scripts": {
     "validate": "node tools/validate-extensions.mjs",
     "test:taxonomy": "node tools/test_catalog_taxonomy.mjs",
@@ -12,6 +12,7 @@
     "pin:check": "node tools/pin_sources.mjs --check --all",
     "test:frenchstream": "node tools/test-frenchstream.mjs",
     "test:xnxx": "node tools/test-xnxx.mjs",
+    "test:xvideos": "node tools/test-xvideos.mjs",
     "test:eporner": "node tools/test-eporner.mjs",
     "test:imhentai": "node tools/test-imhentai.mjs",
     "test:allmanga": "node tools/test-allmanga.mjs",

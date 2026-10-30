@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      {
+        "id": "popular",
+        "component": "spotlight",
+        "title": "Meilleur du mois",
+        "accent": "#FF3D71",
+        "icon": "whatshot",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "latest",
+        "component": "showcase",
+        "title": "Nouveautés",
+        "accent": "tertiary",
+        "icon": "fiber_new",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "best_previous",
+        "component": "rankedWide",
+        "title": "Meilleur du mois dernier",
+        "accent": "#F5A623",
+        "icon": "emoji_events",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "pornstars",
+        "component": "creatorRow",
+        "title": "Actrices",
+        "accent": "#B388FF",
+        "icon": "star",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "studios",
+        "component": "studioExplorer",
+        "title": "Studios",
+        "accent": "#7C4DFF",
+        "icon": "business",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "tags",
+        "component": "grid",
+        "title": "Tags",
+        "accent": "#00B8D4",
+        "icon": "local_offer",
+        "columns": 2,
+        "rows": 3,
+        "cardStyle": "tag",
+        "seeAll": true,
+        "seeAllPage": "tags",
+        "paginated": true
+      },
+      {
+        "id": "categories",
+        "component": "categoryPills",
+        "title": "Catégories",
+        "accent": "#26A69A",
+        "icon": "category",
+        "seeAll": false
+      }
+    ]
+  },
+  "browse": {
+    "popular": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 3,
+        "cardStyle": "thumbnail"
+      },
+      "filters": "chips"
+    }
+  },
+  "detail": {
+    "hero": "backdrop",
+    "episodeList": "compact",
+    "showRecommendations": false
+  },
+  "player": {
+    "mode": "standard"
+  }
+}
