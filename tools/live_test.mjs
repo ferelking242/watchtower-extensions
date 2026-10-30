@@ -100,11 +100,17 @@ class MProvider {
 }
 
 // ---- Loader -------------------------------------------------------------------
+// In-memory stand-in for the app's async session bridge, so the history code
+// path is exercised instead of short-circuiting on a missing global.
+const localStore = new Map();
+
 function loadExtension(filePath) {
   const code = fs.readFileSync(filePath, "utf8");
   const sandbox = {
     Client, MProvider, Document, SharedPreferences,
     extLog: (...a) => { if (process.env.VERBOSE) console.error(...a); },
+    getLocalStorage: async (base, key) => localStore.get(`${base}|${key}`) ?? null,
+    setLocalStorage: async (base, key, value) => { localStore.set(`${base}|${key}`, value); },
     console, setTimeout, clearTimeout, setInterval, clearInterval,
     fetch, URL, URLSearchParams, TextEncoder, TextDecoder, Buffer,
     atob: (s) => Buffer.from(s, "base64").toString("utf8"),
@@ -160,6 +166,25 @@ async function runOne(filePath) {
     detailUrl = first ? (first.url || first.link) : null;
   }
   if (LIST_STEP.includes("latest")) await step("latest", () => ext.getLatestUpdates(1));
+  // Custom rails: the home layout drives these by id (`getCustomList`), so a
+  // broken one silently renders an empty section in the app. Syntax:
+  // CUSTOM_LISTS="tags:1,tags:2,history" (defaults to page 1).
+  if (LIST_STEP.includes("custom")) {
+    const specs = (process.env.CUSTOM_LISTS || "history,tags").split(",").filter(Boolean);
+    for (const spec of specs) {
+      const [id, rawPage] = spec.split(":");
+      const page = Number(rawPage || 1) || 1;
+      await step(`custom:${spec}`, () => ext.getCustomList(id, page));
+    }
+  }
+  if (LIST_STEP.includes("search")) {
+    const q = process.env.QUERY || "teen";
+    const filters = process.env.FILTERS ? JSON.parse(process.env.FILTERS) : [];
+    await step("search", () => ext.search(q, Number(process.env.PAGE || 1) || 1, filters));
+  }
+  if (LIST_STEP.includes("filters")) {
+    await step("filters", () => ext.getFilterList());
+  }
   if (LIST_STEP.includes("detail") && detailUrl) {
     const detail = await step("detail", () => ext.getDetail(detailUrl));
     const ep = detail?.episodes?.[0] || detail?.chapters?.[0] || null;
@@ -188,6 +213,17 @@ function summarize(label, r) {
   if (label === "videos") {
     const arr = Array.isArray(r) ? r : [];
     return { count: arr.length, sample: arr[0] ? { quality: arr[0].quality, url: String(arr[0].url || arr[0].originalUrl || "").slice(0, 140) } : null };
+  }
+  if (label.startsWith("custom:")) {
+    return { count: r?.list?.length ?? 0, hasNext: !!r?.hasNextPage,
+      sample: r?.list?.[0] ? { name: r.list[0].name, url: r.list[0].url, img: (r.list[0].imageUrl || "").slice(0, 90) } : null };
+  }
+  if (label === "search") {
+    return { count: r?.list?.length ?? 0, hasNext: !!r?.hasNextPage,
+      sample: r?.list?.[0] ? { name: r.list[0].name, url: r.list[0].url } : null };
+  }
+  if (label === "filters") {
+    return { groups: Array.isArray(r) ? r.length : 0 };
   }
   return r;
 }
