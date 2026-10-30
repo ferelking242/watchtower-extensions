@@ -1,12 +1,12 @@
 const watchtowerSources = [{
   "name": "JAVMost",
   "lang": "ja",
-  "baseUrl": "https://javmost.com",
+  "baseUrl": "https://www.javmost.ws",
   "apiUrl": "",
-  "iconUrl": "https://javmost.com/favicon.ico",
+  "iconUrl": "https://www.javmost.ws/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.6",
+  "version": "1.0.7",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javmost.js",
@@ -14,18 +14,18 @@ const watchtowerSources = [{
   "isNsfw": true
 }];
 
-const BASE_URL = "https://javmost.com";
+const BASE_URL = "https://www.javmost.ws";
 
 class DefaultExtension extends MProvider {
   getHeaders(url) {
     return {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-      "Referer": "https://javmost.com/"
+      "Referer": "https://www.javmost.ws/"
     };
   }
 
   async getPopular(page) {
-    const url = `${BASE_URL}/page/${page}/`;
+    const url = `${BASE_URL}/rating/all/page/${page}/`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
     return this._parse(res.body, BASE_URL);
   }
@@ -33,7 +33,7 @@ class DefaultExtension extends MProvider {
   get supportsLatest() { return true; }
 
   async getLatestUpdates(page) {
-    const url = `${BASE_URL}/page/${page}/`;
+    const url = page > 1 ? `${BASE_URL}/release/new/page/${page}/` : `${BASE_URL}/release/new/`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
     return this._parse(res.body, BASE_URL);
   }
@@ -171,7 +171,7 @@ class DefaultExtension extends MProvider {
     const p = Number(page) > 1 ? Number(page) : 1;
     const base = this.source && this.source.baseUrl ? this.source.baseUrl : "";
     const sections = {
-      "pornstars": ["https://javmost.com/pornstar/all/", "^/star/([^/?#]+)"],
+      "pornstars": ["https://www.javmost.ws/pornstar/all/", "^/star/([^/?#]+)"],
     };
     if (sections[listId]) {
       const url = sections[listId][0];
