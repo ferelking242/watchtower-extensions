@@ -155,6 +155,15 @@ const context = {
   URL,
   URLSearchParams,
 };
+
+// History goes through the runtime's async localStorage helpers (the same ones
+// the app exposes). Wire them up before loading the extension so the write and
+// the read are both exercised instead of silently no-op'ing.
+const localStore = {};
+context.getLocalStorage = async (origin, key) => localStore[key] ?? null;
+context.setLocalStorage = async (origin, key, value) => {
+  localStore[key] = value;
+};
 vm.runInNewContext(
   `${extensionSource}\nglobalThis.RexPornForTest = DefaultExtension;`,
   context,
@@ -352,6 +361,56 @@ assert.ok(posts.length > 0, "the proxy receives a POST when direct transports fa
 blockDirect = false;
 blockMirror = false;
 
+// ── History ──────────────────────────────────────────────────────────────────
+// Opening a video is what records an entry, and the write must not depend on
+// the player payload being extractable: the live site withholds `data-q` from
+// HTTP clients, so gating the write on `videos.length` left "Historique" empty
+// for every page the user had actually opened.
+// The source-extraction checks above already opened four pages, so start from
+// a clean store and force the static cache to reload from it.
+delete localStore[context.RexPornForTest.HISTORY_KEY];
+context.RexPornForTest._historyCache = undefined;
+// `_saveHistoryItem` is deliberately fire-and-forget (the storage write must
+// never delay the video URL), so let the pending promise chain drain before
+// reading the rail back.
+const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
+const historyPage = "https://www.rexporn.st/watch/history-test";
+await provider.getVideoList(historyPage);
+await flush();
+await flush();
+const historyRail = await provider.getCustomList("history", 1);
+assert.equal(historyRail.list.length, 1, "opening a page records exactly one entry");
+assert.equal(historyRail.list[0].link, historyPage);
+assert.ok(
+  historyRail.list[0].name && historyRail.list[0].name.length > 0,
+  "the entry carries a usable label",
+);
+assert.ok(
+  historyRail.list[0].description.startsWith("Vu le"),
+  `the entry is stamped with a watch date, got "${historyRail.list[0].description}"`,
+);
+
+// Re-opening the same page updates its timestamp instead of duplicating it.
+await provider.getVideoList(historyPage);
+await flush();
+const deduped = await provider.getCustomList("history", 1);
+assert.equal(deduped.list.length, 1, "re-opening a page does not duplicate the entry");
+
+// The fallback label comes from the URL slug when the page carries no title.
+const untitled = await provider.getVideoList(
+  "https://www.rexporn.st/watch/my-drunken-stepmother",
+);
+assert.ok(
+  untitled.length === 0,
+  "a page without a player payload still yields no sources",
+);
+const withSlug = await provider.getCustomList("history", 1);
+assert.equal(
+  withSlug.list[0].name,
+  "My Drunken Stepmother",
+  "a page with no og:title falls back to the de-slugified URL",
+);
+
 console.log(
-  "RexPorn regression checks passed (category routing, pornstar/studio profiles, episodes, thumbnails, pagination, sort, ROT13, transports).",
+  "RexPorn regression checks passed (category routing, pornstar/studio profiles, episodes, thumbnails, pagination, sort, ROT13, history, transports).",
 );

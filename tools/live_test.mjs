@@ -179,11 +179,38 @@ async function runOne(filePath) {
   }
   if (LIST_STEP.includes("search")) {
     const q = process.env.QUERY || "teen";
-    const filters = process.env.FILTERS ? JSON.parse(process.env.FILTERS) : [];
+    // The app hands `search()` the live filter objects produced by
+    // `getFilterList()`, and every extension reads them as `filters[i].state`.
+    // Accept both shapes here: a raw index (`[0,1,0]`) is lifted into
+    // `{state: n}` so a filter run exercises the same code path as the app.
+    const rawFilters = process.env.FILTERS ? JSON.parse(process.env.FILTERS) : [];
+    const filters = rawFilters.map((f) =>
+      f && typeof f === "object" ? f : { state: Number(f) || 0 }
+    );
     await step("search", () => ext.search(q, Number(process.env.PAGE || 1) || 1, filters));
   }
   if (LIST_STEP.includes("filters")) {
     await step("filters", () => ext.getFilterList());
+  }
+  // Round-trip the watch history: opening a video (`getVideoList`) is what
+  // records an entry, so read it back afterwards. A history rail that renders
+  // empty in the app can be a broken write *or* a broken read; this step fails
+  // on either.
+  if (LIST_STEP.includes("history")) {
+    const target = detailUrl;
+    if (!target) {
+      out.steps.history = { ok: false, error: "no popular item to record", result: null };
+    } else {
+      await step("history:record", async () => {
+        const detail = await ext.getDetail(target);
+        const ep = detail?.episodes?.[0] || detail?.chapters?.[0] || null;
+        const epUrl = ep ? (ep.url || ep.link) : null;
+        if (!epUrl) throw new Error("detail exposed no episode url");
+        await ext.getVideoList(epUrl);
+        return { recorded: epUrl };
+      });
+      await step("history:read", () => ext.getCustomList("history", 1));
+    }
   }
   if (LIST_STEP.includes("detail") && detailUrl) {
     const detail = await step("detail", () => ext.getDetail(detailUrl));
@@ -214,7 +241,7 @@ function summarize(label, r) {
     const arr = Array.isArray(r) ? r : [];
     return { count: arr.length, sample: arr[0] ? { quality: arr[0].quality, url: String(arr[0].url || arr[0].originalUrl || "").slice(0, 140) } : null };
   }
-  if (label.startsWith("custom:")) {
+  if (label.startsWith("custom:") || label.startsWith("history:")) {
     return { count: r?.list?.length ?? 0, hasNext: !!r?.hasNextPage,
       sample: r?.list?.[0] ? { name: r.list[0].name, url: r.list[0].url, img: (r.list[0].imageUrl || "").slice(0, 90) } : null };
   }

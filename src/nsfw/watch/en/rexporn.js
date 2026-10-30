@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.rexporn.st/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.9",
+  "version": "1.2.10",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/rexporn.js",
@@ -793,21 +793,38 @@ class DefaultExtension extends MProvider {
       videos = this._sourcesFromPlayerTag(this._playerTagFromHtml(tag), url);
     }
 
+    // Record the history entry from the page metadata, not from the extracted
+    // sources. The site serves its player payload only to a real browser
+    // session, so `videos` is empty whenever the WebView fallback is
+    // unavailable — and gating the write on it meant a page the user had
+    // genuinely opened left no trace in "Historique". Fire-and-forget for the
+    // same reason as before: this storage write must never delay the URL the
+    // player is blocked on.
+    this._saveHistoryItem({
+      name: this._titleFromHtml(html) || this._titleFromUrl(url),
+      link: this._absolute(url),
+      imageUrl: this._thumbFromHtml(html),
+      watchedAt: Date.now()
+    });
+
     if (videos.length === 0) {
       extLog('warn', "RexPorn.getVideoList: missing data-q/n/id in player markup");
     } else {
       extLog('info', `RexPorn.getVideoList: ${videos.length} videos`);
-      // Fire-and-forget: this is a storage write, and awaiting it would delay
-      // returning the video URL the player is blocked on. `_saveHistoryItem`
-      // swallows its own errors, so there is no unhandled rejection.
-      this._saveHistoryItem({
-        name: this._titleFromHtml(html) || "RexPorn video",
-        link: this._absolute(url),
-        imageUrl: this._thumbFromHtml(html),
-        watchedAt: Date.now()
-      });
     }
     return videos;
+  }
+
+  /// Fallback label for the history rail when the page carries no `og:title`:
+  /// the last path segment, de-slugified and title-cased
+  /// ("my-drunken-stepmother" → "My Drunken Stepmother").
+  _titleFromUrl(url) {
+    const path = String(url || "").split(/[?#]/)[0].replace(/\/+$/, "");
+    const slug = path.slice(path.lastIndexOf("/") + 1);
+    if (!slug || /^\d+$/.test(slug)) return "RexPorn video";
+    const words = slug.replace(/[-_]+/g, " ").trim();
+    if (!words) return "RexPorn video";
+    return words.replace(/\b\w/g, (c) => c.toUpperCase());
   }
 
   _titleFromHtml(html) {
