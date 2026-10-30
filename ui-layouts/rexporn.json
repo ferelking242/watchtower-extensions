@@ -11,6 +11,14 @@
         "seeAll": true
       },
       {
+        "id": "history",
+        "component": "landscapeStacked",
+        "title": "Historique",
+        "accent": "#4DD0E1",
+        "icon": "history",
+        "seeAll": false
+      },
+      {
         "id": "top",
         "component": "ranked",
         "title": "Top Rated",

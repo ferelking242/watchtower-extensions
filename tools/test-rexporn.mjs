@@ -15,10 +15,37 @@ const layout = JSON.parse(fs.readFileSync(path.join(root, "ui-layouts/rexporn.js
 
 const requests = [];
 const logs = [];
+const posts = [];
+// Transport-fallback fixtures. When `blockDirect` is set the primary host
+// answers with the localised block stub; when `blockMirror` is also set the
+// alternate domain does too, forcing the Worker proxy to serve the page.
+let blockDirect = false;
+let blockMirror = false;
+const realListing = (slug) => `
+  <div class="pitem">
+    <a href="/watch/${slug}-sample.html">
+      <img src="/placeholder.jpg" data-src="https://images.example/${slug}.jpg" />
+    </a>
+    <div class="ftitle">${slug} sample</div>
+  </div>
+  <div class="pageslinks">
+    <a href="https://www.rexporn.st" class="pagelink" rel="nofollow"><span>&laquo; Prev</span></a>
+    <a href="https://www.rexporn.st/page-3.html" class="pagelink" rel="nofollow"><span>Next &raquo;</span></a>
+  </div>`;
+const blockStub = `<html><body>Please visit https://www.rexporn.sex</body></html>`;
 class TestClient {
   async get(url) {
     requests.push(url);
-    const pathname = new URL(url).pathname;
+    const parsed = new URL(url);
+    const host = parsed.origin;
+    const pathname = parsed.pathname;
+    if (host === "https://www.rexporn.st" && blockDirect && pathname.startsWith("/page-")) {
+      return { statusCode: 200, body: blockStub };
+    }
+    if (host === "https://www.rexporn.sex") {
+      if (blockMirror) return { statusCode: 200, body: blockStub };
+      if (pathname.startsWith("/page-")) return { statusCode: 200, body: realListing("mirror") };
+    }
     if (pathname === "/channels") {
       return {
         statusCode: 200,
@@ -87,8 +114,24 @@ class TestClient {
             <img src="/placeholder.jpg" data-src="https://images.example/${slug}.jpg" />
           </a>
           <div class="ftitle">${slug} sample</div>
+        </div>
+        <div class="pageslinks">
+          <a href="https://www.rexporn.st" class="pagelink" rel="nofollow"><span>&laquo; Prev</span></a>
+          <a href="https://www.rexporn.st/page-3.html" class="pagelink" rel="nofollow"><span>Next &raquo;</span></a>
         </div>`,
     };
+  }
+
+  // The Worker proxy contract: POST the target URL, receive
+  // `{statusCode, headers, body}`. It always reaches the real (unblocked) site.
+  async post(url, headers, body) {
+    posts.push({ url, body });
+    const target = body && body.url ? body.url : "";
+    const pathname = target ? new URL(target).pathname : "";
+    if (pathname.startsWith("/page-")) {
+      return { statusCode: 200, body: JSON.stringify({ statusCode: 200, body: realListing("proxy") }) };
+    }
+    return { statusCode: 200, body: JSON.stringify({ statusCode: 200, body: `<div class="pitem"><a href="/watch/proxy-sample.html"><img src="https://images.example/proxy.jpg"/></a><div class="ftitle">proxy sample</div></div>` }) };
   }
 }
 
@@ -109,6 +152,8 @@ const context = {
   Client: TestClient,
   extLog: (level, message) => logs.push({ level, message }),
   evaluateJavascriptViaWebview,
+  URL,
+  URLSearchParams,
 };
 vm.runInNewContext(
   `${extensionSource}\nglobalThis.RexPornForTest = DefaultExtension;`,
@@ -221,6 +266,92 @@ assert.ok(
   "a page that already carries the payload never opens a WebView",
 );
 
+// ── Pagination, sort, search, ROT13, transports ──────────────────────────────
+// The site paginates the home listing as /page-N.html; `?sort=new&page=N` was
+// silently ignored and returned page 1 forever.
+assert.equal(
+  provider._sortedUrl(0, 1),
+  "https://www.rexporn.st/",
+  "home page 1 is the bare host",
+);
+assert.equal(
+  provider._sortedUrl(0, 2),
+  "https://www.rexporn.st/page-2.html",
+  "home page 2 uses the /page-N.html route, not a query string",
+);
+assert.equal(
+  provider._sortedUrl(4, 3),
+  "https://www.rexporn.st/most-popular/page-3.html",
+  "sorted listings keep the path + /page-N.html shape",
+);
+
+// Search keeps the sort as a path segment on the search route.
+assert.equal(
+  provider._searchUrl("big tits", 1, 0),
+  "https://www.rexporn.st/videos/search/?query=big%20tits",
+);
+assert.equal(
+  provider._searchUrl("teen", 2, 1),
+  "https://www.rexporn.st/videos/search/top-rated/?query=teen&page=2",
+);
+
+// A listing with a "Next" anchor reports more pages; one without does not.
+const nextDoc = new Document(
+  `<div class="pageslinks"><a class="pagelink" href="https://www.rexporn.st/page-3.html"><span>Next &raquo;</span></a></div>`,
+);
+const lastDoc = new Document(
+  `<div class="pageslinks"><a class="pagelink" href="https://www.rexporn.st"><span>&laquo; Prev</span></a></div>`,
+);
+assert.equal(provider._hasNextPage(nextDoc), true, "a Next link means more pages");
+assert.equal(provider._hasNextPage(lastDoc), false, "a Prev-only block is the last page");
+
+const pagedList = provider._parseList(
+  `<div class="pitem"><a href="/watch/paged.html"><img src="https://images.example/a.jpg"/></a><div class="ftitle">Paged</div></div>
+   <div class="pageslinks"><a class="pagelink" href="https://www.rexporn.st/page-2.html"><span>Next &raquo;</span></a></div>`,
+  "https://www.rexporn.st/",
+  1,
+  "popular",
+);
+assert.equal(pagedList.hasNextPage, true, "parseList propagates the Next signal");
+
+// Pornstar names arrive ROT13-encoded in `.vname.rtt` nodes.
+assert.equal(provider._rot13("Nnyvlnu Ybir"), "Aaliyah Love", "ROT13 decodes pornstar names");
+assert.equal(provider._rot13("Nqevnan Purpuvx"), "Adriana Chechik");
+
+const encodedCollection = provider._parseCollectionList(
+  `<div class="pornstar"><a href="/pornstar/Aaxliyah-Loxve"><img src="https://images.example/p.jpg"/><div class="vname rtt">Nnyvlnu Ybir</div><div class="vidcount">11 videos</div></a></div>`,
+  ".pornstar",
+  1,
+  "pornstars",
+);
+assert.equal(encodedCollection.list[0].name, "Aaliyah Love", "collection cards decode ROT13 names");
+
+// A plain-text name (no `.rtt`) must not be mangled.
+const plainCollection = provider._parseCollectionList(
+  `<div class="studio"><a href="/channel/demo"><img src="https://images.example/s.jpg"/><div class="name">Demo Studio</div></a></div>`,
+  ".studio",
+  1,
+  "studios",
+);
+assert.equal(plainCollection.list[0].name, "Demo Studio", "unencoded names pass through untouched");
+
+// Transport fallback: with the primary host blocked, the mirror serves the page.
+blockDirect = true;
+const viaMirror = await provider.getPopular(2);
+assert.equal(viaMirror.list[0].name, "mirror sample", "the alternate domain serves the blocked page");
+assert.ok(
+  requests.some((u) => u.startsWith("https://www.rexporn.sex/page-2.html")),
+  "the mirror host is tried when the primary is blocked",
+);
+
+// With both direct hosts blocked, the Worker proxy is the last resort.
+blockMirror = true;
+const viaProxy = await provider.getPopular(2);
+assert.equal(viaProxy.list[0].name, "proxy sample", "the proxy serves the page when every direct host is blocked");
+assert.ok(posts.length > 0, "the proxy receives a POST when direct transports fail");
+blockDirect = false;
+blockMirror = false;
+
 console.log(
-  "RexPorn regression checks passed (category routing, pornstar/studio profiles, episodes, thumbnails).",
+  "RexPorn regression checks passed (category routing, pornstar/studio profiles, episodes, thumbnails, pagination, sort, ROT13, transports).",
 );

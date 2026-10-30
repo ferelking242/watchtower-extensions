@@ -6152,7 +6152,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000180.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.2.8",
+    "version": "1.2.9",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124953596b836facf3d4b63b7fc38cb57435c4dd/src/nsfw/watch/en/rexporn.js",
     "isManga": false,
     "isNsfw": true,
@@ -6177,7 +6177,7 @@
       "tags"
     ],
     "uiLayout": "ui-layouts/rexporn.json",
-    "uiLayoutVersion": "1.2.1",
+    "uiLayoutVersion": "1.2.2",
     "tags": [
       "watch",
       "english"

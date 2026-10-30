@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.rexporn.st/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.8",
+  "version": "1.2.9",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/rexporn.js",
@@ -15,6 +15,8 @@ const watchtowerSources = [{
 }];
 
 class DefaultExtension extends MProvider {
+
+  static get BASE_URL() { return "https://www.rexporn.st"; }
 
   // ── Category & sort definitions ──────────────────────────────────────────
   static get CATEGORIES() {
@@ -109,13 +111,13 @@ class DefaultExtension extends MProvider {
 
   // ── URL builders ──────────────────────────────────────────────────────────
 
-  // Build URL for popular/sorted listing
+  // Build URL for popular/sorted listing. The home listing paginates as
+  // /page-N.html: `?sort=new&page=N` is ignored by the site and always
+  // returns page 1.
   _sortedUrl(sortState, page) {
     const path = DefaultExtension.SORT_PATHS[sortState] || "";
     if (!path) {
-      // "New" — home page uses ?sort=new (page > 1 adds &page=N)
-      if (page > 1) return `https://www.rexporn.st/?sort=new&page=${page}`;
-      return "https://www.rexporn.st/?sort=new";
+      return page > 1 ? `https://www.rexporn.st/page-${page}.html` : "https://www.rexporn.st/";
     }
     if (page > 1) return `https://www.rexporn.st/${path}/page-${page}.html`;
     return `https://www.rexporn.st/${path}`;
@@ -127,6 +129,236 @@ class DefaultExtension extends MProvider {
     return `https://www.rexporn.st/${slug}`;
   }
 
+  // Build URL for a text search, honouring the sort selector. The site keeps
+  // the sort as a path segment (`/videos/search/top-rated/?query=…`); the bare
+  // route serves the default relevance order.
+  _searchUrl(query, page, sortState) {
+    const path = DefaultExtension.SORT_PATHS[sortState] || "";
+    const base = path
+      ? `https://www.rexporn.st/videos/search/${path}/`
+      : "https://www.rexporn.st/videos/search/";
+    const params = `query=${encodeURIComponent(query)}`;
+    return page > 1 ? `${base}?${params}&page=${page}` : `${base}?${params}`;
+  }
+
+  // Every listing page closes with a `.pageslinks` block whose anchors carry
+  // `class="pagelink"`. On the last page the block only holds a "Prev" link,
+  // so a "Next" anchor is the reliable signal. The previous
+  // `.pagination/.pager/.pages` selectors never matched the live markup, which
+  // left `hasNextPage` permanently true and looped page 1 forever.
+  _hasNextPage(doc) {
+    const links = doc.select(".pageslinks a, a.pagelink");
+    for (const link of links) {
+      if (/next/i.test(link.text || "")) return true;
+    }
+    return false;
+  }
+
+  // Pornstar names ship ROT13-obfuscated (the `.vname.rtt` class marks the
+  // encoded nodes) to keep them out of naive scrapers. Decode so a card reads
+  // "Aaliyah Love" instead of "Nnyvlnu Ybir".
+  _rot13(value) {
+    return String(value || "").replace(/[a-zA-Z]/g, (ch) => {
+      const base = ch <= "Z" ? 65 : 97;
+      return String.fromCharCode(((ch.charCodeAt(0) - base + 13) % 26) + base);
+    });
+  }
+
+  // ── Watch history ─────────────────────────────────────────────────────────
+  // Stored through the app's session bridge (`getLocalStorage`/
+  // `setLocalStorage`) rather than SharedPreferences, which writes to Isar and
+  // is dropped when called from the extension worker isolate.
+  static get HISTORY_KEY() { return "rexporn_watch_history"; }
+
+  _storageAvailable() {
+    return typeof getLocalStorage === "function" &&
+      typeof setLocalStorage === "function";
+  }
+
+  _storedHistory() {
+    if (Array.isArray(DefaultExtension._historyCache)) {
+      return DefaultExtension._historyCache;
+    }
+    return DefaultExtension._historyPending || [];
+  }
+
+  // The rail is built from the cache synchronously, so a cold cache must be
+  // warmed before getCustomList("history") runs.
+  async _loadStoredHistory() {
+    if (Array.isArray(DefaultExtension._historyCache)) {
+      return DefaultExtension._historyCache;
+    }
+    if (!this._storageAvailable()) {
+      DefaultExtension._historyCache = [];
+      return DefaultExtension._historyCache;
+    }
+    try {
+      const raw = await getLocalStorage(
+        DefaultExtension.BASE_URL,
+        DefaultExtension.HISTORY_KEY,
+      );
+      const parsed = typeof raw === "string" ? JSON.parse(raw || "[]") : raw;
+      DefaultExtension._historyCache = Array.isArray(parsed)
+        ? parsed.filter(item => item && item.link && item.name)
+        : [];
+    } catch (error) {
+      extLog("warn", `RexPorn history could not be read: ${error.message}`);
+      DefaultExtension._historyCache = [];
+    }
+    return DefaultExtension._historyCache;
+  }
+
+  async _saveHistoryItem(item) {
+    if (!this._storageAvailable()) return;
+    try {
+      const entries = (await this._loadStoredHistory())
+        .filter(entry => entry.link !== item.link);
+      entries.unshift(item);
+      const history = entries.slice(0, 60);
+      DefaultExtension._historyCache = history;
+      DefaultExtension._historyPending = history;
+      await setLocalStorage(
+        DefaultExtension.BASE_URL,
+        DefaultExtension.HISTORY_KEY,
+        JSON.stringify(history),
+      );
+    } catch (error) {
+      extLog("warn", `RexPorn local history could not be saved: ${error.message}`);
+    }
+  }
+
+  _historyDescription(timestamp) {
+    const date = new Date(timestamp);
+    if (Number.isNaN(date.getTime())) return "Déjà regardé";
+    return `Vu le ${date.toLocaleString("fr-FR", {
+      day: "2-digit", month: "short", year: "numeric",
+      hour: "2-digit", minute: "2-digit"
+    })}`;
+  }
+
+  // ── Transports ────────────────────────────────────────────────────────────
+  // The primary domain can be unreachable from some networks (ISP/ARCOM DNS
+  // blocking). Requests walk a chain — direct host, then the alternate domain
+  // the site itself links to, then the Worker proxy — and the first transport
+  // that returns real markup wins. The proxy runs outside the blocked network,
+  // so it is the transport of last resort.
+  static get MIRRORS() {
+    return ["https://www.rexporn.sex"];
+  }
+  static get PROXY_URL() {
+    return "https://watchtower-proxy.aivos-dev.workers.dev/proxy";
+  }
+
+  _activeHost() {
+    return this._hostOverride || DefaultExtension.BASE_URL;
+  }
+
+  _transports() {
+    const list = [{ kind: "direct", host: DefaultExtension.BASE_URL }];
+    for (const host of DefaultExtension.MIRRORS) list.push({ kind: "direct", host });
+    list.push({ kind: "proxy", host: DefaultExtension.BASE_URL });
+    return list;
+  }
+
+  _isCloudflareChallenge(body) {
+    // Every real RexPorn page embeds Cloudflare's JSD beacon
+    // (`challenge-platform/…/jsd/main.js`, `__CF$cv$params`), so those markers
+    // must NOT count. Only an actual interstitial does.
+    return /cf-chl-|cf-browser-verification|__cf_chl_|checking your browser|just a moment|verify you are human|enable javascript and cookies|attention required/i
+      .test(String(body || ""));
+  }
+
+  _isStubBody(body) {
+    const text = String(body || "");
+    if (!text.trim()) return true;
+    if (/please visit|veuillez visiter|visitar|besuchen|visitez|not available in your (country|region)/i
+      .test(text)) {
+      return true;
+    }
+    // A real RexPorn page is tens of KB and carries listing/detail markup; a
+    // tiny HTML page with none of it is a block stub whatever its language.
+    return text.length < 1500 &&
+      /^\s*</.test(text) &&
+      !/pitem|viewmov|pornstar|pornstudio|studio|vname|channels|pageslinks|data-q|itemprop="thumbnailUrl"/i.test(text);
+  }
+
+  async _directFetch(host, path, headers) {
+    const url = `${host}${path}`;
+    const res = await new Client().get(url, headers);
+    return { url, statusCode: res && res.statusCode, body: res ? res.body : "" };
+  }
+
+  async _proxyFetch(host, path, headers) {
+    const target = `${host}${path}`;
+    const res = await new Client().post(
+      DefaultExtension.PROXY_URL,
+      { "Content-Type": "application/json", "Accept": "application/json" },
+      { method: "GET", url: target, headers }
+    );
+    if (!res || typeof res.body !== "string") {
+      throw new Error("RexPorn proxy returned an invalid response");
+    }
+    let payload;
+    try {
+      payload = JSON.parse(res.body);
+    } catch (_) {
+      throw new Error("RexPorn proxy returned unparseable JSON");
+    }
+    if (payload && payload.error) {
+      throw new Error(`RexPorn proxy error: ${payload.error}`);
+    }
+    return { url: target, statusCode: payload && payload.statusCode, body: payload && payload.body };
+  }
+
+  async _get(url) {
+    // Reduce a full page URL to a path so each transport can rebuild it
+    // against its own host.
+    let route = String(url || "");
+    if (/^https?:\/\//i.test(route)) {
+      try {
+        const parsed = new URL(route);
+        route = parsed.pathname + parsed.search;
+      } catch (_) { /* keep as-is */ }
+    }
+    let lastError;
+    let sawCloudflare = false;
+    let sawStub = false;
+    for (const transport of this._transports()) {
+      const headers = this.getPageHeaders(`${transport.host}/`);
+      try {
+        const res = transport.kind === "proxy"
+          ? await this._proxyFetch(transport.host, route, headers)
+          : await this._directFetch(transport.host, route, headers);
+        const body = String(res.body || "");
+        const status = Number(res.statusCode);
+        const challenge = this._isCloudflareChallenge(body);
+        if (challenge) { sawCloudflare = true; continue; }
+        if (this._isStubBody(body)) { sawStub = true; continue; }
+        // Any real page wins, including a 404: callers decide what to do with
+        // it (a 404 body parses to an empty list rather than an error).
+        if (transport.host !== DefaultExtension.BASE_URL) {
+          this._hostOverride = transport.host;
+          extLog("info", `RexPorn using transport=${transport.kind} host=${transport.host} route=${route}`);
+        }
+        return { url: res.url, body, statusCode: status };
+      } catch (error) {
+        if (!lastError) lastError = error;
+      }
+    }
+    if (sawCloudflare) {
+      throw new Error(
+        "RexPorn is showing a Cloudflare verification page. Open the source, complete its verification, then retry."
+      );
+    }
+    if (sawStub) {
+      throw new Error(
+        `RexPorn is blocked on this network (route ${route}). The direct site and every mirror were refused.`
+      );
+    }
+    extLog("error", `RexPorn request failed route=${route} error=${lastError && lastError.message}`);
+    throw new Error(`RexPorn request failed for ${route}: ${lastError && lastError.message}`);
+  }
+
   async _getCategoryThumbnail(slug) {
     const cache = DefaultExtension.CATEGORY_THUMBNAIL_CACHE;
     if (cache[slug]) return cache[slug];
@@ -134,7 +366,7 @@ class DefaultExtension extends MProvider {
     const request = (async () => {
       const url = this._categoryUrl(slug, 1);
       try {
-        const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+        const res = await this._get(url);
         const item = this._parseList(res.body, url, 1, "category")
           .list.find(video => !!video.imageUrl);
         if (!item) {
@@ -170,7 +402,7 @@ class DefaultExtension extends MProvider {
     }
 
     extLog('info', `RexPorn.getPopular: sort=${sort} cat=${cat} page=${page} url=${url}`);
-    const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+    const res = await this._get(url);
     return this._parseList(res.body, url, page, style);
   }
 
@@ -180,13 +412,14 @@ class DefaultExtension extends MProvider {
     const url = page > 1
       ? `https://www.rexporn.st/page-${page}.html`
       : "https://www.rexporn.st/";
-    const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+    const res = await this._get(url);
     return this._parseList(res.body, url, page, "popular");
   }
 
   async search(query, page, filters) {
     this._currentFilters = filters;
     const cat = this._filterCategory(filters);
+    const sort = this._filterSort(filters);
     const q   = (query || "").trim();
 
     // No query → browse popular with current sort/category filter
@@ -194,19 +427,17 @@ class DefaultExtension extends MProvider {
       return this.getPopular(page);
     }
 
-    // Text search (category filter narrows via search URL or category URL)
-    let url;
-    if (cat) {
-      // Search within category: use category browse + keyword match isn't available;
-      // fall back to global search and return results (category filter acts as browse)
-    }
-    url = page > 1
-      ? `https://www.rexporn.st/videos/search/?query=${encodeURIComponent(q)}&page=${page}`
-      : `https://www.rexporn.st/videos/search/?query=${encodeURIComponent(q)}`;
+    // The site exposes no keyword+category route, so a category selection with
+    // a query browses that category; a plain query runs a keyword search that
+    // keeps the chosen sort (the sort is a path segment on the search route).
+    const url = cat
+      ? this._categoryUrl(cat, page)
+      : this._searchUrl(q, page, sort);
+    const style = cat ? "category" : "search";
 
-    extLog('info', `RexPorn.search: q="${q}" cat=${cat} page=${page} url=${url}`);
-    const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
-    return this._parseList(res.body, url, page, "search");
+    extLog('info', `RexPorn.search: q="${q}" cat=${cat} sort=${sort} page=${page} url=${url}`);
+    const res = await this._get(url);
+    return this._parseList(res.body, url, page, style);
   }
 
   // ── Parse list ────────────────────────────────────────────────────────────
@@ -245,53 +476,12 @@ class DefaultExtension extends MProvider {
     }
 
     // ── hasNextPage strategy ──────────────────────────────────────────────
-    // Scoped detection: look for the next-page link inside pagination containers
-    // rather than broad html.includes() to avoid false positives.
+    // The site renders one shared pagination block on every listing page, so a
+    // single "Next" check replaces the per-style slug guessing that never
+    // matched the live markup.
     const doc2 = new Document(html);
     const cap = 50;
-    let hasNext = false;
-
-    if (page >= cap) {
-      hasNext = false;
-    } else if (style === "popular") {
-      // Home /page-N.html — check nav anchor hrefs only
-      const nextSlug = `/page-${page + 1}.html`;
-      const navLinks = doc2.select(".pagination a, .pager a, .pages a, nav.pages a");
-      for (const a of navLinks) {
-        if ((a.attr("href") || "").includes(nextSlug)) { hasNext = true; break; }
-      }
-      if (!hasNext) hasNext = items.length >= 20; // fallback
-    } else if (style === "category") {
-      // /slug-page-N.html — scoped check
-      const nextSlug = `-page-${page + 1}.html`;
-      const navLinks = doc2.select(".pagination a, .pager a, .pages a, nav.pages a");
-      for (const a of navLinks) {
-        if ((a.attr("href") || "").includes(nextSlug)) { hasNext = true; break; }
-      }
-      if (!hasNext) hasNext = items.length >= 20;
-    } else if (style === "sorted") {
-      // /path/page-N.html — scoped check
-      const nextSlug = `/page-${page + 1}.html`;
-      const navLinks = doc2.select(".pagination a, .pager a, .pages a, nav.pages a");
-      for (const a of navLinks) {
-        if ((a.attr("href") || "").includes(nextSlug)) { hasNext = true; break; }
-      }
-      if (!hasNext) hasNext = items.length >= 20;
-    } else if (style === "new") {
-      // ?page=N in nav links OR item count heuristic
-      const navLinks = doc2.select(".pagination a, .pager a, .pages a, nav.pages a");
-      for (const a of navLinks) {
-        if ((a.attr("href") || "").includes(`page=${page + 1}`)) { hasNext = true; break; }
-      }
-      if (!hasNext) hasNext = items.length >= 20;
-    } else {
-      // search: nav link or item count (search results don't always have explicit nav)
-      const navLinks = doc2.select(".pagination a, .pager a, .pages a, nav.pages a");
-      for (const a of navLinks) {
-        if ((a.attr("href") || "").includes(`page=${page + 1}`)) { hasNext = true; break; }
-      }
-      if (!hasNext) hasNext = items.length >= 20;
-    }
+    let hasNext = page < cap && this._hasNextPage(doc2);
 
     return { list: items, hasNextPage: hasNext };
   }
@@ -317,9 +507,13 @@ class DefaultExtension extends MProvider {
       const titleNode = card.selectFirst(".vname") ||
         card.selectFirst(".ftitle") ||
         card.selectFirst(".name");
-      const title = (titleNode ? titleNode.text : (img ? img.attr("alt") : ""))
+      let title = (titleNode ? titleNode.text : (img ? img.attr("alt") : ""))
         .replace(/^Pornstar$/i, "")
         .trim();
+      // Pornstar names are ROT13-encoded in `.vname.rtt` nodes.
+      if (titleNode && /(^|\s)rtt(\s|$)/.test(titleNode.attr("class") || "")) {
+        title = this._rot13(title);
+      }
       const descriptionNode = card.selectFirst(".vidcount") ||
         card.selectFirst(".length");
       const description = descriptionNode ? descriptionNode.text.trim() : "";
@@ -334,41 +528,53 @@ class DefaultExtension extends MProvider {
       });
     }
 
-    const nextPage = page + 1;
-    const nextHref = style === "pornstars"
-      ? `/pornstars-page-${nextPage}.html`
-      : `/page-${nextPage}.html`;
-    const hasNextPage = page < 50 &&
-      doc.select(".pagination a, .pager a, .pages a, nav.pages a")
-        .some(a => (a.attr("href") || "").includes(nextHref));
+    const hasNextPage = page < 50 && this._hasNextPage(doc);
 
     return { list: items, hasNextPage };
   }
 
   async getCustomList(listId, page) {
+    if (listId === "history") {
+      await this._loadStoredHistory();
+      const seen = new Set();
+      const list = this._storedHistory()
+        .filter(item => {
+          if (!item.link || seen.has(item.link)) return false;
+          seen.add(item.link);
+          return true;
+        })
+        .map(item => ({
+          name: item.name,
+          imageUrl: item.imageUrl || "",
+          link: item.link,
+          previewUrl: item.previewUrl || "",
+          description: this._historyDescription(item.watchedAt)
+        }));
+      return { list, hasNextPage: false };
+    }
     if (listId === "latest") return this.getLatestUpdates(page);
     if (listId === "top") {
       const url = this._sortedUrl(1, page);
-      const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+      const res = await this._get(url);
       return this._parseList(res.body, url, page, "sorted");
     }
     if (listId === "popular") {
       const url = this._sortedUrl(4, page);
-      const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+      const res = await this._get(url);
       return this._parseList(res.body, url, page, "sorted");
     }
     if (listId === "pornstars") {
       const url = page > 1
         ? `https://www.rexporn.st/pornstars-page-${page}.html`
         : "https://www.rexporn.st/pornstars";
-      const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+      const res = await this._get(url);
       return this._parseCollectionList(res.body, ".pornstar", page, "pornstars");
     }
     if (listId === "studios") {
       const url = page > 1
         ? `https://www.rexporn.st/channels-page-${page}.html`
         : "https://www.rexporn.st/channels";
-      const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+      const res = await this._get(url);
       const studios = this._parseCollectionList(
         res.body,
         ".pornstudio, .studio, .producer, [class*='studio'], [class*='channel']",
@@ -409,7 +615,7 @@ class DefaultExtension extends MProvider {
     if (listId.startsWith("category_")) {
       const slug = listId.slice("category_".length);
       const url = this._categoryUrl(slug, page);
-      const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+      const res = await this._get(url);
       return this._parseList(res.body, url, page, "category");
     }
     return this.getPopular(page);
@@ -417,7 +623,7 @@ class DefaultExtension extends MProvider {
 
   // ── Detail page ───────────────────────────────────────────────────────────
   async getDetail(url) {
-    const res   = await new Client().get(url, { headers: this.getPageHeaders(url) });
+    const res   = await this._get(url);
     const doc   = new Document(res.body);
     const h1    = doc.selectFirst("h1");
     const ogTitle = doc.selectFirst('meta[property="og:title"]');
@@ -573,7 +779,7 @@ class DefaultExtension extends MProvider {
   async getVideoList(url) {
     let html = "";
     try {
-      const res = await new Client().get(url, { headers: this.getPageHeaders(url) });
+      const res = await this._get(url);
       html = res.body || "";
     } catch (e) {
       extLog('warn', `RexPorn.getVideoList: HTTP fetch failed: ${e.message || e}`);
@@ -591,8 +797,38 @@ class DefaultExtension extends MProvider {
       extLog('warn', "RexPorn.getVideoList: missing data-q/n/id in player markup");
     } else {
       extLog('info', `RexPorn.getVideoList: ${videos.length} videos`);
+      // Fire-and-forget: this is a storage write, and awaiting it would delay
+      // returning the video URL the player is blocked on. `_saveHistoryItem`
+      // swallows its own errors, so there is no unhandled rejection.
+      this._saveHistoryItem({
+        name: this._titleFromHtml(html) || "RexPorn video",
+        link: this._absolute(url),
+        imageUrl: this._thumbFromHtml(html),
+        watchedAt: Date.now()
+      });
     }
     return videos;
+  }
+
+  _titleFromHtml(html) {
+    if (!html) return "";
+    const m = html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i) ||
+      html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+    if (!m) return "";
+    return m[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim();
+  }
+
+  _thumbFromHtml(html) {
+    if (!html) return "";
+    const m = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i) ||
+      html.match(/<link[^>]+itemprop=["']thumbnailUrl["'][^>]+href=["']([^"']+)["']/i);
+    return m ? this._absolute(m[1]) : "";
+  }
+
+  _absolute(url) {
+    if (!url) return "";
+    if (/^https?:\/\//i.test(url)) return url;
+    return `${this._activeHost()}${url.startsWith("/") ? "" : "/"}${url}`;
   }
 
   async getPageList(url) { return []; }
