@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.pornhub.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.4.3",
+  "version": "1.4.4",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/pornhub.js",
@@ -57,6 +57,14 @@ const PORNHUB_PLAYLISTS = [
   ["Recommended playlists", "recommended"],
 ];
 
+// The app's own Cloudflare Worker proxy — the same endpoint the web build
+// routes every request through. It runs outside the user's network, so it can
+// still reach pornhub.com when a direct client cannot (French ISPs, among
+// others, DNS-block the host). Used only as the last transport, once every
+// direct client has come back empty.
+const PORNHUB_PROXY_URL =
+  "https://watchtower-proxy.aivos-dev.workers.dev/proxy";
+
 // Pornhub's edge drops requests from the app's default native client
 // (Rust/rustls) for this host — the JS bridge then hands the extension
 // `{statusCode: 0, body: ""}`, which used to surface as an empty home screen.
@@ -68,6 +76,9 @@ function pornhubTransports() {
     { label: "native", options: null },
     { label: "dart", options: { useDartHttpClient: true } },
     { label: "dart-noproxy", options: { useDartHttpClient: true, noProxy: true } },
+    // Last resort: the app's Worker proxy, reached over the extension's own
+    // HTTP bridge (the worker endpoint itself is not DNS-blocked).
+    { label: "worker-proxy", proxy: true },
   ];
 }
 
@@ -112,40 +123,81 @@ class DefaultExtension extends MProvider {
     let lastError = null;
     for (const transport of pornhubTransports()) {
       try {
-        const body = await this._fetch(url, transport.options);
-        if (body) {
-          return body;
-        }
-        lastError = new Error(
-          `PornHub returned an empty response (${transport.label} client)`
-        );
+        return await this._fetch(url, transport);
       } catch (error) {
         lastError = error;
+        extLog(
+          "warn",
+          `PornHub._get transport=${transport.label} failed url=${url} error=${error && error.message}`
+        );
       }
-      extLog(
-        "warn",
-        `PornHub._get transport=${transport.label} failed url=${url} error=${lastError && lastError.message}`
-      );
     }
-    // Never hand back an empty listing: an empty body here is a transport
-    // failure (the app maps a thrown request to `{statusCode: 0, body: ""}`),
-    // not a genuinely empty page. Surfacing it lets the app show the real
-    // cause instead of an empty home screen.
-    throw lastError || new Error("PornHub request failed");
+    // A transport failure must never read as an empty page. The app's error
+    // state pulls the failing URL out of this message to offer its browser
+    // bypass, so keep the URL as the message's last token.
+    throw lastError || new Error(`PornHub request failed for ${url}`);
   }
 
-  async _fetch(url, options) {
-    const response = await (options
-      ? new Client(options)
+  async _fetch(url, transport) {
+    if (transport.proxy) {
+      return this._fetchViaProxy(url);
+    }
+    const response = await (transport.options
+      ? new Client(transport.options)
       : new Client()).get(url, this.getHeaders(url));
     if (!response || typeof response.body !== "string") {
-      throw new Error("PornHub returned an invalid response");
+      throw new Error(`PornHub returned an invalid response for ${url}`);
     }
     const status = Number(response.statusCode) || 0;
     if (status && (status < 200 || status >= 400)) {
-      throw new Error(`PornHub request failed with HTTP ${status}`);
+      throw new Error(`PornHub request failed with HTTP ${status} for ${url}`);
+    }
+    if (!response.body) {
+      // The app turns a thrown request into `{statusCode: 0, body: ""}` and
+      // stashes the real exception in `reasonPhrase`; surface it instead of
+      // letting the empty body look like a genuinely empty page.
+      const reason = String(response.reasonPhrase || "").trim();
+      throw new Error(
+        reason
+          ? `PornHub empty response (${reason}) for ${url}`
+          : `PornHub returned an empty response for ${url}`
+      );
     }
     return response.body;
+  }
+
+  // The Worker proxy takes the target request as a JSON body and answers with
+  // `{statusCode, headers, body}` — the same contract the web build relies on.
+  async _fetchViaProxy(url) {
+    const response = await new Client().post(
+      PORNHUB_PROXY_URL,
+      { "Content-Type": "application/json", "Accept": "application/json" },
+      {
+        method: "GET",
+        url,
+        headers: this.getHeaders(url)
+      }
+    );
+    if (!response || typeof response.body !== "string") {
+      throw new Error(`PornHub proxy returned an invalid response for ${url}`);
+    }
+    let payload;
+    try {
+      payload = JSON.parse(response.body);
+    } catch (error) {
+      throw new Error(`PornHub proxy returned unparseable JSON for ${url}`);
+    }
+    if (payload && payload.error) {
+      throw new Error(`PornHub proxy error: ${payload.error} for ${url}`);
+    }
+    const status = Number(payload && payload.statusCode) || 0;
+    if (status && (status < 200 || status >= 400)) {
+      throw new Error(`PornHub proxy failed with HTTP ${status} for ${url}`);
+    }
+    if (!payload || !payload.body) {
+      throw new Error(`PornHub proxy returned an empty body for ${url}`);
+    }
+    return payload.body;
   }
 
   _absolute(value) {
