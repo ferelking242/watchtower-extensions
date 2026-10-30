@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.pornhub.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.4.2",
+  "version": "1.4.3",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/pornhub.js",
@@ -57,6 +57,20 @@ const PORNHUB_PLAYLISTS = [
   ["Recommended playlists", "recommended"],
 ];
 
+// Pornhub's edge drops requests from the app's default native client
+// (Rust/rustls) for this host — the JS bridge then hands the extension
+// `{statusCode: 0, body: ""}`, which used to surface as an empty home screen.
+// The ladder re-tries the same URL with the app's Dart HTTP stack, which is a
+// different TLS/HTTP fingerprint, before giving up. `undefined` options keeps
+// the app default so the first attempt is unchanged when it already works.
+function pornhubTransports() {
+  return [
+    { label: "native", options: null },
+    { label: "dart", options: { useDartHttpClient: true } },
+    { label: "dart-noproxy", options: { useDartHttpClient: true, noProxy: true } },
+  ];
+}
+
 class DefaultExtension extends MProvider {
   static get BASE_URL() {
     return "https://www.pornhub.com";
@@ -95,12 +109,41 @@ class DefaultExtension extends MProvider {
 
   async _get(url) {
     this._lastUrl = url;
-    const response = await new Client().get(url, this.getHeaders(url));
+    let lastError = null;
+    for (const transport of pornhubTransports()) {
+      try {
+        const body = await this._fetch(url, transport.options);
+        if (body) {
+          return body;
+        }
+        lastError = new Error(
+          `PornHub returned an empty response (${transport.label} client)`
+        );
+      } catch (error) {
+        lastError = error;
+      }
+      extLog(
+        "warn",
+        `PornHub._get transport=${transport.label} failed url=${url} error=${lastError && lastError.message}`
+      );
+    }
+    // Never hand back an empty listing: an empty body here is a transport
+    // failure (the app maps a thrown request to `{statusCode: 0, body: ""}`),
+    // not a genuinely empty page. Surfacing it lets the app show the real
+    // cause instead of an empty home screen.
+    throw lastError || new Error("PornHub request failed");
+  }
+
+  async _fetch(url, options) {
+    const response = await (options
+      ? new Client(options)
+      : new Client()).get(url, this.getHeaders(url));
     if (!response || typeof response.body !== "string") {
       throw new Error("PornHub returned an invalid response");
     }
-    if (response.statusCode && (response.statusCode < 200 || response.statusCode >= 400)) {
-      throw new Error(`PornHub request failed with HTTP ${response.statusCode}`);
+    const status = Number(response.statusCode) || 0;
+    if (status && (status < 200 || status >= 400)) {
+      throw new Error(`PornHub request failed with HTTP ${status}`);
     }
     return response.body;
   }
