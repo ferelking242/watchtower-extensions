@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://cdn.tokyo-motion.net/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/tokyomotion.js",
@@ -104,6 +104,54 @@ class DefaultExtension extends MProvider {
       }
     }
     return videos;
+  }
+
+  async getCustomList(listId, page) {
+    const p = Number(page) > 1 ? Number(page) : 1;
+    if (listId === "categories") {
+      const url = `${BASE_URL}/categories`;
+      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      const doc = new Document(res.body);
+      const out = [];
+      const seen = {};
+      for (const a of doc.select("a")) {
+        const href = a.attr("href") || "";
+        if (!/^\/videos\/[^/?#]+$/.test(href)) continue;
+        if (seen[href]) continue;
+        seen[href] = 1;
+        const img = a.selectFirst("img");
+        const name = (img?.attr("title") || img?.attr("alt") || a.text || "").trim();
+        if (!name) continue;
+        out.push({ name: name, imageUrl: img?.attr("src") || "", link: BASE_URL + href });
+      }
+      return { list: out, hasNextPage: false };
+    }
+    if (listId === "tags") {
+      const url = `${BASE_URL}/tags`;
+      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      const doc = new Document(res.body);
+      const out = [];
+      const seen = {};
+      for (const a of doc.select("a.thumb-popu, a[href*='search_query=']")) {
+        const href = a.attr("href") || "";
+        if (!/search_query=/.test(href)) continue;
+        const name = (a.text || "").trim();
+        if (!name || seen[name]) continue;
+        seen[name] = 1;
+        out.push({ name: name, imageUrl: "", link: href.startsWith("http") ? href : BASE_URL + href });
+        if (out.length >= 300) break;
+      }
+      return { list: out, hasNextPage: false };
+    }
+    if (listId && listId.indexOf("profile_") === 0) {
+      const hex = listId.slice(8);
+      let path = "";
+      for (let i = 0; i + 4 <= hex.length; i += 4) path += String.fromCharCode(parseInt(hex.substr(i, 4), 16));
+      const url = path.charAt(0) === "h" ? path : BASE_URL + path;
+      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      return this._parse(res.body, BASE_URL);
+    }
+    throw new Error("TokyoMotion: unknown section \"" + listId + "\"");
   }
 
   getFilterList() { return []; }

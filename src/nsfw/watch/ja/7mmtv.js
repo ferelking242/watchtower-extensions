@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.7mmtv.sx/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/7mmtv.js",
@@ -164,6 +164,10 @@ class DefaultExtension extends MProvider {
     if (id === "categories") {
       const res = await new Client().get(`${BASE_URL}/en/censored_categorylist/list/index.html`, { headers: this.getHeaders() });
       return this._parseDirectory(res.body, /\/en\/censored_category\/\d+\//);
+    }
+    if (id === "makers") {
+      const res = await new Client().get(`${BASE_URL}/en/uncensored_makersr/list/index.html`, { headers: this.getHeaders() });
+      return this._parseDirectory(res.body, /\/en\/uncensored_makersr\/\d+\//);
     }
     const path = SECTIONS[id];
     if (!path) throw new Error(`7MMTV: unknown section "${id}"`);

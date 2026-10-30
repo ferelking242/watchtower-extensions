@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javsb.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javsb.js",
@@ -81,6 +81,12 @@ class DefaultExtension extends MProvider {
       }
     }
     if (videos.length === 0) { const f = html.match(/file\s*:\s*["']([^"']+)["']/); if (f) videos.push({ url: f[1], quality: "JWPlayer", originalUrl: f[1], headers: this.getHeaders(url) }); }
+    const direct = videos.filter((v) => /\.(?:m3u8|mp4|webm|m4v)(?:[?#]|$)/i.test(v.url));
+    videos.length = 0;
+    videos.push(...direct);
+    if (videos.length === 0) {
+      videos.push({ url, originalUrl: url, quality: "Web player", type: "webview", kind: "webview", headers: this.getHeaders(url) });
+    }
     return videos;
   }
   getFilterList() { return []; }

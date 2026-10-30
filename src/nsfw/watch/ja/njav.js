@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://njav.tv/assets/123av/images/favicon.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.6",
+  "version": "1.0.7",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/njav.js",
@@ -95,6 +95,12 @@ class DefaultExtension extends MProvider {
       const fileM = html.match(/file\s*:\s*["']([^"']+)["']/);
       if (fileM) videos.push({ url: fileM[1], quality: "JWPlayer", originalUrl: fileM[1], headers: this.getHeaders(url) });
     }
+    const direct = videos.filter((v) => /\.(?:m3u8|mp4|webm|m4v)(?:[?#]|$)/i.test(v.url));
+    videos.length = 0;
+    videos.push(...direct);
+    if (videos.length === 0) {
+      videos.push({ url, originalUrl: url, quality: "Web player", type: "webview", kind: "webview", headers: this.getHeaders(url) });
+    }
     return videos;
   }
 
@@ -111,7 +117,7 @@ class DefaultExtension extends MProvider {
       const m = path.match(rx);
       if (!m) continue;
       const slug = decodeURIComponent(m[1] || path.split("/").filter(Boolean).pop() || "");
-      const NAV_RX = /^(?:all|page|popular|rated|subscribed|videos?|new|hot|recent|latest|top|best|browse|uncensored|censored|index)$/i;
+      const NAV_RX = /^(?:all|page|popular|rated|subscribed|videos?|photos|pornstars|users|login|signup|new|hot|recent|latest|top|best|browse|uncensored|censored|index|[a-z])$/i;
       if (!slug || NAV_RX.test(slug) || /^\d+$/.test(slug) || slug.indexOf("$") >= 0) continue;
       const key = slug.toLowerCase();
       if (seen[key]) continue;
@@ -136,6 +142,7 @@ class DefaultExtension extends MProvider {
       let u;
       try { u = new URL(href, base); } catch (e) { continue; }
       const path = u.pathname;
+      const slug = decodeURIComponent(path.split("/").filter(Boolean).pop() || "");
       if (!/(\/video|\/videos|\/watch|-\d{2,}\/|-\d{2,}$|\/[a-z0-9]{5,}-\d{2,}|\/\d{4,}\/|dm\d+\/|\.html$)/i.test(path)) continue;
       if (/\/(tags?|categor|genres?|models?|pornstars?|actress|performers?|idols?|channels?|studios?|makers?|labels?|series)\//i.test(path)) continue;
       if (seen[path]) continue;
@@ -158,9 +165,9 @@ class DefaultExtension extends MProvider {
     if (sections[listId]) {
       const url = sections[listId][0];
       const rx = new RegExp(sections[listId][1], "i");
-      const pageUrl = url.indexOf("?") >= 0
+      const pageUrl = p === 1 ? url : (url.indexOf("?") >= 0
         ? url + "page=" + p
-        : url + (url.endsWith("/") ? "page/" + p + "/" : "?page=" + p);
+        : url + (url.endsWith("/") ? "page/" + p + "/" : "?page=" + p));
       const res = await new Client().get(pageUrl, this._wtHeaders(pageUrl));
       const people = this._wtPeople(res.body, pageUrl, rx);
       if (people.length) return { list: people, hasNextPage: people.length >= 240 };

@@ -27,6 +27,53 @@
         "accent": "#B388FF",
         "icon": "star",
         "seeAll": true
+      },
+      {
+        "id": "tags",
+        "component": "grid",
+        "title": "Tags",
+        "accent": "#64D8CB",
+        "icon": "tag",
+        "seeAll": true,
+        "columns": 3,
+        "rows": 3,
+        "gridOrder": "column",
+        "scrollDirection": "horizontal",
+        "cardStyle": "thumbnail"
+      },
+      {
+        "id": "makers",
+        "component": "studioExplorer",
+        "title": "Makers",
+        "accent": "#7986CB",
+        "icon": "business",
+        "seeAll": true
+      },
+      {
+        "id": "categories",
+        "component": "grid",
+        "title": "Categories",
+        "accent": "#4DB6AC",
+        "icon": "category",
+        "seeAll": true,
+        "columns": 3,
+        "rows": 3,
+        "gridOrder": "column",
+        "scrollDirection": "horizontal",
+        "cardStyle": "thumbnail"
+      },
+      {
+        "id": "directors",
+        "component": "grid",
+        "title": "Directors",
+        "accent": "#FFB74D",
+        "icon": "movie",
+        "seeAll": true,
+        "columns": 3,
+        "rows": 3,
+        "gridOrder": "column",
+        "scrollDirection": "horizontal",
+        "cardStyle": "thumbnail"
       }
     ]
   },

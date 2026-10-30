@@ -21,7 +21,7 @@
         "paginated": true
       },
       {
-        "id": "categories",
+        "id": "tags",
         "component": "grid",
         "title": "Categories",
         "accent": "#64D8CB",

@@ -27,6 +27,27 @@
         "accent": "#B388FF",
         "icon": "star",
         "seeAll": true
+      },
+      {
+        "id": "studios",
+        "component": "studioExplorer",
+        "title": "Studios",
+        "accent": "#7C4DFF",
+        "icon": "business",
+        "seeAll": true
+      },
+      {
+        "id": "categories",
+        "component": "grid",
+        "title": "Categories",
+        "accent": "#4DB6AC",
+        "icon": "category",
+        "seeAll": true,
+        "columns": 3,
+        "rows": 3,
+        "gridOrder": "column",
+        "scrollDirection": "horizontal",
+        "cardStyle": "thumbnail"
       }
     ]
   },

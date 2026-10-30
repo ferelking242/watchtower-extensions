@@ -6885,8 +6885,8 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000196.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.1.0",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124953596b836facf3d4b63b7fc38cb57435c4dd/src/nsfw/watch/ja/7mmtv.js",
+    "version": "1.1.1",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@55fb89c855fa51900d9ecc49199ab62a7c529db4/src/nsfw/watch/ja/7mmtv.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
@@ -6924,7 +6924,9 @@
       "th": "7mmtv,AV無修正エロ動画ファンに7MMが贈る、人気AV女優や可愛い素人の高画質独ฟรี วิดีโอโป๊ HD และสตรีมมิ่ง JAV・Japan AV",
       "tr": "7mmtv, Av 7MMが贈る、人気AV女優や可愛い素人の高画質独Ücretsiz HD Porno Videoları ve JAV Yayını・Japonya AV.",
       "zh": "7mmtv,Avguru无修改エロ动画fuァンに7MMが赠る、人気AV女优やい素人の高画质独占配信aダルト动画・免费成人影片、日本AV、无码高清播放视频・免费高清色情影片和JAV流媒体・日本AV。"
-    }
+    },
+    "uiLayout": "ui-layouts/7mmtv.json",
+    "uiLayoutVersion": "1.1.1"
   },
   {
     "name": "ABJav",
@@ -6983,8 +6985,8 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000198.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.5",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124953596b836facf3d4b63b7fc38cb57435c4dd/src/nsfw/watch/ja/avporner.js",
+    "version": "1.0.6",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@e4dc344344e684f133a7cb0f28eec2726bc45775/src/nsfw/watch/ja/avporner.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
@@ -7144,6 +7146,7 @@
     "hasDRM": false,
     "tags": [
       "watch",
+      "jav",
       "japanese"
     ],
     "addedAt": "2026-09-02",
@@ -7165,7 +7168,10 @@
       "th": "JapanWhores — สตรีมมิ่ง JAV (วิดีโอผู้ใหญ่ญี่ปุ่น) ฟรี 18+ เท่านั้น วิดีโอยอดนิยมและล่าสุด ค้นหาได้ตามชื่อเรื่อง",
       "tr": "JapanWhores — ücretsiz JAV (Japon yetişkin videosu) yayını, yalnızca 18+. Başlığa göre aranabilen popüler ve en yeni videolar.",
       "zh": "JapanWhores — 免费 JAV（日本成人视频）流媒体，仅限 18 岁以上。热门和最新视频，可按标题搜索。"
-    }
+    },
+    "contentSubtype": [
+      "jav"
+    ]
   },
   {
     "name": "JAVBestTV",
@@ -7224,8 +7230,8 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000203.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.6",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124953596b836facf3d4b63b7fc38cb57435c4dd/src/nsfw/watch/ja/javbraze.js",
+    "version": "1.0.8",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@e4dc344344e684f133a7cb0f28eec2726bc45775/src/nsfw/watch/ja/javbraze.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
@@ -7475,8 +7481,8 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000208.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.7",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124953596b836facf3d4b63b7fc38cb57435c4dd/src/nsfw/watch/ja/javguru.js",
+    "version": "1.0.8",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@e4dc344344e684f133a7cb0f28eec2726bc45775/src/nsfw/watch/ja/javguru.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
@@ -7526,8 +7532,8 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000209.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.7",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124953596b836facf3d4b63b7fc38cb57435c4dd/src/nsfw/watch/ja/javhdtoday.js",
+    "version": "1.0.8",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@e4dc344344e684f133a7cb0f28eec2726bc45775/src/nsfw/watch/ja/javhdtoday.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
@@ -7726,8 +7732,8 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000213.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.5",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124953596b836facf3d4b63b7fc38cb57435c4dd/src/nsfw/watch/ja/javsb.js",
+    "version": "1.0.6",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@e4dc344344e684f133a7cb0f28eec2726bc45775/src/nsfw/watch/ja/javsb.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
@@ -7924,8 +7930,8 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000217.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.5",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124953596b836facf3d4b63b7fc38cb57435c4dd/src/nsfw/watch/ja/maxjav.js",
+    "version": "1.0.6",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@e4dc344344e684f133a7cb0f28eec2726bc45775/src/nsfw/watch/ja/maxjav.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
@@ -8076,8 +8082,8 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000220.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.6",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124953596b836facf3d4b63b7fc38cb57435c4dd/src/nsfw/watch/ja/njav.js",
+    "version": "1.0.7",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@e4dc344344e684f133a7cb0f28eec2726bc45775/src/nsfw/watch/ja/njav.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
@@ -8225,8 +8231,8 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000223.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.5",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124953596b836facf3d4b63b7fc38cb57435c4dd/src/nsfw/watch/ja/tokyomotion.js",
+    "version": "1.0.6",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@e4dc344344e684f133a7cb0f28eec2726bc45775/src/nsfw/watch/ja/tokyomotion.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
@@ -8239,6 +8245,7 @@
     "hasDRM": false,
     "tags": [
       "watch",
+      "jav",
       "japanese"
     ],
     "addedAt": "2026-09-02",
@@ -8260,7 +8267,12 @@
       "th": "TokyoMotion — สตรีมมิ่ง JAV (วิดีโอผู้ใหญ่ญี่ปุ่น) ฟรี 18+ เท่านั้น เรียกดูตามหมวดหมู่แท็ก",
       "tr": "TokyoMotion — ücretsiz JAV (Japon yetişkin videosu) akışı, yalnızca 18+. Kategorilere, etiketlere göre göz atın.",
       "zh": "TokyoMotion — 免费 JAV（日本成人视频）流媒体，仅限 18 岁以上。按类别、标签浏览。"
-    }
+    },
+    "contentSubtype": [
+      "jav"
+    ],
+    "uiLayout": "ui-layouts/tokyomotion.json",
+    "uiLayoutVersion": "1.0.6"
   },
   {
     "name": "VJav",
@@ -8319,8 +8331,8 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000225.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.5",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124953596b836facf3d4b63b7fc38cb57435c4dd/src/nsfw/watch/ja/zerojav.js",
+    "version": "1.0.7",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@e4dc344344e684f133a7cb0f28eec2726bc45775/src/nsfw/watch/ja/zerojav.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
@@ -8358,7 +8370,9 @@
       "th": "สำรวจคอลเลกชันหนังสือภาพสำหรับผู้ใหญ่คุณภาพสูงสุดพิเศษของเรา ซึ่งมีภาพถ่ายที่น่าทึ่งและธีมที่น่าดึงดูด นำเสนอกราเวียร์ไอดอล ศิลปะอีโรติก และภาพที่ตระการตา",
       "tr": "Çarpıcı fotoğraflar ve büyüleyici temalar içeren, yüksek kaliteli, yetişkinlere yönelik fotoğraf kitaplarından oluşan özel koleksiyonumuzu keşfedin. Gravür idoller, erotik sanat ve şehvetli görüntüler içerir.",
       "zh": "探索我们独家收集的高品质成人写真集，其中包括令人惊叹的摄影和迷人的主题。以凹版偶像、色情艺术和感性图像为特色。"
-    }
+    },
+    "uiLayout": "ui-layouts/zerojav.json",
+    "uiLayoutVersion": "1.0.7"
   },
   {
     "name": "123AV",
@@ -8382,6 +8396,7 @@
     "hasDRM": false,
     "tags": [
       "watch",
+      "jav",
       "multilingual"
     ],
     "addedAt": "2026-09-02",
@@ -8403,7 +8418,10 @@
       "th": "สตรีม JAV และ AV ญี่ปุ่นออนไลน์ในรูปแบบ HD บน 123AV อัปเดตรายการหลายพันรายการทุกวัน รับชมฟรีโดยไม่ต้องสมัคร เริ่มสตรีมมิ่งทันที",
       "tr": "JAV ve Japonca AV'yi 123AV'da HD olarak çevrimiçi izleyin. Her gün güncellenen binlerce başlık, kayıt olmadan ücretsiz olarak izlenebilir. Şimdi akışa başlayın.",
       "zh": "在 123AV 上在线高清播放 JAV 和日本 AV。每天更新数千部影片，无需注册即可免费观看。现在开始直播。"
-    }
+    },
+    "contentSubtype": [
+      "jav"
+    ]
   },
   {
     "name": "RedGIFs",

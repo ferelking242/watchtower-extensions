@@ -40,6 +40,14 @@
         "accent": "#B388FF",
         "icon": "star",
         "seeAll": true
+      },
+      {
+        "id": "studios",
+        "component": "studioExplorer",
+        "title": "Studios",
+        "accent": "#7C4DFF",
+        "icon": "business",
+        "seeAll": true
       }
     ]
   },

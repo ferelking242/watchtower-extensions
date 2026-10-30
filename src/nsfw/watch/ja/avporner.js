@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://avporner.com/favicon.ico?v=1.1",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/avporner.js",
@@ -98,6 +98,12 @@ class DefaultExtension extends MProvider {
     if (videos.length === 0) {
       const fileM = html.match(/file\s*:\s*["']([^"']+)["']/);
       if (fileM) videos.push({ url: fileM[1], quality: "JWPlayer", originalUrl: fileM[1], headers: this.getHeaders(url) });
+    }
+    const direct = videos.filter((v) => /\.(?:m3u8|mp4|webm|m4v)(?:[?#]|$)/i.test(v.url));
+    videos.length = 0;
+    videos.push(...direct);
+    if (videos.length === 0) {
+      videos.push({ url, originalUrl: url, quality: "Web player", type: "webview", kind: "webview", headers: this.getHeaders(url) });
     }
     return videos;
   }

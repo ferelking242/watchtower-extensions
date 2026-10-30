@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://zerojav.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.5",
+  "version": "1.0.7",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/zerojav.js",
@@ -81,7 +81,32 @@ class DefaultExtension extends MProvider {
       }
     }
     if (videos.length === 0) { const f = html.match(/file\s*:\s*["']([^"']+)["']/); if (f) videos.push({ url: f[1], quality: "JWPlayer", originalUrl: f[1], headers: this.getHeaders(url) }); }
+    const direct = videos.filter((v) => /\.(?:m3u8|mp4|webm|m4v)(?:[?#]|$)/i.test(v.url));
+    videos.length = 0;
+    videos.push(...direct);
+    if (videos.length === 0) {
+      videos.push({ url, originalUrl: url, quality: "Web player", type: "webview", kind: "webview", headers: this.getHeaders(url) });
+    }
     return videos;
+  }
+  async getCustomList(listId, page) {
+    if (listId === "categories") {
+      const url = `${BASE_URL}/`;
+      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      const doc = new Document(res.body);
+      const out = [];
+      const seen = {};
+      for (const a of doc.select("a")) {
+        const href = a.attr("href") || "";
+        if (!/\/category\/[^/?#]+\/?$/.test(href)) continue;
+        const name = (a.text || "").trim();
+        if (!name || seen[href]) continue;
+        seen[href] = 1;
+        out.push({ name: name, imageUrl: "", link: href.startsWith("http") ? href : BASE_URL + href });
+      }
+      return { list: out, hasNextPage: false };
+    }
+    throw new Error("ZeroJav: unknown section \"" + listId + "\"");
   }
   getFilterList() { return []; }
   getSourcePreferences() { return []; }
