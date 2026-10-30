@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xnxx.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.5.5",
+  "version": "1.5.6",
   "login": true,
   "loginUrl": "https://www.xnxx.com/mobile/login",
   "forYou": false,
@@ -22,6 +22,21 @@ const watchtowerSources = [{
 
 class DefaultExtension extends MProvider {
   static get BASE_URL() { return "https://www.xnxx.com"; }
+  // XNXX is published under many country mirrors that serve the exact same
+  // markup and share the media CDN. In France (and other EU states) the
+  // registry blocks `xnxx.com` at the ISP DNS resolver, so the direct request
+  // never leaves the device — every rail then renders empty. The mirrors are
+  // used as fallback transports below.
+  static get MIRRORS() {
+    return ["https://www.xnxx.es", "https://www.xnxx.net", "https://www.xnxx.org"];
+  }
+  // Cloudflare Worker that forwards a request and answers
+  // `{statusCode, headers, body}` (the same contract the web build relies on).
+  // It is the transport of last resort: it runs outside the blocked network,
+  // so it also works when the ISP blocks every mirror host at the resolver.
+  static get PROXY_URL() {
+    return "https://watchtower-proxy.aivos-dev.workers.dev/proxy";
+  }
   static get HISTORY_KEY() { return "xnxx_watch_history"; }
   get supportsLatest() { return true; }
 
@@ -122,15 +137,63 @@ class DefaultExtension extends MProvider {
     };
   }
 
+  // Origin that answered the last request. Links are still emitted against
+  // the canonical `BASE_URL` so the catalog stays portable, but a second pass
+  // rewrites them onto the origin the device can actually reach.
+  _activeHost() {
+    return this._hostOverride || DefaultExtension.BASE_URL;
+  }
+
   _absolute(href) {
     if (!href) return "";
     if (href.startsWith("http")) return href;
     if (href.startsWith("//")) return `https:${href}`;
     try {
-      return new URL(href, `${DefaultExtension.BASE_URL}/`).toString();
+      return new URL(href, `${this._activeHost()}/`).toString();
     } catch (_) {
-      return `${DefaultExtension.BASE_URL}${href}`;
+      return `${this._activeHost()}${href}`;
     }
+  }
+
+  // Any catalog item whose link still points at the canonical host is moved
+  // onto the origin that actually served the listing. Without this the browse
+  // screen rendered fine over a mirror while every card opened a blocked URL.
+  _toActiveHost(value) {
+    const host = this._hostOverride;
+    if (!host || !value) return value;
+    return String(value).split(DefaultExtension.BASE_URL).join(host);
+  }
+
+  // A blocked host answers a *stub* page (HTTP 200, ~80 bytes, "Please visit
+  // https://www.xnxx.com"). `_checkedBody` cannot tell it apart from real
+  // markup, so the transport layer sniffs it and moves on to the next mirror.
+  _isStubBody(body) {
+    const text = String(body || "");
+    if (text.length > 4000) return false;
+    if (/please visit|veuillez visiter|visitar|besuchen|visitez|visita|bezoek|请访问|not available in your (country|region)/i
+      .test(text)) {
+      return true;
+    }
+    // The block page is localised, so the wording is not reliable on its own.
+    // Every real XNXX page is tens of KB and carries listing markup; a tiny
+    // HTML page that only advertises an XNXX host is a stub whatever its
+    // language. JSON listing endpoints are exempt: they are small and mention
+    // XNXX in their URLs but are legitimate.
+    return text.length < 1000 &&
+      /^\s*</.test(text) &&
+      /xnxx/i.test(text) &&
+      !/thumb-block|<video|mozaique|id=["']tags["']/i.test(text);
+  }
+
+  // Pull a working mirror out of the blocked page itself: XNXX prints the
+  // visitor's country domain on the stub (e.g. "Veuillez visiter
+  // https://www.xnxx.es"). It is the most likely mirror to answer.
+  _findMirrorInBody(body) {
+    const match = /https?:\/\/[a-z0-9.-]*xnxx[a-z0-9.-]*/i.exec(String(body || ""));
+    if (!match) return null;
+    const candidate = match[0].replace(/\/+$/, "");
+    if (candidate === DefaultExtension.BASE_URL) return null;
+    return candidate;
   }
 
   _text(el) { return (el && el.text ? el.text : "").replace(/\s+/g, " ").trim(); }
@@ -1026,19 +1089,144 @@ class DefaultExtension extends MProvider {
     throw lastError;
   }
 
-  async _get(path) {
-    const url = this._absolute(path);
-    let res;
-    try {
-      res = await new Client().get(url, this.getHeaders(url));
-    } catch (error) {
-      const route = (() => {
-        try { return new URL(url).pathname; } catch (_) { return url; }
-      })();
-      extLog("error", `XNXX network request failed route=${route} error=${error.message}`);
-      throw new Error(`XNXX request failed for ${route}: ${error.message}`);
+  // Transports are tried in order and the first one that returns real markup
+  // wins. Direct first (the common, unblocked case), then each mirror, then
+  // the Worker proxy as the last resort.
+  _transports() {
+    const list = [{ kind: "direct", host: DefaultExtension.BASE_URL }];
+    for (const host of DefaultExtension.MIRRORS) {
+      list.push({ kind: "direct", host });
     }
-    return { url, body: this._checkedBody(url, res) };
+    list.push({ kind: "proxy", host: DefaultExtension.BASE_URL });
+    return list;
+  }
+
+  // A Cloudflare interstitial is not fatal: the Worker proxy renders a real
+  // browser fingerprint and usually walks straight through it.
+  _isCloudflareChallenge(body) {
+    return /cf-chl-|challenge-platform|cf-browser-verification|__cf_chl_|attention required|checking your browser|just a moment|verify you are human|cloudflare ray id/i
+      .test(String(body || ""));
+  }
+
+  async _directFetch(host, path, headers) {
+    const url = `${host}${path}`;
+    const res = await new Client().get(url, headers);
+    return { url, statusCode: res && res.statusCode, body: res ? res.body : "" };
+  }
+
+  async _proxyFetch(host, path, headers) {
+    const target = `${host}${path}`;
+    const res = await new Client().post(
+      DefaultExtension.PROXY_URL,
+      { "Content-Type": "application/json", "Accept": "application/json" },
+      { method: "GET", url: target, headers }
+    );
+    if (!res || typeof res.body !== "string") {
+      throw new Error("XNXX proxy returned an invalid response");
+    }
+    let payload;
+    try {
+      payload = JSON.parse(res.body);
+    } catch (_) {
+      throw new Error("XNXX proxy returned unparseable JSON");
+    }
+    if (payload && payload.error) {
+      throw new Error(`XNXX proxy error: ${payload.error}`);
+    }
+    return { url: target, statusCode: payload && payload.statusCode, body: payload && payload.body };
+  }
+
+  async _get(path) {
+    // Callers pass either a site-relative path or a full URL (a detail link a
+    // previous run localised onto a mirror). Reduce both to a path so every
+    // transport can rebuild it against its own host.
+    let route = String(path || "");
+    if (/^https?:\/\//i.test(route)) {
+      try { const parsed = new URL(route); route = parsed.pathname + parsed.search; } catch (_) { /* keep as-is */ }
+    }
+    let lastError;
+    // Track why the transports refused, so the thrown error keeps naming the
+    // real cause (Cloudflare, HTTP status, empty page) instead of the
+    // transport mechanics. The first meaningful reason and the first network
+    // error win: the direct attempt is the one the user cares about, and a
+    // later proxy hiccup must not mask a Cloudflare page.
+    let lastReason = "network";
+    let lastStatus = 0;
+    let haveReason = false;
+    let advertisedHost = null;
+    for (const transport of this._transports()) {
+      const headers = this.getHeaders(`${transport.host}/`);
+      try {
+        const res = transport.kind === "proxy"
+          ? await this._proxyFetch(transport.host, route, headers)
+          : await this._directFetch(transport.host, route, headers);
+        const body = String(res.body || "");
+        const status = Number(res.statusCode);
+        const challenge = this._isCloudflareChallenge(body);
+        if (body.trim() && !this._isStubBody(body) && !challenge &&
+            (!Number.isFinite(status) || status < 400)) {
+          if (transport.host !== DefaultExtension.BASE_URL) {
+            // Serve everything from the origin that answered so the detail and
+            // playback requests follow the same route.
+            this._hostOverride = transport.host;
+            extLog("info", `XNXX using transport=${transport.kind} host=${transport.host} route=${route}`);
+          }
+          return { url: res.url, body };
+        }
+        const reason = this._isStubBody(body) ? "blocked-stub"
+          : challenge ? "cloudflare-challenge"
+            : Number.isFinite(status) && status >= 400 ? "http"
+              : "empty-body";
+        if (!haveReason) {
+          lastReason = reason;
+          lastStatus = Number.isFinite(status) ? status : 0;
+          haveReason = true;
+        }
+        // The blocked page names the country mirror that will answer.
+        if (reason === "blocked-stub" && !advertisedHost) {
+          advertisedHost = this._findMirrorInBody(body);
+        }
+      } catch (error) {
+        if (!lastError) lastError = error;
+      }
+    }
+    if (advertisedHost && !DefaultExtension.MIRRORS.includes(advertisedHost)) {
+      // One last shot at the mirror the block page advertised.
+      try {
+        const res = await this._directFetch(advertisedHost, route, this.getHeaders(`${advertisedHost}/`));
+        const body = String(res.body || "");
+        if (body.trim() && !this._isStubBody(body) && !this._isCloudflareChallenge(body)) {
+          this._hostOverride = advertisedHost;
+          extLog("info", `XNXX using advertised host=${advertisedHost} route=${route}`);
+          return { url: res.url, body };
+        }
+      } catch (_) { /* fall through to the error below */ }
+    }
+
+    // Rebuild the message the caller (and the Cloudflare retry policy in the
+    // app) expects for each cause.
+    if (lastReason === "cloudflare-challenge") {
+      extLog("warn", `XNXX request blocked by Cloudflare route=${route}`);
+      throw new Error(
+        "XNXX is showing a Cloudflare verification page. Open the source, complete its verification, then retry."
+      );
+    }
+    if (lastReason === "http") {
+      extLog("warn", `XNXX request failed route=${route} status=${lastStatus}`);
+      throw new Error(`XNXX returned HTTP ${lastStatus} for ${route}.`);
+    }
+    if (lastReason === "empty-body") {
+      extLog("warn", `XNXX returned an empty response route=${route}`);
+      throw new Error(`XNXX returned an empty response for ${route}.`);
+    }
+    if (lastReason === "blocked-stub") {
+      extLog("warn", `XNXX blocked on this network route=${route}`);
+      throw new Error(
+        `XNXX is blocked on this network (route ${route}). The direct site and every mirror were refused.`
+      );
+    }
+    extLog("error", `XNXX network request failed route=${route} error=${lastError && lastError.message}`);
+    throw new Error(`XNXX request failed for ${route}: ${lastError && lastError.message}`);
   }
 
   async getPopular(page) {
@@ -1325,10 +1513,13 @@ class DefaultExtension extends MProvider {
     const cdnId = body.match(/setIdCdnHLS\(['"]?([^'")]+)['"]?\)/)?.[1] ||
       body.match(/setIdCDN\(['"]?([^'")]+)['"]?\)/)?.[1];
     if (encodedId && cdnId) {
-      const endpoint = `${DefaultExtension.BASE_URL}/html5player/getvideo/${encodedId}/${cdnId}`;
+      // Route the media RPC through the same transport chain as the page: when
+      // the host is DNS-blocked the direct call dies, and playback needs the
+      // mirror or the proxy just as much as the listing does.
+      const endpoint = `/html5player/getvideo/${encodedId}/${cdnId}`;
       const rpcSw = Date.now();
-      const rpc = await new Client().get(endpoint, headers);
-      const rpcBody = this._checkedBody(endpoint, rpc);
+      const rpc = await this._get(endpoint);
+      const rpcBody = rpc.body;
       const rpcMs = Date.now() - rpcSw;
       let data;
       try {

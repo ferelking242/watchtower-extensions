@@ -745,4 +745,159 @@ assert.equal(
   );
 }
 
-console.log("XNXX regression checks passed (listing parsing, Cloudflare, HTTP, network, recommendations, comments, getVideoList, profile listing).");
+// ── Transport fallback: DNS-blocked networks reach XNXX through a mirror ─────
+// In France the registry blocks xnxx.com at the ISP resolver, so the direct
+// request never leaves the device and every rail rendered empty. The extension
+// must fall through to a country mirror, then to the Worker proxy, and rewrite
+// the links it returns onto the origin that actually answered.
+{
+  const mirrorFixture = `
+    <div class="thumb-block">
+      <a class="thumb-link" href="/video-mirror/test">
+        <img data-src="//img.example/m.jpg" />
+      </a>
+      <div class="thumb-under">
+        <a title="From mirror" href="/video-mirror/test">From mirror</a>
+      </div>
+    </div>`;
+  const stub =
+    "<h1>Please visit <a href='https://www.xnxx.com'>https://www.xnxx.com</a></h1>";
+  const advert =
+    "<h1>Veuillez visiter <a href='https://www.xnxx-fr.com'>https://www.xnxx-fr.com</a></h1>";
+
+  function build(routes) {
+    const calls = [];
+    class ScriptedClient {
+      async get(url) {
+        calls.push("GET " + url);
+        const r = routes["GET " + url];
+        if (r === undefined) return { statusCode: 200, body: "" };
+        if (r instanceof Error) throw r;
+        return r;
+      }
+      async post(url, headers, body) {
+        calls.push("POST " + body.url);
+        const r = routes["PROXY " + body.url];
+        if (r === undefined) return { statusCode: 502, body: "" };
+        if (r instanceof Error) throw r;
+        return { statusCode: 200, body: JSON.stringify(r) };
+      }
+    }
+    const ctx = {
+      MProvider: class {},
+      Document,
+      Client: ScriptedClient,
+      SharedPreferences: class {},
+      extLog: (level, message) => calls.push("LOG " + message),
+      URL,
+    };
+    vm.runInNewContext(
+      `${extensionSource}\nglobalThis.XnxxForTest = DefaultExtension;`,
+      ctx,
+    );
+    const p = new ctx.XnxxForTest();
+    p.source = { name: "XNXX", baseUrl: "https://www.xnxx.com", prefs: [] };
+    return { p, calls };
+  }
+
+  // 1. Direct host is blocked; the first mirror answers and links follow it.
+  {
+    const { p } = build({
+      "GET https://www.xnxx.com/hits": { statusCode: 200, body: stub },
+      "GET https://www.xnxx.es/hits": { statusCode: 200, body: mirrorFixture },
+    });
+    const res = await p._get("/hits");
+    assert.ok(res.body.includes("From mirror"), "served from the mirror");
+    assert.equal(
+      p._hostOverride,
+      "https://www.xnxx.es",
+      "later requests stick to the origin that answered",
+    );
+    const parsed = p._parseVideoList(res.body, 1, "hits");
+    assert.equal(
+      parsed.list[0].link,
+      "https://www.xnxx.es/video-mirror/test",
+      "listing links are localised onto the mirror",
+    );
+  }
+
+  // 2. Every direct host is blocked; the Worker proxy answers.
+  {
+    const { p, calls } = build({
+      "GET https://www.xnxx.com/hits": { statusCode: 200, body: stub },
+      "GET https://www.xnxx.es/hits": { statusCode: 200, body: stub },
+      "GET https://www.xnxx.net/hits": { statusCode: 200, body: stub },
+      "GET https://www.xnxx.org/hits": { statusCode: 200, body: stub },
+      "PROXY https://www.xnxx.com/hits": { statusCode: 200, body: mirrorFixture },
+    });
+    const res = await p._get("/hits");
+    assert.ok(res.body.includes("From mirror"), "served from the proxy");
+    assert.ok(
+      calls.some((c) => c === "POST https://www.xnxx.com/hits"),
+      "the proxy was used",
+    );
+  }
+
+  // 3. Nothing answers -> a clear error, never a silent empty success.
+  {
+    const { p, calls } = build({
+      "GET https://www.xnxx.com/hits": { statusCode: 200, body: stub },
+      "GET https://www.xnxx.es/hits": { statusCode: 200, body: stub },
+      "GET https://www.xnxx.net/hits": { statusCode: 200, body: stub },
+      "GET https://www.xnxx.org/hits": { statusCode: 200, body: stub },
+      "PROXY https://www.xnxx.com/hits": { statusCode: 200, body: stub },
+    });
+    await assert.rejects(p._get("/hits"), /blocked on this network/);
+    assert.ok(
+      calls.some((c) => c === "LOG XNXX blocked on this network route=/hits"),
+      "the block is logged for the diagnostics screen",
+    );
+  }
+
+  // 4. The block page names a mirror; it is tried even when it is not in the
+  //    built-in list.
+  {
+    const { p } = build({
+      "GET https://www.xnxx.com/hits": { statusCode: 200, body: advert },
+      "GET https://www.xnxx.es/hits": { statusCode: 200, body: stub },
+      "GET https://www.xnxx.net/hits": { statusCode: 200, body: stub },
+      "GET https://www.xnxx.org/hits": { statusCode: 200, body: stub },
+      "PROXY https://www.xnxx.com/hits": { statusCode: 200, body: stub },
+      "GET https://www.xnxx-fr.com/hits": { statusCode: 200, body: mirrorFixture },
+    });
+    const res = await p._get("/hits");
+    assert.ok(res.body.includes("From mirror"), "served from the advertised mirror");
+    assert.equal(p._hostOverride, "https://www.xnxx-fr.com");
+  }
+
+  // 5. A detail URL already localised onto a mirror is fetched as-is.
+  {
+    const { p } = build({
+      "GET https://www.xnxx.es/video-x/one": {
+        statusCode: 200,
+        body: mirrorFixture,
+      },
+    });
+    const res = await p._get("https://www.xnxx.es/video-x/one");
+    assert.ok(res.body.includes("From mirror"));
+  }
+
+  // 6. Stub sniffing and mirror extraction.
+  {
+    const { p } = build({});
+    assert.equal(p._isStubBody(stub), true);
+    assert.equal(
+      p._isStubBody("<html>" + "x".repeat(5000) + "</html>"),
+      false,
+      "a real page is never mistaken for a stub",
+    );
+    assert.equal(
+      p._findMirrorInBody(stub),
+      null,
+      "the canonical host is not offered back as a mirror",
+    );
+    assert.equal(p._findMirrorInBody(advert), "https://www.xnxx-fr.com");
+  }
+}
+
+console.log("XNXX regression checks passed (listing parsing, Cloudflare, HTTP, network, transport fallback, recommendations, comments, getVideoList, profile listing).");
