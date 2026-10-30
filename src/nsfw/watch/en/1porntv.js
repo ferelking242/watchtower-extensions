@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.1porn.tv/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.0",
+  "version": "1.3.1",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/1porntv.js",
@@ -14,7 +14,7 @@ const watchtowerSources = [{
   "isNsfw": true,
   "hasCloudflare": true,
   "uiLayout": "ui-layouts/1porntv.json",
-  "uiLayoutVersion": "1.1.0",
+  "uiLayoutVersion": "1.2.0",
   "subCategories": ["pornstars", "studios", "networks", "categories", "tags"],
   "contentSubtype": ["videos", "pornstars", "studios", "networks", "tags"]
 }];

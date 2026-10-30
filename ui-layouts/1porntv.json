@@ -64,17 +64,15 @@
         "title": "Tags",
         "accent": "#64D8CB",
         "icon": "local_offer",
-        "columns": 2,
-        "rows": 3,
-        "gridOrder": "column",
-        "scrollDirection": "horizontal",
+        "columns": 3,
+        "rows": 2,
         "cardStyle": "tag",
         "seeAll": true,
         "seeAllPage": "tags"
       },
       {
         "id": "category_milf",
-        "component": "carousel",
+        "component": "landscapeStacked",
         "title": "MILF",
         "accent": "#EC407A",
         "seeAll": true
@@ -88,7 +86,7 @@
       },
       {
         "id": "category_lesbian",
-        "component": "landscapeStacked",
+        "component": "showcase",
         "title": "Lesbiennes",
         "accent": "#42A5F5",
         "seeAll": true
