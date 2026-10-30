@@ -6080,7 +6080,7 @@
     "typeSource": "single",
     "itemType": 1,
     "version": "1.4.3",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@e4dc344344e684f133a7cb0f28eec2726bc45775/src/nsfw/watch/en/pornhub.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@d3574a53e19ef91a14d6506e6654801b5729b32b/src/nsfw/watch/en/pornhub.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
