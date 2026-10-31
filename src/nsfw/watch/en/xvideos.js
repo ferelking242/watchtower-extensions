@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xvideos.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xvideos.js",
@@ -365,6 +365,61 @@ class DefaultExtension extends MProvider {
     return items;
   }
 
+  // ── Profile directory (`/profileslist`) ──────────────────────────────────
+  // `/pornstars-index` and `/channels-index` list performers and studios;
+  // `/profileslist` is the site-wide member directory (188 pages, ~556 M
+  // profiles). Its cards use the same `id="profile_<slug>"` shape as the other
+  // directories, so `_parseProfileCards` handles them too — only the link
+  // prefix differs, and `_normalizeProfileLink` keeps `/profiles/<slug>` as-is.
+  async _profilesDirectory(page) {
+    const html = await this._get(`/profileslist${this._pageSuffix(page)}`);
+    const items = this._parseProfileCards(html, "profiles");
+    return { list: items, hasNextPage: items.length > 0 && this._hasNextPage(html) };
+  }
+
+  // ── Languages (`/lang`) ──────────────────────────────────────────────────
+  // 38 language feeds ("Porno en Français", "Porn in Arabic"…). Each links to
+  // `/lang/<code>`, whose listing is a normal video grid, so a language behaves
+  // exactly like a category and is browsable through `language_<code>`.
+  //
+  // The index draws its flags with CSS sprite classes (`flag-small flag-fr`),
+  // not `<img>`, so there is no artwork to read. The card keeps the language's
+  // own flag as an emoji in the title and borrows a real video cover instead
+  // of pointing at a third-party flag CDN the app does not ship.
+  _flagEmoji(code) {
+    const iso = String(code || "").toLowerCase();
+    if (!/^[a-z]{2}$/.test(iso)) return "";
+    return String.fromCodePoint(
+      ...iso.split("").map((c) => 0x1f1e6 + c.charCodeAt(0) - 97),
+    );
+  }
+
+  _parseLanguages(html) {
+    const items = [];
+    const seen = {};
+    const re = /<a[^>]+class=["'][^"']*\blang-index-link\b[^"']*["'][^>]*href=["'](\/lang\/[^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+    let match;
+    while ((match = re.exec(String(html || "")))) {
+      const code = match[1].slice("/lang/".length).split(/[/?#]/)[0];
+      if (!code || seen[code]) continue;
+      seen[code] = true;
+      const body = match[2];
+      const flag = /class=["'][^"']*\bflag-([a-z]{2})\b/i.exec(body);
+      const label = /<span[^>]*class=["'][^"']*\blang-index-name\b[^"']*["'][^>]*>([\s\S]*?)<\/span>/i.exec(body);
+      const count = /<span[^>]*class=["'][^"']*\blang-index-count\b[^"']*["'][^>]*>([\s\S]*?)<\/span>/i.exec(body);
+      const emoji = flag ? this._flagEmoji(flag[1]) : "";
+      const name = this._text(label ? label[1] : "") || this._text(body) || code;
+      items.push({
+        name: emoji ? `${emoji} ${name}` : name,
+        imageUrl: "",
+        link: this._absolute(match[1]),
+        collectionId: `language_${code}`,
+        description: count ? `${this._text(count[1])} videos` : "Browse videos",
+      });
+    }
+    return items;
+  }
+
   // ── Directory parsers ────────────────────────────────────────────────────
   // Pornstars / channels / verified profiles all render
   // `<div id="profile_<slug">` cards with a name, a cover and a video count.
@@ -422,8 +477,64 @@ class DefaultExtension extends MProvider {
   }
 
   // `/tags` returns the whole index in one page; slice it so the "see all"
-  // grid can page through it without a second network shape.
-  static get TAG_PAGE_SIZE() { return 120; }
+  // grid can page through it without a second network shape. The page is kept
+  // small because each visible tag costs one listing request to borrow its
+  // cover (see `_borrowCovers`).
+  static get TAG_PAGE_SIZE() { return 12; }
+
+  // How many cards get a borrowed cover per list. Tags are capped (the index
+  // holds thousands) while a directory of a few dozen entries is covered in
+  // full.
+  static get COVER_LIMIT() { return 12; }
+
+  // The tag index carries no artwork at all — `/tags` lists `<b>name</b>` plus a
+  // count. The cover is therefore borrowed from the tag's own listing: its
+  // first video thumbnail. `_borrowCovers` runs the lookups through a small
+  // pool so a page of 24 tags costs a couple of seconds, not 24 serial round
+  // trips, and never more than [COVER_CONCURRENCY] sockets at once.
+  static get COVER_CONCURRENCY() { return 6; }
+
+  // First video thumbnail of a listing page, used as the tag's cover.
+  _firstListingImage(html) {
+    for (const block of String(html || "").split(/(?=<div[^>]+id=["']video[-_])/).slice(1)) {
+      const image = this._cardImage(block);
+      if (image) return image;
+    }
+    return "";
+  }
+
+  // Fills `imageUrl` on items whose listing page is derived from a slug
+  // (`tag_<slug>` → `/tags/<slug>`, `category_<slug>` → `/c/<slug>`). Items
+  // that already carry artwork, or whose lookup fails, are left untouched so a
+  // single dead slug cannot blank the whole grid.
+  async _borrowCovers(items, prefix, route, limit) {
+    const cap = Number.isFinite(limit) && limit > 0 ? limit : DefaultExtension.COVER_LIMIT;
+    const pending = [];
+    for (const item of items) {
+      if (pending.length >= cap) break;
+      const id = item && item.collectionId ? String(item.collectionId) : "";
+      if (!id.startsWith(prefix) || (item.imageUrl && item.imageUrl.length)) continue;
+      pending.push({ item, slug: id.slice(prefix.length) });
+    }
+    let cursor = 0;
+    const worker = async () => {
+      while (cursor < pending.length) {
+        const job = pending[cursor++];
+        if (!job.slug) continue;
+        try {
+          const html = await this._get(route(job.slug));
+          const image = this._firstListingImage(html);
+          if (image) job.item.imageUrl = image;
+        } catch (_) { /* keep the gradient fallback for this one card */ }
+      }
+    };
+    const workers = [];
+    for (let i = 0; i < Math.min(DefaultExtension.COVER_CONCURRENCY, pending.length); i++) {
+      workers.push(worker());
+    }
+    await Promise.all(workers);
+    return items;
+  }
 
   _parseTags(html) {
     const items = [];
@@ -543,7 +654,9 @@ class DefaultExtension extends MProvider {
     const size = DefaultExtension.TAG_PAGE_SIZE;
     const index = Math.max(1, Number(page) || 1) - 1;
     const start = index * size;
-    return { list: all.slice(start, start + size), hasNextPage: start + size < all.length };
+    const slice = all.slice(start, start + size);
+    await this._borrowCovers(slice, "tag_", (slug) => `/tags/${slug}`, size);
+    return { list: slice, hasNextPage: start + size < all.length };
   }
 
   async _profilePage(path, page) {
@@ -753,18 +866,37 @@ class DefaultExtension extends MProvider {
 
     if (id === "categories" || id === "category") {
       const html = await this._get("/");
-      return { list: this._parseCategories(html), hasNextPage: false };
+      const items = this._parseCategories(html);
+      await this._borrowCovers(items, "category_", (slug) => `/c/${slug}`);
+      return { list: items, hasNextPage: false };
     }
 
-    // "Explorer" — the browse entry points of the site (categories first, then
-    // the most used tags) as one discovery rail.
+    // "Explorer" — the site's discovery entry points: categories, then the
+    // most used tags, then the language feeds. Each opens a real listing.
     if (id === "explore" || id === "discover") {
-      const html = await this._get("/");
-      const tags = await this._tagsPage(1);
-      return {
-        list: this._parseCategories(html).concat(tags.list.slice(0, 12)),
-        hasNextPage: false,
-      };
+      const home = await this._get("/");
+      const categories = this._parseCategories(home);
+      const tags = (await this._tagsPage(1)).list.slice(0, 8);
+      const languages = this._parseLanguages(await this._get("/lang")).slice(0, 6);
+      await this._borrowCovers(categories, "category_", (slug) => `/c/${slug}`);
+      await this._borrowCovers(tags, "tag_", (slug) => `/tags/${slug}`);
+      return { list: categories.concat(tags, languages), hasNextPage: false };
+    }
+
+    // "Profils" — the site-wide member directory.
+    if (id === "profiles" || id === "members") return this._profilesDirectory(page);
+
+    // "Langues" — the 38 language feeds, with their flag as the cover.
+    if (id === "languages" || id === "lang") {
+      const items = this._parseLanguages(await this._get("/lang"));
+      return { list: items, hasNextPage: false };
+    }
+
+    // `language_<code>` — one language's video listing.
+    if (id.startsWith("language_")) {
+      const code = id.slice("language_".length);
+      if (!code) return { list: [], hasNextPage: false };
+      return this._videoListing(`/lang/${code}`, page);
     }
 
     // `tag_<slug>` — one tag's video listing, zero-based pages.

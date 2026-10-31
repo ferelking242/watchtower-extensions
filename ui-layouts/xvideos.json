@@ -48,6 +48,28 @@
         "paginated": true
       },
       {
+        "id": "profiles",
+        "component": "creatorRow",
+        "title": "Profils",
+        "accent": "#FF80AB",
+        "icon": "person",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "categories",
+        "component": "landscape",
+        "title": "Catégories",
+        "accent": "#26A69A",
+        "icon": "category",
+        "params": {
+          "layout": "grid",
+          "columns": 2,
+          "rows": 2
+        },
+        "seeAll": true
+      },
+      {
         "id": "tags",
         "component": "grid",
         "title": "Tags",
@@ -61,16 +83,14 @@
         "paginated": true
       },
       {
-        "id": "categories",
-        "component": "landscape",
-        "title": "Catégories",
-        "accent": "#26A69A",
-        "icon": "category",
+        "id": "languages",
+        "component": "grid",
+        "title": "Langues",
+        "accent": "#FFB300",
+        "icon": "translate",
         "columns": 2,
-        "rows": 2,
-        "params": {
-          "layout": "grid"
-        },
+        "rows": 3,
+        "cardStyle": "tag",
         "seeAll": true
       },
       {
