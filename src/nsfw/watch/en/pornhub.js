@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.pornhub.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.4.4",
+  "version": "1.4.5",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/pornhub.js",
@@ -349,12 +349,21 @@ class DefaultExtension extends MProvider {
     if (items.length === 0) {
       extLog('info', `PornHub._parseList: 0 cards url=${this._lastUrl} html_len=${String(html || "").length}`);
       const fallback = this._fallbackList(html, page, kind);
-      if (fallback.list.length === 0 && this._isGatePage(html)) {
-        // Age/region-block page: surface the exact URL as the last token so the
-        // app's inline access panel opens it and the user validates once.
-        throw new Error(
-          `PornHub is behind an age or region verification. Open the page to validate access ${this._lastUrl}`
-        );
+      if (fallback.list.length === 0) {
+        // A card-less page that is neither a wall nor a bot check is a real
+        // (empty) result; the two walls below must be surfaced as errors so the
+        // app opens its inline access panel instead of showing a dead section.
+        // The URL stays the message's last token: that is what the panel opens.
+        if (this._isGatePage(html)) {
+          throw new Error(
+            `PornHub is behind an age or region verification. Open the page to validate access ${this._lastUrl}`
+          );
+        }
+        if (this._isChallengePage(html)) {
+          throw new Error(
+            `PornHub is behind a bot check. Open the page to validate access ${this._lastUrl}`
+          );
+        }
       }
       return fallback;
     }
@@ -405,6 +414,21 @@ class DefaultExtension extends MProvider {
   _isGatePage(html) {
     const source = String(html || "");
     return DefaultExtension.GATE_PATTERN.test(source) && !source.includes("pcVideoListItem");
+  }
+
+  static get CHALLENGE_PATTERN() {
+    // Cloudflare interstitial / block page. Matched only on a card-less page, so
+    // the challenge-platform script Cloudflare injects into healthy pages can
+    // never produce a false hit (that script ships with the video cards too).
+    return /just a moment|checking your browser|verify you are human|performing security verification|cf-challenge-running|cf-chl|enable javascript and cookies|attention required|you have been blocked|error 1020|un instant|v[ée]rification de s[ée]curit[ée]/i;
+  }
+
+  _isChallengePage(html) {
+    const source = String(html || "");
+    return (
+      DefaultExtension.CHALLENGE_PATTERN.test(source) &&
+      !source.includes("pcVideoListItem")
+    );
   }
 
   _meta(doc, property) {
