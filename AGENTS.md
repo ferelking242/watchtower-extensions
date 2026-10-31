@@ -126,6 +126,16 @@ URL émise, à cadence espacée.
   `tools/pin_sources.mjs` à chaque push sur `main` et committe les index
   réécrits (message `chore(cdn): pin sourceCodeUrl to commit`, garde
   anti-boucle incluse). En local : `npm run pin` / `npm run pin:check`.
+- **Piège du pin en retard d'un commit (déjà rencontré sur PornHub 1.4.4) :**
+  quand le commit qui bumpe `"version"` touche aussi `src/`, le job de figage
+  lancé sur ce commit re-pointe `sourceCodeUrl` sur le **commit précédent** —
+  celui qui n'a pas encore le nouveau code. L'index annonce donc la nouvelle
+  version en servant l'ancienne. C'est invisible côté CI (`pin:check` passe :
+  l'URL est bien un SHA), mais l'app compare `version` (index) à `version`
+  (installé) : tant qu'elles sont égales, **aucune mise à jour n'est proposée**,
+  et le correctif n'atteint jamais l'utilisateur. Vérifier après un push que
+  `sourceCodeUrl` du commit courant pointe bien sur ce commit, sinon rebumper la
+  version (l'index et le manifeste) pour forcer une nouvelle comparaison.
 - Purger jsDelivr (`purge-cdn.yml`) reste utile pour **l'index** lui-même, qui
   est lu par l'app depuis `raw.githubusercontent.com` mais peut aussi être
   consommé via jsDelivr. Ne jamais compter sur la purge pour les fichiers
