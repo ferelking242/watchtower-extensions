@@ -15,6 +15,9 @@ const extensionSource = fs.readFileSync(
 let response = { statusCode: 200, body: "" };
 let clientError = null;
 let lastUrl = "";
+// Upper bound a single borrowing section may spend before it must return (the
+// extension's own COVER_BUDGET_MS is 2000; this leaves scheduling headroom).
+const DefaultBudgetCeiling = 4000;
 // Optional per-route bodies. The language/category indexes borrow their covers
 // from a second request, so a single static `response` cannot serve both.
 let routes = null;
@@ -406,6 +409,115 @@ assert.ok(clientOptions.length > 0, "search issued an HTTP request");
 for (const options of clientOptions) {
   assert.equal(options.timeout, 10, "each request carries a 10 s budget");
   assert.equal(options.connectTimeout, 5, "each request carries a 5 s connect budget");
+}
+
+// ── Cover budget: one heavy section must not starve the rest ───────────────
+// The host runtime is single-threaded, so every borrowed cover costs a real
+// round trip *inside* one getCustomList call. Without a ceiling the 38-category
+// index spent ~18 s there and the user's search (same queue) was killed at
+// 40 s. Each borrowing section must stay inside COVER_BUDGET_MS.
+{
+  const slow = { statusCode: 200, body: listingFixture };
+  const slowRoutes = [
+    [/^https?:\/\/[^/]+\/$/, categoryFixture],
+    [/\/lang$/, languageFixture],
+    [/\/tags$/, tagFixture],
+    [/\/c\//, slow],
+    [/\/tags\//, slow],
+    [/\/lang\//, slow],
+  ];
+  let slowCalls = 0;
+  const budgetContext = {
+    MProvider: class {},
+    Document,
+    Client: class {
+      async get(url) {
+        slowCalls++;
+        // 120 ms per borrowed cover: enough that an uncapped 38-item index
+        // would blow the budget, small enough to keep the test quick.
+        await new Promise((r) => setTimeout(r, 120));
+        for (const [pattern, body] of slowRoutes) {
+          if (pattern.test(url)) return { statusCode: 200, body };
+        }
+        return slow;
+      }
+    },
+    SharedPreferences: class {
+      get() { return null; }
+      getString(_k, d) { return d; }
+      setString() {}
+    },
+    extLog: () => {},
+    URL,
+  };
+  vm.runInNewContext(
+    `${extensionSource}\nglobalThis.XVideosForTest = DefaultExtension;`,
+    budgetContext,
+  );
+  const budgetProvider = new budgetContext.XVideosForTest();
+  const started = Date.now();
+  const result = await budgetProvider.getCustomList("categories", 1);
+  const elapsed = Date.now() - started;
+  assert.ok(
+    elapsed < DefaultBudgetCeiling,
+    `categories stayed inside its cover budget (took ${elapsed} ms)`,
+  );
+  assert.ok(result.list.length > 0, "categories still returned its cards");
+}
+
+// ── Cover cache: a borrowed cover is paid once ─────────────────────────────
+// Covers are stored through SharedPreferences so the expensive lookups are not
+// repeated on every home load.
+{
+  const store = new Map();
+  let coverCalls = 0;
+  const cacheContext = {
+    MProvider: class {},
+    Document,
+    Client: class {
+      async get(url) {
+        if (/\/c\//.test(url)) {
+          coverCalls++;
+          return { statusCode: 200, body: listingFixture };
+        }
+        if (/^https?:\/\/[^/]+\/$/.test(url)) {
+          return { statusCode: 200, body: categoryFixture };
+        }
+        return { statusCode: 200, body: "" };
+      }
+    },
+    SharedPreferences: class {
+      get(k) { return store.has(k) ? store.get(k) : null; }
+      getString(k, d) { return store.has(k) ? store.get(k) : d; }
+      setString(k, v) { store.set(k, String(v)); }
+    },
+    extLog: () => {},
+    URL,
+  };
+  vm.runInNewContext(
+    `${extensionSource}\nglobalThis.XVideosForTest = DefaultExtension;`,
+    cacheContext,
+  );
+  const cacheProvider = new cacheContext.XVideosForTest();
+  const first = await cacheProvider.getCustomList("categories", 1);
+  assert.ok(first.list.every((c) => c.imageUrl), "cold load filled the covers");
+  assert.ok(coverCalls > 0, "cold load borrowed covers over the network");
+
+  const callsAfterCold = coverCalls;
+  // A fresh instance, same persisted store: the covers must come from the cache.
+  const warmContext = { ...cacheContext };
+  vm.runInNewContext(
+    `${extensionSource}\nglobalThis.XVideosForTest = DefaultExtension;`,
+    warmContext,
+  );
+  const warmProvider = new warmContext.XVideosForTest();
+  const second = await warmProvider.getCustomList("categories", 1);
+  assert.equal(
+    coverCalls,
+    callsAfterCold,
+    "warm load issued no cover request (served from cache)",
+  );
+  assert.ok(second.list.every((c) => c.imageUrl), "warm load still has covers");
 }
 
 console.log("test-xvideos: all assertions passed");

@@ -491,11 +491,36 @@ Les index « Langues » (`/lang`), « Catégories » (`/c/`) et « Tags » n'aff
 **aucune image** : les drapeaux de `/lang` sont des sprites CSS
 (`flag-small flag-fr`), les tags n'ont qu'un nom et un compteur. La cover est
 donc *empruntée* à la première vignette de la liste de l'entrée
-(`_borrowCovers`, pool de `COVER_CONCURRENCY` requêtes). Deux pièges corrigés en
-1.3.2 : la section `languages` n'appelait jamais `_borrowCovers` (0 cover sur 39
-cartes) et `COVER_LIMIT` plafonnait à 12, ce qui laissait 26 catégories sur 38
-sans artwork. Le plafond vaut désormais 40, couvrant les index de quelques
-dizaines d'entrées en ≤2,5 s (timeout JS : 15 s).
+(`_borrowCovers`). Deux pièges corrigés en 1.3.2 : la section `languages`
+n'appelait jamais `_borrowCovers` (0 cover sur 39 cartes) et `COVER_LIMIT`
+plafonnait à 12, ce qui laissait 26 catégories sur 38 sans artwork.
+
+### Emprunter une cover coûte cher : budget obligatoire
+
+Le runtime de l'app est **mono-thread**. Un `await` dans une extension bloque
+tout le moteur, donc le pool `COVER_CONCURRENCY` de `_borrowCovers` s'exécute
+**en série** sur l'appareil : chaque cover empruntée coûte un vrai aller-retour
+(~0,45 s mesuré). L'écran d'accueil demande ses dix sections d'un coup et elles
+partagent la même file ; l'index des 38 catégories occupait donc le runtime
+~18 s et les langues davantage, ce qui **affamait `search`** (même priorité 1)
+jusqu'au budget d'exécution de 40 s — d'où `search TIMEOUT after 40026ms` alors
+que l'extension répond en 0,6 s en isolation.
+
+Corrigé en 1.3.4 :
+- `_borrowCovers` s'arrête à `COVER_BUDGET_MS` (2 s) ; les cartes non remplies
+  gardent le dégradé et sont complétées au chargement suivant ;
+- la section composite `explore` partage **un seul** budget pour ses trois
+  emprunts, et parse `/tags` directement au lieu d'appeler `_tagsPage` (qui
+  empruntait déjà, doublant le coût) ;
+- les covers empruntées sont mises en cache (`_coverCacheGet/Put`) : mémoire de
+  session toujours, plus `SharedPreferences` quand l'isolate a un Isar. Attention
+  : dans le **worker isolate** de l'app, `_db == null`, donc `setString` est un
+  no-op et seul le cache mémoire joue — suffisant puisque l'instance
+  d'extension est réutilisée par source.
+
+Résultat mesuré : premier chargement complet ~6,7 s (réseau rapide) / ~26 s
+(réseau lent où l'hôte canonique pend), `search` réussit dans tous les cas
+(12,4 s pire cas concurrent, 0,2 s au repos) au lieu d'un timeout à 40 s.
 
 Toute extension dont le `uiLayout` change doit aussi porter un
 `uiLayoutVersion` dans `index/watch.json` : sans lui, le rafraîchissement du

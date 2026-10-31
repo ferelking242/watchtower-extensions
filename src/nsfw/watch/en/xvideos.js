@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xvideos.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.3",
+  "version": "1.3.4",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xvideos.js",
@@ -530,10 +530,64 @@ class DefaultExtension extends MProvider {
 
   // The tag index carries no artwork at all — `/tags` lists `<b>name</b>` plus a
   // count. The cover is therefore borrowed from the tag's own listing: its
-  // first video thumbnail. `_borrowCovers` runs the lookups through a small
-  // pool so a page of 24 tags costs a couple of seconds, not 24 serial round
-  // trips, and never more than [COVER_CONCURRENCY] sockets at once.
-  static get COVER_CONCURRENCY() { return 8; }
+  // first video thumbnail.
+  //
+  // IMPORTANT — the host runtime is single-threaded. Every `_get` await blocks
+  // the whole engine, so the pool below runs *serially* in the app whatever its
+  // size: a borrowed cover costs a real ~0.45 s round trip, and the 38-category
+  // index took ~18 s. The home screen requests all of its sections at once and
+  // `search` shares the same queue, so that cost starved the user's search
+  // until the caller's 40 s budget killed it. A pool larger than the number of
+  // sockets we want on a slow network buys nothing; 4 is a compromise for hosts
+  // that *can* overlap.
+  static get COVER_CONCURRENCY() { return 4; }
+
+  // Wall-clock ceiling for borrowing covers inside a single `getCustomList`
+  // call. It is what keeps one heavy section (categories, languages, explore)
+  // from monopolising the runtime and starving every other call behind it.
+  // Cards that miss the budget keep the gradient fallback and are filled on a
+  // later visit, since results are cached below.
+  static get COVER_BUDGET_MS() { return 2000; }
+
+  // Borrowed covers are remembered (session map + SharedPreferences) so the
+  // expensive part is paid once. A warm home load issues no cover request at
+  // all; a cold one fills a few more cards on every visit until complete.
+  static get COVER_CACHE_KEY() { return "xvideos_cover_cache_v1"; }
+  static get COVER_CACHE_MAX() { return 800; }
+
+  _coverCacheLoad() {
+    if (this._covers) return this._covers;
+    let stored = null;
+    try {
+      stored = new SharedPreferences().get(DefaultExtension.COVER_CACHE_KEY);
+    } catch (_) { /* preferences unavailable: keep the cache in memory only */ }
+    let parsed = null;
+    try { parsed = stored ? JSON.parse(stored) : null; } catch (_) { parsed = null; }
+    this._covers = parsed && typeof parsed === "object" ? parsed : {};
+    return this._covers;
+  }
+
+  _coverCacheGet(key) {
+    const hit = this._coverCacheLoad()[key];
+    return typeof hit === "string" && hit ? hit : "";
+  }
+
+  _coverCachePut(key, image) {
+    if (!key || !image) return;
+    const cache = this._coverCacheLoad();
+    if (cache[key] === image) return;
+    cache[key] = image;
+    try {
+      const keys = Object.keys(cache);
+      if (keys.length > DefaultExtension.COVER_CACHE_MAX) {
+        for (const stale of keys.slice(0, keys.length - DefaultExtension.COVER_CACHE_MAX)) {
+          delete cache[stale];
+        }
+      }
+      new SharedPreferences().setString(
+        DefaultExtension.COVER_CACHE_KEY, JSON.stringify(cache));
+    } catch (_) { /* a cache that cannot persist is still useful in memory */ }
+  }
 
   // First video thumbnail of a listing page, used as the tag's cover.
   _firstListingImage(html) {
@@ -548,24 +602,43 @@ class DefaultExtension extends MProvider {
   // (`tag_<slug>` → `/tags/<slug>`, `category_<slug>` → `/c/<slug>`). Items
   // that already carry artwork, or whose lookup fails, are left untouched so a
   // single dead slug cannot blank the whole grid.
-  async _borrowCovers(items, prefix, route, limit) {
+  //
+  // A cached cover is applied immediately and costs no request. The remaining
+  // lookups share a wall-clock budget (`COVER_BUDGET_MS`): the host runtime is
+  // single-threaded, so without a ceiling a full category index spent ~18 s
+  // inside one `getCustomList` and starved every other call (including the
+  // user's search) until it was killed. Unfilled cards are picked up on the
+  // next load from the cache.
+  async _borrowCovers(items, prefix, route, limit, deadline) {
     const cap = Number.isFinite(limit) && limit > 0 ? limit : DefaultExtension.COVER_LIMIT;
     const pending = [];
     for (const item of items) {
       if (pending.length >= cap) break;
       const id = item && item.collectionId ? String(item.collectionId) : "";
       if (!id.startsWith(prefix) || (item.imageUrl && item.imageUrl.length)) continue;
-      pending.push({ item, slug: id.slice(prefix.length) });
+      const cached = this._coverCacheGet(id);
+      if (cached) {
+        item.imageUrl = cached;
+        continue;
+      }
+      pending.push({ item, key: id, slug: id.slice(prefix.length) });
     }
+    if (!pending.length) return items;
+
+    const until = Number.isFinite(deadline) ? deadline : Date.now() + DefaultExtension.COVER_BUDGET_MS;
     let cursor = 0;
     const worker = async () => {
       while (cursor < pending.length) {
+        if (Date.now() >= until) return;
         const job = pending[cursor++];
         if (!job.slug) continue;
         try {
           const html = await this._get(route(job.slug));
           const image = this._firstListingImage(html);
-          if (image) job.item.imageUrl = image;
+          if (image) {
+            job.item.imageUrl = image;
+            this._coverCachePut(job.key, image);
+          }
         } catch (_) { /* keep the gradient fallback for this one card */ }
       }
     };
@@ -982,11 +1055,19 @@ class DefaultExtension extends MProvider {
     if (id === "explore" || id === "discover") {
       const home = await this._get("/");
       const categories = this._parseCategories(home);
-      const tags = (await this._tagsPage(1)).list.slice(0, 8);
+      // Parse the tag index directly instead of going through `_tagsPage`:
+      // that helper borrows covers for the whole page, and "explore" borrows
+      // again right below — the same 12 covers would be fetched twice, doubling
+      // the cost of the heaviest section.
+      const tags = this._parseTags(await this._get("/tags")).slice(0, 8);
       const languages = this._parseLanguages(await this._get("/lang")).slice(0, 6);
-      await this._borrowCovers(categories, "category_", (slug) => `/c/${slug}`);
-      await this._borrowCovers(tags, "tag_", (slug) => `/tags/${slug}`);
-      await this._borrowCovers(languages, "language_", (code) => `/lang/${code}`);
+      // One shared budget for the whole composite section: borrowing three
+      // times the per-call ceiling would let "explore" alone occupy the
+      // runtime for ~6 s and starve the calls queued behind it.
+      const deadline = Date.now() + DefaultExtension.COVER_BUDGET_MS;
+      await this._borrowCovers(categories, "category_", (slug) => `/c/${slug}`, undefined, deadline);
+      await this._borrowCovers(tags, "tag_", (slug) => `/tags/${slug}`, undefined, deadline);
+      await this._borrowCovers(languages, "language_", (code) => `/lang/${code}`, undefined, deadline);
       return { list: categories.concat(tags, languages), hasNextPage: false };
     }
 
