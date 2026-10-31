@@ -21,10 +21,13 @@ const extensionSource = fs.readFileSync(
 );
 
 let response = { statusCode: 200, body: "" };
+// Answer for the master playlist, when the case needs variant expansion.
+let masterResponse = null;
 let requestedUrl = "";
 class TestClient {
   async get(url) {
     requestedUrl = url;
+    if (masterResponse && /playlist\.m3u8/i.test(url)) return masterResponse;
     return response;
   }
 }
@@ -44,7 +47,10 @@ vm.runInNewContext(
 const provider = new context.MissAvForTest();
 
 // Arrays come from the vm realm, so compare their contents, not prototypes.
-assert.equal(provider.getSourcePreferences().length, 0);
+const preferences = provider.getSourcePreferences();
+assert.equal(preferences.length, 1, "one preference: the site language");
+assert.equal(preferences[0].key, "language");
+assert.equal(preferences[0].listPreference.entryValues.length, 20);
 assert.equal(provider.getFilterList().length, 0);
 
 // ── Listing cards ───────────────────────────────────────────────────────────
@@ -194,30 +200,104 @@ assert.equal(
 );
 
 // ── Playback: the P.A.C.K.E.R payload carried by every detail page ──────────
+// The packed block resolves to the adaptive master; expanding it yields ONE
+// entry per real rendition, highest first, never a fake "Auto" line.
 const VIDEO_UUID = "5a62dec7-80fc-42da-8157-45f256fd3038";
 const packedPlayer = `<script>
 eval(function(p,a,c,k,e,d){e=function(c){return c.toString(36)};if(!''.replace(/^/,String)){while(c--){d[c.toString(a)]=k[c]||c.toString(a)}k=[function(e){return d[e]}];e=function(){return'\\\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\\\b'+e(c)+'\\\\b','g'),k[c])}}return p}('e=\\'8://7.6/5-4-3-2-1/d.0\\';c=\\'8://7.6/5-4-3-2-1/a/9.0\\';b=\\'8://7.6/5-4-3-2-1/a/9.0\\';',15,15,'m3u8|45f256fd3038|8157|42da|80fc|5a62dec7|com|surrit|https|video|720p|source1280|source842|playlist|source'.split('|'),0,{}))
 </script>
 <img src="https://surrit.com/${VIDEO_UUID}/seek/_0.jpg">`;
 
+// A real master advertises every rendition the CDN offers.
+const masterPlaylist = `#EXTM3U
+#EXT-X-STREAM-INF:BANDWIDTH=6000000,RESOLUTION=1920x1080
+1080p/video.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=2800000,RESOLUTION=1280x720
+720p/video.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=900000,RESOLUTION=854x480
+480p/video.m3u8`;
+
+masterResponse = { statusCode: 200, body: masterPlaylist };
 response = { statusCode: 200, body: packedPlayer };
 const videos = await provider.getVideoList("https://missav.ws/en/fc2-ppv-4997309");
-assert.equal(videos.length, 1, "one adaptive entry, not the raw packed blobs");
-assert.equal(videos[0].url, `https://surrit.com/${VIDEO_UUID}/playlist.m3u8`);
-assert.equal(videos[0].quality, "Auto");
+assert.equal(videos.length, 3, "one entry per advertised rendition");
+assert.equal(
+  videos.map((v) => v.quality).join(","),
+  "1080p,720p,480p",
+  "highest resolution first",
+);
+assert.equal(
+  videos[0].url,
+  `https://surrit.com/${VIDEO_UUID}/1080p/video.m3u8`,
+  "relative variant URIs resolve against the master",
+);
 assert.equal(videos[0].originalUrl, videos[0].url);
+
+// The download headers must look like a cross-site media request: surrit
+// answers 403 to a download that omits Origin / sends a navigation Sec-Fetch.
 assert.ok(videos[0].headers["User-Agent"].includes("Chrome"));
 assert.equal(videos[0].headers.Referer, "https://missav.ws/");
+assert.equal(videos[0].headers.Origin, "https://missav.ws");
+assert.equal(videos[0].headers["Sec-Fetch-Dest"], "empty");
+assert.equal(videos[0].headers["Sec-Fetch-Mode"], "cors");
+assert.equal(videos[0].headers["Sec-Fetch-Site"], "cross-site");
+assert.equal(videos[0].headers.Accept, "*/*");
+
+// A master whose renditions are absolute URLs (the surrit layout) is expanded
+// the same way, and no adaptive "Auto" entry is ever emitted.
+masterResponse = {
+  statusCode: 200,
+  body: `#EXTM3U
+#EXT-X-STREAM-INF:BANDWIDTH=5000000,RESOLUTION=1920x1080
+https://surrit.com/${VIDEO_UUID}/1080p/video.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=854x480
+https://surrit.com/${VIDEO_UUID}/480p/video.m3u8`,
+};
+const absolute = await provider.getVideoList("https://missav.ws/en/fc2-ppv-4997309");
+assert.equal(absolute.map((v) => v.quality).join(","), "1080p,480p");
+assert.ok(
+  absolute.every((v) => v.quality !== "Auto"),
+  "never a placeholder quality",
+);
+
+// A CDN error page is not a playlist: when the master is the only source
+// (a page exposing just the UUID), an error body must yield no rendition at
+// all rather than being parsed into a bogus variant.
+response = {
+  statusCode: 200,
+  body: `<img src="https://surrit.com/${VIDEO_UUID}/seek/_0.jpg">`,
+};
+masterResponse = {
+  statusCode: 403,
+  body: "<html><head><title>Attention Required! | Cloudflare</title></head></html>",
+};
+assert.equal(
+  (await provider.getVideoList("https://missav.ws/en/fc2-ppv-4997309")).length,
+  0,
+  "an error body yields no fake rendition",
+);
+masterResponse = {
+  statusCode: 200,
+  body: "<html><head><title>Attention Required! | Cloudflare</title></head></html>",
+};
+assert.equal(
+  (await provider.getVideoList("https://missav.ws/en/fc2-ppv-4997309")).length,
+  0,
+  "an HTML error served with 200 is not parsed as a playlist",
+);
+masterResponse = null;
 
 // The UUID fallback covers pages whose packed block changed shape.
 response = {
   statusCode: 200,
   body: `<img src="https://surrit.com/${VIDEO_UUID}/seek/_0.jpg">`,
 };
+masterResponse = { statusCode: 200, body: masterPlaylist };
 assert.equal(
   (await provider.getVideoList("https://missav.ws/en/fc2-ppv-4997309"))[0].url,
-  `https://surrit.com/${VIDEO_UUID}/playlist.m3u8`,
+  `https://surrit.com/${VIDEO_UUID}/1080p/video.m3u8`,
 );
+masterResponse = null;
 
 // Variant-only pages are labelled from their own path, never invented.
 response = {
@@ -229,10 +309,26 @@ assert.equal(variants.length, 1);
 assert.equal(variants[0].quality, "720p");
 assert.equal(variants[0].url, `https://surrit.com/${VIDEO_UUID}/720p/video.m3u8`);
 
-response = { statusCode: 200, body: `<video><source src="https://cdn.example/v.mp4"></video>` };
+// An MP4 fallback is only labelled when its own URL states the resolution —
+// a bare `.mp4` with no resolution is skipped rather than given a fake label.
+response = {
+  statusCode: 200,
+  body: `<video><source src="https://cdn.example/v-1080p.mp4"></video>`,
+};
 const mp4 = await provider.getVideoList("https://missav.ws/en/aarm-327");
-assert.equal(mp4[0].url, "https://cdn.example/v.mp4");
-assert.equal(mp4[0].quality, "MP4");
+assert.equal(mp4.length, 1);
+assert.equal(mp4[0].url, "https://cdn.example/v-1080p.mp4");
+assert.equal(mp4[0].quality, "1080p");
+
+response = {
+  statusCode: 200,
+  body: `<video><source src="https://cdn.example/v.mp4"></video>`,
+};
+assert.equal(
+  (await provider.getVideoList("https://missav.ws/en/aarm-327")).length,
+  0,
+  "an unlabelled MP4 is not exposed with an invented quality",
+);
 
 response = { statusCode: 200, body: "<html><body>no player</body></html>" };
 assert.equal((await provider.getVideoList("https://missav.ws/en/aarm-327")).length, 0);

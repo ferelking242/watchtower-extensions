@@ -6,12 +6,12 @@ const watchtowerSources = [{
   "iconUrl": "https://missav.ws/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.0",
+  "version": "1.3.1",
   "login": true,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/missav.js",
   "videoQualities": ["1080p", "720p", "480p", "360p"],
-  "notes": "JAV streaming — 13 home sections (random, actresses, ranking), 20 site languages, real HLS qualities and Cloudflare clearance reuse",
+  "notes": "JAV streaming — 13 home sections (random, actresses, ranking), 20 site languages, real HLS qualities, Cloudflare clearance reuse and Origin/Sec-Fetch headers so downloads stop 403-ing",
   "isNsfw": true
 }];
 
@@ -72,14 +72,26 @@ const SECTIONS = {
 };
 
 class DefaultExtension extends MProvider {
-  // Used for media/download requests (surrit, covers): a browser UA is expected
-  // there and no Cloudflare clearance is involved.
+  // Headers attached to every media entry returned by getVideoList. They reach
+  // both the player and the downloader (M3u8Downloader merges them over its own
+  // defaults), so they must describe a cross-site media request and not a page
+  // navigation:
+  //  • the surrit CDN rejects a request whose `Origin` is missing or wrong and
+  //    whose `Sec-Fetch-Dest` is `document` instead of `empty` — playback (a
+  //    native player request) was tolerated but the downloader got a 403;
+  //  • the UA is a real desktop Chrome because the CDN fingerprints it, while
+  //    the page itself must keep the WebView UA that solved Cloudflare (see
+  //    _siteHeaders). The two never mix: this map is only for surrit/segments.
   getHeaders(url) {
     return {
       "User-Agent": USER_AGENT,
       "Referer": BASE_URL + "/",
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-      "Accept-Language": "en-US,en;q=0.9,ja;q=0.8"
+      "Origin": BASE_URL,
+      "Accept": "*/*",
+      "Accept-Language": "en-US,en;q=0.9,ja;q=0.8",
+      "Sec-Fetch-Dest": "empty",
+      "Sec-Fetch-Mode": "cors",
+      "Sec-Fetch-Site": "cross-site"
     };
   }
 
