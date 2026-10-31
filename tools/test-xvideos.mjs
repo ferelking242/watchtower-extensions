@@ -241,6 +241,32 @@ assert.equal(detail.description, "11 min");
 assert.equal(JSON.stringify(detail.genre.map((g) => g.name)), JSON.stringify(["latina", "busty", "colombia"]));
 assert.equal(detail.episodes.length, 1);
 
+// ── Recommendations: the embedded `video_related` array drives "Pour vous" ─
+const relatedFixture = `
+  <meta property="og:title" content="Some video" />
+  <script>var video_related = [
+    {"t":"Related One","u":"/video.aaa111/related_one","i":"https://thumb.example/r1/xv_30_t.jpg","d":"11 min","n":"2,6M","r":"100%"},
+    {"t":"Related Two","u":"/video.bbb222/related_two","i":"https://thumb.example/r2/xv_30_t.jpg"},
+    {"t":"Related One","u":"/video.aaa111/related_one","i":"https://thumb.example/r1/xv_30_t.jpg"}
+  ];</script>`;
+response = { statusCode: 200, body: relatedFixture };
+const related = await provider.getRecommendations(
+  "https://www.xvideos.com/video.oumiola3a1f/some_video",
+);
+// The duplicate entry is dropped, so the two distinct siblings remain.
+assert.equal(related.length, 2);
+assert.equal(related[0].name, "Related One");
+assert.equal(related[0].link, "https://www.xvideos.com/video.aaa111/related_one");
+assert.equal(related[0].imageUrl, "https://thumb.example/r1/xv_30_t.jpg");
+assert.match(related[0].description, /11 min/);
+
+// With no `video_related` literal, the page's first tag drives the fallback.
+response = { statusCode: 200, body: detailFixture };
+const fallbackRelated = await provider.getRecommendations(
+  "https://www.xvideos.com/video.oumiola3a1f/inka_sex",
+);
+assert.ok(Array.isArray(fallbackRelated));
+
 // ── Playback: RPC sources deduped, identical MP4 labelled once ─────────────
 const playerPage = `<script>
   setEncodedIdVideo('oumiola3a1f');

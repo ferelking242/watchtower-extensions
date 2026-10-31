@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xvideos.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.0",
+  "version": "1.3.0",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xvideos.js",
@@ -833,6 +833,71 @@ class DefaultExtension extends MProvider {
   getFilterList() { return []; }
 
   getSourcePreferences() { return []; }
+
+  // ── Recommendations ("Pour vous" tab on the detail screen) ───────────────
+  // The detail page embeds `var video_related = [ ... ]` (a JSON array of up
+  // to ~40 sibling videos) alongside the player config. The extension did not
+  // implement this hook, so the tab stayed permanently empty. The page also
+  // carries the video's own keyword tags; when the related literal is missing
+  // (signed-out or partially rendered responses) the first tag drives a real
+  // listing instead of an empty tab.
+  _parseRelatedJson(html) {
+    const marker = /var\s+video_related\s*=\s*(\[)/i.exec(String(html || ""));
+    if (!marker) return [];
+    const start = html.indexOf("[", marker.index);
+    if (start < 0) return [];
+    let depth = 0;
+    for (let i = start; i < html.length; i++) {
+      const ch = html[i];
+      if (ch === "[") depth++;
+      else if (ch === "]") {
+        depth--;
+        if (depth === 0) {
+          try { return JSON.parse(html.slice(start, i + 1)); } catch (_) { return []; }
+        }
+      }
+    }
+    return [];
+  }
+
+  async getRecommendations(url) {
+    const target = String(url || "").split("#")[0];
+    if (!target) return [];
+    const body = await this._get(target);
+
+    const items = [];
+    const seen = {};
+    for (const video of this._parseRelatedJson(body)) {
+      const link = this._absolute(video && video.u ? video.u : "");
+      if (!link || seen[link]) continue;
+      seen[link] = true;
+      const name = this._decodeEntities(String(video.t || video.tf || "").trim());
+      if (!name) continue;
+      items.push({
+        name,
+        imageUrl: this._absolute(video.i || video.il || video.if || video.ip || ""),
+        previewUrl: this._absolute(video.ipu || ""),
+        link,
+        description: [video.d, video.n, video.r].filter(Boolean).join(" • "),
+      });
+    }
+    if (items.length) return items.slice(0, 24);
+
+    // Fallback: the detail page's own tags. The first tag is the closest
+    // match to the video's subject, so its listing is a usable "related" rail.
+    const tagJson = /"video_tags":\s*\[([^\]]*)\]/i.exec(body);
+    if (!tagJson) return [];
+    const tag = /"([^"]+)"/.exec(tagJson[1]);
+    if (!tag) return [];
+    const slug = tag[1].trim().toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+    if (!slug) return [];
+    try {
+      const listing = await this._videoListing(`/tags/${slug}`, 1);
+      return (listing.list || []).slice(0, 24);
+    } catch (_) {
+      return [];
+    }
+  }
 
   // ── Custom lists (home layout + directory pages) ─────────────────────────
   async getCustomList(listId, page) {
