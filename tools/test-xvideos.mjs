@@ -15,11 +15,19 @@ const extensionSource = fs.readFileSync(
 let response = { statusCode: 200, body: "" };
 let clientError = null;
 let lastUrl = "";
+// Optional per-route bodies. The language/category indexes borrow their covers
+// from a second request, so a single static `response` cannot serve both.
+let routes = null;
 const logs = [];
 class TestClient {
   async get(url) {
     lastUrl = url;
     if (clientError) throw clientError;
+    if (routes) {
+      for (const [pattern, body] of routes) {
+        if (pattern.test(url)) return { statusCode: 200, body };
+      }
+    }
     return response;
   }
 }
@@ -190,10 +198,23 @@ assert.equal(profilesList.list.length, 2);
 assert.match(lastUrl, /\/profileslist$/);
 
 response = { statusCode: 200, body: languageFixture };
+// The language feeds borrow their cover from `/lang/<code>`, which is a normal
+// video grid; serve the listing fixture for those and the index otherwise.
+routes = [[/\/lang\/[a-z]+$/, listingFixture]];
 const languagesList = await provider.getCustomList("languages", 1);
+routes = null;
 assert.equal(languagesList.list.length, 2);
 assert.equal(languagesList.list[0].collectionId, "language_francais");
-assert.match(lastUrl, /\/lang$/);
+// The `/lang` index carries no artwork, so every card borrows the first
+// thumbnail of its own listing instead of rendering a bare gradient tile.
+assert.equal(
+  languagesList.list[0].imageUrl,
+  "https://thumb.example/e1/0/xv_15_t.jpg",
+);
+assert.equal(
+  languagesList.list[1].imageUrl,
+  "https://thumb.example/e1/0/xv_15_t.jpg",
+);
 
 // `language_<code>` is a plain video listing, exactly like a category.
 response = { statusCode: 200, body: listingFixture };

@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xvideos.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.1",
+  "version": "1.3.2",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xvideos.js",
@@ -482,17 +482,19 @@ class DefaultExtension extends MProvider {
   // cover (see `_borrowCovers`).
   static get TAG_PAGE_SIZE() { return 12; }
 
-  // How many cards get a borrowed cover per list. Tags are capped (the index
-  // holds thousands) while a directory of a few dozen entries is covered in
-  // full.
-  static get COVER_LIMIT() { return 12; }
+  // How many cards get a borrowed cover per list. The tag index holds
+  // thousands of entries so it stays capped, but the category, language and
+  // studio indexes are only a few dozen each and are covered in full — capping
+  // them at 12 left two thirds of the "Catégories" grid and every single
+  // "Langues" card without artwork.
+  static get COVER_LIMIT() { return 40; }
 
   // The tag index carries no artwork at all — `/tags` lists `<b>name</b>` plus a
   // count. The cover is therefore borrowed from the tag's own listing: its
   // first video thumbnail. `_borrowCovers` runs the lookups through a small
   // pool so a page of 24 tags costs a couple of seconds, not 24 serial round
   // trips, and never more than [COVER_CONCURRENCY] sockets at once.
-  static get COVER_CONCURRENCY() { return 6; }
+  static get COVER_CONCURRENCY() { return 8; }
 
   // First video thumbnail of a listing page, used as the tag's cover.
   _firstListingImage(html) {
@@ -945,15 +947,21 @@ class DefaultExtension extends MProvider {
       const languages = this._parseLanguages(await this._get("/lang")).slice(0, 6);
       await this._borrowCovers(categories, "category_", (slug) => `/c/${slug}`);
       await this._borrowCovers(tags, "tag_", (slug) => `/tags/${slug}`);
+      await this._borrowCovers(languages, "language_", (code) => `/lang/${code}`);
       return { list: categories.concat(tags, languages), hasNextPage: false };
     }
 
     // "Profils" — the site-wide member directory.
     if (id === "profiles" || id === "members") return this._profilesDirectory(page);
 
-    // "Langues" — the 38 language feeds, with their flag as the cover.
+    // "Langues" — the 39 language feeds. The `/lang` index draws its flags with
+    // CSS sprite classes (`flag-small flag-fr`), not `<img>`, so there is no
+    // artwork to read; the cover is borrowed from the language's own listing
+    // like a tag or a category. Without this every language card rendered as a
+    // bare gradient tile.
     if (id === "languages" || id === "lang") {
       const items = this._parseLanguages(await this._get("/lang"));
+      await this._borrowCovers(items, "language_", (code) => `/lang/${code}`);
       return { list: items, hasNextPage: false };
     }
 
