@@ -501,3 +501,28 @@ Toute extension dont le `uiLayout` change doit aussi porter un
 `uiLayoutVersion` dans `index/watch.json` : sans lui, le rafraîchissement du
 layout ne se déclenche jamais chez une installation existante. XVideos en était
 dépourvu (seule du catalogue).
+
+### Budget réseau : ne jamais se fier au timeout par défaut du client
+
+`new Client()` sans options hérite du timeout HTTP **par défaut de l'app (60 s)**,
+alors que le budget d'exécution d'un appel d'extension est de **40 s**
+(`isolate_service.dart`). Comme `_get` essaie plusieurs transports à la suite
+(canonique → miroirs → proxy), un seul hôte injoignable consommait la totalité
+du budget avant que le premier miroir soit tenté : la recherche mourait en
+`TIMEOUT after 40014ms` puis l'UI affichait 0 résultat. Sur certains opérateurs
+l'hôte canonique pend, donc le bug ne se voyait pas en test depuis une machine
+qui l'atteint.
+
+Règles retenues :
+- chaque requête porte un budget explicite (`{timeout: 10, connectTimeout: 5}`),
+  le client l'honore (`m_client.dart` → `rhttp.ClientSettings.timeout`) ;
+- `_get` borne la cascade entière (`TRANSPORT_DEADLINE_MS = 24000`) ;
+- l'hôte qui a répondu est mémorisé et remis en tête : premier appel ~10 s,
+  suivants ~0,2 s.
+
+Corollaire sur `_isStubBody` : un interstitiel Cloudflare (« Just a moment… »,
+« Attention Required », `cf-chl`) pèse quelques Ko et **passe** l'ancien test
+« page < 4 Ko sans markup ». Il faut le classer par libellé, quelle que soit sa
+taille, sinon la page est acceptée comme réelle et renvoie 0 carte. La garde
+`!/id=["']video[-_]|thumb-block|mozaique/` évite de rejeter une vraie grille qui
+ne fait que référencer le script `challenge-platform`.
