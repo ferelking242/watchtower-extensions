@@ -479,3 +479,25 @@ Côté lecture, l'endpoint `/html5player/getvideo/<eid>/<cdn>` renvoie souvent
 `mp4_high` et `mp4_low` **identiques** (`mp4_sd.mp4`) : on déduplique par URL et
 on nomme la qualité d'après le fichier plutôt que de proposer deux fois la même
 source.
+
+L'onglet « Pour vous » de la fiche passe par `getRecommendations(url)`, qui
+n'était **pas implémenté** (l'onglet restait vide, `→ 0 item` dans les logs).
+La page détail embarque `var video_related = [ ... ]` (~40 vidéos sœurs) :
+on l'extrait avec un scan d'accolades équilibrées (`_parseRelatedJson`), on
+déduplique par `u` et on renvoie 24 items (`t`/`u`/`i`/`d`/`n`/`r`). Repli sur
+le premier `video_tags` → `/tags/<slug>` quand le littéral est absent.
+
+Les index « Langues » (`/lang`), « Catégories » (`/c/`) et « Tags » n'affichent
+**aucune image** : les drapeaux de `/lang` sont des sprites CSS
+(`flag-small flag-fr`), les tags n'ont qu'un nom et un compteur. La cover est
+donc *empruntée* à la première vignette de la liste de l'entrée
+(`_borrowCovers`, pool de `COVER_CONCURRENCY` requêtes). Deux pièges corrigés en
+1.3.2 : la section `languages` n'appelait jamais `_borrowCovers` (0 cover sur 39
+cartes) et `COVER_LIMIT` plafonnait à 12, ce qui laissait 26 catégories sur 38
+sans artwork. Le plafond vaut désormais 40, couvrant les index de quelques
+dizaines d'entrées en ≤2,5 s (timeout JS : 15 s).
+
+Toute extension dont le `uiLayout` change doit aussi porter un
+`uiLayoutVersion` dans `index/watch.json` : sans lui, le rafraîchissement du
+layout ne se déclenche jamais chez une installation existante. XVideos en était
+dépourvu (seule du catalogue).
