@@ -6705,6 +6705,7 @@
     "version": "1.3.0",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@bebab1d7eb12dfb525af9a1ae714d8a6242c0610/src/nsfw/watch/en/xvideos.js",
     "uiLayout": "ui-layouts/xvideos.json",
+    "uiLayoutVersion": "1.3.0",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
