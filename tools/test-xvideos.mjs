@@ -345,4 +345,67 @@ vm.runInNewContext(
 const failingProvider = new failingContext.XVideosForTest();
 await assert.rejects(() => failingProvider.getCustomList("pornstars", 1), /HTTP 404/);
 
+// ── Blocked-page detection ─────────────────────────────────────────────────
+// A Cloudflare interstitial is a few KB and carries no listing markup, so the
+// old "small page that mentions xvideos" heuristic let it through and every
+// search came back with zero cards. It must be classified as a stub at any
+// size, while a healthy page that merely links the Bot Fight Mode script (or
+// embeds a Turnstile widget) must NOT be.
+const stubCases = [
+  ["tiny please-visit stub",
+    "<html><body>Please visit https://www.xvideos.com</body></html>", true],
+  ["Cloudflare 'Just a moment' (large)",
+    "<!doctype html><html><head><title>Just a moment...</title></head><body>"
+    + "checking your browser<div id='cf-chl'></div>"
+    + "<div>x</div>".repeat(600) + "</body></html>", true],
+  ["Cloudflare block page (large)",
+    "<html><head><title>Attention Required! | Cloudflare</title></head><body>"
+    + "You have been blocked" + "<p>y</p>".repeat(400) + "</body></html>", true],
+  ["healthy page with challenge-platform script",
+    "<html><script src='/cdn-cgi/challenge-platform/x.js'></script>"
+    + "<div id='video-abc' class='thumb-block'><img src='x.jpg'></div></html>", false],
+  ["real search grid",
+    "<html><div id='video-thumb-1' class='thumb-block video'>"
+    + "<a href='/video.abc/title'><img data-src='t.jpg'></a></div></html>", false],
+];
+for (const [label, body, expected] of stubCases) {
+  assert.equal(provider._isStubBody(body), expected, `stub classification: ${label}`);
+}
+
+// ── Per-transport timeouts ─────────────────────────────────────────────────
+// The app client defaults to a 60 s request timeout, longer than the 40 s
+// execution budget for `search`: one blackholed host consumed the whole budget
+// before a mirror was tried. Every request must therefore carry an explicit,
+// shorter budget.
+const clientOptions = [];
+const slowContext = {
+  MProvider: class {},
+  Document,
+  Client: class {
+    constructor(options) { clientOptions.push(options); }
+    async get(url) {
+      if (String(url).includes("www.xvideos.com")) {
+        // Blackholed canonical host: the mirror answers, the canonical one hangs.
+        return { statusCode: 0, body: "" };
+      }
+      return { statusCode: 200, body: listingFixture };
+    }
+    async post() { return { statusCode: 200, body: "{}" }; }
+  },
+  SharedPreferences: class {},
+  extLog: () => {},
+  URL,
+};
+vm.runInNewContext(
+  `${extensionSource}\nglobalThis.XVideosForTest = DefaultExtension;`,
+  slowContext,
+);
+const slowProvider = new slowContext.XVideosForTest();
+await slowProvider.search("inkasex", 1, []);
+assert.ok(clientOptions.length > 0, "search issued an HTTP request");
+for (const options of clientOptions) {
+  assert.equal(options.timeout, 10, "each request carries a 10 s budget");
+  assert.equal(options.connectTimeout, 5, "each request carries a 5 s connect budget");
+}
+
 console.log("test-xvideos: all assertions passed");

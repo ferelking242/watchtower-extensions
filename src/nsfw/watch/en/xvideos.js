@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xvideos.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.2",
+  "version": "1.3.3",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xvideos.js",
@@ -30,6 +30,21 @@ class DefaultExtension extends MProvider {
   static get PROXY_URL() {
     return "https://watchtower-proxy.aivos-dev.workers.dev/proxy";
   }
+
+  // Per-transport HTTP budget. The app client defaults to a 60 s request
+  // timeout, which is longer than the 40 s execution budget the caller allows
+  // for `search`: a single blackholed host (the canonical one is unreachable on
+  // some networks) swallowed the whole budget before a mirror was ever tried,
+  // and the call died as "TIMEOUT after 40014ms" with zero results. Bounding
+  // each hop means a dead host costs a few seconds and the mirrors still get
+  // their turn.
+  static get REQUEST_TIMEOUT() { return 10; }
+  static get CONNECT_TIMEOUT() { return 5; }
+
+  // Total time `_get` may spend across all transports. Keeps the worst case
+  // (every host slow) inside the caller's execution budget instead of being
+  // killed mid-cascade by the watchdog.
+  static get TRANSPORT_DEADLINE_MS() { return 24000; }
 
   get supportsLatest() { return true; }
 
@@ -62,6 +77,14 @@ class DefaultExtension extends MProvider {
   // mirror.
   _isStubBody(body) {
     const text = String(body || "");
+    // A Cloudflare interstitial ("Just a moment…", "Attention Required!") is a
+    // few KB and carries no listing markup, so the size heuristic below misses
+    // it and the transport layer accepted it as a real page — every search then
+    // returned zero cards. Classified by wording, whatever the size.
+    if (/just a moment|checking your browser|cf-chl|cf_chl|enable javascript and cookies|verify you are human|attention required|you have been blocked|error 1020|challenge-platform/i
+      .test(text) && !/id=["']video[-_]|thumb-block|mozaique/i.test(text)) {
+      return true;
+    }
     if (text.length > 4000) return false;
     if (/please visit|veuillez visiter|visitar|besuchen|visitez|visita|bezoek|请访问|not available in your (country|region)/i
       .test(text)) {
@@ -95,18 +118,32 @@ class DefaultExtension extends MProvider {
       list.push({ kind: "direct", host });
     }
     list.push({ kind: "proxy", host: DefaultExtension.BASE_URL });
+    // Put the origin that already answered this session first. The canonical
+    // host is blackholed on some networks; without this every single call paid
+    // its REQUEST_TIMEOUT again before reaching the mirror that works.
+    const known = this._hostOverride;
+    if (known) {
+      const index = list.findIndex((t) => t.host === known);
+      if (index > 0) list.unshift(list.splice(index, 1)[0]);
+    }
     return list;
   }
 
   async _directFetch(host, route, headers) {
     const url = `${host}${route}`;
-    const res = await new Client().get(url, headers);
+    const res = await new Client({
+      timeout: DefaultExtension.REQUEST_TIMEOUT,
+      connectTimeout: DefaultExtension.CONNECT_TIMEOUT,
+    }).get(url, headers);
     return { url, statusCode: res && (res.statusCode || res.status), body: res && res.body };
   }
 
   async _proxyFetch(host, route, headers) {
     const target = `${host}${route}`;
-    const res = await new Client().post(
+    const res = await new Client({
+      timeout: DefaultExtension.REQUEST_TIMEOUT,
+      connectTimeout: DefaultExtension.CONNECT_TIMEOUT,
+    }).post(
       DefaultExtension.PROXY_URL,
       { "Content-Type": "application/json", "Accept": "application/json" },
       { method: "GET", url: target, headers }
@@ -142,7 +179,9 @@ class DefaultExtension extends MProvider {
     let lastStatus = 0;
     let haveReason = false;
     let advertisedHost = null;
+    const deadline = Date.now() + DefaultExtension.TRANSPORT_DEADLINE_MS;
     for (const transport of this._transports()) {
+      if (Date.now() >= deadline) break;
       const headers = this.getHeaders(`${transport.host}/`);
       try {
         const res = transport.kind === "proxy"
