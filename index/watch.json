@@ -7980,7 +7980,7 @@
     "typeSource": "single",
     "itemType": 1,
     "version": "1.3.2",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@fa3523496b4dd95584315209fba5a1f325b0a46f/src/nsfw/watch/ja/missav.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@80ed94c879121a7f2f71578de667e98defd3c1cb/src/nsfw/watch/ja/missav.js",
     "uiLayout": "ui-layouts/missav.json",
     "uiLayoutVersion": "1.2.0",
     "isManga": false,
