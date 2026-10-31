@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://missav.ws/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.1",
+  "version": "1.3.2",
   "login": true,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/missav.js",
@@ -597,6 +597,15 @@ class DefaultExtension extends MProvider {
     }
 
     if (videos.length === 0) return [];
+    // The literal-variant fallback (step 4) follows the page order, which is
+    // not resolution-ordered: a page can list 720p before 1080p. Sort the final
+    // list by resolution so the picker always leads with the best rendition,
+    // whatever path produced the entries.
+    const heightOf = (quality) => {
+      const match = String(quality || "").match(/(\d{3,4})/);
+      return match ? parseInt(match[1], 10) : 0;
+    };
+    videos.sort((a, b) => heightOf(b.quality) - heightOf(a.quality));
     return videos;
   }
 

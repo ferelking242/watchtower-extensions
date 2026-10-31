@@ -309,6 +309,23 @@ assert.equal(variants.length, 1);
 assert.equal(variants[0].quality, "720p");
 assert.equal(variants[0].url, `https://surrit.com/${VIDEO_UUID}/720p/video.m3u8`);
 
+// When the master is unreachable the page's literal variants are the only
+// source, and the page order is not resolution-ordered (it lists 720p before
+// 1080p here). The result must still lead with the best rendition.
+response = {
+  statusCode: 200,
+  body: `<script>
+const a = "https:\\/\\/surrit.com\\/${VIDEO_UUID}\\/720p\\/video.m3u8";
+const b = "https:\\/\\/surrit.com\\/${VIDEO_UUID}\\/1080p\\/video.m3u8";
+</script>`,
+};
+const literals = await provider.getVideoList("https://missav.ws/en/aarm-327");
+assert.equal(
+  literals.map((v) => v.quality).join(","),
+  "1080p,720p",
+  "literal variants are sorted highest-first, not left in page order",
+);
+
 // An MP4 fallback is only labelled when its own URL states the resolution —
 // a bare `.mp4` with no resolution is skipped rather than given a fake label.
 response = {
