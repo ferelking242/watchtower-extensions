@@ -85,9 +85,11 @@ URL émise, à cadence espacée.
 - Les vraies variantes d'un master HLS ne sont pas listées par l'extension en
   temps normal : l'app les découvre en lisant le master
   (`lib/services/hls_variant_resolver.dart`). **Exception contractuelle
-  Watchtower ≥ x : MissAV (v1.3.0)** fetch le master lui-même (natif puis
-  reroute navigateur via le client runtime) et retourne UNE entrée par vraie
-  variante, étiquetée par sa vraie résolution, triée descendante. Aucune
+  Watchtower ≥ x : MissAV (v1.3.0)** fetch le master lui-même via `Client`
+  (natif puis reroute navigateur via le client runtime) et retourne UNE entrée
+  par vraie variante, étiquetée par sa vraie résolution, triée descendante. Le
+  runtime d'extension ne fournit pas `fetch()` global : ne pas l'utiliser.
+  Aucune
   entrée `"Auto"` ne doit jamais revenir son `getVideoList` — c'est une
   demande produit explicite ; ne pas la « réparer » en la ramenant à une
   entrée `Auto` qui délègue au resolver app.

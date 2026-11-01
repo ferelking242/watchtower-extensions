@@ -23,11 +23,15 @@ const extensionSource = fs.readFileSync(
 let response = { statusCode: 200, body: "" };
 // Answer for the master playlist, when the case needs variant expansion.
 let masterResponse = null;
+let masterResponseQueue = [];
 let requestedUrl = "";
 class TestClient {
   async get(url) {
     requestedUrl = url;
-    if (masterResponse && /playlist\.m3u8/i.test(url)) return masterResponse;
+    if (/playlist\.m3u8/i.test(url)) {
+      if (masterResponseQueue.length > 0) return masterResponseQueue.shift();
+      if (masterResponse) return masterResponse;
+    }
     return response;
   }
 }
@@ -215,15 +219,17 @@ const masterPlaylist = `#EXTM3U
 #EXT-X-STREAM-INF:BANDWIDTH=2800000,RESOLUTION=1280x720
 720p/video.m3u8
 #EXT-X-STREAM-INF:BANDWIDTH=900000,RESOLUTION=854x480
-480p/video.m3u8`;
+480p/video.m3u8
+#EXT-X-STREAM-INF:BANDWIDTH=450000,RESOLUTION=640x360
+360p/video.m3u8`;
 
 masterResponse = { statusCode: 200, body: masterPlaylist };
 response = { statusCode: 200, body: packedPlayer };
 const videos = await provider.getVideoList("https://missav.ws/en/fc2-ppv-4997309");
-assert.equal(videos.length, 3, "one entry per advertised rendition");
+assert.equal(videos.length, 4, "one entry per advertised rendition");
 assert.equal(
   videos.map((v) => v.quality).join(","),
-  "1080p,720p,480p",
+  "1080p,720p,480p,360p",
   "highest resolution first",
 );
 assert.equal(
@@ -236,12 +242,33 @@ assert.equal(videos[0].originalUrl, videos[0].url);
 // The download headers must look like a cross-site media request: surrit
 // answers 403 to a download that omits Origin / sends a navigation Sec-Fetch.
 assert.ok(videos[0].headers["User-Agent"].includes("Chrome"));
-assert.equal(videos[0].headers.Referer, "https://missav.ws/");
+assert.equal(
+  videos[0].headers.Referer,
+  "https://missav.ws/en/fc2-ppv-4997309",
+);
 assert.equal(videos[0].headers.Origin, "https://missav.ws");
 assert.equal(videos[0].headers["Sec-Fetch-Dest"], "empty");
 assert.equal(videos[0].headers["Sec-Fetch-Mode"], "cors");
 assert.equal(videos[0].headers["Sec-Fetch-Site"], "cross-site");
 assert.equal(videos[0].headers.Accept, "*/*");
+
+// A refused native request must remain on the app's Client bridge so its
+// Surrit-specific browser fallback can fetch all advertised resolutions.
+masterResponse = null;
+masterResponseQueue = [
+  { statusCode: 403, body: "Forbidden" },
+  { statusCode: 200, body: masterPlaylist },
+];
+const browserRecovered = await provider.getVideoList(
+  "https://missav.ws/en/fc2-ppv-4997309",
+);
+assert.equal(
+  browserRecovered.map((v) => v.quality).join(","),
+  "1080p,720p,480p,360p",
+  "the Client retry preserves every browser-recovered rendition",
+);
+assert.equal(browserRecovered[0].headers.Referer, "https://missav.ws/en/fc2-ppv-4997309");
+masterResponseQueue = [];
 
 // A master whose renditions are absolute URLs (the surrit layout) is expanded
 // the same way, and no adaptive "Auto" entry is ever emitted.

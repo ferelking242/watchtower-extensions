@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://missav.ws/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.2",
+  "version": "1.3.3",
   "login": true,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/missav.js",
@@ -75,7 +75,8 @@ class DefaultExtension extends MProvider {
   // Headers attached to every media entry returned by getVideoList. They reach
   // both the player and the downloader (M3u8Downloader merges them over its own
   // defaults), so they must describe a cross-site media request and not a page
-  // navigation:
+  // navigation. Keep the exact video page as Referer: the browser fallback
+  // needs that page to establish the same origin/context as playback.
   //  • the surrit CDN rejects a request whose `Origin` is missing or wrong and
   //    whose `Sec-Fetch-Dest` is `document` instead of `empty` — playback (a
   //    native player request) was tolerated but the downloader got a 403;
@@ -83,9 +84,12 @@ class DefaultExtension extends MProvider {
   //    the page itself must keep the WebView UA that solved Cloudflare (see
   //    _siteHeaders). The two never mix: this map is only for surrit/segments.
   getHeaders(url) {
+    const pageUrl = /^https?:\/\//i.test(String(url || ""))
+      ? String(url)
+      : BASE_URL + "/" + this._lang();
     return {
       "User-Agent": USER_AGENT,
-      "Referer": BASE_URL + "/",
+      "Referer": pageUrl,
       "Origin": BASE_URL,
       "Accept": "*/*",
       "Accept-Language": "en-US,en;q=0.9,ja;q=0.8",
@@ -609,34 +613,27 @@ class DefaultExtension extends MProvider {
     return videos;
   }
 
-  // Master text retrieval: the CDN refuses some native fingerprints with a
-  // 403, so every attempt falls through: (1) native client with the video
-  // headers, (2) native client without them (session cookies only), (3) the
-  // runtime fetch, which reroutes blocked requests through the WebView
-  // session when the app's browser bridge can serve the host.
+  // Master text retrieval uses the app's supported Client bridge. A refused
+  // Surrit playlist is retried there from the exact MissAV page in the browser
+  // session; the extension runtime does not expose the global fetch() API.
   async _fetchMasterText(url, headers) {
-    try {
-      const res = await new Client().get(url, headers);
-      const body = (res && res.body) || "";
-      if (((res && res.statusCode) || 0) < 400 && body) return body;
-    } catch (error) {
-      // Fall through to the next attempt.
-    }
-    try {
-      const res = await new Client().get(url);
-      const body = (res && res.body) || "";
-      if (((res && res.statusCode) || 0) < 400 && body) return body;
-    } catch (error) {
-      // Fall through to the bridge fetch.
-    }
-    try {
-      const res = await fetch(url, { headers: headers });
-      const text = await res.text();
-      if (text) return text;
-    } catch (error) {
-      // No attempt could read the master; the caller keeps searching.
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const res = await new Client().get(url, headers);
+        const body = (res && res.body) || "";
+        const status = (res && res.statusCode) || 0;
+        if (status < 400 && this._isMasterPlaylist(body)) return body;
+      } catch (error) {
+        // A second request through the same app bridge is a bounded retry.
+      }
     }
     return "";
+  }
+
+  _isMasterPlaylist(text) {
+    const body = String(text || "");
+    return /^\s*#EXTM3U(?:\s|$)/m.test(body) &&
+      /#EXT-X-STREAM-INF:/i.test(body);
   }
 
   // `#EXT-X-STREAM-INF` → { url, quality, height, bandwidth }, highest first.
