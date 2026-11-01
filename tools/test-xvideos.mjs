@@ -102,11 +102,24 @@ const suggestionFixture = JSON.stringify({
   },
 });
 const originalSuggestionGet = provider._get.bind(provider);
+const originalVideoParser = provider._parseVideoCards.bind(provider);
 let requestedRoute = "";
+const requestedRoutes = [];
 provider._get = async (route) => {
   requestedRoute = route;
-  return route.startsWith("/search-suggest/") ? suggestionFixture : "";
+  requestedRoutes.push(route);
+  if (route.startsWith("/search-suggest/")) return suggestionFixture;
+  if (route.startsWith("/?k=")) return "video-search-fixture";
+  return "";
 };
+provider._parseVideoCards = (html) => html === "video-search-fixture"
+  ? [{
+      name: "Inkasex video",
+      imageUrl: "https://thumb.example/video.jpg",
+      link: "https://www.xvideos.com/video.123/inkasex-video",
+      description: "Duration: 12:34",
+    }]
+  : originalVideoParser(html);
 try {
   let result = await provider.search("", 1, channelFilters);
   assert.equal(requestedRoute, "/channels-index");
@@ -131,13 +144,15 @@ try {
   assert.equal(requestedRoute, "/channels-index/new");
 
   const suggestions = await provider.getCustomList("search_preview:inka", 1);
-  assert.equal(requestedRoute, "/search-suggest/inka");
+  assert.ok(requestedRoutes.includes("/search-suggest/inka"));
+  assert.ok(requestedRoutes.includes("/?k=inka&p=0"));
   assert.equal(suggestions.hasNextPage, false);
   assert.equal(suggestions.list[0].name, "Inkasex");
   assert.equal(suggestions.list[0].link, "https://www.xvideos.com/channels/inkasex");
   assert.equal(suggestions.list[0].imageUrl, "https://thumb.example/inkasex.jpg");
   assert.match(suggestions.list[0].description, /1,1M abonnés/);
   assert.equal(suggestions.list[1].link, "https://www.xvideos.com/pornstars/itsvan-inka");
+  assert.equal(suggestions.list[2].name, "Inkasex video");
 
   result = await provider.search("inka", 1, channelFilters);
   assert.equal(requestedRoute, "/search-suggest/inka");
@@ -155,6 +170,7 @@ try {
   );
 } finally {
   provider._get = originalSuggestionGet;
+  provider._parseVideoCards = originalVideoParser;
 }
 
 // ── Listing cards ──────────────────────────────────────────────────────────

@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xvideos.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.6",
+  "version": "1.3.7",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xvideos.js",
@@ -989,11 +989,35 @@ class DefaultExtension extends MProvider {
     return items;
   }
 
-  async _searchSuggestions(query) {
+  async _searchSuggestions(query, includeVideos = true) {
     const normalized = String(query || "").trim();
     if (normalized.length < 2) return [];
-    const body = await this._get(`/search-suggest/${encodeURIComponent(normalized)}`);
-    return this._parseSearchSuggestions(body);
+    const requests = [
+      this._get(`/search-suggest/${encodeURIComponent(normalized)}`),
+    ];
+    if (includeVideos) {
+      requests.push(this._get(this._videoSearchPath(normalized, 1, [])));
+    }
+    const responses = await Promise.allSettled(requests);
+    const profiles = responses[0].status === "fulfilled"
+      ? this._parseSearchSuggestions(responses[0].value)
+      : [];
+    const videos = includeVideos && responses[1].status === "fulfilled"
+      ? this._parseVideoCards(responses[1].value)
+      : [];
+    const unique = [];
+    const seen = new Set();
+    for (const item of [...profiles, ...videos]) {
+      const key = String(item.link || item.name || "");
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      unique.push(item);
+    }
+    if (unique.length === 0) {
+      const failure = responses.find((response) => response.status === "rejected");
+      if (failure) throw failure.reason;
+    }
+    return unique;
   }
 
   async search(query, page, filters) {
@@ -1002,7 +1026,7 @@ class DefaultExtension extends MProvider {
     if (channelSearch) {
       const normalized = String(query || "").trim();
       if (normalized) {
-        return { list: await this._searchSuggestions(normalized), hasNextPage: false };
+        return { list: await this._searchSuggestions(normalized, false), hasNextPage: false };
       }
       const path = `${this._channelDirectoryPath(filters)}${this._pageSuffix(page)}`;
       const html = await this._get(path);
