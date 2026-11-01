@@ -6096,7 +6096,7 @@
     "typeSource": "single",
     "itemType": 1,
     "version": "1.4.6",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@edb65eff92276461125151637d3502efa84e0b0a/src/nsfw/watch/en/pornhub.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@e80172a789de16f4e85df38c5b21391bee65f819/src/nsfw/watch/en/pornhub.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
