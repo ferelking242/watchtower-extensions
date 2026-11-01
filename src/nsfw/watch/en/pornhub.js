@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.pornhub.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.4.5",
+  "version": "1.4.6",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/pornhub.js",
@@ -87,10 +87,6 @@ class DefaultExtension extends MProvider {
     return "https://www.pornhub.com";
   }
 
-  static get USER_AGENT() {
-    return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
-  }
-
   get supportsLatest() {
     return true;
   }
@@ -111,7 +107,6 @@ class DefaultExtension extends MProvider {
   getHeaders(url) {
     return {
       "Referer": url || `${DefaultExtension.BASE_URL}/`,
-      "User-Agent": DefaultExtension.USER_AGENT,
       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,*/*;q=0.8",
       "Accept-Language": "en-US,en;q=0.8",
       "Cookie": "accessAgeDisclaimerPH=1; age_verified=1; platform=pc"
