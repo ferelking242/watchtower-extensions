@@ -103,6 +103,7 @@ const suggestionFixture = JSON.stringify({
 });
 const originalSuggestionGet = provider._get.bind(provider);
 const originalVideoParser = provider._parseVideoCards.bind(provider);
+const originalBestOfMonth = provider._bestOfMonth.bind(provider);
 let requestedRoute = "";
 const requestedRoutes = [];
 provider._get = async (route) => {
@@ -168,9 +169,16 @@ try {
     requestedRoute,
     "/?k=inka%20sex&p=1&sort=uploaddate&datef=week&durf=10-20min&quality=1080P&vw=h",
   );
+
+  provider._bestOfMonth = async () => {
+    throw new Error("network timeout");
+  };
+  await provider.getPopular(1);
+  assert.equal(requestedRoute, "/");
 } finally {
   provider._get = originalSuggestionGet;
   provider._parseVideoCards = originalVideoParser;
+  provider._bestOfMonth = originalBestOfMonth;
 }
 
 // ── Listing cards ──────────────────────────────────────────────────────────

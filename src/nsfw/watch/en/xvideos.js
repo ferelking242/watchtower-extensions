@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xvideos.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.7",
+  "version": "1.3.8",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xvideos.js",
@@ -788,10 +788,19 @@ class DefaultExtension extends MProvider {
 
   // ── Standard catalogue methods ───────────────────────────────────────────
   async getPopular(page) {
-    const ranked = await this._bestOfMonth(this._monthSlug(0), page);
-    if (ranked.list.length) return ranked;
+    try {
+      const ranked = await this._bestOfMonth(this._monthSlug(0), page);
+      if (ranked.list.length) return ranked;
+    } catch (error) {
+      extLog(
+        "warn",
+        `XVideos spotlight monthly feed failed; falling back to home: ${
+          error && error.message ? error.message : String(error)
+        }`,
+      );
+    }
     // Early in a month the current best-of is still empty; fall back to the
-    // curated home feed so the section never renders blank.
+    // curated home feed when ranking is unavailable so Spotlight still loads.
     const html = await this._get("/");
     return { list: this._parseVideoCards(html), hasNextPage: false };
   }
