@@ -50,6 +50,92 @@ vm.runInNewContext(
 
 const provider = new context.XVideosForTest();
 assert.equal(provider.getSourcePreferences().length, 0);
+assert.equal(provider.getFilterList().length, 0, "unscoped extension search stays unchanged");
+const xvideosLayout = JSON.parse(
+  fs.readFileSync(path.join(root, "ui-layouts/xvideos.json"), "utf8"),
+);
+assert.equal(xvideosLayout.browse.search.searchPreview, true);
+
+// ── Channel filters and whole-site search preview ─────────────────────────
+const channelFilters = provider.getFilterList("studios");
+assert.equal(channelFilters.length, 3);
+assert.equal(channelFilters[0].type, "xvideos_channels_orientation");
+assert.deepEqual(
+  Array.from(channelFilters[0].values, (option) => option.value),
+  ["hetero", "gay", "trans"],
+);
+assert.equal(channelFilters[1].searchable, true, "the country selector is searchable");
+assert.equal(provider.constructor.CHANNEL_COUNTRIES.length, 185);
+assert.equal(channelFilters[1].values.length, 187, "local + worldwide + all 185 countries");
+assert.ok(channelFilters[1].values.some((option) => option.value === "congo"));
+
+const suggestionFixture = JSON.stringify({
+  result: true,
+  code: 0,
+  data: {
+    keywords: [],
+    channel: [{
+      N: "Inkasex",
+      F: "inkasex",
+      T: "channel",
+      P: "https://thumb.example/inkasex.jpg",
+      RF: "9 895",
+      SF: "1,1M",
+    }],
+    pornstar: [{
+      N: "Itsvan Inka",
+      F: "itsvan-inka",
+      T: "pornstar",
+      P: "https://thumb.example/itsvan.jpg",
+      RF: "6 741",
+      SF: "47,1k",
+    }],
+  },
+});
+const originalSuggestionGet = provider._get.bind(provider);
+let requestedRoute = "";
+provider._get = async (route) => {
+  requestedRoute = route;
+  return route.startsWith("/search-suggest/") ? suggestionFixture : "";
+};
+try {
+  let result = await provider.search("", 1, channelFilters);
+  assert.equal(requestedRoute, "/channels-index");
+  assert.equal(result.list.length, 0);
+
+  const countryIndex = channelFilters[1].values.findIndex((option) => option.value === "congo");
+  channelFilters[0].state = 1;
+  channelFilters[1].state = countryIndex;
+  channelFilters[2].state = 1;
+  result = await provider.search("", 1, channelFilters);
+  assert.equal(requestedRoute, "/channels-gay/congo/top");
+
+  channelFilters[0].state = 2;
+  channelFilters[1].state = 1;
+  result = await provider.search("", 2, channelFilters);
+  assert.equal(requestedRoute, "/channels-trans/from/worldwide/top/1");
+
+  channelFilters[0].state = 0;
+  channelFilters[1].state = 0;
+  channelFilters[2].state = 2;
+  await provider.search("", 1, channelFilters);
+  assert.equal(requestedRoute, "/channels-index/new");
+
+  const suggestions = await provider.getCustomList("search_preview:inka", 1);
+  assert.equal(requestedRoute, "/search-suggest/inka");
+  assert.equal(suggestions.hasNextPage, false);
+  assert.equal(suggestions.list[0].name, "Inkasex");
+  assert.equal(suggestions.list[0].link, "https://www.xvideos.com/channels/inkasex");
+  assert.equal(suggestions.list[0].imageUrl, "https://thumb.example/inkasex.jpg");
+  assert.match(suggestions.list[0].description, /1,1M abonnés/);
+  assert.equal(suggestions.list[1].link, "https://www.xvideos.com/pornstars/itsvan-inka");
+
+  result = await provider.search("inka", 1, channelFilters);
+  assert.equal(requestedRoute, "/search-suggest/inka");
+  assert.equal(result.list[0].name, "Inkasex");
+} finally {
+  provider._get = originalSuggestionGet;
+}
 
 // ── Listing cards ──────────────────────────────────────────────────────────
 const listingFixture = `

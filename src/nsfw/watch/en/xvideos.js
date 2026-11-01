@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xvideos.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.4",
+  "version": "1.3.5",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xvideos.js",
@@ -16,6 +16,14 @@ const watchtowerSources = [{
 
 class DefaultExtension extends MProvider {
   static get BASE_URL() { return "https://www.xvideos.com"; }
+  static get CHANNEL_COUNTRIES() {
+    return "AD:andorra,AE:united_arab_emirates,AF:afghanistan,AG:antigua_and_barbuda,AL:albania,AM:armenia,AN:netherlands_antilles,AO:angola,AQ:antarctica,AR:argentina,AS:american_samoa,AT:austria,AU:australia,AW:aruba,AX:land_islands,AZ:azerbaijan,BB:barbados,BD:bangladesh,BE:belgium,BF:burkina_faso,BG:bulgaria,BI:burundi,BJ:benin,BN:brunei_darussalam,BO:bolivia,BQ:caribbean_netherlands,BR:brazil,BS:bahamas,BW:botswana,BY:belarus,BZ:belize,CA:canada,CC:cocos_keeling_islands,CD:congo_the_democratic_republic_of_the,CF:central_african_republic,CG:congo,CH:switzerland,CI:cote_d_ivoire,CK:cook_islands,CL:chile,CM:cameroon,CN:china,CO:colombia,CR:costa_rica,CU:cuba,CV:cape_verde,CW:cura_ao,CY:cyprus,CZ:czech_republic,DE:germany,DJ:djibouti,DK:denmark,DM:dominica,DO:dominican_republic,DZ:algeria,EC:ecuador,EE:estonia,EG:egypt,ER:eritrea,ES:spain,ET:ethiopia,FI:finland,FJ:fiji,FO:faroe_islands,FR:france,GA:gabon,GB:united_kingdom,GE:georgia,GH:ghana,GI:gibraltar,GM:gambia,GN:guinea,GR:greece,GT:guatemala,HK:hong_kong,HN:honduras,HR:croatia,HT:haiti,HU:hungary,ID:indonesia,IE:ireland,IL:israel,IM:isle_of_man,IN:india,IQ:iraq,IR:iran_islamic_republic_of_the,IS:iceland,IT:italy,JM:jamaica,JO:jordan,JP:japan,KE:kenya,KG:kyrgyzstan,KH:cambodia,KR:korea,KW:kuwait,KY:cayman_islands,KZ:kazakhstan,LA:lao_people_s_democratic_republic,LB:lebanon,LK:sri_lanka,LR:liberia,LS:lesotho,LT:lithuania,LU:luxembourg,LV:latvia,MA:morocco,MC:monaco,MD:moldova_republic_of,ME:montenegro,MH:marshall_islands,MK:macedonia,MM:myanmar,MO:macao,MP:northern_mariana_islands,MR:mauritania,MS:montserrat,MT:malta,MU:mauritius,MV:maldives,MW:malawi,MX:mexico,MZ:mozambique,NA:namibia,NC:new_caledonia,NE:niger,NG:nigeria,NI:nicaragua,NL:netherlands,NO:norway,NP:nepal,NZ:new_zealand,PA:panama,PE:peru,PF:french_polynesia,PH:philippines,PK:pakistan,PL:poland,PR:puerto_rico,PS:palestinian_territory,PT:portugal,PW:palau,PY:paraguay,QA:qatar,RE:reunion,RO:romania,RS:serbia,RU:russia,RW:rwanda,SA:saudi_arabia,SC:seychelles,SD:sudan,SE:sweden,SG:singapore,SI:slovenia,SK:slovakia,SN:senegal,SR:suriname,SV:el_salvador,SY:syrian_arab_republic,SZ:swaziland,TC:turks_and_caicos_islands,TG:togo,TH:thailand,TJ:tajikistan,TN:tunisia,TR:turkey,TT:trinidad_and_tobago,TW:taiwan,TZ:tanzania_united_republic_of_tanzania,UA:ukraine,UG:uganda,US:usa,UY:uruguay,UZ:uzbekistan,VC:saint_vincent_and_the_grenadines,VE:venezuela,VG:virgin_islands_british,VI:virgin_islands_u_s,VN:vietnam,WS:samoa,YE:yemen,ZA:south_africa,ZM:zambia,ZW:zimbabwe"
+      .split(",")
+      .map((entry) => {
+        const [code, slug] = entry.split(":");
+        return { code, slug };
+      });
+  }
   // XVideos is published under country mirrors that serve the exact same
   // markup and share the media CDN. On many EU networks (and through the app's
   // Cloudflare worker proxy, which answers the canonical host with a tiny
@@ -799,7 +807,138 @@ class DefaultExtension extends MProvider {
     return { list: items, hasNextPage: items.length > 0 && this._hasNextPage(html) };
   }
 
+  _filterValue(filters, type, fallback) {
+    const filter = (Array.isArray(filters) ? filters : [])
+      .find((item) => item && item.type === type);
+    const state = Number(filter && filter.state);
+    const option = filter && Array.isArray(filter.values) ? filter.values[state] : null;
+    return option && option.value != null ? String(option.value) : fallback;
+  }
+
+  _channelDirectoryPath(filters) {
+    const orientation = this._filterValue(filters, "xvideos_channels_orientation", "hetero");
+    const country = this._filterValue(filters, "xvideos_channels_country", "local");
+    const sort = this._filterValue(filters, "xvideos_channels_sort", "recent");
+    let path = orientation === "gay"
+      ? "/channels-gay"
+      : orientation === "trans"
+        ? "/channels-trans"
+        : "/channels-index";
+    if (country === "worldwide") {
+      path += "/from/worldwide";
+    } else if (country !== "local") {
+      path += `/${country}`;
+    }
+    if (sort === "top") path += "/top";
+    else if (sort === "new") path += "/new";
+    return path;
+  }
+
+  _channelFilterOptions() {
+    const orientation = ["Hétéro", "Gay", "Trans"].map((name, index) => ({
+      type_name: "SelectOption",
+      name,
+      value: ["hetero", "gay", "trans"][index],
+    }));
+    const countries = [
+      { type_name: "SelectOption", name: "Pays de l’utilisateur", value: "local" },
+      { type_name: "SelectOption", name: "Monde entier", value: "worldwide" },
+      ...DefaultExtension.CHANNEL_COUNTRIES.map(({ code, slug }) => {
+        let name = "";
+        try {
+          if (typeof Intl !== "undefined" && Intl.DisplayNames) {
+            name = new Intl.DisplayNames(["fr"], { type: "region" }).of(code) || "";
+          }
+        } catch (_) {}
+        if (!name || name === code) {
+          name = slug.split("_").map((part) =>
+            part ? part[0].toUpperCase() + part.slice(1) : part
+          ).join(" ");
+        }
+        const flag = String.fromCodePoint(
+          ...code.split("").map((letter) => letter.toUpperCase().charCodeAt(0) + 127397)
+        );
+        return { type_name: "SelectOption", name: `${flag} ${name}`, value: slug };
+      }),
+    ];
+    const sort = [
+      { type_name: "SelectOption", name: "Regardées récemment", value: "recent" },
+      { type_name: "SelectOption", name: "Classement des meilleurs", value: "top" },
+      { type_name: "SelectOption", name: "Nouveau", value: "new" },
+    ];
+    return [
+      {
+        type_name: "SelectFilter",
+        type: "xvideos_channels_orientation",
+        name: "Orientation",
+        state: 0,
+        values: orientation,
+      },
+      {
+        type_name: "SelectFilter",
+        type: "xvideos_channels_country",
+        name: "Chaînes du monde entier",
+        state: 0,
+        searchable: true,
+        values: countries,
+      },
+      {
+        type_name: "SelectFilter",
+        type: "xvideos_channels_sort",
+        name: "Classement",
+        state: 0,
+        values: sort,
+      },
+    ];
+  }
+
+  _parseSearchSuggestions(body) {
+    let payload;
+    try { payload = JSON.parse(body || "{}"); } catch (_) { return []; }
+    if (!payload || !payload.result || !payload.data) return [];
+    const items = [];
+    const seen = {};
+    for (const [key, route] of [["channel", "channels"], ["pornstar", "pornstars"]]) {
+      const entries = Array.isArray(payload.data[key]) ? payload.data[key] : [];
+      for (const entry of entries) {
+        if (!entry || !entry.F || !entry.N) continue;
+        const link = this._absolute(`/${route}/${entry.F}`);
+        if (!link || seen[link]) continue;
+        seen[link] = true;
+        const details = [];
+        if (entry.SF) details.push(`${this._text(entry.SF)} abonnés`);
+        if (entry.RF) details.push(`${this._text(entry.RF)} vidéos`);
+        items.push({
+          name: this._decodeEntities(String(entry.N)),
+          imageUrl: this._absolute(entry.P || ""),
+          link,
+          description: details.join(" • "),
+        });
+      }
+    }
+    return items;
+  }
+
+  async _searchSuggestions(query) {
+    const normalized = String(query || "").trim();
+    if (normalized.length < 2) return [];
+    const body = await this._get(`/search-suggest/${encodeURIComponent(normalized)}`);
+    return this._parseSearchSuggestions(body);
+  }
+
   async search(query, page, filters) {
+    const channelSearch = (Array.isArray(filters) ? filters : [])
+      .some((filter) => filter && /^xvideos_channels_/.test(String(filter.type || "")));
+    if (channelSearch) {
+      const normalized = String(query || "").trim();
+      if (normalized) {
+        return { list: await this._searchSuggestions(normalized), hasNextPage: false };
+      }
+      const path = `${this._channelDirectoryPath(filters)}${this._pageSuffix(page)}`;
+      const html = await this._get(path);
+      const items = this._parseProfileCards(html, "channels");
+      return { list: items, hasNextPage: items.length > 0 && this._hasNextPage(html) };
+    }
     const q = encodeURIComponent(String(query || "").trim());
     const html = await this._get(`/?k=${q}&p=${Math.max(0, (Number(page) || 1) - 1)}`);
     const items = this._parseVideoCards(html);
@@ -944,7 +1083,12 @@ class DefaultExtension extends MProvider {
 
   async getPageList(url) { return []; }
 
-  getFilterList() { return []; }
+  getFilterList(context) {
+    if (context === "channels" || context === "studios") {
+      return this._channelFilterOptions();
+    }
+    return [];
+  }
 
   getSourcePreferences() { return []; }
 
@@ -1016,6 +1160,12 @@ class DefaultExtension extends MProvider {
   // ── Custom lists (home layout + directory pages) ─────────────────────────
   async getCustomList(listId, page) {
     const id = String(listId || "");
+
+    if (id.startsWith("search_preview:")) {
+      let query = id.slice("search_preview:".length);
+      try { query = decodeURIComponent(query); } catch (_) {}
+      return { list: await this._searchSuggestions(query), hasNextPage: false };
+    }
 
     if (id === "latest") return this.getLatestUpdates(page);
     if (id === "popular") return this.getPopular(page);

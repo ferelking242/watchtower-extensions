@@ -124,7 +124,8 @@
         "columns": 3,
         "cardStyle": "thumbnail"
       },
-      "filters": "chips"
+      "filters": "chips",
+      "searchPreview": true
     }
   },
   "detail": {
