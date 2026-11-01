@@ -50,7 +50,16 @@ vm.runInNewContext(
 
 const provider = new context.XVideosForTest();
 assert.equal(provider.getSourcePreferences().length, 0);
-assert.equal(provider.getFilterList().length, 0, "unscoped extension search stays unchanged");
+const videoFilters = provider.getFilterList();
+assert.deepEqual(
+  Array.from(videoFilters, (filter) => filter.name),
+  ["Trier par", "Date", "Durée", "Qualité vidéo", "Vues"],
+);
+assert.equal(videoFilters[2].type, "xvideos_videos_duration");
+assert.deepEqual(
+  Array.from(videoFilters[2].values, (option) => option.value),
+  ["allduration", "1-3min", "3-10min", "10min_more", "10-20min", "20min_more"],
+);
 const xvideosLayout = JSON.parse(
   fs.readFileSync(path.join(root, "ui-layouts/xvideos.json"), "utf8"),
 );
@@ -133,6 +142,17 @@ try {
   result = await provider.search("inka", 1, channelFilters);
   assert.equal(requestedRoute, "/search-suggest/inka");
   assert.equal(result.list[0].name, "Inkasex");
+
+  videoFilters[0].state = 1;
+  videoFilters[1].state = 2;
+  videoFilters[2].state = 4;
+  videoFilters[3].state = 2;
+  videoFilters[4].state = 1;
+  await provider.search("inka sex", 2, videoFilters);
+  assert.equal(
+    requestedRoute,
+    "/?k=inka%20sex&p=1&sort=uploaddate&datef=week&durf=10-20min&quality=1080P&vw=h",
+  );
 } finally {
   provider._get = originalSuggestionGet;
 }

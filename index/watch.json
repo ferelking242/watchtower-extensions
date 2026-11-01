@@ -6702,7 +6702,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000192.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.3.5",
+    "version": "1.3.6",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@8079094e08097540478c8323f88bb7064428786b/src/nsfw/watch/en/xvideos.js",
     "uiLayout": "ui-layouts/xvideos.json",
     "uiLayoutVersion": "1.3.5",

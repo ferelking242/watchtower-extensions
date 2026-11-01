@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xvideos.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.5",
+  "version": "1.3.6",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xvideos.js",
@@ -892,6 +892,76 @@ class DefaultExtension extends MProvider {
     ];
   }
 
+  _videoFilterOptions() {
+    const select = (type, name, options) => ({
+      type_name: "SelectFilter",
+      type,
+      name,
+      state: 0,
+      values: options.map(([label, value]) => ({
+        type_name: "SelectOption",
+        name: label,
+        value,
+      })),
+    });
+    return [
+      select("xvideos_videos_sort", "Trier par", [
+        ["Pertinence", "relevance"],
+        ["Les plus récentes", "uploaddate"],
+        ["Note", "rating"],
+        ["Durée", "length"],
+        ["Vues", "views"],
+        ["Aléatoire", "random"],
+      ]),
+      select("xvideos_videos_date", "Date", [
+        ["Toutes les dates", "all"],
+        ["3 derniers jours", "today"],
+        ["Cette semaine", "week"],
+        ["Ce mois-ci", "month"],
+        ["3 derniers mois", "3month"],
+        ["6 derniers mois", "6month"],
+      ]),
+      select("xvideos_videos_duration", "Durée", [
+        ["Toutes les durées", "allduration"],
+        ["1 à 3 min", "1-3min"],
+        ["3 à 10 min", "3-10min"],
+        ["Plus de 10 min", "10min_more"],
+        ["10 à 20 min", "10-20min"],
+        ["Plus de 20 min", "20min_more"],
+      ]),
+      select("xvideos_videos_quality", "Qualité vidéo", [
+        ["Toutes les qualités", "all"],
+        ["720p et plus", "hd"],
+        ["1080p et plus", "1080P"],
+      ]),
+      select("xvideos_videos_viewed", "Vues", [
+        ["Toutes les vidéos", ""],
+        ["Masquer les vidéos vues", "h"],
+      ]),
+    ];
+  }
+
+  _videoSearchPath(query, page, filters) {
+    const params = [
+      `k=${encodeURIComponent(String(query || "").trim())}`,
+      `p=${Math.max(0, (Number(page) || 1) - 1)}`,
+    ];
+    const options = [
+      ["sort", "xvideos_videos_sort", "relevance"],
+      ["datef", "xvideos_videos_date", "all"],
+      ["durf", "xvideos_videos_duration", "allduration"],
+      ["quality", "xvideos_videos_quality", "all"],
+      ["vw", "xvideos_videos_viewed", ""],
+    ];
+    for (const [parameter, type, fallback] of options) {
+      const value = this._filterValue(filters, type, fallback);
+      if (value !== fallback) {
+        params.push(`${parameter}=${encodeURIComponent(value)}`);
+      }
+    }
+    return `/?${params.join("&")}`;
+  }
+
   _parseSearchSuggestions(body) {
     let payload;
     try { payload = JSON.parse(body || "{}"); } catch (_) { return []; }
@@ -939,8 +1009,7 @@ class DefaultExtension extends MProvider {
       const items = this._parseProfileCards(html, "channels");
       return { list: items, hasNextPage: items.length > 0 && this._hasNextPage(html) };
     }
-    const q = encodeURIComponent(String(query || "").trim());
-    const html = await this._get(`/?k=${q}&p=${Math.max(0, (Number(page) || 1) - 1)}`);
+    const html = await this._get(this._videoSearchPath(query, page, filters));
     const items = this._parseVideoCards(html);
     return { list: items, hasNextPage: items.length > 0 && this._hasNextPage(html) };
   }
@@ -1087,7 +1156,7 @@ class DefaultExtension extends MProvider {
     if (context === "channels" || context === "studios") {
       return this._channelFilterOptions();
     }
-    return [];
+    return this._videoFilterOptions();
   }
 
   getSourcePreferences() { return []; }
