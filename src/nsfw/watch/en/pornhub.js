@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.pornhub.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.4.6",
+  "version": "1.4.7",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/pornhub.js",
@@ -75,7 +75,14 @@ function pornhubTransports() {
   return [
     { label: "native", options: null },
     { label: "dart", options: { useDartHttpClient: true } },
-    { label: "dart-noproxy", options: { useDartHttpClient: true, noProxy: true } },
+    {
+      label: "dart-noproxy",
+      options: {
+        useDartHttpClient: true,
+        noProxy: true,
+        browserFetchOnError: true
+      }
+    },
     // Last resort: the app's Worker proxy, reached over the extension's own
     // HTTP bridge (the worker endpoint itself is not DNS-blocked).
     { label: "worker-proxy", proxy: true },
