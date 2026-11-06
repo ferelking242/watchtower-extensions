@@ -170,6 +170,74 @@ try {
     "/?k=inka%20sex&p=1&sort=uploaddate&datef=week&durf=10-20min&quality=1080P&vw=h",
   );
 
+  // A filtered page can be a successful but empty response while the same
+  // query has matches. Retry the first page without refinements instead of
+  // telling the user that their search returned nothing.
+  const fallbackFilters = provider.getFilterList();
+  fallbackFilters[0].state = 1;
+  const fallbackRoutes = [];
+  const beforeFallbackGet = provider._get;
+  provider._get = async (route) => {
+    fallbackRoutes.push(route);
+    if (route === "/?k=fallback&p=0&sort=uploaddate") return "<html></html>";
+    if (route === "/?k=fallback&p=0") return "video-search-fixture";
+    return "";
+  };
+  let fallbackSearch;
+  try {
+    fallbackSearch = await provider.search("fallback", 1, fallbackFilters);
+  } finally {
+    provider._get = beforeFallbackGet;
+  }
+  assert.deepEqual(fallbackRoutes, [
+    "/?k=fallback&p=0&sort=uploaddate",
+    "/?k=fallback&p=0",
+  ]);
+  assert.equal(fallbackSearch.list.length, 1);
+  assert.equal(fallbackSearch.list[0].name, "Inkasex video");
+  assert.ok(
+    logs.some(({ message }) =>
+      message.includes("filtered search returned zero cards"),
+    ),
+  );
+
+  // If even the unfiltered HTML route is empty for one call, the same
+  // suggestion flow used by the live preview can recover matching entries.
+  const previewFallbackRoutes = [];
+  let previewVideoCalls = 0;
+  const beforePreviewFallbackGet = provider._get;
+  provider._get = async (route) => {
+    previewFallbackRoutes.push(route);
+    if (route === "/?k=previewfallback&p=0") {
+      previewVideoCalls++;
+      return previewVideoCalls === 1 ? "<html></html>" : "video-search-fixture";
+    }
+    if (route === "/search-suggest/previewfallback") return suggestionFixture;
+    return "";
+  };
+  let previewFallbackSearch;
+  try {
+    previewFallbackSearch = await provider.search(
+      "previewfallback",
+      1,
+      provider.getFilterList(),
+    );
+  } finally {
+    provider._get = beforePreviewFallbackGet;
+  }
+  assert.equal(previewFallbackRoutes[0], "/?k=previewfallback&p=0");
+  assert.ok(previewFallbackRoutes.includes("/search-suggest/previewfallback"));
+  assert.equal(previewFallbackSearch.list.length, 3);
+  assert.ok(
+    previewFallbackSearch.list.some((item) => item.name === "Inkasex video"),
+  );
+  assert.equal(previewFallbackSearch.hasNextPage, false);
+  assert.ok(
+    logs.some(({ message }) =>
+      message.includes("search page was empty; recovered 3 suggestions"),
+    ),
+  );
+
   provider._bestOfMonth = async () => {
     throw new Error("network timeout");
   };

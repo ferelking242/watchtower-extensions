@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xvideos.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.8",
+  "version": "1.3.9",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xvideos.js",
@@ -1042,9 +1042,61 @@ class DefaultExtension extends MProvider {
       const items = this._parseProfileCards(html, "channels");
       return { list: items, hasNextPage: items.length > 0 && this._hasNextPage(html) };
     }
-    const html = await this._get(this._videoSearchPath(query, page, filters));
+    const normalized = String(query || "").trim();
+    const path = this._videoSearchPath(normalized, page, filters);
+    const html = await this._get(path);
     const items = this._parseVideoCards(html);
-    return { list: items, hasNextPage: items.length > 0 && this._hasNextPage(html) };
+    if (items.length > 0) {
+      return { list: items, hasNextPage: this._hasNextPage(html) };
+    }
+
+    // Some app filter states can produce a valid search page with no cards,
+    // even though the same keyword has matches. Keep search useful by retrying
+    // page 1 without refinements before returning an empty result.
+    if (normalized.length >= 2 && Number(page) <= 1) {
+      const unfilteredPath = this._videoSearchPath(normalized, page, []);
+      if (unfilteredPath !== path) {
+        try {
+          const unfilteredHtml = await this._get(unfilteredPath);
+          const unfilteredItems = this._parseVideoCards(unfilteredHtml);
+          if (unfilteredItems.length > 0) {
+            extLog(
+              "warn",
+              `XVideos filtered search returned zero cards; using unfiltered results for "${normalized}"`,
+            );
+            return {
+              list: unfilteredItems,
+              hasNextPage: this._hasNextPage(unfilteredHtml),
+            };
+          }
+        } catch (error) {
+          extLog(
+            "warn",
+            `XVideos unfiltered search fallback failed: ${error.message}`,
+          );
+        }
+      }
+
+      // Match the working live search preview as a final recovery path. It
+      // also includes matching channels and profiles when the video page is
+      // temporarily empty.
+      try {
+        const suggestions = await this._searchSuggestions(normalized);
+        if (suggestions.length > 0) {
+          extLog(
+            "warn",
+            `XVideos search page was empty; recovered ${suggestions.length} suggestions for "${normalized}"`,
+          );
+          return { list: suggestions, hasNextPage: false };
+        }
+      } catch (error) {
+        extLog(
+          "warn",
+          `XVideos search suggestions fallback failed: ${error.message}`,
+        );
+      }
+    }
+    return { list: items, hasNextPage: false };
   }
 
   // ── Detail ───────────────────────────────────────────────────────────────
