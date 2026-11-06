@@ -125,7 +125,27 @@
         "cardStyle": "thumbnail"
       },
       "filters": "chips",
-      "searchPreview": true
+      "searchPreview": true,
+      "tabs": [
+        {
+          "id": "videos",
+          "title": "Vidéos",
+          "source": "search",
+          "resultType": "video"
+        },
+        {
+          "id": "actresses",
+          "title": "Actrices",
+          "source": "custom",
+          "resultType": "actress"
+        },
+        {
+          "id": "channels",
+          "title": "Chaînes",
+          "source": "custom",
+          "resultType": "channel"
+        }
+      ]
     }
   },
   "detail": {

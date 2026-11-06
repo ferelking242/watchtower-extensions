@@ -64,6 +64,14 @@ const xvideosLayout = JSON.parse(
   fs.readFileSync(path.join(root, "ui-layouts/xvideos.json"), "utf8"),
 );
 assert.equal(xvideosLayout.browse.search.searchPreview, true);
+assert.deepEqual(
+  xvideosLayout.browse.search.tabs.map((tab) => [tab.id, tab.source, tab.resultType]),
+  [
+    ["videos", "search", "video"],
+    ["actresses", "custom", "actress"],
+    ["channels", "custom", "channel"],
+  ],
+);
 
 // ── Channel filters and whole-site search preview ─────────────────────────
 const channelFilters = provider.getFilterList("studios");
@@ -154,6 +162,21 @@ try {
   assert.match(suggestions.list[0].description, /1,1M abonnés/);
   assert.equal(suggestions.list[1].link, "https://www.xvideos.com/pornstars/itsvan-inka");
   assert.equal(suggestions.list[2].name, "Inkasex video");
+
+  const actressTab = await provider.getCustomList("search_tab:actresses:inka", 1);
+  assert.equal(actressTab.hasNextPage, false);
+  assert.equal(actressTab.list.length, 1);
+  assert.equal(
+    actressTab.list[0].link,
+    "https://www.xvideos.com/pornstars/itsvan-inka",
+  );
+  const channelTab = await provider.getCustomList("search_tab:channels:inka", 1);
+  assert.equal(channelTab.hasNextPage, false);
+  assert.equal(channelTab.list.length, 1);
+  assert.equal(
+    channelTab.list[0].link,
+    "https://www.xvideos.com/channels/inkasex",
+  );
 
   result = await provider.search("inka", 1, channelFilters);
   assert.equal(requestedRoute, "/search-suggest/inka");

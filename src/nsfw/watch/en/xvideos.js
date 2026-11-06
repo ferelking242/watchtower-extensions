@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xvideos.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.9",
+  "version": "1.4.0",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xvideos.js",
@@ -1314,6 +1314,25 @@ class DefaultExtension extends MProvider {
   // ── Custom lists (home layout + directory pages) ─────────────────────────
   async getCustomList(listId, page) {
     const id = String(listId || "");
+
+    if (id.startsWith("search_tab:")) {
+      const request = id.slice("search_tab:".length);
+      const separator = request.indexOf(":");
+      const tab = separator < 0 ? request : request.slice(0, separator);
+      let query = separator < 0 ? "" : request.slice(separator + 1);
+      try { query = decodeURIComponent(query); } catch (_) {}
+      query = query.trim();
+      if (!query || (tab !== "actresses" && tab !== "channels")) {
+        return { list: [], hasNextPage: false };
+      }
+
+      const suggestions = await this._searchSuggestions(query, false);
+      const route = tab === "actresses" ? "/pornstars/" : "/channels/";
+      const items = suggestions.filter((item) =>
+        String(item.link || "").toLowerCase().includes(route)
+      );
+      return { list: items, hasNextPage: false };
+    }
 
     if (id.startsWith("search_preview:")) {
       let query = id.slice("search_preview:".length);
