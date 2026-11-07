@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.xvideos.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.4.0",
+  "version": "1.4.1",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/xvideos.js",
@@ -752,7 +752,10 @@ class DefaultExtension extends MProvider {
     const perPage = Number(payload && payload.nb_per_page) || items.length || 1;
     const current = Number(payload && payload.current_page) || 0;
     const hasNextPage = total > 0 && (current + 1) * perPage < total;
-    return { list: items, hasNextPage };
+    // `nb_videos` is the profile's real catalogue size (thousands of videos).
+    // Publishing it lets the app show the true count instead of the number of
+    // cards already loaded, and stop paging at the announced end.
+    return { list: items, hasNextPage, total: total > 0 ? total : undefined };
   }
 
   // ── Listing endpoints ────────────────────────────────────────────────────
