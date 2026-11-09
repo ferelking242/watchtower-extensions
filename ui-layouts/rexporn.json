@@ -27,37 +27,8 @@
         "seeAll": true
       },
       {
-        "id": "pornstars",
-        "component": "creatorRow",
-        "title": "Pornstars",
-        "accent": "#B388FF",
-        "icon": "star",
-        "seeAll": true
-      },
-      {
-        "id": "studios",
-        "component": "studioExplorer",
-        "title": "Studios",
-        "accent": "#7C4DFF",
-        "icon": "business",
-        "seeAll": true
-      },
-      {
-        "id": "tags",
-        "component": "grid",
-        "title": "Browse Categories",
-        "accent": "#64D8CB",
-        "icon": "category",
-        "columns": 3,
-        "rows": 3,
-        "gridOrder": "column",
-        "scrollDirection": "horizontal",
-        "cardStyle": "thumbnail",
-        "seeAll": true
-      },
-      {
         "id": "popular",
-        "component": "carousel",
+        "component": "landscape",
         "title": "Most Popular",
         "accent": "#FF7043",
         "icon": "whatshot",
@@ -65,7 +36,7 @@
       },
       {
         "id": "category_big-tits",
-        "component": "carousel",
+        "component": "landscape",
         "title": "Big Tits",
         "accent": "#EC407A",
         "seeAll": true
@@ -82,8 +53,15 @@
         "component": "grid",
         "title": "Russian",
         "accent": "#42A5F5",
-        "columns": 3,
-        "cardStyle": "thumbnail",
+        "columns": 4,
+        "rows": 3,
+        "scrollDirection": "horizontal",
+        "cardStyle": "landscape",
+        "params": {
+          "cardWidth": 176,
+          "mainAxisSpacing": 10,
+          "crossAxisSpacing": 8
+        },
         "seeAll": true
       }
     ]

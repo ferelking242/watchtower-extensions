@@ -6168,7 +6168,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000180.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.2.10",
+    "version": "1.2.11",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@732c0509700a8c27f924c6aa1d112b8926227f04/src/nsfw/watch/en/rexporn.js",
     "isManga": false,
     "isNsfw": true,
@@ -6181,19 +6181,15 @@
     "requiresAccount": false,
     "hasDRM": false,
     "subCategories": [
-      "pornstars",
-      "studios",
       "categories",
       "tags"
     ],
     "contentSubtype": [
       "videos",
-      "pornstars",
-      "studios",
       "tags"
     ],
     "uiLayout": "ui-layouts/rexporn.json",
-    "uiLayoutVersion": "1.2.2",
+    "uiLayoutVersion": "1.2.3",
     "tags": [
       "watch",
       "english"

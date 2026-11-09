@@ -174,9 +174,22 @@ const expectedCategories = context.RexPornForTest.CATEGORIES
   .filter(([, slug]) => !!slug);
 assert.equal(layout.home.sections[0].component, "spotlight");
 assert.equal(
-  layout.home.sections.find((section) => section.id === "tags").cardStyle,
-  "thumbnail",
+  layout.home.sections.some((section) =>
+    ["tags", "pornstars", "studios"].includes(section.id),
+  ),
+  false,
+  "unsupported category/person sections are not exposed on the home page",
 );
+assert.equal(
+  layout.home.sections.find((section) => section.id === "popular").component,
+  "landscape",
+);
+const russianSection = layout.home.sections.find(
+  (section) => section.id === "category_russian",
+);
+assert.equal(russianSection.columns, 4);
+assert.equal(russianSection.rows, 3);
+assert.equal(russianSection.cardStyle, "landscape");
 
 const [tags, categories] = await Promise.all([
   provider.getCustomList("tags", 1),

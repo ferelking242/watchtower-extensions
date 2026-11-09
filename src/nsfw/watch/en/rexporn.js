@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.rexporn.st/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.10",
+  "version": "1.2.11",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/rexporn.js",
