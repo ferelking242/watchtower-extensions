@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      {
+        "id": "popular",
+        "component": "spotlight",
+        "title": "Popular videos",
+        "accent": "#FF3D71",
+        "icon": "whatshot",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "watching_now",
+        "component": "showcase",
+        "title": "Watching now",
+        "accent": "#26A69A",
+        "icon": "play_circle",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "trending",
+        "component": "rankedWide",
+        "title": "Trending · NEW",
+        "accent": "#F5A623",
+        "icon": "trending_up",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "explore",
+        "component": "landscape",
+        "title": "Explore · NEW",
+        "accent": "#42A5F5",
+        "icon": "explore",
+        "params": {
+          "layout": "grid",
+          "columns": 2,
+          "rows": 2
+        },
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "latest",
+        "component": "compactRow",
+        "title": "Recent",
+        "accent": "#00B8D4",
+        "icon": "fiber_new",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "time_periods",
+        "component": "grid",
+        "title": "Popular by period",
+        "accent": "#FFB300",
+        "icon": "date_range",
+        "columns": 3,
+        "rows": 1,
+        "cardStyle": "tag",
+        "seeAll": false
+      },
+      {
+        "id": "quick_searches",
+        "component": "grid",
+        "title": "Popular searches",
+        "accent": "#7C4DFF",
+        "icon": "search",
+        "columns": 2,
+        "rows": 4,
+        "cardStyle": "tag",
+        "seeAll": true
+      }
+    ]
+  },
+  "browse": {
+    "popular": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 3,
+        "cardStyle": "thumbnail"
+      },
+      "searchPreview": false,
+      "tabs": [
+        {
+          "id": "videos",
+          "title": "Videos",
+          "source": "search",
+          "resultType": "video"
+        }
+      ]
+    }
+  },
+  "detail": {
+    "hero": "backdrop",
+    "episodeList": "compact",
+    "showRecommendations": false
+  },
+  "player": {
+    "mode": "standard"
+  }
+}
