@@ -50,6 +50,8 @@ const chaptersHtml = `
     <ul class="main">
       <li class="wp-manga-chapter"><a href="${detailUrl}chapter-2/">Chapter 2 - Latest</a></li>
       <li class="wp-manga-chapter"><a href="${detailUrl}chapter-1/">Chapter 1 - Start</a></li>
+      <li class="wp-manga-chapter"><a href="${detailUrl}vol-02-chapter-440-cq-1-3/">Vol.02 - Chapter 440</a></li>
+      <li class="wp-manga-chapter"><a href="${detailUrl}season-03-episode-114/">[Season 03] Episode 114</a></li>
     </ul>
   </div>
   <a href="${detailUrl}chapter-99/">Unrelated link outside chapter list</a>`;
@@ -111,7 +113,7 @@ const { sources, DefaultExtension } = sandbox.__exports;
 const extension = new DefaultExtension();
 extension.source = sources[0];
 
-assert.equal(sources[0].version, "1.3.0");
+assert.equal(sources[0].version, "1.4.0");
 
 const allResults = await extension.search("Rock & Roll", 1, []);
 assert.equal(allResults.list[0].name, "Rock It Girl");
@@ -141,6 +143,22 @@ const tabSearch = new URL(requests.at(-1).url);
 assert.equal(tabSearch.pathname, "/gl-genre/romance/");
 assert.equal(tabSearch.searchParams.get("s"), "rock music");
 
+// The app's live search box calls getCustomList with a "search_preview:" id.
+const previewResults = await extension.getCustomList(
+  "search_preview:rock%20%26%20roll",
+  1,
+);
+assert.equal(previewResults.list[0].name, "Rock It Girl");
+const previewSearch = new URL(requests.at(-1).url);
+assert.equal(previewSearch.pathname, "/");
+assert.equal(previewSearch.searchParams.get("s"), "rock & roll");
+assert.equal(previewSearch.searchParams.get("post_type"), "wp-manga");
+
+const newManga = await extension.getCustomList("new_manga", 1);
+assert.equal(newManga.list[0].name, "Rock It Girl");
+const newMangaSearch = new URL(requests.at(-1).url);
+assert.equal(newMangaSearch.searchParams.get("m_orderby"), "new-manga");
+
 const spotlight = await extension.getCustomList("spotlight", 1);
 assert.deepEqual(
   Array.from(spotlight.list, (item) => item.name),
@@ -149,10 +167,15 @@ assert.deepEqual(
 
 const detail = await extension.getDetail(detailUrl);
 assert.equal(detail.name, "Example Manga");
-assert.equal(detail.chapters.length, 2);
+assert.equal(detail.chapters.length, 4);
 assert.deepEqual(
   Array.from(detail.chapters, (chapter) => chapter.name),
-  ["Chapter 2 - Latest", "Chapter 1 - Start"],
+  [
+    "Chapter 2 - Latest",
+    "Chapter 1 - Start",
+    "Vol.02 - Chapter 440",
+    "[Season 03] Episode 114",
+  ],
 );
 assert.ok(
   detail.chapters.every(
@@ -160,6 +183,14 @@ assert.ok(
       chapter.url.startsWith("https://lilymanga.net/") &&
       !/read first|read last|mangabuddy/i.test(chapter.name),
   ),
+);
+// Volume- and season-prefixed slugs must survive parsing, not just bare
+// "chapter-N"/"episode-N" URLs.
+assert.ok(
+  detail.chapters.some((chapter) => /vol-02-chapter-440/.test(chapter.url)),
+);
+assert.ok(
+  detail.chapters.some((chapter) => /season-03-episode-114/.test(chapter.url)),
 );
 const chapterRequest = requests.find((request) => request.method === "POST");
 assert.equal(
@@ -185,14 +216,31 @@ const heroSections = layout.home.sections.filter(
   (section) => section.component === "spotlight" || section.component === "carousel",
 );
 assert.equal(heroSections.length, 1);
+assert.equal(heroSections[0].id, "spotlight");
 assert.deepEqual(
   layout.browse.search.tabs.map((tab) => tab.id),
   ["all", "yuri", "romance", "fantasy", "drama"],
 );
+assert.equal(layout.browse.search.searchPreview, true);
 assert.ok(
   layout.home.sections
     .filter((section) => section.id.startsWith("genre_"))
     .every((section) => section.component === "compactRow"),
+);
+// Every declared section must resolve to a real getCustomList id.
+assert.deepEqual(
+  layout.home.sections.map((section) => section.id),
+  [
+    "spotlight",
+    "popular",
+    "latest_updates",
+    "new_manga",
+    "top_rated",
+    "genre_yuri",
+    "genre_romance",
+    "genre_fantasy",
+    "genre_drama",
+  ],
 );
 
 const index = JSON.parse(
@@ -201,6 +249,6 @@ const index = JSON.parse(
 const catalogEntry = index.find((entry) => entry.id === 2000000051);
 assert.equal(catalogEntry.version, sources[0].version);
 assert.equal(catalogEntry.uiLayout, "ui-layouts/lilymanga.json");
-assert.equal(catalogEntry.uiLayoutVersion, "1.1.0");
+assert.equal(catalogEntry.uiLayoutVersion, "1.2.0");
 
 console.log("Lily Manga unit checks passed: search, genre tabs, chapters, reader, and layout.");

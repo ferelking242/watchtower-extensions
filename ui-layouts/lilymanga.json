@@ -10,11 +10,35 @@
         "icon": "auto_awesome"
       },
       {
+        "id": "popular",
+        "component": "ranked",
+        "title": "Most Popular",
+        "accent": "error",
+        "icon": "trending_up",
+        "seeAll": true
+      },
+      {
         "id": "latest_updates",
         "component": "compactRow",
         "title": "Latest Chapter Updates",
         "accent": "tertiary",
         "icon": "update",
+        "seeAll": true
+      },
+      {
+        "id": "new_manga",
+        "component": "compactRow",
+        "title": "Recently Added",
+        "accent": "secondary",
+        "icon": "fiber_new",
+        "seeAll": true
+      },
+      {
+        "id": "top_rated",
+        "component": "compactRow",
+        "title": "Top Rated",
+        "accent": "#FFC107",
+        "icon": "star",
         "seeAll": true
       },
       {
@@ -50,7 +74,7 @@
         "seeAll": true
       }
     ],
-    "note": "One featured slider, followed by latest updates and dedicated genre shelves."
+    "note": "One featured slider, then popularity, updates, new titles and dedicated genre shelves."
   },
   "browse": {
     "popular": {
@@ -70,6 +94,7 @@
         "cardStyle": "poster"
       },
       "filters": "chips",
+      "searchPreview": true,
       "tabs": [
         { "id": "all", "title": "All", "source": "search" },
         { "id": "yuri", "title": "Yuri", "source": "custom" },

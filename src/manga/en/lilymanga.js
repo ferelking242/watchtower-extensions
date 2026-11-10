@@ -5,7 +5,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/manga-2000000051.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "1.3.0",
+    "version": "1.4.0",
     "login": false,
     "forYou": false,
     "pkgPath": "manga/src/en/lilymanga.js",
@@ -15,7 +15,7 @@ const watchtowerSources = [{
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
     "uiLayout": "ui-layouts/lilymanga.json",
-    "uiLayoutVersion": "1.0.0"
+    "uiLayoutVersion": "1.2.0"
 }];
 
 const BASE_URL = "https://lilymanga.net";
@@ -193,14 +193,19 @@ class DefaultExtension extends MProvider {
             const anchor = anchors[i];
             const href = anchor.getHref || anchor.attr("href") || "";
             const path = href.split(/[?#]/, 1)[0];
-            if (!/\/(?:episode|chapter)-[^/]+\/?$/i.test(path)) continue;
+            // Chapter slugs are not always bare "chapter-N"/"episode-N": many
+            // series prefix them with a volume/season ("vol-02-chapter-440",
+            // "season-03-episode-114"), so match a chapter/episode token
+            // anywhere in the final segment instead of anchoring it at the
+            // start of the segment.
+            const slug = path.split("/").filter(Boolean).pop() || "";
+            if (!/(?:^|[-_])(?:chapter|episode)[-_]?\d/i.test(slug)) continue;
             const anchorId = String(anchor.attr("id") || "").toLowerCase();
             const nameText = String(anchor.text || "").replace(/\s+/g, " ").trim();
             if (/btn-read-(?:first|last)/.test(anchorId) || /^(?:read first|read last)$/i.test(nameText)) continue;
             const url = this.resolveUrl(href, baseUrl);
             if (!url || seen[url]) continue;
             seen[url] = true;
-            const slug = path.split("/").filter(Boolean).pop().replace(/^(?:episode|chapter)-/i, "");
             const name = nameText || `Chapter ${slug.replace(/[-_]+/g, " ")}`;
             chapters.push({ name, url });
         }
@@ -346,14 +351,30 @@ class DefaultExtension extends MProvider {
             }
             return this.getSearchResults(term, page, searchTab[1], "trending");
         }
+        if (String(listId || "").indexOf("search_preview:") === 0) {
+            // The app's live search box queries getCustomList("search_preview:<term>").
+            // Without this branch the section fell through to getPopular, so the
+            // preview listed trending titles instead of matches for the term.
+            let term = String(listId).slice("search_preview:".length);
+            try {
+                term = decodeURIComponent(term);
+            } catch (_) {
+                // Keep the original query if the caller passed malformed encoding.
+            }
+            return this.getSearchResults(term, page, "", "trending");
+        }
         if (listId === "spotlight") {
             const homeUrl = `${this.getBaseUrl()}/`;
             const response = await new Client().get(homeUrl, this.getHeaders(homeUrl));
             const list = this.parseCards(response.body, ".popular-slider .slider__item");
             return { list: list.slice(0, 6), hasNextPage: false };
         }
-        if (listId === "latest_updates") return this.getLatestUpdates(page);
+        if (listId === "latest_updates" || listId === "latest") return this.getLatestUpdates(page);
+        if (listId === "popular") return this.getPopular(page);
         if (listId === "top_rated") return this.getTopRated(page);
+        if (listId === "new_manga" || listId === "new") {
+            return this.getListing(`${this.getBaseUrl()}/gl/`, page, "new-manga");
+        }
 
         const genre = String(listId || "").match(/^genre_([a-z0-9-]+)$/i);
         if (genre) {
