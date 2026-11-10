@@ -29,9 +29,22 @@ class Client {
     }
   }
   async get(url, headers) { return this._fetch("GET", url, headers); }
-  async post(url, body, headers) {
-    let b = body;
-    let h = { ...(headers || {}) };
+  async post(url, first, second) {
+    const isHeaderBag = (value) =>
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      Object.keys(value).some((key) =>
+        /^(accept|content-type|referer|user-agent|origin|cookie|authorization|x-)/i.test(key),
+      );
+    const headerFirst =
+      first &&
+      typeof first === "object" &&
+      !Array.isArray(first) &&
+      (second == null || typeof second === "string" || isHeaderBag(first));
+    let h = headerFirst ? first : second;
+    let b = headerFirst ? second : first;
+    h = { ...(h || {}) };
     if (b && typeof b === "object" && !(b instanceof URLSearchParams) && !Buffer.isBuffer(b)) {
       b = JSON.stringify(b);
       if (!h["Content-Type"] && !h["content-type"]) h["Content-Type"] = "application/json";

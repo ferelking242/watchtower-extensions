@@ -5,7 +5,7 @@ const watchtowerSources = [{
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/manga-2000000051.png",
     "typeSource": "single",
     "itemType": 0,
-    "version": "1.2.0",
+    "version": "1.3.0",
     "login": false,
     "forYou": false,
     "pkgPath": "manga/src/en/lilymanga.js",
@@ -36,11 +36,13 @@ class DefaultExtension extends MProvider {
         };
     }
 
-    resolveUrl(value) {
+    resolveUrl(value, baseUrl) {
         const url = String(value || "").trim();
         if (!url || url.startsWith("data:")) return "";
         if (/^https?:\/\//i.test(url)) return url;
         if (url.startsWith("//")) return `https:${url}`;
+        if (url.startsWith("/")) return `${this.getBaseUrl()}${url}`;
+        if (baseUrl) return `${baseUrl.replace(/\/+$/, "")}/${url.replace(/^\/+/, "")}`;
         return `${this.getBaseUrl()}/${url.replace(/^\/+/, "")}`;
     }
 
@@ -152,12 +154,10 @@ class DefaultExtension extends MProvider {
         return "trending";
     }
 
-    async search(query, page, filters) {
-        const term = String(query || "").trim();
-        const genre = this.selectedGenre(filters);
-        const order = this.selectedSort(filters);
-        const path = genre
-            ? `${this.getBaseUrl()}/gl-genre/${genre}/`
+    async getSearchResults(term, page, genre, order) {
+        const safeGenre = /^[a-z0-9-]+$/i.test(genre || "") ? genre : "";
+        const path = safeGenre
+            ? `${this.getBaseUrl()}/gl-genre/${safeGenre}/`
             : (term ? `${this.getBaseUrl()}/` : `${this.getBaseUrl()}/gl/`);
         let url = this.pagedPath(path, page);
         const params = [];
@@ -175,20 +175,34 @@ class DefaultExtension extends MProvider {
         };
     }
 
-    parseChapters(body) {
+    async search(query, page, filters) {
+        return this.getSearchResults(
+            String(query || "").trim(),
+            page,
+            this.selectedGenre(filters),
+            this.selectedSort(filters)
+        );
+    }
+
+    parseChapters(body, baseUrl) {
         const doc = new Document(body || "");
-        const anchors = doc.select("a[href]");
+        const anchors = doc.select(".listing-chapters_wrap a[href]");
         const chapters = [];
         const seen = {};
         for (let i = 0; i < anchors.length; i++) {
             const anchor = anchors[i];
             const href = anchor.getHref || anchor.attr("href") || "";
-            if (!/\/(?:episode-[^/]+|chapter-[^/]+|chapter\/[^/]+)\/?$/i.test(href)) continue;
-            const url = this.resolveUrl(href);
+            const path = href.split(/[?#]/, 1)[0];
+            if (!/\/(?:episode|chapter)-[^/]+\/?$/i.test(path)) continue;
+            const anchorId = String(anchor.attr("id") || "").toLowerCase();
+            const nameText = String(anchor.text || "").replace(/\s+/g, " ").trim();
+            if (/btn-read-(?:first|last)/.test(anchorId) || /^(?:read first|read last)$/i.test(nameText)) continue;
+            const url = this.resolveUrl(href, baseUrl);
             if (!url || seen[url]) continue;
             seen[url] = true;
-            const name = String(anchor.text || "").trim();
-            chapters.push({ name: name || url.split("/").filter(Boolean).pop(), url });
+            const slug = path.split("/").filter(Boolean).pop().replace(/^(?:episode|chapter)-/i, "");
+            const name = nameText || `Chapter ${slug.replace(/[-_]+/g, " ")}`;
+            chapters.push({ name, url });
         }
         return chapters;
     }
@@ -225,28 +239,23 @@ class DefaultExtension extends MProvider {
         }
 
         let chapters = [];
-        const mangaId = (body.match(/"manga_id"\s*:\s*"?(\d+)/i) || body.match(/data-id="(\d+)"/i) || [])[1];
-        if (mangaId) {
-            try {
-                const headers = this.getHeaders(detailUrl);
-                headers["Content-Type"] = "application/x-www-form-urlencoded; charset=UTF-8";
-                const ajax = await new Client().post(
-                    `${this.getBaseUrl()}/wp-admin/admin-ajax.php`,
-                    headers,
-                    `action=manga_get_chapters&manga=${encodeURIComponent(mangaId)}`
-                );
-                chapters = this.parseChapters(ajax.body);
-            } catch (_) {
-                // The detail page still exposes its first and latest chapter links.
-            }
+        try {
+            const chapterBase = detailUrl.split(/[?#]/, 1)[0].replace(/\/+$/, "");
+            const chapterUrl = `${chapterBase}/ajax/chapters/?t=1`;
+            const headers = {
+                ...this.getHeaders(detailUrl),
+                "Accept": "*/*",
+                "X-Requested-With": "XMLHttpRequest"
+            };
+            const ajax = await new Client().post(chapterUrl, headers, null);
+            chapters = this.parseChapters(ajax.body, detailUrl);
+        } catch (_) {
+            // Do not turn the detail page's Read First/Read Last buttons into chapters.
         }
-        if (chapters.length === 0) chapters = this.parseChapters(body);
+        if (chapters.length === 0) chapters = this.parseChapters(body, detailUrl);
 
         const chapterOrder = String(new SharedPreferences().get("chapter_order") || "newest");
         if (chapterOrder === "oldest") chapters.reverse();
-        if (chapters.length === 0) {
-            chapters.push({ name: String(title ? title.text : "Read"), url: detailUrl });
-        }
 
         return {
             name: String(title ? title.text : "").trim(),
@@ -327,6 +336,16 @@ class DefaultExtension extends MProvider {
     }
 
     async getCustomList(listId, page) {
+        const searchTab = String(listId || "").match(/^search_tab:([a-z0-9-]+):(.*)$/i);
+        if (searchTab) {
+            let term = searchTab[2] || "";
+            try {
+                term = decodeURIComponent(term);
+            } catch (_) {
+                // Keep the original query if the caller passed malformed encoding.
+            }
+            return this.getSearchResults(term, page, searchTab[1], "trending");
+        }
         if (listId === "spotlight") {
             const homeUrl = `${this.getBaseUrl()}/`;
             const response = await new Client().get(homeUrl, this.getHeaders(homeUrl));

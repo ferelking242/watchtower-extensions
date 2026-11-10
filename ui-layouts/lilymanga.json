@@ -11,7 +11,7 @@
       },
       {
         "id": "latest_updates",
-        "component": "carousel",
+        "component": "compactRow",
         "title": "Latest Chapter Updates",
         "accent": "tertiary",
         "icon": "update",
@@ -19,7 +19,7 @@
       },
       {
         "id": "genre_yuri",
-        "component": "carousel",
+        "component": "compactRow",
         "title": "Yuri",
         "accent": "#D97AA7",
         "icon": "favorite",
@@ -27,7 +27,7 @@
       },
       {
         "id": "genre_romance",
-        "component": "carousel",
+        "component": "compactRow",
         "title": "Romance",
         "accent": "#E58BB5",
         "icon": "favorite_border",
@@ -35,14 +35,22 @@
       },
       {
         "id": "genre_fantasy",
-        "component": "carousel",
+        "component": "compactRow",
         "title": "Fantasy",
         "accent": "#8E7CC3",
         "icon": "auto_awesome",
         "seeAll": true
+      },
+      {
+        "id": "genre_drama",
+        "component": "compactRow",
+        "title": "Drama",
+        "accent": "secondary",
+        "icon": "theater_comedy",
+        "seeAll": true
       }
     ],
-    "note": "Home rails reflect Lily Manga's trending slider, latest chapter feed, and popular genres."
+    "note": "One featured slider, followed by latest updates and dedicated genre shelves."
   },
   "browse": {
     "popular": {
@@ -61,7 +69,14 @@
         "columns": 3,
         "cardStyle": "poster"
       },
-      "filters": "chips"
+      "filters": "chips",
+      "tabs": [
+        { "id": "all", "title": "All", "source": "search" },
+        { "id": "yuri", "title": "Yuri", "source": "custom" },
+        { "id": "romance", "title": "Romance", "source": "custom" },
+        { "id": "fantasy", "title": "Fantasy", "source": "custom" },
+        { "id": "drama", "title": "Drama", "source": "custom" }
+      ]
     }
   },
   "player": {

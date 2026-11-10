@@ -24,6 +24,11 @@ const ROOT      = path.resolve(__dirname, "..");
 const TIMEOUT   = 20000;
 
 // ── Shared stubs ───────────────────────────────────────────────
+function isHeaderBag(value) {
+  return value && typeof value === "object" && !Array.isArray(value) &&
+    Object.keys(value).some((key) => /^(accept|content-type|referer|user-agent|origin|cookie|authorization|x-)/i.test(key));
+}
+
 class Client {
   constructor() {
     this.requestLog = null;
@@ -57,7 +62,15 @@ class Client {
     }
   }
   async get(url, h)       { return this._fetch("GET",  url, h); }
-  async post(url, body, h){ let b=body,hd={...(h||{})};if(b&&typeof b==="object"&&!(b instanceof URLSearchParams)){b=JSON.stringify(b);if(!hd["Content-Type"]&&!hd["content-type"])hd["Content-Type"]="application/json";}return this._fetch("POST",url,hd,b); }
+  async post(url, first, second){
+    const headerFirst = first && typeof first === "object" && !Array.isArray(first) &&
+      (second == null || typeof second === "string" || first instanceof URLSearchParams === false && isHeaderBag(first));
+    let h = headerFirst ? first : second;
+    let b = headerFirst ? second : first;
+    const hd = { ...(h || {}) };
+    if(b&&typeof b==="object"&&!(b instanceof URLSearchParams)){b=JSON.stringify(b);if(!hd["Content-Type"]&&!hd["content-type"])hd["Content-Type"]="application/json";}
+    return this._fetch("POST",url,hd,b);
+  }
   async head(url, h)      { return this._fetch("HEAD", url, h); }
 }
 class MProvider { constructor() { this.source = null; } }
@@ -329,13 +342,14 @@ async function runExtension(relPath, options = {}) {
   }
 
   // 3. search (short query to avoid blank results)
-  const search = await step("search", () => ext.search("a", 1, []));
+  const query = options.query || "a";
+  const search = await step("search", () => ext.search(query, 1, []));
   if (options.strict && (!search?.list?.length || !search.list.every((item) => item?.url || item?.link))) {
     result.ok = false;
     result.errors.push("search: empty result or missing item URL");
   }
   if (options.deep && search?.hasNextPage) {
-    const searchPageTwo = await step("searchPage2", () => ext.search("a", 2, []));
+    const searchPageTwo = await step("searchPage2", () => ext.search(query, 2, []));
     const ratio = overlapRatio(search.list, searchPageTwo?.list);
     result.steps.searchPagination = {
       ok: !!searchPageTwo?.list?.length && ratio < 0.8,
@@ -483,6 +497,7 @@ async function main() {
   let typeFilter   = null;
   const selectedFiles = [];
   let concurrency  = 8;
+  let query = "a";
   let outputFile   = path.join(__dirname, "report.json");
 
   for (let i=0; i<args.length; i++) {
@@ -492,6 +507,7 @@ async function main() {
       selectedFiles.push(...args[++i].split(",").map((file) => file.trim()).filter(Boolean));
     }
     if (args[i]==="--concurrency" && args[i+1]) { concurrency = parseInt(args[++i])||8; }
+    if (args[i]==="--query"       && args[i+1]) { query = args[++i]; }
     if (args[i]==="--out"         && args[i+1]) { outputFile  = args[++i]; }
   }
   const deep = args.includes("--deep");
@@ -504,7 +520,7 @@ async function main() {
   process.stderr.write(`   Output     : ${outputFile}\n\n`);
 
   const start  = Date.now();
-  const tasks  = files.map(f => () => runExtension(f, { deep, strict }));
+  const tasks  = files.map(f => () => runExtension(f, { deep, strict, query }));
   let   passed = 0, failed = 0;
 
   const results = await pool(tasks, concurrency, (r, i, total) => {
