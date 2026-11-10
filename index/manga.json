@@ -1362,7 +1362,7 @@
     "typeSource": "single",
     "itemType": 0,
     "version": "1.3.0",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124ac2fc97a6478f1a42c58537199dfd46a635c4/src/manga/en/lilymanga.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@0a18a93ce46bf51a9f0f8e74f77f7a9f241b1db0/src/manga/en/lilymanga.js",
     "uiLayout": "ui-layouts/lilymanga.json",
     "uiLayoutVersion": "1.1.0",
     "isManga": true,
