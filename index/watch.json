@@ -15537,7 +15537,7 @@
     "version": "1.2.0",
     "uiLayout": "ui-layouts/noodlemagazine.json",
     "uiLayoutVersion": "1.1.0",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@fba7c6d97e611ce7c2df2df8b62bd4c3f881b337/src/nsfw/watch/en/noodlemagazine.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@8213005cbe33194eff8af799d31e48d4fd19dac6/src/nsfw/watch/en/noodlemagazine.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
