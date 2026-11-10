@@ -27,23 +27,40 @@ const listingHtml = `
       <img src="//cdn.example.test/thumb/two.jpg">
     </a>
   </div>
-  <nav class="pagination"><a rel="next" href="/home?page=2">Next</a></nav>
+  <nav class="pagination"><a rel="next" href="/home?p=1">Next</a></nav>
+  <div class="suggestions">
+    <a href="/video/raped">Raped</a>
+    <a href="/video/bitch">Bitch</a>
+  </div>
 `;
 const detailHtml = `
   <html><head>
     <meta property="og:title" content="Generic NoodleMagazine title">
     <meta property="og:image" content="/poster.jpg">
+    <meta property="og:video" content="https://nmcorp.video/player/example?m=test">
   </head><body>
     <h1>Specific video title</h1>
     <video poster="/player-poster.jpg"></video>
   </body></html>
 `;
+const playerHtml = `
+  <script>
+    window.playlist = {
+      "sources": [
+        {"file":"https://cdn2.pvvstream.pro/video_720p.mp4?secure=test","label":"720","type":"mp4"},
+        {"file":"https://cdn2.pvvstream.pro/video_480p.mp4?secure=test","label":"480","type":"mp4"}
+      ]
+    };
+  </script>
+`;
 let challengeMode = false;
 const requests = [];
+const requestHeaders = [];
 
 class TestClient {
-  async get(url) {
+  async get(url, headers) {
     requests.push(url);
+    requestHeaders.push(headers);
     if (challengeMode) {
       return {
         statusCode: 403,
@@ -52,7 +69,11 @@ class TestClient {
     }
     return {
       statusCode: 200,
-      body: url.includes("/watch/") ? detailHtml : listingHtml,
+      body: url.includes("/player/")
+        ? playerHtml
+        : url.includes("/watch/")
+          ? detailHtml
+          : listingHtml,
     };
   }
 }
@@ -76,7 +97,7 @@ assert.equal(popular.hasNextPage, true);
 await provider.getLatestUpdates(2);
 assert.equal(
   requests.at(-1),
-  "https://noodlemagazine.com/home?range=recent&page=2",
+  "https://noodlemagazine.com/home?range=recent&p=1",
 );
 
 await provider.search("tina nanami and 712", 1);
@@ -86,15 +107,17 @@ assert.equal(
 );
 
 for (const [listId, expectedPath] of [
-  ["popular", "/home?page=2"],
-  ["latest", "/home?range=recent&page=2"],
-  ["watching_now", "/now?page=2"],
-  ["trending", "/popular/trending?page=2"],
-  ["explore", "/home?range=explore&page=2"],
-  ["recent", "/home?range=recent&page=2"],
-  ["range:day", "/home?range=day&page=2"],
-  ["range:week", "/home?range=week&page=2"],
-  ["range:month", "/home?range=month&page=2"],
+  ["popular", "/home?p=1"],
+  ["latest", "/home?range=recent&p=1"],
+  ["watching_now", "/now?p=1"],
+  ["trending", "/popular/trending?p=1"],
+  ["explore", "/home?range=explore&p=1"],
+  ["recent", "/home?range=recent&p=1"],
+  ["raped", "/video/raped?p=1"],
+  ["bitch", "/video/bitch?p=1"],
+  ["range:day", "/home?range=day&p=1"],
+  ["range:week", "/home?range=week&p=1"],
+  ["range:month", "/home?range=month&p=1"],
 ]) {
   await provider.getCustomList(listId, 2);
   assert.equal(requests.at(-1), "https://noodlemagazine.com" + expectedPath);
@@ -114,6 +137,16 @@ assert.equal(
 const periods = await provider.getCustomList("time_periods", 1);
 assert.equal(periods.list.length, 3);
 assert.equal(periods.list[0].collectionId, "range:day");
+assert.equal(periods.list[0].imageUrl, "https://noodlemagazine.com/thumb/one.jpg");
+
+const trends = await provider.getCustomList("recent_trends", 1);
+assert.deepEqual(trends.list.map((item) => item.name), ["Raped", "Bitch"]);
+assert.equal(trends.list[0].collectionId, "search_query:raped");
+await provider.getCustomList(trends.list[1].collectionId, 1);
+assert.equal(
+  requests.at(-1),
+  "https://noodlemagazine.com/video/bitch",
+);
 
 const detail = await provider.getDetail("https://noodlemagazine.com/watch/example");
 assert.equal(detail.name, "Specific video title");
@@ -121,11 +154,15 @@ assert.equal(detail.imageUrl, "https://noodlemagazine.com/poster.jpg");
 
 const requestCountBeforePlayer = requests.length;
 const videos = await provider.getVideoList("https://noodlemagazine.com/watch/example");
-assert.equal(requests.length, requestCountBeforePlayer);
-assert.equal(videos.length, 1);
-assert.equal(videos[0].type, "webview");
-assert.equal(videos[0].kind, "webview");
-assert.equal(videos[0].url, "https://noodlemagazine.com/watch/example");
+assert.equal(requests.length, requestCountBeforePlayer + 1);
+assert.equal(requests.at(-1), "https://nmcorp.video/player/example?m=test");
+assert.equal(requestHeaders.at(-1).Referer, "https://noodlemagazine.com/watch/example");
+assert.equal(videos.length, 2);
+assert.equal(videos[0].quality, "720p");
+assert.equal(
+  videos[0].url,
+  "https://cdn2.pvvstream.pro/video_720p.mp4?secure=test",
+);
 
 challengeMode = true;
 await assert.rejects(
@@ -141,10 +178,13 @@ assert.deepEqual(sectionIds, [
   "trending",
   "explore",
   "latest",
+  "raped",
+  "bitch",
   "time_periods",
+  "recent_trends",
   "quick_searches",
 ]);
 
 console.log(
-  "NoodleMagazine checks passed (routes, cards, shortcuts, detail, Web player, challenge reporting, layout).",
+  "NoodleMagazine checks passed (routes, pagination, covers, categories, detail, streams, challenge reporting, layout).",
 );

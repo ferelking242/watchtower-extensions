@@ -6,10 +6,10 @@ const watchtowerSources = [{
   "iconUrl": "https://noodlemagazine.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "pkgPath": "nsfw/watch/en/noodlemagazine.js",
   "uiLayout": "ui-layouts/noodlemagazine.json",
-  "uiLayoutVersion": "1.0.0",
+  "uiLayoutVersion": "1.1.0",
   "notes": "Adult content (18+) — noodlemagazine",
   "isNsfw": true
 }];
@@ -49,7 +49,7 @@ class DefaultExtension extends MProvider {
   getHeaders(url) {
     // The runtime supplies the User-Agent for its current request context.
     return {
-      "Referer": BASE_URL + "/",
+      "Referer": url || BASE_URL + "/",
       "Accept-Language": "en-US,en;q=0.9"
     };
   }
@@ -58,7 +58,9 @@ class DefaultExtension extends MProvider {
     const currentPage = Math.max(1, Number(page) || 1);
     const base = BASE_URL + path;
     if (currentPage <= 1) return base;
-    return base + (path.indexOf("?") >= 0 ? "&" : "?") + "page=" + currentPage;
+    const separator = path.indexOf("?") >= 0 ? "&" : "?";
+    // NoodleMagazine uses zero-based `p` for pagination; `page` is ignored.
+    return base + separator + "p=" + (currentPage - 1);
   }
 
   _absoluteUrl(value) {
@@ -85,8 +87,8 @@ class DefaultExtension extends MProvider {
       /<title[^>]*>\s*(?:just a moment|attention required)|cf-chl-|__cf_chl|cf_challenge|enable javascript and cookies to continue|verify you are human/i.test(String(body || ""));
   }
 
-  async _requestHtml(url) {
-    const response = await new Client().get(url, this.getHeaders(url));
+  async _requestHtml(url, referer) {
+    const response = await new Client().get(url, this.getHeaders(referer || url));
     const status = Number(response && response.statusCode || 0);
     const body = String(response && response.body || "");
     if (this._isChallenge(status, body)) {
@@ -162,13 +164,24 @@ class DefaultExtension extends MProvider {
     const currentPage = Math.max(1, Number(page) || 1);
     let hasNextPage = !!doc.selectFirst("a[rel='next'], a.next, .pagination .next a");
     if (!hasNextPage) {
-      for (const link of doc.select("a[href*='page=']")) {
+      for (const link of doc.select("a[href]")) {
         const href = link.attr("href") || "";
-        const match = href.match(/[?&]page=(\d+)/i);
-        if (match && Number(match[1]) > currentPage) {
+        const sitePage = href.match(/[?&]p=(\d+)/i);
+        const legacyPage = href.match(/[?&]page=(\d+)/i);
+        if (
+          (sitePage && Number(sitePage[1]) >= currentPage) ||
+          (legacyPage && Number(legacyPage[1]) > currentPage)
+        ) {
           hasNextPage = true;
           break;
         }
+      }
+    }
+    if (!hasNextPage) {
+      const more = doc.selectFirst(".more[data-page]");
+      const nextPage = Number(more && more.attr("data-page"));
+      if (Number.isFinite(nextPage) && nextPage >= currentPage) {
+        hasNextPage = true;
       }
     }
     if (!hasNextPage && items.length >= 20) hasNextPage = true;
@@ -178,7 +191,10 @@ class DefaultExtension extends MProvider {
   async getDetail(url) {
     const pageUrl = this._absoluteUrl(url);
     if (!pageUrl) throw new Error("NoodleMagazine: invalid video URL.");
-    const doc = new Document(await this._requestHtml(pageUrl));
+    const html = await this._requestHtml(pageUrl);
+    const doc = new Document(html);
+    const playerUrl = this._playerUrlFromHtml(html);
+    if (playerUrl) this._cachePlayerUrl(pageUrl, playerUrl);
     const title = (
       doc.selectFirst("h1")?.text ||
       doc.selectFirst('meta[property="og:title"]')?.attr("content") ||
@@ -205,25 +221,130 @@ class DefaultExtension extends MProvider {
   async getVideoList(url) {
     const pageUrl = this._absoluteUrl(url);
     if (!pageUrl) return [];
-    // The site builds its player in the page; it does not expose a stable
-    // direct stream in the HTML returned to the extension. Let the normal
-    // in-app browser load and play that page rather than returning an empty list.
-    return [{
-      url: pageUrl,
-      originalUrl: pageUrl,
-      quality: "Web player",
-      type: "webview",
-      kind: "webview",
-      headers: this.getHeaders(pageUrl)
-    }];
+
+    let playerUrl = this._cachedPlayerUrl(pageUrl);
+    if (!playerUrl) {
+      const pageHtml = await this._requestHtml(pageUrl);
+      playerUrl = this._playerUrlFromHtml(pageHtml);
+      if (playerUrl) this._cachePlayerUrl(pageUrl, playerUrl);
+    }
+    if (!playerUrl) {
+      throw new Error("NoodleMagazine: player URL not found in video page.");
+    }
+
+    let playerHtml = "";
+    let mediaSources = [];
+    if (/\.(?:mp4|m3u8)(?:[?#]|$)/i.test(playerUrl)) {
+      mediaSources = [{ file: playerUrl, label: "Auto" }];
+    } else {
+      playerHtml = await this._requestHtml(playerUrl, pageUrl);
+      mediaSources = this._mediaSources(playerHtml);
+    }
+
+    const seen = {};
+    const videos = [];
+    for (const source of mediaSources) {
+      const streamUrl = this._absoluteUrl(source && (source.file || source.src || source.url));
+      if (!streamUrl || seen[streamUrl]) continue;
+      const type = String(source && source.type || "").toLowerCase();
+      if (!/\.(?:mp4|m3u8)(?:[?#]|$)/i.test(streamUrl) &&
+          !/mp4|mpegurl|m3u8|hls/.test(type)) {
+        continue;
+      }
+      seen[streamUrl] = true;
+
+      const rawQuality = String(source && (source.label || source.quality) || "Auto").trim();
+      const quality = /^\d{3,4}$/.test(rawQuality) ? rawQuality + "p" : rawQuality;
+      videos.push({
+        url: streamUrl,
+        originalUrl: streamUrl,
+        quality: quality,
+        headers: this.getHeaders(playerUrl)
+      });
+    }
+    if (!videos.length) {
+      throw new Error("NoodleMagazine: no playable MP4/HLS sources found in player response.");
+    }
+    return videos;
   }
 
-  _collectionItem(name, listId, link) {
+  _playerUrlFromHtml(html) {
+    const doc = new Document(String(html || ""));
+    const value =
+      doc.selectFirst('meta[property="og:video:secure_url"]')?.attr("content") ||
+      doc.selectFirst('meta[property="og:video"]')?.attr("content") ||
+      doc.selectFirst("iframe[src]")?.attr("src") ||
+      "";
+    return this._absoluteUrl(value);
+  }
+
+  _cachePlayerUrl(pageUrl, playerUrl) {
+    if (!this._playerUrlCache) this._playerUrlCache = {};
+    this._playerUrlCache[pageUrl] = { url: playerUrl, savedAt: Date.now() };
+    const keys = Object.keys(this._playerUrlCache);
+    if (keys.length > 48) delete this._playerUrlCache[keys[0]];
+  }
+
+  _cachedPlayerUrl(pageUrl) {
+    const entry = this._playerUrlCache && this._playerUrlCache[pageUrl];
+    if (!entry || Date.now() - entry.savedAt > 2 * 60 * 1000) return "";
+    return entry.url;
+  }
+
+  _playlistObject(html) {
+    const source = String(html || "");
+    const assignment = /(?:window\s*\.\s*)?playlist\s*=\s*/i.exec(source);
+    if (!assignment) return null;
+
+    const start = source.indexOf("{", assignment.index + assignment[0].length);
+    if (start < 0) return null;
+    let depth = 0;
+    let inString = false;
+    let escaped = false;
+    for (let i = start; i < source.length; i++) {
+      const char = source[i];
+      if (inString) {
+        if (escaped) escaped = false;
+        else if (char === "\\") escaped = true;
+        else if (char === '"') inString = false;
+        continue;
+      }
+      if (char === '"') inString = true;
+      else if (char === "{") depth++;
+      else if (char === "}" && --depth === 0) {
+        try {
+          return JSON.parse(source.slice(start, i + 1));
+        } catch (_) {
+          return null;
+        }
+      }
+    }
+    return null;
+  }
+
+  _mediaSources(html) {
+    const playlist = this._playlistObject(html);
+    if (playlist && Array.isArray(playlist.sources)) return playlist.sources;
+
+    const doc = new Document(String(html || ""));
+    const sources = [];
+    for (const node of doc.select("video[src]")) {
+      const src = node.attr("src");
+      if (src) sources.push({ file: src, label: "Auto" });
+    }
+    for (const node of doc.select("source[src]")) {
+      const src = node.attr("src");
+      if (src) sources.push({ file: src, label: "Auto" });
+    }
+    return sources;
+  }
+
+  _collectionItem(name, listId, link, imageUrl) {
     return {
       name: name,
       link: link || BASE_URL + "/",
       url: link || BASE_URL + "/",
-      imageUrl: "",
+      imageUrl: imageUrl || "",
       collectionId: listId,
       description: "Open " + name + " videos",
       metadata: { collection: true }
@@ -240,14 +361,66 @@ class DefaultExtension extends MProvider {
     );
   }
 
-  _timePeriodItems() {
-    return TIME_PERIODS.map(([name, range]) =>
+  async _timePeriodItems() {
+    const covers = await Promise.all(TIME_PERIODS.map(async ([, range]) => {
+      try {
+        const result = await this._listing("/home?range=" + range, 1);
+        const firstWithCover = (result.list || []).find((item) => item.imageUrl);
+        return firstWithCover ? firstWithCover.imageUrl : "";
+      } catch (error) {
+        try {
+          console.warn("NoodleMagazine: period cover unavailable for " + range, error);
+        } catch (_) {}
+        return "";
+      }
+    }));
+    return TIME_PERIODS.map(([name, range], index) =>
       this._collectionItem(
         name,
         "range:" + range,
-        this._pageUrl("/home?range=" + range, 1)
+        this._pageUrl("/home?range=" + range, 1),
+        covers[index]
       )
     );
+  }
+
+  async _recentTrendItems() {
+    const doc = new Document(await this._requestHtml(BASE_URL + "/home"));
+    const items = [];
+    const seen = {};
+    for (const anchor of doc.select(".suggestions a")) {
+      const link = this._absoluteUrl(anchor.attr("href"));
+      const name = String(anchor.text || "").replace(/\s+/g, " ").trim();
+      if (!link || !name) continue;
+
+      let pathname = "";
+      let host = "";
+      try {
+        const parsed = new URL(link);
+        pathname = parsed.pathname;
+        host = parsed.hostname.toLowerCase();
+      } catch (_) {}
+      if (
+        (host !== "noodlemagazine.com" && host !== "www.noodlemagazine.com") ||
+        !pathname.startsWith("/video/")
+      ) {
+        continue;
+      }
+      const slug = pathname.slice("/video/".length);
+      let query = slug.replace(/\+/g, " ");
+      try { query = decodeURIComponent(query); } catch (_) {}
+      query = query.trim();
+      if (!query || seen[query.toLowerCase()]) continue;
+      seen[query.toLowerCase()] = true;
+      items.push(
+        this._collectionItem(
+          name,
+          "search_query:" + encodeURIComponent(query),
+          link
+        )
+      );
+    }
+    return items;
   }
 
   async getCustomList(listId, page) {
@@ -258,14 +431,19 @@ class DefaultExtension extends MProvider {
       "watching_now": "/now",
       "trending": "/popular/trending",
       "explore": "/home?range=explore",
-      "recent": "/home?range=recent"
+      "recent": "/home?range=recent",
+      "raped": "/video/raped",
+      "bitch": "/video/bitch"
     };
     if (routes[id]) return this._listing(routes[id], page);
     if (id === "time_periods") {
-      return { list: this._timePeriodItems(), hasNextPage: false };
+      return { list: await this._timePeriodItems(), hasNextPage: false };
     }
     if (id === "quick_searches") {
       return { list: this._quickSearchItems(), hasNextPage: false };
+    }
+    if (id === "recent_trends") {
+      return { list: await this._recentTrendItems(), hasNextPage: false };
     }
     if (id.indexOf("range:") === 0) {
       const range = id.slice("range:".length);

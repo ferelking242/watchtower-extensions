@@ -53,6 +53,34 @@
         "paginated": true
       },
       {
+        "id": "raped",
+        "component": "landscape",
+        "title": "Raped videos",
+        "accent": "#F06292",
+        "icon": "movie",
+        "params": {
+          "layout": "grid",
+          "columns": 2,
+          "rows": 2
+        },
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "bitch",
+        "component": "landscape",
+        "title": "Bitch videos",
+        "accent": "#D7A46D",
+        "icon": "movie",
+        "params": {
+          "layout": "grid",
+          "columns": 2,
+          "rows": 2
+        },
+        "seeAll": true,
+        "paginated": true
+      },
+      {
         "id": "time_periods",
         "component": "grid",
         "title": "Popular by period",
@@ -62,6 +90,17 @@
         "rows": 1,
         "cardStyle": "tag",
         "seeAll": false
+      },
+      {
+        "id": "recent_trends",
+        "component": "grid",
+        "title": "Recent trends",
+        "accent": "#7C4DFF",
+        "icon": "trending_up",
+        "columns": 2,
+        "rows": 4,
+        "cardStyle": "tag",
+        "seeAll": true
       },
       {
         "id": "quick_searches",
