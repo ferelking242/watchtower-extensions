@@ -1,56 +1,372 @@
-const watchtowerSources = [{"name":"Lily Manga","lang":"en","baseUrl":"https://lilymanga.com","iconUrl":"https://lilymanga.com/favicon.ico","typeSource":"single","itemType":0,"version": "1.1.0", "login": false, "forYou": false,"pkgPath":"manga/src/en/lilymanga.js"}];
-const BASE_URL = "https://lilymanga.com";
+const watchtowerSources = [{
+    "name": "Lily Manga",
+    "lang": "en",
+    "baseUrl": "https://lilymanga.net",
+    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/manga-2000000051.png",
+    "typeSource": "single",
+    "itemType": 0,
+    "version": "1.2.0",
+    "login": false,
+    "forYou": false,
+    "pkgPath": "manga/src/en/lilymanga.js",
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "isManga": true,
+    "appMinVerReq": "0.5.0",
+    "sourceCodeLanguage": 1,
+    "uiLayout": "ui-layouts/lilymanga.json",
+    "uiLayoutVersion": "1.0.0"
+}];
+
+const BASE_URL = "https://lilymanga.net";
 class DefaultExtension extends MProvider {
-    constructor() { super(); }
-    getHeaders() { return {"User-Agent":"Mozilla/5.0","Referer":`${BASE_URL}/`}; }
-    mangaListParse(h) { const l=[];const re=/<a[^>]+href="([^"]+)"[\s\S]*?<img[^>]+(?:src|data-src)="([^"]+)"[\s\S]*?<\/a>[\s\S]*?<h2[^>]*>([^<]+)<\/h2>/g;let m;const s={};while((m=re.exec(h))!==null){if(!s[m[1]]){s[m[1]]=1;l.push({link:m[1],imageUrl:m[2],name:m[3].trim()});}}if(l.length===0){const r2=/href="([^"]+)"[\s\S]*?src="([^"]+)"[\s\S]*?alt="([^"]*)"/g;while((m=r2.exec(h))!==null){if(!s[m[1]]&&m[3].trim()&&!m[3].toLowerCase().includes("logo")){s[m[1]]=1;l.push({link:m[1],imageUrl:m[2],name:m[3].trim()});}}}return l; }
-    async getPopular(p) { const r=await new Client().get(`${BASE_URL}/manga/?order=popular&page=${p}`,this.getHeaders());return{list:this.mangaListParse(r.body),hasNextPage:r.body.includes('page=')}; }
-    async getLatestUpdates(p) { const r=await new Client().get(`${BASE_URL}/manga/?order=update&page=${p}`,this.getHeaders());return{list:this.mangaListParse(r.body),hasNextPage:r.body.includes('page=')}; }
-    async search(q,p) { if(!q)return this.getPopular(p);const r=await new Client().get(`${BASE_URL}/manga/?q=${encodeURIComponent(q)}&page=${p}`,this.getHeaders());return{list:this.mangaListParse(r.body),hasNextPage:false}; }
-    async getDetail(url) { const u=url.startsWith("http")?url:`${BASE_URL}${url}`;const r=await new Client().get(u,this.getHeaders());const h=r.body;const nm=h.match(/<h1[^>]*>([^<]+)<\/h1>/);const n=nm?nm[1].trim():"";const dm=h.match(/<div[^>]*class="[^"]*description[^"]*"[^>]*>([\s\S]*?)<\/div>/);const d=dm?dm[1].replace(/<[^>]+>/g,"").trim():"";const im=h.match(/<img[^>]+src="([^"]+)"[^>]*(?:cover|manga)/i);const img=im?im[1]:"";const ch=[];const cr=/href="([^"]+)"[\s\S]*?chapter[\s\S]*?([\d.]+)/gi;let cm;while((cm=cr.exec(h))!==null){ch.push({name:`Ch. ${cm[2]}`,url:cm[1]});}return{name:n,description:d,imageUrl:img,genre:["Yuri"],status:0,chapters:ch}; }
-    async getPageList(url) { const u=url.startsWith("http")?url:`${BASE_URL}${url}`;const r=await new Client().get(u,this.getHeaders());const p=[];const re=/src="([^"]+\.(?:jpg|jpeg|png|webp)[^"]*)"/gi;let m;const h=r.body;while((m=re.exec(h))!==null){if(!m[1].includes("logo"))p.push(m[1]);}return p.map(x=>({url:x,headers:this.getHeaders()})); }
-    getFilterList() { return []; }
+    getBaseUrl() {
+        const saved = String(new SharedPreferences().get("base_url") || "").trim();
+        if (!saved || /^https?:\/\/(?:www\.)?lilymanga\.com(?:\/|$)/i.test(saved)) {
+            return BASE_URL;
+        }
+        return saved.replace(/\/+$/, "");
+    }
+
+    getHeaders(referer) {
+        return {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Referer": referer || `${this.getBaseUrl()}/`,
+            "Accept-Language": "en-US,en;q=0.9"
+        };
+    }
+
+    resolveUrl(value) {
+        const url = String(value || "").trim();
+        if (!url || url.startsWith("data:")) return "";
+        if (/^https?:\/\//i.test(url)) return url;
+        if (url.startsWith("//")) return `https:${url}`;
+        return `${this.getBaseUrl()}/${url.replace(/^\/+/, "")}`;
+    }
+
+    imageUrlFromElement(img) {
+        if (!img) return "";
+        const srcset = (img.attr("srcset") || "")
+            .split(",")
+            .map((part) => part.trim().split(/\s+/))
+            .sort((a, b) => {
+                const widthA = parseInt((a[1] || "").replace(/[^\d]/g, ""), 10) || 0;
+                const widthB = parseInt((b[1] || "").replace(/[^\d]/g, ""), 10) || 0;
+                return widthB - widthA;
+            })
+            .map((part) => part[0])
+            .filter(Boolean);
+        const candidates = [
+            img.attr("data-src") || "",
+            img.attr("data-lazy-src") || "",
+            img.attr("data-original") || "",
+            img.attr("src") || "",
+            ...srcset
+        ];
+        const selected = candidates.map((item) => item.trim()).find((item) =>
+            item &&
+            !item.startsWith("data:") &&
+            !/(?:placeholder|transparent|spacer|pixel)\.(?:gif|png|webp)(?:[?#]|$)/i.test(item)
+        );
+        return this.resolveUrl(selected);
+    }
+
+    parseCard(card) {
+        const titleLink = card.selectFirst(".item-summary .post-title a")
+            || card.selectFirst(".slider__content .post-title a")
+            || card.selectFirst("a[href*='/gl/']");
+        const img = card.selectFirst("img");
+        const link = titleLink
+            ? this.resolveUrl(titleLink.getHref || titleLink.attr("href") || "")
+            : "";
+        const name = titleLink
+            ? String(titleLink.text || "").trim()
+            : (img ? String(img.attr("alt") || img.attr("title") || "").trim() : "");
+        const imageUrl = this.imageUrlFromElement(img);
+        return { name, link, imageUrl };
+    }
+
+    parseCards(body, selector) {
+        const doc = new Document(body || "");
+        const nodes = doc.select(selector || ".page-item-detail");
+        const list = [];
+        const seen = {};
+        for (let i = 0; i < nodes.length; i++) {
+            const item = this.parseCard(nodes[i]);
+            if (item.name && item.link && !seen[item.link]) {
+                seen[item.link] = true;
+                list.push(item);
+            }
+        }
+        return list;
+    }
+
+    hasNextPage(body, page) {
+        const next = page + 1;
+        return String(body || "").indexOf(`/page/${next}/`) !== -1
+            || String(body || "").indexOf(`page=${next}`) !== -1;
+    }
+
+    pagedPath(path, page) {
+        const clean = path.endsWith("/") ? path : `${path}/`;
+        return page > 1 ? `${clean}page/${page}/` : clean;
+    }
+
+    async getListing(path, page, order) {
+        let url = this.pagedPath(path, page);
+        if (order) url += `?m_orderby=${encodeURIComponent(order)}`;
+        const response = await new Client().get(url, this.getHeaders(url));
+        return {
+            list: this.parseCards(response.body),
+            hasNextPage: this.hasNextPage(response.body, page)
+        };
+    }
+
+    async getPopular(page) {
+        return this.getListing(`${this.getBaseUrl()}/gl/`, page, "trending");
+    }
+
+    async getLatestUpdates(page) {
+        return this.getListing(`${this.getBaseUrl()}/gl/`, page, "latest");
+    }
+
+    async getTopRated(page) {
+        return this.getListing(`${this.getBaseUrl()}/gl/`, page, "rating");
+    }
+
+    selectedGenre(filters) {
+        for (const filter of Array.from(filters || [])) {
+            if (filter.name !== "Genre") continue;
+            const selected = Array.from(filter.state || []).find((item) => item && item.state);
+            if (selected && /^[a-z0-9-]+$/i.test(selected.value || "")) return selected.value;
+        }
+        return "";
+    }
+
+    selectedSort(filters) {
+        for (const filter of Array.from(filters || [])) {
+            if (filter.name !== "Sort By" || !filter.values) continue;
+            const option = filter.values[filter.state];
+            if (option && /^[a-z0-9-]+$/i.test(option.value || "")) return option.value;
+        }
+        return "trending";
+    }
+
+    async search(query, page, filters) {
+        const term = String(query || "").trim();
+        const genre = this.selectedGenre(filters);
+        const order = this.selectedSort(filters);
+        const path = genre
+            ? `${this.getBaseUrl()}/gl-genre/${genre}/`
+            : (term ? `${this.getBaseUrl()}/` : `${this.getBaseUrl()}/gl/`);
+        let url = this.pagedPath(path, page);
+        const params = [];
+        if (term) {
+            params.push(`s=${encodeURIComponent(term)}`);
+            params.push("post_type=wp-manga");
+        }
+        if (order) params.push(`m_orderby=${encodeURIComponent(order)}`);
+        if (params.length) url += `?${params.join("&")}`;
+
+        const response = await new Client().get(url, this.getHeaders(url));
+        return {
+            list: this.parseCards(response.body),
+            hasNextPage: this.hasNextPage(response.body, page)
+        };
+    }
+
+    parseChapters(body) {
+        const doc = new Document(body || "");
+        const anchors = doc.select("a[href]");
+        const chapters = [];
+        const seen = {};
+        for (let i = 0; i < anchors.length; i++) {
+            const anchor = anchors[i];
+            const href = anchor.getHref || anchor.attr("href") || "";
+            if (!/\/(?:episode-[^/]+|chapter-[^/]+|chapter\/[^/]+)\/?$/i.test(href)) continue;
+            const url = this.resolveUrl(href);
+            if (!url || seen[url]) continue;
+            seen[url] = true;
+            const name = String(anchor.text || "").trim();
+            chapters.push({ name: name || url.split("/").filter(Boolean).pop(), url });
+        }
+        return chapters;
+    }
+
+    async getDetail(url) {
+        const detailUrl = this.resolveUrl(url);
+        const response = await new Client().get(detailUrl, this.getHeaders(detailUrl));
+        const body = response.body || "";
+        const doc = new Document(body);
+        const title = doc.selectFirst(".post-title h1") || doc.selectFirst("h1");
+        const cover = doc.selectFirst(".summary_image img");
+        const description = doc.selectFirst(".description-summary .summary__content")
+            || doc.selectFirst(".summary__content");
+
+        const genreNodes = doc.select(".genres-content a");
+        const genres = [];
+        for (let i = 0; i < genreNodes.length; i++) {
+            const genre = String(genreNodes[i].text || "").trim();
+            if (genre && genres.indexOf(genre) === -1) genres.push(genre);
+        }
+
+        let status = 5;
+        const statusItems = doc.select(".post-status .post-content_item");
+        for (let i = 0; i < statusItems.length; i++) {
+            const heading = statusItems[i].selectFirst(".summary-heading h5");
+            if (!heading || !/status/i.test(heading.text || "")) continue;
+            const value = statusItems[i].selectFirst(".summary-content");
+            const statusText = String(value ? value.text : "").toLowerCase();
+            if (statusText.indexOf("ongoing") !== -1) status = 0;
+            else if (statusText.indexOf("completed") !== -1 || statusText.indexOf("ended") !== -1) status = 1;
+            else if (statusText.indexOf("hiatus") !== -1) status = 2;
+            else if (statusText.indexOf("canceled") !== -1 || statusText.indexOf("dropped") !== -1) status = 3;
+            break;
+        }
+
+        let chapters = [];
+        const mangaId = (body.match(/"manga_id"\s*:\s*"?(\d+)/i) || body.match(/data-id="(\d+)"/i) || [])[1];
+        if (mangaId) {
+            try {
+                const headers = this.getHeaders(detailUrl);
+                headers["Content-Type"] = "application/x-www-form-urlencoded; charset=UTF-8";
+                const ajax = await new Client().post(
+                    `${this.getBaseUrl()}/wp-admin/admin-ajax.php`,
+                    headers,
+                    `action=manga_get_chapters&manga=${encodeURIComponent(mangaId)}`
+                );
+                chapters = this.parseChapters(ajax.body);
+            } catch (_) {
+                // The detail page still exposes its first and latest chapter links.
+            }
+        }
+        if (chapters.length === 0) chapters = this.parseChapters(body);
+
+        const chapterOrder = String(new SharedPreferences().get("chapter_order") || "newest");
+        if (chapterOrder === "oldest") chapters.reverse();
+        if (chapters.length === 0) {
+            chapters.push({ name: String(title ? title.text : "Read"), url: detailUrl });
+        }
+
+        return {
+            name: String(title ? title.text : "").trim(),
+            description: String(description ? description.text : "").trim(),
+            imageUrl: this.imageUrlFromElement(cover),
+            genre: genres,
+            status,
+            chapters
+        };
+    }
+
+    async getPageList(url) {
+        const chapterUrl = this.resolveUrl(url);
+        const response = await new Client().get(chapterUrl, this.getHeaders(chapterUrl));
+        const doc = new Document(response.body || "");
+        const images = doc.select(".wp-manga-chapter-img");
+        const pages = [];
+        const seen = {};
+        for (let i = 0; i < images.length; i++) {
+            const img = images[i];
+            const src = img.attr("data-src")
+                || img.attr("data-lazy-src")
+                || img.attr("src")
+                || "";
+            const imageUrl = this.resolveUrl(src);
+            if (imageUrl && !seen[imageUrl]) {
+                seen[imageUrl] = true;
+                pages.push(imageUrl);
+            }
+        }
+        return pages;
+    }
+
+    getFilterList() {
+        return [
+            {
+                type_name: "SelectFilter",
+                name: "Sort By",
+                state: 0,
+                values: [
+                    ["Trending", "trending"],
+                    ["Latest Updates", "latest"],
+                    ["Top Rated", "rating"],
+                    ["Recently Added", "new-manga"]
+                ].map((item) => ({
+                    type_name: "SelectOption",
+                    name: item[0],
+                    value: item[1]
+                }))
+            },
+            {
+                type_name: "GroupFilter",
+                name: "Genre",
+                state: [
+                    ["Action", "action"], ["Adult", "adult"], ["Adventure", "adventure"],
+                    ["Anime", "anime"], ["Anthology", "anthology"], ["Comedy", "comedy"],
+                    ["Coming Soon GL's", "coming-soon-gls"], ["Crime", "crime"],
+                    ["Doujinshi", "doujinshi"], ["Drama", "drama"], ["Ecchi", "ecchi"],
+                    ["Fantasy", "fantasy"], ["Gender Bender", "gender-bender"],
+                    ["Harem", "harem"], ["Hentai", "hentai"], ["Historical", "historical"],
+                    ["Horror", "horror"], ["HQ", "hq"], ["Isekai", "isekai"],
+                    ["Josei", "josei"], ["Lolicon", "lolicon"], ["Martial Arts", "martial-arts"],
+                    ["Mature", "mature"], ["Mecha", "mecha"], ["Mystery", "mystery"],
+                    ["Oneshots", "oneshots"], ["Philosophical", "philosophical"],
+                    ["Psychological", "psychological"], ["Romance", "romance"],
+                    ["School Life", "school-life"], ["Sci-fi", "sci-fi"], ["Seinen", "seinen"],
+                    ["Shoujo", "shoujo"], ["Shoujo Ai", "shoujo-ai"], ["Shounen", "shounen"],
+                    ["Slice of Life", "slice-of-life"], ["Smut", "smut"], ["Sports", "sports"],
+                    ["Supernatural", "supernatural"], ["Tragedy", "tragedy"], ["Yuri", "yuri"]
+                ].map((item) => ({
+                    type_name: "CheckBox",
+                    name: item[0],
+                    value: item[1],
+                    state: false
+                }))
+            }
+        ];
+    }
+
+    async getCustomList(listId, page) {
+        if (listId === "spotlight") {
+            const homeUrl = `${this.getBaseUrl()}/`;
+            const response = await new Client().get(homeUrl, this.getHeaders(homeUrl));
+            const list = this.parseCards(response.body, ".popular-slider .slider__item");
+            return { list: list.slice(0, 6), hasNextPage: false };
+        }
+        if (listId === "latest_updates") return this.getLatestUpdates(page);
+        if (listId === "top_rated") return this.getTopRated(page);
+
+        const genre = String(listId || "").match(/^genre_([a-z0-9-]+)$/i);
+        if (genre) {
+            return this.getListing(
+                `${this.getBaseUrl()}/gl-genre/${genre[1]}/`,
+                page,
+                "latest"
+            );
+        }
+        return this.getPopular(page);
+    }
 
     getSourcePreferences() {
         return [
             {
                 key: "base_url",
                 editTextPreference: {
-                    title: "URL du site",
-                    summary: "Adresse du site. Changez si le domaine est migré.",
+                    title: "Site URL",
+                    summary: "Change this if Lily Manga moves to another domain.",
                     value: BASE_URL,
-                    dialogTitle: "URL du site",
-                    dialogMessage: "URL actuelle : " + BASE_URL
-                }
-            },
-            {
-                key: "default_lang",
-                listPreference: {
-                    title: "Langue par défaut",
-                    summary: "Langue d'affichage des titres et descriptions du manga",
-                    valueIndex: 0,
-                    entries: ["Anglais (recommandé)", "Français", "Espagnol", "Automatique"],
-                    entryValues: ["en", "fr", "es", "auto"]
+                    dialogTitle: "Site URL",
+                    dialogMessage: `Current URL: ${BASE_URL}`
                 }
             },
             {
                 key: "chapter_order",
                 listPreference: {
-                    title: "Ordre des chapitres",
-                    summary: "Afficher les chapitres du plus récent au plus ancien, ou l'inverse",
+                    title: "Chapter order",
+                    summary: "Choose whether older or newer chapters appear first.",
                     valueIndex: 0,
-                    entries: ["Plus récents d'abord (recommandé)", "Plus anciens d'abord"],
+                    entries: ["Newest first", "Oldest first"],
                     entryValues: ["newest", "oldest"]
-                }
-            },
-            {
-                key: "image_quality",
-                listPreference: {
-                    title: "Qualité des images",
-                    summary: "Qualité d'affichage des pages de manga. La haute qualité consomme plus de données.",
-                    valueIndex: 0,
-                    entries: ["Haute qualité (recommandé)", "Qualité moyenne", "Faible qualité (économie de données)"],
-                    entryValues: ["high", "medium", "low"]
                 }
             }
         ];

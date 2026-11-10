@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      {
+        "id": "spotlight",
+        "component": "spotlight",
+        "title": "Trending on Lily Manga",
+        "accent": "#D97AA7",
+        "icon": "auto_awesome"
+      },
+      {
+        "id": "latest_updates",
+        "component": "carousel",
+        "title": "Latest Chapter Updates",
+        "accent": "tertiary",
+        "icon": "update",
+        "seeAll": true
+      },
+      {
+        "id": "genre_yuri",
+        "component": "carousel",
+        "title": "Yuri",
+        "accent": "#D97AA7",
+        "icon": "favorite",
+        "seeAll": true
+      },
+      {
+        "id": "genre_romance",
+        "component": "carousel",
+        "title": "Romance",
+        "accent": "#E58BB5",
+        "icon": "favorite_border",
+        "seeAll": true
+      },
+      {
+        "id": "genre_fantasy",
+        "component": "carousel",
+        "title": "Fantasy",
+        "accent": "#8E7CC3",
+        "icon": "auto_awesome",
+        "seeAll": true
+      }
+    ],
+    "note": "Home rails reflect Lily Manga's trending slider, latest chapter feed, and popular genres."
+  },
+  "browse": {
+    "popular": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "poster"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "poster"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 3,
+        "cardStyle": "poster"
+      },
+      "filters": "chips"
+    }
+  },
+  "player": {
+    "mode": "standard"
+  }
+}
