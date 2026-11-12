@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      {
+        "id": "spotlight",
+        "component": "spotlight",
+        "title": "Spotlight",
+        "accent": "#E8608A",
+        "icon": "auto_awesome"
+      },
+      {
+        "id": "popular",
+        "component": "ranked",
+        "title": "Most Viewed",
+        "accent": "error",
+        "icon": "trending_up",
+        "seeAll": true
+      },
+      {
+        "id": "latest_updates",
+        "component": "compactRow",
+        "title": "Latest Updates",
+        "accent": "tertiary",
+        "icon": "update",
+        "seeAll": true
+      },
+      {
+        "id": "top_rated",
+        "component": "compactRow",
+        "title": "Top Rated",
+        "accent": "#FFC107",
+        "icon": "star",
+        "seeAll": true
+      },
+      {
+        "id": "category_milf",
+        "component": "compactRow",
+        "title": "MILF",
+        "accent": "#E8608A",
+        "icon": "category",
+        "seeAll": true
+      },
+      {
+        "id": "category_futanari",
+        "component": "compactRow",
+        "title": "Futanari",
+        "accent": "#8E7CC3",
+        "icon": "category",
+        "seeAll": true
+      },
+      {
+        "id": "category_cartoons",
+        "component": "compactRow",
+        "title": "Cartoons",
+        "accent": "#64D8CB",
+        "icon": "category",
+        "seeAll": true
+      },
+      {
+        "id": "category_incest",
+        "component": "compactRow",
+        "title": "Incest",
+        "accent": "secondary",
+        "icon": "category",
+        "seeAll": true
+      },
+      {
+        "id": "category_furry",
+        "component": "compactRow",
+        "title": "Furry",
+        "accent": "#7986CB",
+        "icon": "category",
+        "seeAll": true
+      },
+      {
+        "id": "category_monsters",
+        "component": "compactRow",
+        "title": "Monsters",
+        "accent": "#4DB6AC",
+        "icon": "category",
+        "seeAll": true
+      },
+      {
+        "id": "category_interracial",
+        "component": "compactRow",
+        "title": "Interracial",
+        "accent": "#A1887F",
+        "icon": "category",
+        "seeAll": true
+      },
+      {
+        "id": "category_hentaipictures",
+        "component": "compactRow",
+        "title": "Hentai Pictures",
+        "accent": "#BA68C8",
+        "icon": "collections",
+        "seeAll": true
+      }
+    ],
+    "note": "One featured slider, then most-viewed, updates, top rated and dedicated category shelves."
+  },
+  "browse": {
+    "popular": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "poster"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "poster"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 3,
+        "cardStyle": "poster"
+      },
+      "filters": "chips",
+      "searchPreview": true,
+      "tabs": [
+        { "id": "all", "title": "All", "source": "search" },
+        { "id": "milf", "title": "MILF", "source": "custom" },
+        { "id": "futanari", "title": "Futanari", "source": "custom" },
+        { "id": "cartoons", "title": "Cartoons", "source": "custom" },
+        { "id": "incest", "title": "Incest", "source": "custom" },
+        { "id": "hentaipictures", "title": "Pictures", "source": "custom" }
+      ]
+    }
+  },
+  "player": {
+    "mode": "standard"
+  }
+}

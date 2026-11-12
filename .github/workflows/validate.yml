@@ -24,6 +24,8 @@ jobs:
         run: npm run test:taxonomy
       - name: Test Lily Manga source and layout
         run: npm run test:lilymanga
+      - name: Test Cutie Comics source and layout
+        run: npm run test:cutiecomics
       - name: Test Eporner parser
         run: npm run test:eporner
       - name: Test IMHentai parser

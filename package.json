@@ -7,6 +7,7 @@
     "validate": "node tools/validate-extensions.mjs",
     "test:taxonomy": "node tools/test_catalog_taxonomy.mjs",
     "test:lilymanga": "node tools/test_lilymanga.mjs",
+    "test:cutiecomics": "node tools/test_cutiecomics.mjs",
     "tags": "node tools/generate_tags.mjs",
     "tags:check": "node tools/generate_tags.mjs --check",
     "pin": "node tools/pin_sources.mjs --all",
