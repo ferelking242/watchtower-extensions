@@ -5399,7 +5399,7 @@
     "typeSource": "single",
     "itemType": 0,
     "version": "1.0.0",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/nsfw/manga/en/cutiecomics.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@969cbeba8550b13eff101e3ea1ce9a7a31212215/src/nsfw/manga/en/cutiecomics.js",
     "uiLayout": "ui-layouts/cutiecomics.json",
     "uiLayoutVersion": "1.0.0",
     "isManga": true,
