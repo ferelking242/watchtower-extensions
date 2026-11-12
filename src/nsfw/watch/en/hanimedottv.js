@@ -2,7 +2,7 @@ const watchtowerSources = [{
   "name": "Hanime.tv",
   "lang": "en",
   "baseUrl": "https://hanime.tv",
-  "apiUrl": "https://auth.hanime.tv",
+  "apiUrl": "https://guest.freeanimehentai.net",
   "iconUrl": "https://hanime.tv/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
@@ -345,6 +345,9 @@ class DefaultExtension extends MProvider {
 
   // ── Catalogue (the site's own search database) ────────────────────────────
   async _catalogue() {
+    // The catalogue is a ~4 MB download and every catalogue-backed list needs
+    // it, so keep it for the session.
+    if (this._catalogueCache) return this._catalogueCache;
     const res = await new Client().get(HV_CATALOGUE, this._jsonHeaders(HV_BASE + "/"));
     const data = JSON.parse(res.body);
     const rows = Array.isArray(data) ? data : (data.data || []);
@@ -363,6 +366,7 @@ class DefaultExtension extends MProvider {
         brand: row.brand || ""
       });
     }
+    this._catalogueCache = items;
     return items;
   }
 
@@ -523,7 +527,9 @@ class DefaultExtension extends MProvider {
 
   async _handshakeHttp(token, headers) {
     try {
-      const res = await new Client().post(HV_AUTH + "/api/v11/handshake", headers, JSON.stringify({ token }));
+      // The runtime serialises a Map body to JSON itself (and would
+      // double-encode a pre-stringified one), so pass the object.
+      const res = await new Client().post(HV_AUTH + "/api/v11/handshake", headers, { token });
       const xt = this._headerOf(res.headers, "x-token");
       if (xt) return xt;
       extLog("warn", "hanime: handshake HTTP refused (status " + (res.statusCode || "?") + ")");
@@ -532,34 +538,6 @@ class DefaultExtension extends MProvider {
     }
     return "";
   }
-
-  // auth.hanime.tv sits behind the same Cloudflare challenge as the site, so a
-  // native request is refused. Replaying the call from the WebView keeps the
-  // site's own cookies/clearance and its cross-origin allowance.
-  async _handshakeWebview(token, headers, pageUrl) {
-    if (typeof evaluateJavascriptViaWebview !== "function") return "";
-    const script =
-      "(function(){fetch(" + JSON.stringify(HV_AUTH + "/api/v11/handshake") + ",{" +
-      "method:'POST',credentials:'include'," +
-      "headers:" + JSON.stringify(headers) + "," +
-      "body:" + JSON.stringify(JSON.stringify({ token })) + "})" +
-      ".then(function(r){var t=r.headers.get('x-token');" +
-      "try{window.flutter_inappwebview.callHandler('setResponse',t||('STATUS:'+r.status));}catch(e){}})" +
-      ".catch(function(e){try{window.flutter_inappwebview.callHandler('setResponse','ERR:'+(e&&e.message||e));}catch(x){}});})();";
-    try {
-      const out = await evaluateJavascriptViaWebview(pageUrl, this.getHeaders(pageUrl), [script]);
-      const value = String(out || "").trim();
-      if (value.indexOf("STATUS:") === 0 || value.indexOf("ERR:") === 0) {
-        extLog("warn", "hanime: WebView handshake rejected (" + value + ")");
-        return "";
-      }
-      return value;
-    } catch (e) {
-      extLog("warn", "hanime: WebView handshake failed: " + (e && e.message ? e.message : e));
-      return "";
-    }
-  }
-
   async getVideoList(url) {
     const slug = this._slugFromUrl(url);
     if (!slug) return [];
@@ -569,8 +547,7 @@ class DefaultExtension extends MProvider {
     const token = this._sealToken(slug, ts);
     const headers = this._handshakeHeaders(pageUrl, ts);
 
-    let xToken = await this._handshakeHttp(token, headers);
-    if (!xToken) xToken = await this._handshakeWebview(token, headers, pageUrl);
+    const xToken = await this._handshakeHttp(token, headers);
     if (!xToken) {
       extLog("warn", "hanime.getVideoList: no player token");
       return [];

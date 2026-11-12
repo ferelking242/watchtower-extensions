@@ -14,7 +14,7 @@
       {
         "id": "latest",
         "component": "showcase",
-        "title": "Recent Uploads",
+        "title": "Recently Uploaded",
         "accent": "tertiary",
         "icon": "fiber_new",
         "seeAll": true,
@@ -44,11 +44,31 @@
         "seeAllPage": "tags"
       },
       {
+        "id": "recent",
+        "component": "catalogue",
+        "title": "New Releases",
+        "accent": "secondary",
+        "icon": "new_releases",
+        "columns": 3,
+        "cardStyle": "thumbnail",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
         "id": "tag_uncensored",
         "component": "showcase",
         "title": "Uncensored",
         "accent": "#FF5C8A",
         "icon": "lock_open",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "tag_hd",
+        "component": "showcase",
+        "title": "HD",
+        "accent": "#00BCD4",
+        "icon": "high_quality",
         "seeAll": true,
         "paginated": true
       },
@@ -78,6 +98,78 @@
         "icon": "favorite",
         "seeAll": true,
         "paginated": true
+      },
+      {
+        "id": "tag_harem",
+        "component": "landscapeStacked",
+        "title": "Harem",
+        "accent": "#EC407A",
+        "icon": "groups",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "tag_creampie",
+        "component": "landscapeStacked",
+        "title": "Creampie",
+        "accent": "#FF7043",
+        "icon": "water_drop",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "tag_futanari",
+        "component": "landscapeStacked",
+        "title": "Futanari",
+        "accent": "#AB47BC",
+        "icon": "wc",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "tag_milf",
+        "component": "landscapeStacked",
+        "title": "MILF",
+        "accent": "#8D6E63",
+        "icon": "woman",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "tag_threesome",
+        "component": "landscapeStacked",
+        "title": "Threesome",
+        "accent": "#26A69A",
+        "icon": "people",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "tag_yuri",
+        "component": "landscapeStacked",
+        "title": "Yuri",
+        "accent": "#F06292",
+        "icon": "favorite_border",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "tag_tentacle",
+        "component": "landscapeStacked",
+        "title": "Tentacle",
+        "accent": "#7E57C2",
+        "icon": "bug_report",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "tag_pov",
+        "component": "landscapeStacked",
+        "title": "POV",
+        "accent": "#5C6BC0",
+        "icon": "visibility",
+        "seeAll": true,
+        "paginated": true
       }
     ]
   },
@@ -104,7 +196,7 @@
   "detail": {
     "hero": "backdrop",
     "episodeList": "compact",
-    "showRecommendations": true
+    "showRecommendations": false
   },
   "player": {
     "mode": "standard"
