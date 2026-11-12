@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      {
+        "id": "popular",
+        "component": "spotlight",
+        "title": "Trending Now",
+        "accent": "#FE628E",
+        "icon": "whatshot",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "latest",
+        "component": "showcase",
+        "title": "Recent Uploads",
+        "accent": "tertiary",
+        "icon": "fiber_new",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "top",
+        "component": "rankedWide",
+        "title": "Most Viewed",
+        "accent": "error",
+        "icon": "trending_up",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "tags",
+        "component": "grid",
+        "title": "Browse by Tag",
+        "accent": "#64D8CB",
+        "icon": "category",
+        "columns": 3,
+        "rows": 3,
+        "gridOrder": "column",
+        "scrollDirection": "horizontal",
+        "cardStyle": "thumbnail",
+        "seeAll": true,
+        "seeAllPage": "tags"
+      },
+      {
+        "id": "tag_uncensored",
+        "component": "showcase",
+        "title": "Uncensored",
+        "accent": "#FF5C8A",
+        "icon": "lock_open",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "tag_anal",
+        "component": "showcase",
+        "title": "Anal",
+        "accent": "#F5A623",
+        "icon": "local_fire_department",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "tag_ntr",
+        "component": "showcase",
+        "title": "Netorare",
+        "accent": "#7E57C2",
+        "icon": "heart_broken",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "tag_vanilla",
+        "component": "showcase",
+        "title": "Vanilla",
+        "accent": "#66BB6A",
+        "icon": "favorite",
+        "seeAll": true,
+        "paginated": true
+      }
+    ]
+  },
+  "browse": {
+    "popular": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "thumbnail"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 3,
+        "cardStyle": "thumbnail"
+      },
+      "filters": "chips"
+    }
+  },
+  "detail": {
+    "hero": "backdrop",
+    "episodeList": "compact",
+    "showRecommendations": true
+  },
+  "player": {
+    "mode": "standard"
+  }
+}

@@ -4645,21 +4645,23 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000146.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.3",
+    "version": "2.0.0",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124953596b836facf3d4b63b7fc38cb57435c4dd/src/nsfw/watch/en/hanimedottv.js",
     "isManga": false,
     "isNsfw": true,
-    "hasCloudflare": false,
+    "hasCloudflare": true,
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
-    "notes": "Hanime.tv — premier hentai streaming (18+). API JSON officielle.",
+    "notes": "Hanime.tv — premier hentai streaming (18+). Trending/latest via catalogue, signed player handshake.",
     "login": false,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
-    "apiUrl": "https://api.hanime.tv",
+    "apiUrl": "https://auth.hanime.tv",
     "tags": [
       "watch",
+      "fantasy",
+      "comedy",
       "english"
     ],
     "addedAt": "2026-09-02",
@@ -4681,7 +4683,9 @@
       "th": "Hanime.tv — สตรีมมิ่งอนิเมะเฮ็นไทฟรี 18+ เท่านั้น วิดีโอยอดนิยมและล่าสุด ค้นหาได้ตามชื่อเรื่อง",
       "tr": "Hanime.tv — ücretsiz hentai anime yayını, yalnızca 18+. Başlığa göre aranabilen popüler ve en yeni videolar.",
       "zh": "Hanime.tv — 免费无尽动漫流媒体，仅限 18 岁以上。热门和最新视频，可按标题搜索。"
-    }
+    },
+    "uiLayout": "ui-layouts/hanimedottv.json",
+    "uiLayoutVersion": "1.0.0"
   },
   {
     "name": "Hentai0",
@@ -12589,20 +12593,22 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900001320.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "2.0.0",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124953596b836facf3d4b63b7fc38cb57435c4dd/src/nsfw/watch/en/hanime.js",
     "isManga": false,
     "isNsfw": true,
-    "hasCloudflare": false,
+    "hasCloudflare": true,
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
-    "notes": "Adult content (18+) — Hanime hentai streaming",
+    "notes": "Adult content (18+) — Hanime hentai streaming. Trending/latest via catalogue, signed player handshake.",
     "login": false,
     "forYou": false,
     "requiresAccount": false,
     "hasDRM": false,
     "tags": [
       "watch",
+      "fantasy",
+      "comedy",
       "english"
     ],
     "addedAt": "2026-10-08",
@@ -12624,7 +12630,10 @@
       "th": "hanime — สตรีมมิ่งอนิเมะเฮ็นไทฟรี 18+ เท่านั้น วิดีโอยอดนิยมและล่าสุด ค้นหาได้ตามชื่อเรื่อง",
       "tr": "hanime — ücretsiz hentai anime yayını, yalnızca 18+. Başlığa göre aranabilen popüler ve en yeni videolar.",
       "zh": "hanime — 免费无尽动漫流媒体，仅限 18 岁以上。热门和最新视频，可按标题搜索。"
-    }
+    },
+    "apiUrl": "https://guest.freeanimehentai.net",
+    "uiLayout": "ui-layouts/hanime.json",
+    "uiLayoutVersion": "1.0.0"
   },
   {
     "name": "hdeasyporn",
