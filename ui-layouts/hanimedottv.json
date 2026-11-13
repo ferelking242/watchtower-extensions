@@ -13,7 +13,7 @@
       },
       {
         "id": "latest",
-        "component": "showcase",
+        "component": "banner",
         "title": "Recently Uploaded",
         "accent": "tertiary",
         "icon": "fiber_new",
@@ -30,27 +30,35 @@
         "paginated": true
       },
       {
+        "id": "brands",
+        "component": "collectionCards",
+        "title": "Studios",
+        "accent": "#7C4DFF",
+        "icon": "business",
+        "seeAll": false
+      },
+      {
         "id": "tags",
         "component": "grid",
         "title": "Browse by Tag",
         "accent": "#64D8CB",
         "icon": "category",
         "columns": 3,
-        "rows": 3,
+        "rows": 2,
         "gridOrder": "column",
         "scrollDirection": "horizontal",
-        "cardStyle": "thumbnail",
+        "cardStyle": "tag",
         "seeAll": true,
         "seeAllPage": "tags"
       },
       {
         "id": "recent",
-        "component": "catalogue",
+        "component": "masonry",
         "title": "New Releases",
         "accent": "secondary",
         "icon": "new_releases",
-        "columns": 3,
-        "cardStyle": "thumbnail",
+        "columns": 2,
+        "rows": 2,
         "seeAll": true,
         "paginated": true
       },
@@ -64,35 +72,61 @@
         "paginated": true
       },
       {
+        "id": "tag_plot",
+        "component": "compactRow",
+        "title": "Story Driven",
+        "accent": "#4DB6AC",
+        "icon": "auto_stories",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
         "id": "tag_hd",
-        "component": "showcase",
-        "title": "HD",
+        "component": "discoverGrid",
+        "title": "HD Quality",
         "accent": "#00BCD4",
         "icon": "high_quality",
+        "columns": 2,
+        "rows": 2,
+        "cardStyle": "landscape",
         "seeAll": true,
         "paginated": true
       },
       {
         "id": "tag_anal",
-        "component": "showcase",
+        "component": "categoryPills",
         "title": "Anal",
         "accent": "#F5A623",
         "icon": "local_fire_department",
+        "columns": 4,
+        "rows": 1,
+        "scrollDirection": "horizontal",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "brand_poro",
+        "component": "banner",
+        "title": "PoRO",
+        "accent": "#AB47BC",
+        "icon": "movie_filter",
         "seeAll": true,
         "paginated": true
       },
       {
         "id": "tag_ntr",
-        "component": "showcase",
+        "component": "editorialSplit",
         "title": "Netorare",
         "accent": "#7E57C2",
         "icon": "heart_broken",
+        "columns": 3,
+        "rows": 2,
         "seeAll": true,
         "paginated": true
       },
       {
         "id": "tag_vanilla",
-        "component": "showcase",
+        "component": "creatorRow",
         "title": "Vanilla",
         "accent": "#66BB6A",
         "icon": "favorite",
@@ -100,74 +134,51 @@
         "paginated": true
       },
       {
+        "id": "brand_meltdown",
+        "component": "doubleFeature",
+        "title": "Meltdown",
+        "accent": "#EC407A",
+        "icon": "local_movies",
+        "columns": 2,
+        "rows": 1,
+        "seeAll": true,
+        "paginated": true
+      },
+      {
         "id": "tag_harem",
         "component": "landscapeStacked",
         "title": "Harem",
-        "accent": "#EC407A",
+        "accent": "#FF7043",
         "icon": "groups",
         "seeAll": true,
         "paginated": true
       },
       {
         "id": "tag_creampie",
-        "component": "landscapeStacked",
+        "component": "feed",
         "title": "Creampie",
-        "accent": "#FF7043",
+        "accent": "#FFB300",
         "icon": "water_drop",
+        "columns": 3,
+        "rows": 2,
         "seeAll": true,
         "paginated": true
       },
       {
         "id": "tag_futanari",
-        "component": "landscapeStacked",
+        "component": "universeExplorer",
         "title": "Futanari",
-        "accent": "#AB47BC",
+        "accent": "#9C27B0",
         "icon": "wc",
         "seeAll": true,
         "paginated": true
       },
       {
         "id": "tag_milf",
-        "component": "landscapeStacked",
+        "component": "statusPoster",
         "title": "MILF",
         "accent": "#8D6E63",
         "icon": "woman",
-        "seeAll": true,
-        "paginated": true
-      },
-      {
-        "id": "tag_threesome",
-        "component": "landscapeStacked",
-        "title": "Threesome",
-        "accent": "#26A69A",
-        "icon": "people",
-        "seeAll": true,
-        "paginated": true
-      },
-      {
-        "id": "tag_yuri",
-        "component": "landscapeStacked",
-        "title": "Yuri",
-        "accent": "#F06292",
-        "icon": "favorite_border",
-        "seeAll": true,
-        "paginated": true
-      },
-      {
-        "id": "tag_tentacle",
-        "component": "landscapeStacked",
-        "title": "Tentacle",
-        "accent": "#7E57C2",
-        "icon": "bug_report",
-        "seeAll": true,
-        "paginated": true
-      },
-      {
-        "id": "tag_pov",
-        "component": "landscapeStacked",
-        "title": "POV",
-        "accent": "#5C6BC0",
-        "icon": "visibility",
         "seeAll": true,
         "paginated": true
       }

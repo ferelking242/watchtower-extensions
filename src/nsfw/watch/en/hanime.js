@@ -320,22 +320,58 @@ class DefaultExtension extends MProvider {
   _itemsFromHtml(html) {
     const items = [];
     const seen = {};
+    // Cards are anchors whose poster carries the cover. The title may live in
+    // an <h3>, a plain span (related grids) or an alt attribute, so read all of
+    // them; a card without any of those is skipped rather than guessed at.
     const re = /<a href="(\/videos\/hentai\/[^"?#]+)"[^>]*>([\s\S]*?)<\/a>/g;
     let m;
     while ((m = re.exec(html)) !== null) {
       const href = m[1];
       const inner = m[2];
       const img = inner.match(/<img[^>]*\bsrc="([^"]+)"/);
+      if (!img) continue;
       const h3 = inner.match(/<h3[^>]*>([\s\S]*?)<\/h3>/);
-      if (!img || !h3) continue;
+      const alt = inner.match(/<img[^>]*\balt="([^"]*)"/);
+      const span = inner.match(/<span[^>]*class="[^"]*line-clamp-2[^"]*"[^>]*>([\s\S]*?)<\/span>/);
+      const raw = h3 ? h3[1] : span ? span[1] : alt ? alt[1] : "";
+      const title = String(raw).replace(/<[^>]*>/g, "").replace(/ thumbnail$/i, "").trim();
+      if (!title) continue;
       const link = HV_BASE + href;
       if (seen[link]) continue;
       seen[link] = true;
-      const title = h3[1].replace(/<[^>]*>/g, "").trim();
-      if (!title) continue;
       items.push({ name: this._cleanTitle(title), imageUrl: img[1], link });
     }
     return items;
+  }
+
+  // The site groups a franchise's episodes in a "More from <group>" section.
+  // Those siblings are the real episodes of one title, so the detail page lists
+  // them together instead of a single entry.
+  _siblingsFromHtml(html) {
+    const at = html.indexOf("More from");
+    if (at < 0) return [];
+    const section = html.slice(at, at + 12000);
+    const items = [];
+    const seen = {};
+    const re = /<a href="(\/videos\/hentai\/[^"?#]+)"[^>]*>([\s\S]*?)<\/a>/g;
+    let m;
+    while ((m = re.exec(section)) !== null) {
+      const img = m[2].match(/<img[^>]*\bsrc="([^"]+)"/);
+      if (!img) continue;
+      const title = m[2].match(/<span[^>]*class="[^"]*line-clamp-2[^"]*"[^>]*>([\s\S]*?)<\/span>/);
+      const name = (title ? title[1] : "").replace(/<[^>]*>/g, "").trim();
+      if (!name) continue;
+      const link = HV_BASE + m[1];
+      if (seen[link]) continue;
+      seen[link] = true;
+      items.push({ name: this._cleanTitle(name), imageUrl: img[1], link });
+    }
+    return items;
+  }
+
+  _brandFromHtml(html) {
+    const m = html.match(/href="\/browse\/brands\/([^"?#]+)"[^>]*title="Browse more [^"]* videos"/);
+    return m ? m[1] : "";
   }
 
   async _getHtml(url) {
@@ -451,7 +487,10 @@ class DefaultExtension extends MProvider {
 
     const genre = [];
     const seenTags = {};
-    const tagRe = /\/browse\/tags\/([^"]+)"[^>]*>\s*([^<]*?)\s*</g;
+    // Real tag chips carry title="Browse more videos with <tag> tag"; the
+    // footer repeats the same hrefs without it, so match the marker to avoid
+    // pulling SEO links into the genre list.
+    const tagRe = /<a href="\/browse\/tags\/([^"]+)"[^>]*title="Browse more videos with[^"]*"[^>]*>([^<]*)<\/a>/g;
     let tm;
     while ((tm = tagRe.exec(html)) !== null) {
       const label = (tm[2] || "").replace(/&amp;/g, "&").trim() || decodeURIComponent(tm[1]);
@@ -461,12 +500,31 @@ class DefaultExtension extends MProvider {
       genre.push({ name: label });
     }
 
+    // Prefer the site's own franchise grouping: "More from <group>" lists every
+    // episode of this title, so they all appear as selectable episodes. When
+    // the page has no such group, the video is a one-off and stays a single
+    // episode.
+    let siblings = this._siblingsFromHtml(html);
+    if (!siblings.some((s) => s.link === url)) siblings.push({ name, link: url });
+    const order = (s) => {
+      const m = String(s).match(/(\d+)\s*$/);
+      return m ? Number(m[1]) : 9999;
+    };
+    siblings.sort((a, b) => order(a.name) - order(b.name));
+    const episodes = siblings.map((s) => ({ name: s.name, url: s.link }));
+
+    const brand = this._brandFromHtml(html);
+    const brandName = brand ? brand.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "";
+    if (brandName && genre.filter((g) => g.name === brandName).length === 0) {
+      genre.push({ name: brandName });
+    }
+
     return {
       name,
       imageUrl: ogImage ? ogImage[1] : "",
       description,
       genre,
-      episodes: [{ name, url }]
+      episodes
     };
   }
 
@@ -608,6 +666,33 @@ class DefaultExtension extends MProvider {
     if (id.indexOf("tag_") === 0) {
       const slug = id.slice(4);
       const html = await this._getHtml(HV_BASE + "/browse/tags/" + slug + "?page=" + p);
+      const list = this._itemsFromHtml(html);
+      return { list, hasNextPage: list.length >= 20 };
+    }
+
+    if (id === "brands") {
+      const html = await this._getHtml(HV_BASE + "/browse/brands");
+      const out = [];
+      const seen = {};
+      const re = /<a href="\/browse\/brands\/([^"?]+)"[^>]*class="group inline-flex[^"]*"[^>]*>\s*<span class="[^"]*font-medium[^"]*"[^>]*>([^<]+)<\/span>/g;
+      let m;
+      while ((m = re.exec(html)) !== null) {
+        const slug = m[1];
+        if (seen[slug]) continue;
+        seen[slug] = true;
+        out.push({
+          name: m[2].replace(/&amp;/g, "&").trim(),
+          imageUrl: "",
+          link: HV_BASE + "/browse/brands/" + slug,
+          collectionId: "brand_" + slug
+        });
+      }
+      return { list: out, hasNextPage: false };
+    }
+
+    if (id.indexOf("brand_") === 0) {
+      const slug = id.slice(6);
+      const html = await this._getHtml(HV_BASE + "/browse/brands/" + slug + "?page=" + p);
       const list = this._itemsFromHtml(html);
       return { list, hasNextPage: list.length >= 20 };
     }
