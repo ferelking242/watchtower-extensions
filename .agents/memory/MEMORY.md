@@ -1,2 +1,3 @@
 - [Signed player media validation](player-media-validation.md) — XNXX/XVideos use signed player RPC URLs; PornHub CDN streams can expire with HTTP 410.
 - [NSFW live validation](nsfw-live-validation.md) — verify current routes; dead domains need replacement URLs, and XNXX history/suggestions are browser-local.
+- [Hetu compiler pitfalls](hetu-compiler-pitfalls.md) — the pinned Hetu compiler miscompiles `continue` in `for`-in and call expressions in the `for`-in header, silently emptying lists; test plugins live, not just compile.
