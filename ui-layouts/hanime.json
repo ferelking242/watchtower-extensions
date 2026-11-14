@@ -30,12 +30,24 @@
         "paginated": true
       },
       {
+        "id": "recent",
+        "component": "masonry",
+        "title": "New Releases",
+        "accent": "secondary",
+        "icon": "new_releases",
+        "columns": 2,
+        "rows": 2,
+        "seeAll": true,
+        "paginated": true
+      },
+      {
         "id": "brands",
         "component": "collectionCards",
         "title": "Studios",
         "accent": "#7C4DFF",
         "icon": "business",
-        "seeAll": false
+        "seeAll": true,
+        "paginated": false
       },
       {
         "id": "tags",
@@ -49,18 +61,8 @@
         "scrollDirection": "horizontal",
         "cardStyle": "tag",
         "seeAll": true,
-        "seeAllPage": "tags"
-      },
-      {
-        "id": "recent",
-        "component": "masonry",
-        "title": "New Releases",
-        "accent": "secondary",
-        "icon": "new_releases",
-        "columns": 2,
-        "rows": 2,
-        "seeAll": true,
-        "paginated": true
+        "seeAllPage": "tags",
+        "paginated": false
       },
       {
         "id": "tag_uncensored",
@@ -105,15 +107,6 @@
         "paginated": true
       },
       {
-        "id": "brand_poro",
-        "component": "banner",
-        "title": "PoRO",
-        "accent": "#AB47BC",
-        "icon": "movie_filter",
-        "seeAll": true,
-        "paginated": true
-      },
-      {
         "id": "tag_ntr",
         "component": "editorialSplit",
         "title": "Netorare",
@@ -130,17 +123,6 @@
         "title": "Vanilla",
         "accent": "#66BB6A",
         "icon": "favorite",
-        "seeAll": true,
-        "paginated": true
-      },
-      {
-        "id": "brand_meltdown",
-        "component": "doubleFeature",
-        "title": "Meltdown",
-        "accent": "#EC407A",
-        "icon": "local_movies",
-        "columns": 2,
-        "rows": 1,
         "seeAll": true,
         "paginated": true
       },
@@ -181,6 +163,26 @@
         "icon": "woman",
         "seeAll": true,
         "paginated": true
+      },
+      {
+        "id": "brand_poro",
+        "component": "banner",
+        "title": "PoRO",
+        "accent": "#AB47BC",
+        "icon": "movie_filter",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "brand_meltdown",
+        "component": "doubleFeature",
+        "title": "Meltdown",
+        "accent": "#EC407A",
+        "icon": "local_movies",
+        "columns": 2,
+        "rows": 1,
+        "seeAll": true,
+        "paginated": true
       }
     ]
   },
@@ -201,13 +203,31 @@
         "columns": 3,
         "cardStyle": "thumbnail"
       },
-      "filters": "chips"
+      "filters": "chips",
+      "searchPreview": false,
+      "tabs": [
+        {
+          "id": "videos",
+          "title": "Videos",
+          "source": "search"
+        },
+        {
+          "id": "studios",
+          "title": "Studios",
+          "source": "custom"
+        },
+        {
+          "id": "tags",
+          "title": "Tags",
+          "source": "custom"
+        }
+      ]
     }
   },
   "detail": {
     "hero": "backdrop",
     "episodeList": "compact",
-    "showRecommendations": false
+    "showRecommendations": true
   },
   "player": {
     "mode": "standard"

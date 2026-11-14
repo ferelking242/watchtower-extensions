@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://hanime.tv/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "2.0.0",
+  "version": "2.1.0",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/hanime.js",
@@ -636,31 +636,185 @@ class DefaultExtension extends MProvider {
     return videos;
   }
 
+  // ── Comments (guest comments API) ─────────────────────────────────────────
+  // The site's own Comments island calls `/api/v11/videos/<slug>/comments` on
+  // the guest API. It is not signed with the player handshake; it only needs
+  // the page's web2 signature headers, which this extension already builds.
+  _commentHeaders(pageUrl) {
+    const ts = Math.floor(Date.now() / 1000);
+    const signature = hv_hex(hv_sha256(hv_utf8(ts + "," + HV_SIGN_SECRET + "," + HV_SIGN_HOST + "," + HV_SIGN_MODE + "," + ts)));
+    return {
+      "User-Agent": HV_UA,
+      "Referer": pageUrl,
+      "Origin": HV_BASE,
+      "Accept": "application/json",
+      "x-signature-version": "web2",
+      "x-signature": signature,
+      "x-time": String(ts)
+    };
+  }
+
+  _commentTimeAgo(unixSeconds) {
+    const secs = Math.max(1, Math.floor(Date.now() / 1000) - Number(unixSeconds || 0));
+    const steps = [["year", 31536000], ["month", 2592000], ["week", 604800], ["day", 86400], ["hour", 3600], ["minute", 60]];
+    for (const [label, size] of steps) {
+      const value = Math.floor(secs / size);
+      if (value >= 1) return value + " " + label + (value === 1 ? "" : "s") + " ago";
+    }
+    return secs + " seconds ago";
+  }
+
+  _mapComment(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    const author = raw.author || {};
+    return {
+      id: raw.id,
+      author: author.name || "Deleted user",
+      avatar: author.avatar_url || "",
+      body: String(raw.text || ""),
+      timeAgo: this._commentTimeAgo(raw.created_at_unix),
+      date: String(raw.created_at_unix || ""),
+      score: Number(raw.upvotes || 0),
+      likes: Number(raw.upvotes || 0),
+      replies: []
+    };
+  }
+
+  async getComments(url) {
+    const slug = this._slugFromUrl(url);
+    if (!slug) return [];
+    const pageUrl = HV_BASE + "/videos/hentai/" + slug;
+
+    let data;
+    try {
+      const res = await new Client().get(
+        HV_GUEST + "/api/v11/videos/" + encodeURIComponent(slug) + "/comments?page=1&page_size=30&sort=new",
+        this._commentHeaders(pageUrl)
+      );
+      data = JSON.parse(res.body);
+    } catch (e) {
+      extLog("warn", "hanime.getComments: " + (e && e.message ? e.message : e));
+      return [];
+    }
+
+    const threads = Array.isArray(data && data.comments) ? data.comments : [];
+    const out = [];
+    for (const thread of threads) {
+      const mapped = this._mapComment(thread);
+      if (!mapped) continue;
+      // Only fetch replies when the thread actually has any; the replies call
+      // is a second request per thread and most threads have none.
+      if (thread.has_reply_records || Number(thread.reply_count || 0) > 0) {
+        try {
+          const rr = await new Client().get(
+            HV_GUEST + "/api/v11/videos/" + encodeURIComponent(slug) + "/comments/" + thread.id + "/replies?page=1&page_size=30&sort=new",
+            this._commentHeaders(pageUrl)
+          );
+          const rd = JSON.parse(rr.body);
+          const replies = Array.isArray(rd && rd.replies) ? rd.replies : [];
+          mapped.replies = replies.map((r) => this._mapComment(r)).filter(Boolean);
+        } catch (e) {
+          extLog("warn", "hanime.getComments replies: " + (e && e.message ? e.message : e));
+        }
+      }
+      out.push(mapped);
+    }
+    return out;
+  }
+
+  // ── Recommendations (the page's "Next Video" / "More from" rails) ─────────
+  async getRecommendations(url) {
+    const target = String(url || "").split("#")[0];
+    if (!target) return [];
+    const html = await this._getHtml(target);
+
+    const items = [];
+    const seen = {};
+    const add = (it) => {
+      if (!it || !it.link || seen[it.link]) return;
+      seen[it.link] = true;
+      items.push(it);
+    };
+
+    // "Next Video" is the single sequel/predecessor the site promotes first.
+    for (const it of this._itemsFromHtml(html)) add(it);
+    // "More from <group>" lists the rest of the title's franchise.
+    for (const it of this._siblingsFromHtml(html)) add(it);
+
+    return items;
+  }
+
+  _tagIndex(html) {
+    const out = [];
+    const seen = {};
+    const re = /<a href="\/browse\/tags\/([^"]+)"[^>]*class="tile[^"]*"[^>]*>([\s\S]*?)<\/a>/g;
+    let m;
+    while ((m = re.exec(html)) !== null) {
+      const slug = m[1];
+      if (seen[slug]) continue;
+      seen[slug] = true;
+      const title = m[2].match(/tile-title[^>]*>([\s\S]*?)<\/div>/);
+      const art = m[2].match(/--tile-art-wide:url\('([^']+)'\)/);
+      out.push({
+        name: title ? title[1].replace(/<[^>]*>/g, "").trim() : decodeURIComponent(slug),
+        imageUrl: art ? art[1] : "",
+        collectionId: "tag_" + slug
+      });
+    }
+    return out;
+  }
+
+  _brandIndex(html) {
+    const out = [];
+    const seen = {};
+    const re = /<a href="\/browse\/brands\/([^"?]+)"[^>]*class="group inline-flex[^"]*"[^>]*>\s*<span class="[^"]*font-medium[^"]*"[^>]*>([^<]+)<\/span>/g;
+    let m;
+    while ((m = re.exec(html)) !== null) {
+      const slug = m[1];
+      if (seen[slug]) continue;
+      seen[slug] = true;
+      out.push({
+        name: m[2].replace(/&amp;/g, "&").trim(),
+        imageUrl: "",
+        link: HV_BASE + "/browse/brands/" + slug,
+        collectionId: "brand_" + slug
+      });
+    }
+    return out;
+  }
+
   // ── Home sections (layout ids) ────────────────────────────────────────────
   async getCustomList(listId, page) {
     const id = String(listId || "");
     const p = Number(page) > 1 ? Number(page) : 1;
 
+    // Category search tabs declared by the layout (browse.search.tabs). The
+    // query is appended by the app as `search_tab:<tabId>:<url-encoded query>`.
+    if (id.indexOf("search_tab:") === 0) {
+      const rest = id.slice("search_tab:".length);
+      const sep = rest.indexOf(":");
+      const tab = sep < 0 ? rest : rest.slice(0, sep);
+      let q = sep < 0 ? "" : rest.slice(sep + 1);
+      try { q = decodeURIComponent(q); } catch (e) { /* keep raw */ }
+      q = q.trim().toLowerCase();
+      if (!q) return { list: [], hasNextPage: false };
+
+      if (tab === "tags") {
+        const html = await this._getHtml(HV_BASE + "/browse/tags");
+        const list = this._tagIndex(html).filter((t) => t.name.toLowerCase().indexOf(q) >= 0);
+        return { list, hasNextPage: false };
+      }
+      if (tab === "studios") {
+        const html = await this._getHtml(HV_BASE + "/browse/brands");
+        const list = this._brandIndex(html).filter((b) => b.name.toLowerCase().indexOf(q) >= 0);
+        return { list, hasNextPage: false };
+      }
+      return { list: [], hasNextPage: false };
+    }
+
     if (id === "tags") {
       const html = await this._getHtml(HV_BASE + "/browse/tags");
-      const out = [];
-      const seen = {};
-      const re = /<a href="\/browse\/tags\/([^"]+)"[^>]*class="tile[^"]*"[^>]*>([\s\S]*?)<\/a>/g;
-      let m;
-      while ((m = re.exec(html)) !== null) {
-        const slug = m[1];
-        const inner = m[2];
-        const title = inner.match(/tile-title[^>]*>([\s\S]*?)<\/div>/);
-        const art = inner.match(/--tile-art-wide:url\('([^']+)'\)/);
-        if (seen[slug]) continue;
-        seen[slug] = true;
-        out.push({
-          name: title ? title[1].replace(/<[^>]*>/g, "").trim() : decodeURIComponent(slug),
-          imageUrl: art ? art[1] : "",
-          collectionId: "tag_" + slug
-        });
-      }
-      return { list: out, hasNextPage: false };
+      return { list: this._tagIndex(html), hasNextPage: false };
     }
 
     if (id.indexOf("tag_") === 0) {
@@ -672,22 +826,7 @@ class DefaultExtension extends MProvider {
 
     if (id === "brands") {
       const html = await this._getHtml(HV_BASE + "/browse/brands");
-      const out = [];
-      const seen = {};
-      const re = /<a href="\/browse\/brands\/([^"?]+)"[^>]*class="group inline-flex[^"]*"[^>]*>\s*<span class="[^"]*font-medium[^"]*"[^>]*>([^<]+)<\/span>/g;
-      let m;
-      while ((m = re.exec(html)) !== null) {
-        const slug = m[1];
-        if (seen[slug]) continue;
-        seen[slug] = true;
-        out.push({
-          name: m[2].replace(/&amp;/g, "&").trim(),
-          imageUrl: "",
-          link: HV_BASE + "/browse/brands/" + slug,
-          collectionId: "brand_" + slug
-        });
-      }
-      return { list: out, hasNextPage: false };
+      return { list: this._brandIndex(html), hasNextPage: false };
     }
 
     if (id.indexOf("brand_") === 0) {
