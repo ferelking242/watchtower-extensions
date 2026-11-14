@@ -1,43 +1,37 @@
-import { SpotifyGqlApi } from '../../dependencies/hetu_spotify_gql_client/lib/assets/hetu/spotify_gql_api_client.ht'
+import { DeezerApi } from '../api/deezer_api.ht'
+import { UserLibrary } from '../library/user_library.ht'
 import { Converters } from '../converter/converter.ht'
 
 class TrackEndpoint {
-  var client: SpotifyGqlApi
+  var api: DeezerApi
+  var library: UserLibrary
 
-  construct (this.client)
+  construct (this.api, this.library)
 
   fun getTrack(id: string) {
-    return client.track.getTrack(id).then((data) {
-      return Converters.fullTracks([data])[0]
+    return api.fetch("/track/${id}").then((track) {
+      if (track == null || track["id"] == null) return null
+      return Converters.fullTracks([track])[0]
     })
   }
 
-  fun save(trackIds: List) async {
-    await client.track.save(trackIds)
-    return true
+  fun save(trackIds: List) {
+    return library.addFavoriteTrack(trackIds)
   }
 
-  fun unsave(trackIds: List) async {
-    await client.track.unsave(trackIds)
-    return true
+  fun unsave(trackIds: List) {
+    return library.removeFavoriteTrack(trackIds)
   }
 
+  /// Deezer has no public "track radio" endpoint; the artist's top tracks are
+  /// the closest real substitute.
   fun radio(trackId: string) {
-    return client.track.getTrack(trackId).then((data){
-      var query = "${data['name']} Radio"
-      return client.search.playlists(query, limit: 20).then((data) {
-        var playlists = data["items"];
-        var radioPlaylist = playlists.firstWhere((playlist) => playlist["name"] == query, orElse: () => null);
-        return client.playlist.tracks(radioPlaylist["id"], offset: 0, limit: 50)
-          .then((data) {
-            var tracks = data["items"].map((item){
-              item["track"]["available_markets"] = null
-              return item["track"]
-            })
-            .toList()
+    return api.fetch("/track/${trackId}").then((track) {
+      var artistId = track?["artist"]?["id"]
+      if (artistId == null) return Converters.fullTracks([track])
 
-            return Converters.fullTracks(tracks)
-          });
+      return api.fetch("/artist/${artistId}/top", params: { limit: 25 }).then((data) {
+        return Converters.fullTracks(data?["data"] ?? [])
       })
     })
   }

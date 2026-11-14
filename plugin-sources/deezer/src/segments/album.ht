@@ -1,34 +1,41 @@
-import { SpotifyGqlApi } from '../../dependencies/hetu_spotify_gql_client/lib/assets/hetu/spotify_gql_api_client.ht'
+import { DeezerApi } from '../api/deezer_api.ht'
+import { UserLibrary } from '../library/user_library.ht'
 import { Converters } from '../converter/converter.ht'
 
 class AlbumEndpoint {
-  var client: SpotifyGqlApi
+  var api: DeezerApi
+  var library: UserLibrary
 
-  construct (this.client)
+  construct (this.api, this.library)
 
   fun getAlbum(id: string) {
-    return client.album.getAlbum(id).then((album) {
+    return api.fetch("/album/${id}").then((album) {
+      if (album == null || album["id"] == null) return null
       return Converters.fullAlbums([album])[0]
     })
   }
 
-  fun tracks(id: string, {offset: int, limit: int}) {
-    return client.album.tracks(id, offset: offset, limit: limit).then((data) {
-      return Converters.paginated(data, (items) => Converters.fullTracks(items))
+  fun tracks(id: string, { offset: int, limit: int }) {
+    return api.fetch("/album/${id}/tracks", params: { index: offset, limit: limit }).then((data) {
+      return Converters.paginated(data, offset, limit, (items) => Converters.fullTracks(items))
     })
   }
 
-  fun releases({offset: int, limit: int}) {
-    return client.album.releases(offset: offset, limit: limit).then((data){
-      return Converters.paginated(data, (items)=> Converters.simpleAlbums(items))
+  /// Deezer's public catalogue has no "new releases" feed, so the album chart
+  /// is the closest real equivalent.
+  fun releases({ offset: int, limit: int }) {
+    return api.fetch("/chart/0/albums", params: { index: offset, limit: limit }).then((data) {
+      return Converters.paginated(data, offset, limit, (items) => Converters.simpleAlbums(items))
     })
   }
 
   fun save(albumIds: List) {
-    return client.album.save(albumIds)
+    return library.addFavoriteAlbum(albumIds)
   }
 
   fun unsave(albumIds: List) {
-    return client.album.unsave(albumIds)
+    return library.removeFavoriteAlbum(albumIds)
   }
 }
+
+export { AlbumEndpoint }

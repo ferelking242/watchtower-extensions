@@ -1,197 +1,282 @@
+/// Maps Deezer API payloads onto the object shapes Watchtower expects
+/// (id / name / externalUri / artists / album / images / durationMs / isrc ...).
+///
+/// Deezer shapes used here:
+/// - track  `{ id, title, duration(s), isrc, explicit_lyrics, artist, album, link }`
+/// - album  `{ id, title, cover_*, release_date, nb_tracks, record_type, artist, genres, label }`
+/// - artist `{ id, name, picture_*, nb_fan }`
+/// - playlist `{ id, title, description, picture_*, user, creator }`
 class Converters {
-  static fun paginated(data: Map, convertItems: (items: List) -> List) -> Map {
-    var hasMore = data["total"] > (data["offset"] + data["items"].length)
-    
-    return {
-      limit: data["limit"],
-      nextOffset: hasMore ? data["offset"] + data["limit"] : null,
-      hasMore: hasMore,
-      total: data["total"],
-      items: convertItems(
-        data["items"].where((item)=> item != null).toList()
-      ),
-    }.toJson()
+  // --- helpers -----------------------------------------------------------
+
+  static fun albumType(recordType: string) -> string {
+    if (recordType == "single") return "single"
+    if (recordType == "compile" || recordType == "compilation") return "compilation"
+    if (recordType == "ep") return "single"
+    return "album"
   }
-  
-  static fun fullTracks(tracks: List) -> List {
-    if(tracks == null || tracks.isEmpty) {
-      return []
-    }
-    
-    var modified = []
-    
-    for(var track in tracks) {
-      if(track == null) {
-        modified.add(null)
-        continue
+
+  static fun images(cover: Map) -> List {
+    if (cover == null) return []
+
+    var pairs = [
+      { "url": cover["cover_xl"], "size": 1000 },
+      { "url": cover["cover_big"], "size": 500 },
+      { "url": cover["cover_medium"], "size": 250 },
+      { "url": cover["cover_small"], "size": 56 },
+    ]
+
+    var out = []
+    for (var pair in pairs) {
+      if (pair["url"] != null) {
+        out.add({ url: pair["url"], width: pair["size"], height: pair["size"] }.toJson())
       }
-      
-      var modifiedTrack = {
-        id: track["id"],
-        name: track["name"],
-        externalUri: track["external_urls"]["spotify"] ?? "https://open.spotify.com/track/${track["id"]}",
-        explicit: track["explicit"] ?? false,
-        durationMs: track["duration_ms"] ?? 0,
-        isrc: track["external_ids"]["isrc"] ?? "",
-        artists: simpleArtists(track["artists"]),
-        album: simpleAlbums([track["album"]])[0],
-      }.toJson()
-
-      modified.add(modifiedTrack)
     }
-
-    return modified
+    return out
   }
 
-  static fun fullAlbums(albums: List) -> List {
-    if(albums == null || albums.isEmpty) {
-      return
+  static fun artistImages(artist: Map) -> List {
+    if (artist == null) return []
+
+    var pairs = [
+      { "url": artist["picture_xl"], "size": 1000 },
+      { "url": artist["picture_big"], "size": 500 },
+      { "url": artist["picture_medium"], "size": 250 },
+      { "url": artist["picture_small"], "size": 56 },
+    ]
+
+    var out = []
+    for (var pair in pairs) {
+      if (pair["url"] != null) {
+        out.add({ url: pair["url"], width: pair["size"], height: pair["size"] }.toJson())
+      }
     }
-
-    var modified = []
-
-    for(var album in albums) {
-      var modifiedAlbum = {
-        id: album["id"],
-        name: album["name"],
-        externalUri: album["external_urls"]["spotify"] ?? "https://open.spotify.com/album/${album["id"]}",
-        releaseDate: album["release_date"] ?? "",
-        releaseDatePrecision: album["release_date_precision"] ?? "year",
-        totalTracks: album["total_tracks"] ?? 0,
-        artists: simpleArtists(album["artists"]),
-        images: album["images"],
-        albumType: (album["album_type"] == "ep" ? "compilation" : album["album_type"]) ?? "album",
-        totalTracks: album["total_tracks"],
-        recordLabel: album["label"],
-        genres: album["genres"]
-      }.toJson()
-
-      modified.add(modifiedAlbum)
-    }
-    
-    return modified
+    return out
   }
 
-  static fun simpleAlbums(albums: List) -> List {
-    if(albums == null || albums.isEmpty) {
-      return []
-    }
-    
+  /// Deezer durations are seconds; the model wants milliseconds.
+  static fun durationMs(seconds) -> int {
+    if (seconds == null) return 0
+    return (seconds * 1000).toInt()
+  }
+
+  // --- artists -----------------------------------------------------------
+
+  static fun simpleArtists(artists: List) -> List {
+    if (artists == null || artists.isEmpty) return []
+
     var modified = []
-
-    for(var album in albums) {
-      var albumModified = {
-        id: album["id"],
-        name: album["name"],
-        externalUri: album["external_urls"]["spotify"] ?? "https://open.spotify.com/album/${album["id"]}",
-        releaseDate: album["release_date"],
-        releaseDatePrecision: album["release_date_precision"],
-        artists: simpleArtists(album["artists"]),
-        images: album["images"],
-        albumType: (album["album_type"] == "ep" ? "compilation" : album["album_type"]) ?? "album",
-      }.toJson()
-
-      modified.add(albumModified)
+    for (var artist in artists) {
+      if (artist == null) continue
+      modified.add({
+        id: artist["id"].toString(),
+        name: artist["name"],
+        externalUri: artist["link"] ?? "https://www.deezer.com/artist/${artist["id"]}",
+        images: artistImages(artist),
+      }.toJson())
     }
-    
     return modified
   }
 
   static fun fullArtists(artists: List) -> List {
-    if(artists == null || artists.isEmpty) {
-      return []
-    }
-    
+    if (artists == null || artists.isEmpty) return []
+
     var modified = []
-
-    for(var artist in artists) {
-      var artistModified = {
-        id: artist["id"],
+    for (var artist in artists) {
+      if (artist == null) continue
+      modified.add({
+        id: artist["id"].toString(),
         name: artist["name"],
-        externalUri: artist["external_urls"]["spotify"] ?? "https://open.spotify.com/artist/${artist["id"]}",
-        images: artist["images"],
-        genres: artist["genres"] ?? [],
-        followers: artist["followers"]?["total"],
-      }.toJson()
-
-      modified.add(artistModified)
+        externalUri: artist["link"] ?? "https://www.deezer.com/artist/${artist["id"]}",
+        images: artistImages(artist),
+        genres: [],
+        followers: artist["nb_fan"],
+      }.toJson())
     }
-    
-    return modified 
-  }
-
-  static fun simpleArtists(artists: List) -> List {
-    if(artists == null || artists.isEmpty) {
-      return []
-    }
-    
-    var modified = []
-
-    for(var artist in artists) {
-      var artistModified = {
-        id: artist["id"],
-        name: artist["name"],
-        externalUri: artist["external_urls"]["spotify"] ?? "https://open.spotify.com/artist/${artist["id"]}",
-        images: artist["images"], // Optional
-      }.toJson()
-
-      modified.add(artistModified)
-    }
-
     return modified
   }
 
-  static fun simpleUser(data: Map) -> Map {
-    return {
-        id: data["id"],
-        name: data["display_name"],
-        images: data["images"],
-        externalUri: data["external_urls"]["spotify"] ?? "https://open.spotify.com/user/${data["id"]}",
-      }.toJson()
+  /// A track embeds a single `artist` object, not a list.
+  static fun trackArtists(track: Map) -> List {
+    var contributors = track["contributors"]
+    if (contributors != null && !contributors.isEmpty) {
+      return simpleArtists(contributors)
+    }
+    if (track["artist"] != null) {
+      return simpleArtists([track["artist"]])
+    }
+    return []
   }
 
-  static fun simplePlaylistsFromLibraryV3(playlists: List) -> List {
-    if (playlists == null || playlists.isEmpty) {
-      return []
+  // --- albums ------------------------------------------------------------
+
+  static fun simpleAlbums(albums: List) -> List {
+    if (albums == null || albums.isEmpty) return []
+
+    var modified = []
+    for (var album in albums) {
+      if (album == null) continue
+      modified.add({
+        id: album["id"].toString(),
+        name: album["title"],
+        externalUri: album["link"] ?? "https://www.deezer.com/album/${album["id"]}",
+        artists: simpleArtists(album["artist"] != null ? [album["artist"]] : []),
+        images: images(album),
+        albumType: albumType(album["record_type"]),
+        releaseDate: album["release_date"],
+      }.toJson())
     }
+    return modified
+  }
+
+  static fun fullAlbums(albums: List) -> List {
+    if (albums == null || albums.isEmpty) return []
+
+    var modified = []
+    for (var album in albums) {
+      if (album == null) continue
+      modified.add({
+        id: album["id"].toString(),
+        name: album["title"],
+        externalUri: album["link"] ?? "https://www.deezer.com/album/${album["id"]}",
+        artists: simpleArtists(album["artist"] != null ? [album["artist"]] : []),
+        images: images(album),
+        albumType: albumType(album["record_type"]),
+        releaseDate: album["release_date"] ?? "",
+        totalTracks: album["nb_tracks"] ?? 0,
+        recordLabel: album["label"],
+        genres: (album["genres"]?["data"] ?? []).map((g) => g["name"]).toList(),
+      }.toJson())
+    }
+    return modified
+  }
+
+  /// The album an individual track belongs to. Deezer's track payload carries
+  /// a reduced album object without `record_type`, so default to "album".
+  static fun trackAlbum(track: Map) -> Map {
+    var album = track["album"]
+    if (album == null) {
+      return {
+        id: null,
+        name: null,
+        externalUri: null,
+        artists: trackArtists(track),
+        images: [],
+        albumType: "album",
+        releaseDate: null,
+      }.toJson()
+    }
+
+    return {
+      id: album["id"].toString(),
+      name: album["title"],
+      externalUri: album["link"] ?? "https://www.deezer.com/album/${album["id"]}",
+      artists: simpleArtists(album["artist"] != null ? [album["artist"]] : []),
+      images: images(album),
+      albumType: albumType(album["record_type"]),
+      releaseDate: album["release_date"],
+    }.toJson()
+  }
+
+  // --- tracks ------------------------------------------------------------
+
+  static fun fullTracks(tracks: List) -> List {
+    if (tracks == null || tracks.isEmpty) return []
+
+    var modified = []
+    for (var track in tracks) {
+      if (track == null) continue
+      modified.add({
+        id: track["id"].toString(),
+        name: track["title"],
+        externalUri: track["link"] ?? "https://www.deezer.com/track/${track["id"]}",
+        artists: trackArtists(track),
+        album: trackAlbum(track),
+        durationMs: durationMs(track["duration"]),
+        isrc: track["isrc"] ?? "",
+        explicit: track["explicit_lyrics"] ?? false,
+      }.toJson())
+    }
+    return modified
+  }
+
+  // --- playlists ---------------------------------------------------------
+
+  static fun user(data: Map) -> Map {
+    if (data == null) {
+      return {
+        id: null,
+        name: "Deezer",
+        images: [],
+        externalUri: null,
+      }.toJson()
+    }
+
+    return {
+      id: data["id"].toString(),
+      name: data["name"],
+      images: artistImages(data),
+      externalUri: data["link"] ?? "https://www.deezer.com/user/${data["id"]}",
+    }.toJson()
+  }
+
+  static fun simplePlaylists(playlists: List) -> List {
+    if (playlists == null || playlists.isEmpty) return []
+
     var modified = []
     for (var playlist in playlists) {
-      var playlistModified = {
-        id: playlist["id"],
-        name: playlist["name"],
-        description: playlist["description"],
-        images: playlist["images"],
-        externalUri: playlist["external_urls"]["spotify"] ?? "https://open.spotify.com/playlist/${playlist["id"]}",
-        owner: simpleUser(playlist["owner"]),
-      }.toJson()
-
-      modified.add(playlistModified)
+      if (playlist == null) continue
+      var owner = playlist["user"] ?? playlist["creator"]
+      modified.add({
+        id: playlist["id"].toString(),
+        name: playlist["title"],
+        description: playlist["description"] ?? "",
+        images: images(playlist),
+        externalUri: playlist["link"] ?? "https://www.deezer.com/playlist/${playlist["id"]}",
+        owner: user(owner),
+      }.toJson())
     }
-
     return modified
   }
 
   static fun fullPlaylists(playlists: List) -> List {
-    if (playlists == null || playlists.isEmpty) {
-      return []
-    }
+    if (playlists == null || playlists.isEmpty) return []
+
     var modified = []
     for (var playlist in playlists) {
-      var playlistModified = {
-        id: playlist["id"],
-        name: playlist["name"],
-        description: playlist["description"],
-        images: playlist["images"],
-        externalUri: playlist["external_urls"]["spotify"] ?? "https://open.spotify.com/playlist/${playlist["id"]}",
-        owner: simpleUser(playlist["owner"]),
+      if (playlist == null) continue
+      var owner = playlist["user"] ?? playlist["creator"]
+      modified.add({
+        id: playlist["id"].toString(),
+        name: playlist["title"],
+        description: playlist["description"] ?? "",
+        images: images(playlist),
+        externalUri: playlist["link"] ?? "https://www.deezer.com/playlist/${playlist["id"]}",
+        owner: user(owner),
         collaborative: playlist["collaborative"] ?? false,
-        public: playlist["public"] ?? false,
-      }.toJson()
-
-      modified.add(playlistModified)
+        public: playlist["public"] ?? true,
+      }.toJson())
     }
-
     return modified
+  }
+
+  // --- pagination --------------------------------------------------------
+
+  /// Paginate a Deezer list response (`{ data, total, next }`).
+  static fun paginated(data: Map, offset: int, limit: int, convertItems: (List) -> List) -> Map {
+    var items = data?["data"] ?? []
+    var total = data?["total"] ?? items.length
+    var off = offset ?? 0
+    var lim = limit ?? items.length
+    var hasMore = data?["next"] != null || (total > off + items.length)
+
+    return {
+      limit: lim,
+      nextOffset: hasMore ? off + (lim > 0 ? lim : items.length) : null,
+      hasMore: hasMore,
+      total: total,
+      items: convertItems(items.where((item) => item != null).toList()),
+    }.toJson()
   }
 }
 

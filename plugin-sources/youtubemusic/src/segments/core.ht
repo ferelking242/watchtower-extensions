@@ -1,0 +1,76 @@
+import 'module:std' as std
+
+var HttpClient = std.HttpClient
+var HttpBaseOptions = std.HttpBaseOptions
+var RequestOptions = std.RequestOptions
+
+/// Plugin housekeeping: update checks and the support blurb.
+class CorePlugin {
+  var client: HttpClient
+
+  construct () {
+    client = HttpClient(
+      HttpBaseOptions(baseUrl: "https://api.github.com")
+    )
+  }
+
+  /// Checks the plugin's GitHub releases for a newer `.smplug`.
+  ///
+  /// [currentConfig] is the parsed `plugin.json`. Returns null when the plugin
+  /// is up to date, otherwise a map with `downloadUrl`, `version` and
+  /// `changelog`.
+  fun checkUpdate(currentConfig: Map) -> Future {
+    var parts = (currentConfig["version"] ?? "0.0.0").split(".")
+    var major = int.parse(parts[0]) ?? 0
+    var minor = parts.length > 1 ? (int.parse(parts[1]) ?? 0) : 0
+    var patch = parts.length > 2 ? (int.parse(parts[2]) ?? 0) : 0
+
+    var repository = currentConfig["repository"] ?? ""
+    if (repository == "") return Future.value(null)
+    var slug = repository.replaceAll("https://github.com/", "").replaceAll("https://api.github.com/repos/", "")
+
+    return client.get_req(
+      "/repos/${slug}/releases/latest",
+      options: RequestOptions(
+        headers: { "Accept": "application/vnd.github.v3+json" }.toJson()
+      ),
+    ).then((res) {
+      var data = res.data
+      var tag = data["tag_name"] ?? ""
+      var latest = tag.split(".")
+      if (latest.length < 3) return null
+
+      var latestMajor = int.parse(latest[0]) ?? 0
+      var latestMinor = int.parse(latest[1]) ?? 0
+      var latestPatch = int.parse(latest[2]) ?? 0
+
+      var available = latestMajor > major ||
+        (latestMajor == major && latestMinor > minor) ||
+        (latestMajor == major && latestMinor == minor && latestPatch > patch)
+
+      if (!available) return null
+
+      var downloadUrl = null
+      var assets = data["assets"] ?? []
+      for (var asset in assets) {
+        if (asset["name"] == "plugin.smplug") {
+          downloadUrl = asset["browser_download_url"]
+          break
+        }
+      }
+      if (downloadUrl == null) return null
+
+      return {
+        "downloadUrl": downloadUrl,
+        "version": tag,
+        "changelog": data["body"] ?? "",
+      }.toJson()
+    })
+  }
+
+  get support -> string {
+    return '# YouTube Music\n\nYouTube Music metadata is read through the public InnerTube API (`music.youtube.com/youtubei/v1`), the same backend the web player uses.\n\nNo account is required for search, playlists and artist pages. Signing in is optional and only adds the saved-library features (liked music, saved albums and artists).\n\nAudio is resolved by the audio source plugin you select (for example *YouTube Audio*), not by this plugin.'
+  }
+}
+
+export { CorePlugin }

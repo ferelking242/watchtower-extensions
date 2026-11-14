@@ -1,0 +1,151 @@
+import '../innertube.ht'
+import '../parser.ht'
+import '../converter.ht'
+import '../params.ht'
+
+/// Album metadata.
+///
+/// Unauthenticated WEB_REMIX does not expose album browse ids, and the search
+/// album filter returns nothing. Albums are still fully playable: YouTube
+/// Music publishes album playlists under `VL…`/`OLAK5uy_…` ids, and those
+/// browse pages carry the album title, artist and ordered track list. So this
+/// endpoint treats a `browseId` as an album page when it resolves to one.
+class AlbumEndpoint {
+  var client: InnerTubeClient
+  var parser: YtParser
+  var converter: Converter
+
+  construct (this.client) {
+    parser = YtParser()
+    converter = Converter()
+  }
+
+  fun _header(res) {
+    var headers = parser.findAll(res, "musicResponsiveHeaderRenderer")
+    if (headers.isEmpty) headers = parser.findAll(res, "musicDetailHeaderRenderer")
+    return headers.isEmpty ? {} : headers[0]
+  }
+
+  fun _headerTitle(res) -> string {
+    return parser.runs(_header(res)["title"])
+  }
+
+  /// The artist line of the album header: `"Album • Daft Punk • 2001"`.
+  fun _headerArtist(res) -> string {
+    var subtitle = parser.runs(_header(res)["subtitle"])
+    var parts = subtitle.split(" • ")
+    for (var part in parts) {
+      var value = part.trim()
+      if (value != "Album" && value != "Single" && value != "EP" && value != "Playlist" && value != "") {
+        return value
+      }
+    }
+    return ""
+  }
+
+  fun _releaseYear(res) -> string {
+    var subtitle = parser.runs(_header(res)["subtitle"])
+    var parts = subtitle.split(" • ")
+    for (var part in parts) {
+      var value = part.trim()
+      if (value.length == 4 && int.parse(value) != null) return value
+    }
+    return ""
+  }
+
+  fun _tracks(res) -> List {
+    var out = []
+    var rows = parser.findAll(res, "musicResponsiveListItemRenderer")
+    for (var item in rows) {
+      var videoId = parser.videoId(item)
+      if (videoId != "") {
+        var albumName = _headerTitle(res)
+        var track = converter.track(item, albumName: albumName)
+        var duration = parser.durationMs(parser.fixedText(item, 0))
+        if (duration > 0) track["durationMs"] = duration
+        out.add(track)
+      }
+    }
+    return out
+  }
+
+  fun getAlbum(id: string) {
+    return client.browse(id).then((res) {
+      var images = converter.images(_header(res))
+      var artistName = _headerArtist(res)
+      var artists = []
+      if (artistName != "") {
+        artists.add(converter.artist("", artistName))
+      }
+      return {
+        id: id,
+        name: _headerTitle(res),
+        externalUri: "https://music.youtube.com/browse/${id}",
+        artists: artists,
+        images: images,
+        albumType: "album",
+        releaseDate: _releaseYear(res),
+      }.toJson()
+    })
+  }
+
+  fun tracks(id: string, {offset: int, limit: int}) {
+    return client.browse(id).then((res) {
+      return _page(_tracks(res), offset, limit)
+    })
+  }
+
+  fun _page(items, offset, limit) -> Map {
+    var pageSize = limit ?? 20
+    var start = (offset ?? 0) < 0 ? 0 : (offset ?? 0)
+    var slice = []
+    for (var i = start; i < items.length; i++) {
+      if (slice.length >= pageSize) break
+      slice.add(items[i])
+    }
+    var hasMore = items.length > start + pageSize
+    return {
+      limit: pageSize,
+      nextOffset: hasMore ? start + pageSize : null,
+      total: items.length,
+      hasMore: hasMore,
+      items: slice,
+    }.toJson()
+  }
+
+  /// "New releases" from the YouTube Music landing page. Real data: the shelf
+  /// YouTube itself shows.
+  fun releases({offset: int, limit: int}) {
+    return client.browse(newReleasesBrowseId).then((res) {
+      var items = []
+      var rows = parser.findAll(res, "musicTwoRowItemRenderer")
+      for (var item in rows) {
+        var videoId = parser.watchVideoId(item)
+        var browseId = parser.browseId(item)
+        var id = browseId == "" ? videoId : browseId
+        if (id != "") {
+          var album = converter.album(
+            id,
+            parser.twoRowTitle(item),
+            "",
+            parser.twoRowSubtitle(item),
+            converter.images(item),
+            "",
+          )
+          items.add(album)
+        }
+      }
+      return _page(items, offset, limit)
+    })
+  }
+
+  fun save(ids: List) {
+    return Future.value(null)
+  }
+
+  fun unsave(ids: List) {
+    return Future.value(null)
+  }
+}
+
+export { AlbumEndpoint }

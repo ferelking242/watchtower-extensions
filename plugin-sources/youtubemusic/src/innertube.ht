@@ -1,15 +1,21 @@
 import 'module:std' as std
 
 var HttpClient = std.HttpClient
+var HttpResponse = std.HttpResponse
 var JSON = std.JSON
 var RequestOptions = std.RequestOptions
-var DateTime = std.DateTime
-var Random = std.Random
 
+/// Client for the YouTube Music InnerTube API.
+///
+/// Everything the plugin does goes through `POST
+/// https://music.youtube.com/youtubei/v1/<endpoint>?prettyPrint=false` with a
+/// WEB_REMIX client context. No API key is required, but the client identity
+/// headers must match the context or the server answers with an empty payload.
 class InnerTubeClient {
   var client: HttpClient
   var cookieHeader: string = ""
-  
+  var authorization: string = ""
+
   construct () {
     client = HttpClient()
   }
@@ -25,32 +31,72 @@ class InnerTubeClient {
     }
   }
 
-  fun post(endpoint: string, body: Map) -> Future {
-    var url = "https://music.youtube.com/youtubei/v1/" + endpoint + "?prettyPrint=false"
-    
-    // Merge context into body
-    body["context"] = getContext()
-
+  fun headers() -> Map {
     var headers = {
       "Content-Type": "application/json",
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "X-Youtube-Client-Name": "67",
+      "X-Youtube-Client-Version": "1.20231214.00.00",
+      "Origin": "https://music.youtube.com",
+      "Referer": "https://music.youtube.com/"
     }
     if (cookieHeader != "") {
       headers["Cookie"] = cookieHeader
     }
+    if (authorization != "") {
+      headers["Authorization"] = authorization
+    }
+    return headers.toJson()
+  }
 
-    return client.post_req(
+  fun post(endpoint: string, body: Map) -> Future {
+    var payload = body.toJson()
+    payload["context"] = getContext()
+    var url = "https://music.youtube.com/youtubei/v1/" + endpoint + "?prettyPrint=false"
+
+    return client.post(
       url,
-      data: JSON.encode(body.toJson()),
-      options: RequestOptions(
-        headers: headers.toJson()
-      )
+      data: JSON.encode(payload),
+      options: RequestOptions(headers: headers())
     ).then((res) {
-      if (res.data is string) {
+      if (res.data is str) {
         return JSON.decode(res.data)
       }
       return res.data
     })
+  }
+
+  /// Runs a filtered search. [params] is one of the tokens in `params.ht`.
+  fun search(query: string, params: string) -> Future {
+    return post("search", {
+      "query": query,
+      "params": params,
+    })
+  }
+
+  /// Fetches the next page of a previous search/shelf response.
+  fun searchMore(continuation: string) -> Future {
+    return post("search", {
+      "continuation": continuation,
+    })
+  }
+
+  /// Fetches a browse page (artist, playlist, album, charts).
+  fun browse(browseId: string, {params: string, continuation: string}) -> Future {
+    var body = { "browseId": browseId }
+    if (params != null && params != "") body["params"] = params
+    if (continuation != null && continuation != "") body["continuation"] = continuation
+    return post("browse", body)
+  }
+
+  /// Fetches the "next" page for a videoId: the only unauthenticated source of
+  /// a track's real duration, title and artist. Passing a [playlistId] selects
+  /// which queue is returned; the `RDAMVM…` autoplay mix is YouTube Music's
+  /// own radio.
+  fun next(videoId: string, {playlistId: string}) -> Future {
+    var body = { "videoId": videoId }
+    if (playlistId != null && playlistId != "") body["playlistId"] = playlistId
+    return post("next", body)
   }
 }
 

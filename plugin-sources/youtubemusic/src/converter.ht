@@ -1,0 +1,178 @@
+import 'module:std' as std
+import { YtParser } from './parser.ht'
+
+/// Converts InnerTube renderers into the Spotube metadata contract that
+/// Watchtower deserialises (`SpotubeSimpleAlbumObject`, `SpotubeFullTrackObject`,
+/// `SpotubeFullArtistObject`, `SpotubeSimplePlaylistObject`).
+class Converter {
+  var parser: YtParser
+
+  construct () {
+    parser = YtParser()
+  }
+
+  /// Extracts `i.ytimg.com`/`lh3` thumbnails into `SpotubeImageObject` shape.
+  fun images(item) -> List {
+    var out = []
+    var thumbList = parser.thumbnails(item)
+    for (var t in thumbList) {
+      out.add({
+        url: t["url"],
+        width: t["width"],
+        height: t["height"],
+      }.toJson())
+    }
+    return out
+  }
+
+  fun artist(id, name) -> Map {
+    var artistId = id == "" ? name : id
+    return {
+      id: artistId,
+      name: name,
+      externalUri: id == "" ? "" : "https://music.youtube.com/channel/${id}",
+      images: [],
+    }.toJson()
+  }
+
+  /// A video row carries no album, so the channel acts as the album holder.
+  /// Watchtower renders `track.album.name`, so an empty name would show a blank
+  /// line: fall back to the artist name.
+  fun pseudoAlbum(trackId, albumName, artistName) -> Map {
+    return {
+      id: trackId,
+      name: albumName == "" ? (artistName == "" ? "YouTube Music" : artistName) : albumName,
+      externalUri: "https://music.youtube.com/watch?v=${trackId}",
+      artists: [],
+      images: [],
+      albumType: "album",
+      releaseDate: "",
+    }.toJson()
+  }
+
+  /// Builds a `SpotubeFullTrackObject` from a search/list row that carries a
+  /// `playlistItemData.videoId`.
+  fun track(item, {albumName: string}) -> Map {
+    var videoId = parser.videoId(item)
+    var name = parser.flexText(item, 0)
+    var byline = parser.byline(item, 1)
+    var names = byline["names"]
+    var ids = byline["ids"]
+
+    var artists = []
+    if (names.isEmpty) {
+      artists.add(artist("", "Unknown Artist"))
+    } else {
+      for (var i = 0; i < names.length; i++) {
+        artists.add(artist(ids[i], names[i]))
+      }
+    }
+
+    var primary = names.isEmpty ? "" : names[0]
+
+    return {
+      id: videoId,
+      name: name,
+      externalUri: "https://music.youtube.com/watch?v=${videoId}",
+      artists: artists,
+      album: pseudoAlbum(videoId, albumName, primary),
+      durationMs: 0,
+      isrc: "",
+      explicit: false,
+    }.toJson()
+  }
+
+  /// A track assembled from the `next` endpoint's `playlistPanelVideoRenderer`,
+  /// which is the only unauthenticated source of duration for a videoId.
+  fun panelTrack(panel, {albumName: string}) -> Map {
+    var videoId = panel["videoId"] ?? ""
+    var name = parser.runs(panel["title"])
+    var byline = parser.runs(panel["longBylineText"])
+    var primary = byline == "" ? "" : byline.split(" • ")[0]
+    var duration = parser.durationMs(parser.runs(panel["lengthText"]))
+
+    var artists = []
+    if (primary == "") {
+      artists.add(artist("", "Unknown Artist"))
+    } else {
+      artists.add(artist("", primary))
+    }
+
+    return {
+      id: videoId,
+      name: name == "" ? videoId : name,
+      externalUri: "https://music.youtube.com/watch?v=${videoId}",
+      artists: artists,
+      album: pseudoAlbum(videoId, albumName, primary),
+      durationMs: duration,
+      isrc: "",
+      explicit: false,
+    }.toJson()
+  }
+
+  /// Minimal `SpotubeFullTrackObject` when only an id is known. Used as a last
+  /// resort so playback can still be attempted; `TrackEndpoint.getTrack`
+  /// normally fills this in from the `next` response.
+  fun trackFromId(id) -> Map {
+    return {
+      id: id,
+      name: id,
+      externalUri: "https://music.youtube.com/watch?v=${id}",
+      artists: [artist("", "Unknown Artist")],
+      album: pseudoAlbum(id, "", ""),
+      durationMs: 0,
+      isrc: "",
+      explicit: false,
+    }.toJson()
+  }
+
+  /// `SpotubeFullArtistObject` from an artist row or channel header.
+  fun artistObject(id, name, images) -> Map {
+    return {
+      id: id,
+      name: name,
+      externalUri: "https://music.youtube.com/channel/${id}",
+      images: images,
+      genres: [],
+      followers: 0,
+    }.toJson()
+  }
+
+  /// `SpotubeSimplePlaylistObject` from a playlist row. [channelId] is the
+  /// owner channel, [playlistId] the `VL…` browse id.
+  fun playlist(playlistId, name, channelId, ownerName, images) -> Map {
+    return {
+      id: playlistId,
+      name: name,
+      description: "",
+      externalUri: "https://music.youtube.com/playlist?list=${playlistId}",
+      owner: {
+        id: channelId,
+        name: ownerName == "" ? "YouTube Music" : ownerName,
+        images: [],
+        externalUri: channelId == "" ? "" : "https://music.youtube.com/channel/${channelId}",
+      }.toJson(),
+      images: images,
+    }.toJson()
+  }
+
+  /// `SpotubeSimpleAlbumObject`. Unauthenticated YouTube Music exposes no album
+  /// browse ids, so this is built from a playlist-shaped browse result.
+  fun album(albumId, name, artistId, artistName, images, releaseDate) -> Map {
+    var artists = []
+    if (artistName != "") {
+      artists.add(artist(artistId, artistName))
+    }
+    return {
+      id: albumId,
+      name: name,
+      externalUri: "https://music.youtube.com/browse/${albumId}",
+      artists: artists,
+      images: images,
+      albumType: "album",
+      releaseDate: releaseDate ?? "",
+    }.toJson()
+  }
+}
+
+export { Converter }

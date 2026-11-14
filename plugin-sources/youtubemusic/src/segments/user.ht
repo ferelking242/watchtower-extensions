@@ -1,0 +1,51 @@
+import '../parser.ht'
+import 'library.ht'
+
+/// The signed-in user's account and saved collections.
+///
+/// All of this is delegated to `LibraryEndpoint`, which owns the session
+/// handling (cookies plus the SAPISIDHASH header). Signed out, each method
+/// resolves to an empty result so the UI shows its signed-out state.
+class UserEndpoint {
+  var library: LibraryEndpoint
+
+  construct (this.library)
+
+  fun me() {
+    return library.me()
+  }
+
+  fun savedTracks({offset: int, limit: int}) {
+    return library.savedTracks(offset: offset, limit: limit)
+  }
+
+  fun savedPlaylists({offset: int, limit: int}) {
+    return library.savedPlaylists(offset: offset, limit: limit)
+  }
+
+  fun savedAlbums({offset: int, limit: int}) {
+    return library.savedAlbums(offset: offset, limit: limit)
+  }
+
+  fun savedArtists({offset: int, limit: int}) {
+    return library.savedArtists(offset: offset, limit: limit)
+  }
+
+  fun isSavedPlaylist(playlistId: string) {
+    return library.isSavedPlaylist(playlistId)
+  }
+
+  fun isSavedTracks(ids: List) {
+    return library.isSavedTracks(ids)
+  }
+
+  fun isSavedAlbums(ids: List) {
+    return library.isSavedAlbums(ids)
+  }
+
+  fun isSavedArtists(ids: List) {
+    return library.isSavedArtists(ids)
+  }
+}
+
+export { UserEndpoint }

@@ -1,8 +1,10 @@
 import "module:std" as std
 import "module:spotube_plugin" as spotube
-import { SpotifyGqlApi } from '../dependencies/hetu_spotify_gql_client/lib/assets/hetu/spotify_gql_api_client.ht'
 
-import { DeezerARLPlugin } from './segments/auth.ht'
+import { DeezerApi } from './api/deezer_api.ht'
+import { UserLibrary } from './library/user_library.ht'
+
+import { DeezerAuthEndpoint } from './segments/auth.ht'
 import { AlbumEndpoint } from "./segments/album.ht"
 import { ArtistEndpoint } from "./segments/artist.ht"
 import { BrowseEndpoint } from "./segments/browse.ht"
@@ -12,46 +14,44 @@ import { TrackEndpoint } from './segments/track.ht'
 import { UserEndpoint } from './segments/user.ht'
 import { CorePlugin } from './segments/core.ht'
 
-var Stream = std.Stream
-var HttpClient = std.HttpClient
+class DeezerMetadataProviderPlugin {
+  var auth: DeezerAuthEndpoint
+  var api: DeezerApi
+  var library: UserLibrary
 
+  var album: AlbumEndpoint
+  var artist: ArtistEndpoint
+  var browse: BrowseEndpoint
+  var playlist: PlaylistEndpoint
+  var search: SearchEndpoint
+  var track: TrackEndpoint
+  var user: UserEndpoint
+  var core: CorePlugin
 
-class DeezerARLPlugin {
-    var arl: String = ""
+  construct () {
+    api = DeezerApi()
+    library = UserLibrary(api)
+    auth = DeezerAuthEndpoint(api)
 
-    construct() {
-        print("Deezer ARL plugin loaded.");
-    }
+    album = AlbumEndpoint(api, library)
+    artist = ArtistEndpoint(api, library)
+    browse = BrowseEndpoint(api)
+    playlist = PlaylistEndpoint(api, library)
+    search = SearchEndpoint(api)
+    track = TrackEndpoint(api, library)
+    user = UserEndpoint(api, library)
+    core = CorePlugin()
 
-    fun authenticate(context: Map) -> Future {
-        return Future((resolve, reject) {
-            resolve({"result": "NEED_ARL"});
-        });
-    }
-
-    fun login(input: Map) -> Future {
-        return Future((resolve, reject) {
-            if (input.containsKey("arl")) {
-                this.arl = input["arl"];
-                print("Got Deezer ARL: " + this.arl);
-                resolve({"success": true});
-            } else {
-                reject({"error": "No ARL provided"});
-            }
-        });
-    }
-
-    fun search(query: String, offset: number, limit: number) -> Future {
-        return Future((resolve, reject) {
-            var results = {
-                'tracks': [],
-                'albums': [],
-                'artists': [],
-                'playlists': []
-            };
-            resolve(results);
-        });
-    }
+    auth.authStateStream.listen((event) {
+      if (auth.credentials != null) {
+        api.setCredentials(
+          arl: auth.credentials["arl"],
+          checkForm: auth.credentials["checkForm"],
+          userId: auth.credentials["userId"],
+        )
+      }
+    })
+  }
 }
 
-export { DeezerARLPlugin }
+export { DeezerMetadataProviderPlugin }

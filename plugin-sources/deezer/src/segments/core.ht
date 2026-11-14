@@ -1,19 +1,7 @@
 import "module:std" as std
 
-const supportStr = 'Just use this plugin and I am good. No need for supporting me.
-
-**But support the artists.** 
-
-Stop feeding megacorp with money. Directly donate to artists or buy their merch or go to their concerts.
-The 30% streaming service cut and other e.g. record labels cut is ridiculous.
-Artists (only ones directly involved in making the music) deserve 100% of the money you pay for their music.
-Not some greedy corporations and stupid middlemen.
-';
-
 var HttpClient = std.HttpClient
-var HttpResponse = std.HttpResponse
 var RequestOptions = std.RequestOptions
-var DateTime = std.DateTime
 
 class CorePlugin {
   var client: HttpClient
@@ -23,14 +11,14 @@ class CorePlugin {
   }
 
   /// Checks for updates to the plugin.
-  /// [currentConfig] is just plugin.json's file content.
+  /// [currentConfig] is plugin.json's file content.
   ///
-  /// If there's an update available, it will return a map of:
+  /// If an update is available it returns a map of:
   /// - [downloadUrl] -> direct download url to the new plugin.smplug file.
   /// - [version] of the new plugin.
   /// - [changelog] Optionally, a changelog for the update (markdown supported).
   ///
-  /// If no update is available, it will return null.
+  /// If no update is available, it returns null.
   fun checkUpdate(currentConfig: Map) -> Future {
     var versionParts = currentConfig["version"].split(".")
     var major = int.parse(versionParts[0])
@@ -82,10 +70,11 @@ class CorePlugin {
     })
   }
 
-    /// Returns the support information for the plugin in Markdown or plain text.
-  /// Supports images and links.
+  /// Returns the support information for the plugin in Markdown or plain text.
+  /// Supports images and links. Intentionally empty so no support section is
+  /// rendered for this plugin.
   get support -> string {
-    return supportStr
+    return ""
   }
 }
 

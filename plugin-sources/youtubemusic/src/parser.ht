@@ -1,0 +1,219 @@
+import 'module:std' as std
+
+/// Utilities for walking YouTube Music InnerTube responses.
+///
+/// InnerTube nests renderers in a deeply irregular tree, so every lookup is a
+/// depth-first search for a renderer key rather than a fixed path.
+///
+/// Methods are instance level (not static) because Hetu cannot resolve a
+/// class name from inside its own body.
+class YtParser {
+  /// Depth-first collect of every value stored under [key].
+  fun collect(node, key, out) {
+    if (node is Map) {
+      for (var k in node.keys) {
+        var v = node[k]
+        if (k == key) out.add(v)
+        collect(v, key, out)
+      }
+    } else if (node is List) {
+      for (var item in node) {
+        collect(item, key, out)
+      }
+    }
+  }
+
+  fun findAll(root, key) -> List {
+    var out = []
+    collect(root, key, out)
+    return out
+  }
+
+  fun findFirst(node, key) {
+    if (node is Map) {
+      for (var k in node.keys) {
+        var v = node[k]
+        if (k == key) return v
+        var nested = findFirst(v, key)
+        if (nested != null) return nested
+      }
+    } else if (node is List) {
+      for (var item in node) {
+        var nested = findFirst(item, key)
+        if (nested != null) return nested
+      }
+    }
+    return null
+  }
+
+  /// Joins `{"text": ...}` runs into a single string. Also accepts
+  /// `{"simpleText": ...}` nodes, which YouTube uses interchangeably.
+  fun runs(textNode) -> string {
+    if (textNode == null) return ""
+    if (textNode is str) return textNode
+    if (textNode["simpleText"] != null) return textNode["simpleText"]
+    var parts = textNode["runs"] ?? []
+    var s = ""
+    for (var r in parts) {
+      s = s + (r["text"] ?? "")
+    }
+    return s
+  }
+
+  fun twoRowTitle(item) -> string {
+    return runs(item["title"])
+  }
+
+  fun twoRowSubtitle(item) -> string {
+    return runs(item["subtitle"])
+  }
+
+  /// Reads `fixedColumns[i].musicResponsiveListItemFixedColumnRenderer.text`.
+  /// Playlist rows put the track duration here.
+  fun fixedText(item, index) -> string {
+    var columns = item["fixedColumns"] ?? []
+    if (index >= columns.length) return ""
+    var column = columns[index]["musicResponsiveListItemFixedColumnRenderer"] ?? {}
+    return runs(column["text"])
+  }
+
+  /// The `MUSIC_PAGE_TYPE_*` of the first `browseEndpoint` in [node].
+  fun pageType(node) -> string {
+    var endpoint = findFirst(node, "browseEndpoint")
+    if (endpoint == null) return ""
+    var configs = endpoint["browseEndpointContextSupportedConfigs"] ?? {}
+    var music = configs["browseEndpointContextMusicConfig"] ?? {}
+    return music["pageType"] ?? ""
+  }
+
+  /// First `browseId` whose page type equals [type]. Search rows carry both the
+  /// owner channel and the playlist/album, so the id must be selected by type.
+  fun browseIdOfType(node, type) -> string {
+    var endpoints = findAll(node, "browseEndpoint")
+    for (var endpoint in endpoints) {
+      var configs = endpoint["browseEndpointContextSupportedConfigs"] ?? {}
+      var music = configs["browseEndpointContextMusicConfig"] ?? {}
+      if (music["pageType"] == type) {
+        return endpoint["browseId"] ?? ""
+      }
+    }
+    return ""
+  }
+
+  /// First `videoId` reachable through a `watchEndpoint` (two-row items store
+  /// it there rather than in `playlistItemData`).
+  fun watchVideoId(node) -> string {
+    var endpoint = findFirst(node, "watchEndpoint")
+    if (endpoint == null) return ""
+    return endpoint["videoId"] ?? ""
+  }
+
+  /// Best available thumbnail set for [item]: prefers the largest square set
+  /// declared by the renderer, ignoring the tiny overlay icons.
+  fun thumbnails(item) -> List {
+    var sets = findAll(item, "thumbnails")
+    var best = []
+    for (var group in sets) {
+      if (group is List && group.length > best.length) best = group
+    }
+    var out = []
+    for (var t in best) {
+      if (t is Map && t["url"] != null) {
+        out.add({
+          url: t["url"],
+          width: t["width"] ?? 0,
+          height: t["height"] ?? 0,
+        }.toJson())
+      }
+    }
+    return out
+  }
+
+  /// Replaces the last `thumbnails` entry with a higher-resolution variant.
+  /// YouTube serves 60/120px squares by default; the same path with
+  /// `w544-h544` yields usable cover art.
+  fun upscaleThumbnails(images) -> List {
+    var out = []
+    for (var image in images) {
+      var url = image["url"] ?? ""
+      out.add({
+        url: url.replaceAll(Regex("w\\d+-h\\d+"), "w544-h544").replaceAll(Regex("=w\\d+-h\\d+"), "=w544-h544"),
+        width: 544,
+        height: 544,
+      }.toJson())
+    }
+    return out
+  }
+
+  /// Reads `flexColumns[i].musicResponsiveListItemFlexColumnRenderer.text`.
+  fun flexText(item, index) -> string {
+    var columns = item["flexColumns"] ?? []
+    if (index >= columns.length) return ""
+    var column = columns[index]["musicResponsiveListItemFlexColumnRenderer"] ?? {}
+    return runs(column["text"])
+  }
+
+  fun flexRuns(item, index) -> List {
+    var columns = item["flexColumns"] ?? []
+    if (index >= columns.length) return []
+    var column = columns[index]["musicResponsiveListItemFlexColumnRenderer"] ?? {}
+    return (column["text"] ?? {})["runs"] ?? []
+  }
+
+  /// Finds the first `browseId` in [node] (artists/playlists/albums).
+  fun browseId(node) -> string {
+    var id = findFirst(node, "browseId")
+    return id ?? ""
+  }
+
+  /// Finds the first `videoId` in [node].
+  fun videoId(node) -> string {
+    var id = findFirst(node, "videoId")
+    return id ?? ""
+  }
+
+  /// Parses `m:ss` or `h:mm:ss` into milliseconds. Returns 0 when absent.
+  fun durationMs(text) -> int {
+    if (text == null || text == "") return 0
+    var parts = text.split(":")
+    if (parts.length < 2 || parts.length > 3) return 0
+    var seconds = 0
+    for (var p in parts) {
+      var n = int.parse(p)
+      if (n == null) return 0
+      seconds = seconds * 60 + n
+    }
+    return seconds * 1000
+  }
+
+  /// Splits the byline of a search row ("Video • Artist • 16M views") and
+  /// returns the artist names together with their channel ids when present.
+  fun byline(item, index) -> Map {
+    var runsList = flexRuns(item, index)
+    var names = []
+    var ids = []
+    for (var r in runsList) {
+      var text = r["text"] ?? ""
+      var channelId = browseId(r["navigationEndpoint"] ?? {})
+      if (text != " • " && channelId != "") {
+        names.add(text)
+        ids.add(channelId)
+      }
+    }
+    return { names: names, ids: ids }.toJson()
+  }
+
+  /// True when the row's byline begins with [kind] ("Video", "Artist", ...).
+  fun isKind(item, kind) -> bool {
+    var text = flexText(item, 1)
+    return text == kind || text.startsWith(kind + " • ")
+  }
+
+  /// Removes YouTube's " • " separators from a byline string.
+  fun cleanByline(text) -> string {
+    if (text == null) return ""
+    return text.replaceAll(" • ", ", ")
+  }
+}
+
+export { YtParser }

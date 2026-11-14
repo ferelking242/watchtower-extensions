@@ -1,0 +1,26 @@
+/// Search filter tokens for the InnerTube `search` endpoint.
+///
+/// The token is a protobuf: field 2 wraps field 17 (a nested message holding
+/// the selected filter in field [F]) plus field 13 (the "chip cloud" list of
+/// the filter ids YouTube itself uses). Only these four values could be
+/// verified against the live API; `videos` is what backs the track list,
+/// because unauthenticated WEB_REMIX no longer returns a Songs filter.
+const videoFilterParams = "EhGKAQIQAWoKEAkQBRAKEAMQBA"
+const albumFilterParams = "EhGKAQIYAWoKEAkQBRAKEAMQBA"
+const artistFilterParams = "EgWKAQIgAWoKEAkQBRAKEAMQBA"
+const playlistFilterParams = "EhGKAQIoAWoKEAkQBRAKEAMQBA"
+
+/// Browse ids for the YouTube Music landing pages.
+const chartsBrowseId = "FEmusic_charts"
+const newReleasesBrowseId = "FEmusic_new_releases"
+
+/// The `MUSIC_PAGE_TYPE_*` values we care about when classifying a row.
+const pageTypeAlbum = "MUSIC_PAGE_TYPE_ALBUM"
+const pageTypeArtist = "MUSIC_PAGE_TYPE_ARTIST"
+const pageTypePlaylist = "MUSIC_PAGE_TYPE_PLAYLIST"
+
+/// Row kinds, taken from the first segment of the byline
+/// (`"Video • Artist • 16M views"`).
+const kindVideo = "Video"
+const kindArtist = "Artist"
+const kindPlaylist = "Playlist"

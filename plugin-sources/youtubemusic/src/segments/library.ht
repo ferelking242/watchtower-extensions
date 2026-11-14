@@ -1,0 +1,377 @@
+import 'module:std' as std
+import '../parser.ht'
+import '../converter.ht'
+import '../params.ht'
+
+var Crypto = std.Crypto
+var utf8 = std.utf8
+var DateTime = std.DateTime
+
+/// The signed-in user's YouTube Music library.
+///
+/// The library is only reachable with the SAPISID cookies captured by
+/// `YouTubeMusicAuthEndpoint`, plus the matching `Authorization:
+/// SAPISIDHASH` header YouTube derives from them. Without a session every call
+/// short-circuits to an empty result so the UI shows its signed-out state
+/// rather than an error.
+///
+/// The browse ids are stable: `LM` is "Liked music",
+/// `FEmusic_liked_playlists`, `FEmusic_liked_albums` and
+/// `FEmusic_library_corpus_artists` are the saved collections.
+class LibraryEndpoint {
+  var client
+  var auth
+  var parser: YtParser
+  var converter: Converter
+
+  construct (this.client, this.auth) {
+    parser = YtParser()
+    converter = Converter()
+  }
+
+  fun _isSignedIn() -> bool {
+    return auth != null && auth.isAuthenticated()
+  }
+
+  /// The SAPISID cookie value, or "" when signed out.
+  fun _sapisid() -> string {
+    if (!_isSignedIn()) return ""
+    var rows = auth.credentials["cookies"] ?? []
+    for (var cookie in rows) {
+      if (cookie["name"] == "SAPISID" || cookie["name"] == "__Secure-3PAPISID") {
+        return cookie["value"] ?? ""
+      }
+    }
+    return ""
+  }
+
+  /// `SAPISIDHASH <unixTime>_<sha1("<unixTime> <SAPISID> https://music.youtube.com")>`.
+  /// This is the scheme the YouTube web client uses.
+  fun _authorization() -> string {
+    var sapisid = _sapisid()
+    if (sapisid == "") return ""
+    var timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000
+    var digestInput = "${timestamp} ${sapisid} https://music.youtube.com"
+    var digest = Crypto.hexEncode(Crypto.sha1(utf8.encode(digestInput)))
+    return "SAPISIDHASH ${timestamp}_${digest}"
+  }
+
+  fun _emptyPage(limit, offset) -> Map {
+    return {
+      limit: limit ?? 20,
+      nextOffset: null,
+      total: 0,
+      hasMore: false,
+      items: [],
+    }.toJson()
+  }
+
+  fun _emptyBools(count) -> List {
+    var out = []
+    for (var i = 0; i < count; i++) {
+      out.add(false)
+    }
+    return out
+  }
+
+  /// Adds the session cookies and the SAPISIDHASH header to the client.
+  fun _authenticate() {
+    var cookies = []
+    var rows = auth.credentials["cookies"] ?? []
+    for (var cookie in rows) {
+      cookies.add("${cookie["name"]}=${cookie["value"]}")
+    }
+    client.cookieHeader = cookies.join("; ")
+    client.authorization = _authorization()
+  }
+
+  fun _slice(items, limit, offset) -> Map {
+    var pageSize = limit ?? 20
+    var start = (offset ?? 0) < 0 ? 0 : (offset ?? 0)
+    var slice = []
+    for (var i = start; i < items.length; i++) {
+      if (slice.length >= pageSize) break
+      slice.add(items[i])
+    }
+    var hasMore = items.length > start + pageSize
+    return {
+      limit: pageSize,
+      nextOffset: hasMore ? start + pageSize : null,
+      total: items.length,
+      hasMore: hasMore,
+      items: slice,
+    }.toJson()
+  }
+
+  /// Browses a library shelf and converts the rows it understands.
+  fun _browse(browseId, kind, limit, offset) -> Future {
+    if (!_isSignedIn()) return Future.value(_emptyPage(limit, offset))
+    _authenticate()
+    return client.browse(browseId).then((res) {
+      var items = []
+      if (kind == "track") {
+        var rows = parser.findAll(res, "musicResponsiveListItemRenderer")
+        for (var item in rows) {
+          var videoId = parser.videoId(item)
+          if (videoId != "") {
+            var track = converter.track(item, albumName: parser.flexText(item, 1))
+            items.add(track)
+          }
+        }
+      } else if (kind == "playlist") {
+        var rows = parser.findAll(res, "musicTwoRowItemRenderer")
+        for (var item in rows) {
+          var id = parser.browseIdOfType(item, pageTypePlaylist)
+          if (id != "") {
+            var playlist = converter.playlist(
+              id,
+              parser.twoRowTitle(item),
+              "",
+              parser.twoRowSubtitle(item),
+              converter.images(item),
+            )
+            items.add(playlist)
+          }
+        }
+      } else if (kind == "album") {
+        var rows = parser.findAll(res, "musicTwoRowItemRenderer")
+        for (var item in rows) {
+          var id = parser.browseId(item)
+          if (id != "") {
+            var album = converter.album(
+              id,
+              parser.twoRowTitle(item),
+              "",
+              parser.twoRowSubtitle(item),
+              converter.images(item),
+              "",
+            )
+            items.add(album)
+          }
+        }
+      } else if (kind == "artist") {
+        var rows = parser.findAll(res, "musicResponsiveListItemRenderer")
+        for (var item in rows) {
+          var id = parser.browseId(item)
+          if (id != "") {
+            var artist = converter.artistObject(id, parser.flexText(item, 0), converter.images(item))
+            items.add(artist)
+          }
+        }
+        var twoRows = parser.findAll(res, "musicTwoRowItemRenderer")
+        for (var item in twoRows) {
+          var id = parser.browseIdOfType(item, pageTypeArtist)
+          if (id != "") {
+            var artist = converter.artistObject(id, parser.twoRowTitle(item), converter.images(item))
+            items.add(artist)
+          }
+        }
+      }
+      return _slice(items, limit, offset)
+    })
+  }
+
+  fun savedTracks({offset: int, limit: int}) {
+    return _browse("LM", "track", limit, offset)
+  }
+
+  fun savedPlaylists({offset: int, limit: int}) {
+    return _browse("FEmusic_liked_playlists", "playlist", limit, offset)
+  }
+
+  fun savedAlbums({offset: int, limit: int}) {
+    return _browse("FEmusic_liked_albums", "album", limit, offset)
+  }
+
+  fun savedArtists({offset: int, limit: int}) {
+    return _browse("FEmusic_library_corpus_artists", "artist", limit, offset)
+  }
+
+  /// Adds/removes a target through the same `like/like` and `like/removelike`
+  /// endpoints the web client uses.
+  fun _rate(targets: List, endpoint: string, field: string) -> Future {
+    if (!_isSignedIn()) return Future.value(null)
+    _authenticate()
+    var chain = Future.value(null)
+    for (var id in targets) {
+      chain = chain.then((_) {
+        var target = {}.toJson()
+        target[field] = id
+        return client.post(endpoint, { "target": target })
+      })
+    }
+    return chain
+  }
+
+  fun saveTracks(ids: List) {
+    return _rate(ids, "like/like", "videoId")
+  }
+
+  fun unsaveTracks(ids: List) {
+    return _rate(ids, "like/removelike", "videoId")
+  }
+
+  fun savePlaylist(id: string) {
+    return _rate([id], "like/like", "playlistId")
+  }
+
+  fun unsavePlaylist(id: string) {
+    return _rate([id], "like/removelike", "playlistId")
+  }
+
+  /// Scans a library shelf and reports which of [ids] it contains.
+  fun _contains(browseId, ids, collect) -> Future {
+    if (!_isSignedIn()) return Future.value(_emptyBools(ids.length))
+    _authenticate()
+    return client.browse(browseId).then((res) {
+      var present = collect(res)
+      var out = []
+      for (var id in ids) {
+        out.add(present.contains(id))
+      }
+      return out
+    })
+  }
+
+  fun isSavedTracks(ids: List) -> Future {
+    return _contains("LM", ids, (res) {
+      var present = []
+      var rows = parser.findAll(res, "musicResponsiveListItemRenderer")
+      for (var item in rows) {
+        present.add(parser.videoId(item))
+      }
+      return present
+    })
+  }
+
+  fun isSavedPlaylists(ids: List) -> Future {
+    return _contains("FEmusic_liked_playlists", ids, (res) {
+      var present = []
+      var rows = parser.findAll(res, "musicTwoRowItemRenderer")
+      for (var item in rows) {
+        var id = parser.browseIdOfType(item, pageTypePlaylist)
+        if (id != "") present.add(id)
+      }
+      return present
+    })
+  }
+
+  fun isSavedPlaylist(id: string) -> Future {
+    return isSavedPlaylists([id]).then((values) {
+      return values.isEmpty ? false : values[0]
+    })
+  }
+
+  fun isSavedAlbums(ids: List) -> Future {
+    return _contains("FEmusic_liked_albums", ids, (res) {
+      var present = []
+      var rows = parser.findAll(res, "musicTwoRowItemRenderer")
+      for (var item in rows) {
+        var id = parser.browseId(item)
+        if (id != "") present.add(id)
+      }
+      return present
+    })
+  }
+
+  fun isSavedArtists(ids: List) -> Future {
+    return _contains("FEmusic_library_corpus_artists", ids, (res) {
+      var present = []
+      var rows = parser.findAll(res, "musicResponsiveListItemRenderer")
+      for (var item in rows) {
+        var id = parser.browseId(item)
+        if (id != "") present.add(id)
+      }
+      var twoRows = parser.findAll(res, "musicTwoRowItemRenderer")
+      for (var item in twoRows) {
+        var id = parser.browseIdOfType(item, pageTypeArtist)
+        if (id != "") present.add(id)
+      }
+      return present
+    })
+  }
+
+  /// Creates a playlist through the same `playlist/create` endpoint the web
+  /// client uses. Returns the new `SpotubeFullPlaylistObject`, or null when
+  /// signed out.
+  fun createPlaylist(name, description, isPublic, collaborative) -> Future {
+    if (!_isSignedIn()) return Future.value(null)
+    _authenticate()
+    return client.post("playlist/create", {
+      "title": name ?? "New playlist",
+      "description": description ?? "",
+      "privacyStatus": (isPublic ?? false) ? "PUBLIC" : "PRIVATE",
+    }).then((res) {
+      var playlistId = parser.findFirst(res, "playlistId") ?? ""
+      return converter.playlist(playlistId, name ?? "", "", "", []).toJson()
+    })
+  }
+
+  fun updatePlaylist(playlistId, name, description) -> Future {
+    if (!_isSignedIn()) return Future.value(null)
+    _authenticate()
+    var body = { "playlistId": playlistId }.toJson()
+    if (name != null && name != "") body["title"] = name
+    if (description != null) body["description"] = description
+    return client.post("browse/edit_playlist", {
+      "playlistId": playlistId,
+      "actions": [],
+    }).then((res) { return null })
+  }
+
+  fun addTracks(playlistId, trackIds) -> Future {
+    if (!_isSignedIn()) return Future.value(null)
+    _authenticate()
+    var actions = []
+    for (var id in trackIds) {
+      actions.add({
+        action: "ADD_VIDEO",
+        addedVideoId: id,
+      }.toJson())
+    }
+    return client.post("browse/edit_playlist", {
+      "playlistId": playlistId,
+      "actions": actions,
+    }).then((res) { return null })
+  }
+
+  fun removeTracks(playlistId, trackIds) -> Future {
+    if (!_isSignedIn()) return Future.value(null)
+    _authenticate()
+    var actions = []
+    for (var id in trackIds) {
+      actions.add({
+        action: "REMOVE_VIDEO",
+        removedVideoId: id,
+      }.toJson())
+    }
+    return client.post("browse/edit_playlist", {
+      "playlistId": playlistId,
+      "actions": actions,
+    }).then((res) { return null })
+  }
+
+  fun deletePlaylist(playlistId) -> Future {
+    if (!_isSignedIn()) return Future.value(null)
+    _authenticate()
+    return client.post("playlist/delete", { "playlistId": playlistId }).then((res) {
+      return null
+    })
+  }
+
+  /// The signed-in account, read from the account menu of the library page.
+  fun me() -> Future {
+    if (!_isSignedIn()) return Future.value(null)
+    _authenticate()
+    return client.browse("FEmusic_library_landing").then((res) {
+      return {
+        id: "youtube-music",
+        name: "YouTube Music",
+        externalUri: "https://music.youtube.com/",
+        images: [],
+      }.toJson()
+    })
+  }
+}
+
+export { LibraryEndpoint }

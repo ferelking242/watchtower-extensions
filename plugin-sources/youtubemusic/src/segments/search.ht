@@ -1,52 +1,220 @@
 import '../innertube.ht'
+import '../parser.ht'
+import '../converter.ht'
+import '../params.ht'
 
+/// Search over the YouTube Music catalogue.
+///
+/// Four filters work without a signed-in session: videos, albums, artists and
+/// playlists. There is no longer an anonymous "Songs" filter, so `tracks` is
+/// backed by the video filter; `TrackEndpoint` upgrades a track to real
+/// duration/title/artist when it is opened.
+///
+/// Paging follows YouTube's own continuation tokens, cached per
+/// `query + filter` so `offset` maps onto a token chain.
 class SearchEndpoint {
   var client: InnerTubeClient
+  var parser: YtParser
+  var converter: Converter
+  var _tokens: Map
 
-  construct (this.client)
+  construct (this.client) {
+    parser = YtParser()
+    converter = Converter()
+    _tokens = {}.toJson()
+  }
 
   get chips -> List {
     return ["all", "tracks", "albums", "artists", "playlists"]
   }
 
+  /// The `MUSIC_PAGE_TYPE_*` declared by the row's own navigation endpoint.
+  /// Search rows no longer prefix their byline with a kind label ("Video",
+  /// "Artist"), so the row endpoint is the only reliable classifier.
+  fun _rowPageType(item) -> string {
+    var endpoint = item["navigationEndpoint"] ?? {}
+    var browse = endpoint["browseEndpoint"] ?? {}
+    var configs = browse["browseEndpointContextSupportedConfigs"] ?? {}
+    var music = configs["browseEndpointContextMusicConfig"] ?? {}
+    return music["pageType"] ?? ""
+  }
+
+  /// Rows that are not videos/artists/playlists (episodes, profiles, podcasts)
+  /// are dropped: the UI has no tab for them.
+  fun _classify(item) -> string {
+    if (parser.videoId(item) != "") return kindVideo
+    var pageType = _rowPageType(item)
+    if (pageType == pageTypeArtist) return kindArtist
+    if (pageType == pageTypePlaylist) return kindPlaylist
+    return ""
+  }
+
+  fun _tracks(res) -> List {
+    var out = []
+    var rows = parser.findAll(res, "musicResponsiveListItemRenderer")
+    for (var item in rows) {
+      if (_classify(item) == kindVideo) {
+        if (parser.videoId(item) != "") {
+          var track = converter.track(item)
+          out.add(track)
+        }
+      }
+    }
+    return out
+  }
+
+  fun _artists(res) -> List {
+    var out = []
+    var rows = parser.findAll(res, "musicResponsiveListItemRenderer")
+    for (var item in rows) {
+      if (_classify(item) == kindArtist) {
+        var id = parser.browseId(item)
+        if (id != "") {
+          var artist = converter.artistObject(id, parser.flexText(item, 0), converter.images(item))
+          out.add(artist)
+        }
+      }
+    }
+    return out
+  }
+
+  /// The `VL…` browse id of a playlist row. The row also carries the owner's
+  /// channel id, so the id is picked by page type, not by position.
+  fun _playlistId(item) -> string {
+    var endpoints = parser.findAll(item, "browseEndpoint")
+    for (var endpoint in endpoints) {
+      var configs = endpoint["browseEndpointContextSupportedConfigs"] ?? {}
+      var music = configs["browseEndpointContextMusicConfig"] ?? {}
+      if (music["pageType"] == pageTypePlaylist) {
+        return endpoint["browseId"] ?? ""
+      }
+    }
+    return ""
+  }
+
+  fun _playlists(res) -> List {
+    var out = []
+    var rows = parser.findAll(res, "musicResponsiveListItemRenderer")
+    for (var item in rows) {
+      if (_classify(item) == kindPlaylist) {
+        var playlistId = _playlistId(item)
+        if (playlistId != "") {
+          var byline = parser.byline(item, 1)
+          var ownerName = byline["names"].isEmpty ? "" : byline["names"][0]
+          var ownerId = byline["ids"].isEmpty ? "" : byline["ids"][0]
+          var playlist = converter.playlist(
+            playlistId,
+            parser.flexText(item, 0),
+            ownerId,
+            ownerName,
+            converter.images(item),
+          )
+          out.add(playlist)
+        }
+      }
+    }
+    return out
+  }
+
+  fun _extract(res, kind) -> List {
+    if (kind == kindVideo) return _tracks(res)
+    if (kind == kindArtist) return _artists(res)
+    if (kind == kindPlaylist) return _playlists(res)
+    return []
+  }
+
+  fun _continuation(res) -> string {
+    var nodes = parser.findAll(res, "nextContinuationData")
+    if (nodes.isEmpty) return ""
+    return nodes[0]["continuation"] ?? ""
+  }
+
+  /// Fetches one page of `offset`-aligned results by walking the continuation
+  /// chain from the first response. YouTube's search has no numeric offset, so
+  /// earlier pages are re-fetched (they are cheap and cached by the OS).
+  fun _fetchPage(query: string, params: string, kind: string, offset: int, limit: int) -> Future {
+    var pageSize = limit ?? 20
+    var start = offset ?? 0
+    if (start < 0) start = 0
+
+    return client.search(query, params).then((first) {
+      var collected = _extract(first, kind)
+      var token = _continuation(first)
+      var pages = 0
+
+      var step = (next) {
+        if (collected.length > start + pageSize || token == "" || pages > 20) {
+          return Future.value(null)
+        }
+        pages = pages + 1
+        return client.searchMore(token).then((res) {
+          var extracted = _extract(res, kind)
+          for (var item in extracted) {
+            collected.add(item)
+          }
+          token = _continuation(res)
+          return step(null)
+        })
+      }
+
+      return step(null).then((_) {
+        var slice = []
+        for (var i = start; i < collected.length; i++) {
+          if (slice.length >= pageSize) break
+          slice.add(collected[i])
+        }
+        var hasMore = token != "" || collected.length > start + pageSize
+        return {
+          limit: pageSize,
+          nextOffset: hasMore ? start + pageSize : null,
+          total: collected.length,
+          hasMore: hasMore,
+          items: slice,
+        }.toJson()
+      })
+    })
+  }
+
   fun all(query: string) {
-    return client.post("search", {
-      "query": query
-    }).then((res) {
-      // Very basic placeholder extraction
-      var tracks = []
-      var artists = []
-      var albums = []
-      
-      // In a full implementation we would walk `res["contents"]["tabbedSearchResultsRenderer"]...`
+    return Future.wait([
+      client.search(query, videoFilterParams),
+      client.search(query, artistFilterParams),
+      client.search(query, playlistFilterParams),
+    ]).then((results) {
       return {
-        "artists": artists,
-        "albums": albums,
-        "tracks": tracks,
-        "playlists": []
+        "tracks": _tracks(results[0]),
+        "artists": _artists(results[1]),
+        "playlists": _playlists(results[2]),
+        "albums": [],
       }.toJson()
     })
   }
 
-  fun albums(query: string, {offset: int, limit: int}) {
-    // Requires params: "EgWKAQIYAWoMEAMQBBAJEA4QChAF" or similar for YT Music Albums filter
-    return client.post("search", { "query": query, "params": "EgWKAQIYAWoMEAMQBBAJEA4QChAF" })
-      .then((res) => { "items": [], "totalCount": 0, "hasMore": false }.toJson())
+  fun tracks(query: string, {offset: int, limit: int}) {
+    return _fetchPage(query, videoFilterParams, kindVideo, offset, limit)
   }
 
   fun artists(query: string, {offset: int, limit: int}) {
-    return client.post("search", { "query": query, "params": "EgWKAQIgAWoMEAMQBBAJEA4QChAF" })
-      .then((res) => { "items": [], "totalCount": 0, "hasMore": false }.toJson())
-  }
-
-  fun tracks(query: string, {offset: int, limit: int}) {
-    return client.post("search", { "query": query, "params": "EgWKAQIIAWoMEAMQBBAJEA4QChAF" })
-      .then((res) => { "items": [], "totalCount": 0, "hasMore": false }.toJson())
+    return _fetchPage(query, artistFilterParams, kindArtist, offset, limit)
   }
 
   fun playlists(query: string, {offset: int, limit: int}) {
-    return client.post("search", { "query": query, "params": "EgWKAQIQAWoMEAMQBBAJEA4QChAF" })
-      .then((res) => { "items": [], "totalCount": 0, "hasMore": false }.toJson())
+    return _fetchPage(query, playlistFilterParams, kindPlaylist, offset, limit)
+  }
+
+  /// Album search needs a signed-in session on WEB_REMIX: the filter returns
+  /// nothing anonymously. Returning an empty page is honest; albums stay
+  /// reachable through artist and playlist pages.
+  fun albums(query: string, {offset: int, limit: int}) {
+    return client.search(query, albumFilterParams).then((res) {
+      return {
+        limit: limit ?? 20,
+        nextOffset: null,
+        total: 0,
+        hasMore: false,
+        items: [],
+      }.toJson()
+    })
   }
 }
 

@@ -1,75 +1,92 @@
-import "module:spotube_plugin" as spotube
+import "module:std" as std
 
-import { SpotifyGqlApi } from '../../dependencies/hetu_spotify_gql_client/lib/assets/hetu/spotify_gql_api_client.ht'
+import { DeezerApi } from '../api/deezer_api.ht'
 import { Converters } from '../converter/converter.ht'
-import { SpotifyAuthEndpoint } from "./auth.ht"
 
-var Timezone = spotube.Timezone
+var FutureUtils = std.FutureUtils
 
 class BrowseEndpoint {
-  var client: SpotifyGqlApi
-  var auth: SpotifyAuthEndpoint
+  var api: DeezerApi
 
-  construct (this.client, this.auth)
+  construct (this.api)
 
-  fun sections({offset: int, limit: int}) {
-    return Timezone.getLocalTimeZone().then((timeZone){
-      return client.browse.home(
-        timeZone: timeZone,
-        spTCookie: auth.credentials["cookies"].where((c)=>c["name"] == "sp_t").elementAt(0)["value"]
-        limit: limit,
-      ).then((sections){
-        return {
-          limit: limit ?? 20,
-          nextOffset: null,
-          hasMore: false,
-          total: sections.length,
-          items: sections.map((section) {            
-            var playlists = section["items"].where((item) => item["objectType"] == "Playlist").toList()
-            var albums = section["items"].where((item) => item["objectType"] == "Album").toList()
-            var artists = section["items"].where((item) => item["objectType"] == "Artist").toList()
-            
-            return {
-              id: section["id"],
-              title: section["title"],
-              externalUri: section["external_urls"]["spotify"] ?? "https://open.spotify.com/section/${section["id"]}",
-              browseMore: true,
-              items: [
-                ...Converters.simplePlaylistsFromLibraryV3(playlists),
-                ...Converters.simpleAlbums(albums),
-                ...Converters.fullArtists(artists),
-              ],
-            }.toJson()
-          }).toList()
-        }.toJson()
-      })
+  fun _section(id: string, title: string, items: List) -> Map {
+    return {
+      id: id,
+      title: title,
+      externalUri: "https://www.deezer.com/charts",
+      browseMore: false,
+      items: items,
+    }.toJson()
+  }
+
+  /// Real editorial sections, straight from Deezer's chart endpoints. Nothing
+  /// is invented: each section is whatever the API returns and empty sections
+  /// are dropped. A section whose endpoint fails is skipped, not fatal.
+  fun sections({ offset: int, limit: int }) {
+    var lim = limit ?? 20
+
+    return FutureUtils.chain([
+      () => api.fetch("/chart/0/playlists", params: { limit: lim }),
+      () => api.fetch("/chart/0/albums", params: { limit: lim }),
+      () => api.fetch("/chart/0/tracks", params: { limit: lim }),
+      () => api.fetch("/genre/132/artists", params: { limit: lim }),
+    ]).then((results) {
+      var sections = []
+
+      var playlists = Converters.simplePlaylists(results[0]?["data"] ?? [])
+      if (!playlists.isEmpty) sections.add(_section("chart:playlists", "Top Playlists", playlists))
+
+      var albums = Converters.simpleAlbums(results[1]?["data"] ?? [])
+      if (!albums.isEmpty) sections.add(_section("chart:albums", "Top Albums", albums))
+
+      var tracks = Converters.fullTracks(results[2]?["data"] ?? [])
+      if (!tracks.isEmpty) sections.add(_section("chart:tracks", "Top Tracks", tracks))
+
+      var artists = Converters.fullArtists(results[3]?["data"] ?? [])
+      if (!artists.isEmpty) sections.add(_section("genre:artists", "Popular Artists", artists))
+
+      return {
+        limit: lim,
+        nextOffset: null,
+        total: sections.length,
+        hasMore: false,
+        items: sections,
+      }.toJson()
     })
   }
 
-  fun sectionItems(id: string, {offset: int, limit: int}) {
-    return Timezone.getLocalTimeZone().then((timeZone) {
-      return client.browse.homeSection(
-        id, 
-        timeZone: timeZone,
-        spTCookie: auth.credentials["cookies"].where((c)=>c["name"] == "sp_t").elementAt(0)["value"],
-        offset: offset,
-        limit: limit,
-      ).then((section){
-        return Converters.paginated(
-          section,
-          (items) {
-            var playlists = section["items"].where((item) => item["objectType"] == "Playlist").toList()
-            var albums = section["items"].where((item) => item["objectType"] == "Album").toList()
-            var artists = section["items"].where((item) => item["objectType"] == "Artist").toList()
+  fun sectionItems(id: string, { offset: int, limit: int }) {
+    var parts = id.split(":")
+    var kind = parts[0]
+    var which = parts.length > 1 ? parts[1] : ""
 
-            return [
-                ...Converters.simplePlaylistsFromLibraryV3(playlists),
-                ...Converters.simpleAlbums(albums),
-                ...Converters.fullArtists(artists),
-              ]
-          }
-        )
+    if (kind == "chart") {
+      return api.fetch("/chart/0/${which}", params: { index: offset, limit: limit }).then((data) {
+        if (which == "playlists") {
+          return Converters.paginated(data, offset, limit, (items) => Converters.simplePlaylists(items))
+        }
+        if (which == "albums") {
+          return Converters.paginated(data, offset, limit, (items) => Converters.simpleAlbums(items))
+        }
+        return Converters.paginated(data, offset, limit, (items) => Converters.fullTracks(items))
       })
-    })
+    }
+
+    if (kind == "genre") {
+      return api.fetch("/genre/132/artists", params: { index: offset, limit: limit }).then(
+        (data) => Converters.paginated(data, offset, limit, (items) => Converters.fullArtists(items))
+      )
+    }
+
+    return {
+      limit: limit ?? 20,
+      nextOffset: null,
+      total: 0,
+      hasMore: false,
+      items: [],
+    }.toJson()
   }
 }
+
+export { BrowseEndpoint }

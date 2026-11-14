@@ -1,0 +1,165 @@
+import '../innertube.ht'
+import '../parser.ht'
+import '../converter.ht'
+import '../params.ht'
+import 'library.ht'
+
+/// Playlists, including YouTube Music's album playlists.
+///
+/// A playlist browse page carries a `musicResponsiveHeaderRenderer` (or an
+/// editable variant for the user's own playlists) and a
+/// `musicPlaylistShelfRenderer` whose rows hold `playlistItemData.videoId` and a
+/// `fixedColumns` duration.
+class PlaylistEndpoint {
+  var client: InnerTubeClient
+  var parser: YtParser
+  var converter: Converter
+  var library: LibraryEndpoint
+
+  construct (this.client, this.library) {
+    parser = YtParser()
+    converter = Converter()
+  }
+
+  fun _header(res) {
+    var keys = [
+      "musicEditablePlaylistDetailHeaderRenderer",
+      "musicDetailHeaderRenderer",
+      "musicResponsiveHeaderRenderer",
+    ]
+    for (var key in keys) {
+      var found = parser.findAll(res, key)
+      if (found.length > 0) {
+        var header = found[0]
+        // The editable variant nests the real header one level down.
+        var nested = header["header"] ?? {}
+        var inner = nested["musicResponsiveHeaderRenderer"] ?? null
+        if (inner != null) return inner
+        return header
+      }
+    }
+    return {}.toJson()
+  }
+
+  fun _name(res) -> string {
+    return parser.runs(_header(res)["title"])
+  }
+
+  /// `"Playlist • Daft Punk • 2026"` → the owner name.
+  fun _owner(res) -> string {
+    var subtitle = parser.runs(_header(res)["subtitle"])
+    var parts = subtitle.split(" • ")
+    for (var part in parts) {
+      var value = part.trim()
+      var isLabel = value == "Playlist" || value == "Album" || value == ""
+      var isYear = value.length == 4 && int.parse(value) != null
+      if (!isLabel && !isYear) return value
+    }
+    return ""
+  }
+
+  fun _trackCount(res) -> int {
+    var count = 0
+    var panelRows = parser.findAll(res, "playlistPanelVideoRenderer")
+    for (var item in panelRows) {
+      count = count + 1
+    }
+    if (count > 0) return count
+    var listRows = parser.findAll(res, "musicResponsiveListItemRenderer")
+    for (var item in listRows) {
+      count = count + 1
+    }
+    return count
+  }
+
+  fun getPlaylist(id: string) {
+    return client.browse(id).then((res) {
+      var owner = _owner(res)
+      return converter.playlist(
+        id,
+        _name(res),
+        "",
+        owner,
+        converter.images(_header(res)),
+      )
+    })
+  }
+
+  fun _tracks(res) -> List {
+    var albumName = _name(res)
+    var out = []
+    var rows = parser.findAll(res, "musicResponsiveListItemRenderer")
+    for (var item in rows) {
+      var videoId = parser.videoId(item)
+      if (videoId != "") {
+        var track = converter.track(item, albumName: albumName)
+        var duration = parser.durationMs(parser.fixedText(item, 0))
+        if (duration > 0) track["durationMs"] = duration
+        out.add(track)
+      }
+    }
+    return out
+  }
+
+  fun tracks(id: string, {offset: int, limit: int}) {
+    return client.browse(id).then((res) {
+      return _page(_tracks(res), offset, limit)
+    })
+  }
+
+  fun _page(items, offset, limit) -> Map {
+    var pageSize = limit ?? 20
+    var start = (offset ?? 0) < 0 ? 0 : (offset ?? 0)
+    var slice = []
+    for (var i = start; i < items.length; i++) {
+      if (slice.length >= pageSize) break
+      slice.add(items[i])
+    }
+    var hasMore = items.length > start + pageSize
+    return {
+      limit: pageSize,
+      nextOffset: hasMore ? start + pageSize : null,
+      total: items.length,
+      hasMore: hasMore,
+      items: slice,
+    }.toJson()
+  }
+
+  /// Creating and editing playlists needs the signed-in account. The methods
+  /// delegate to `LibraryEndpoint`, which reports the signed-out case by
+  /// returning null/empty rather than raising.
+  fun create(userId: string, {name: string, description: string, public: bool, collaborative: bool}) {
+    if (!library._isSignedIn()) return Future.value(null)
+    return library.createPlaylist(name, description, public, collaborative)
+  }
+
+  fun update(playlistId: string, {name: string, description: string, public: bool, collaborative: bool}) {
+    if (!library._isSignedIn()) return Future.value(null)
+    return library.updatePlaylist(playlistId, name, description)
+  }
+
+  fun addTracks(playlistId: string, {trackIds: List, position: int}) {
+    if (!library._isSignedIn()) return Future.value(null)
+    return library.addTracks(playlistId, trackIds)
+  }
+
+  fun removeTracks(playlistId: string, {trackIds: List}) {
+    if (!library._isSignedIn()) return Future.value(null)
+    return library.removeTracks(playlistId, trackIds)
+  }
+
+  fun save(playlistId: string) {
+    return library.savePlaylist(playlistId)
+  }
+
+  fun unsave(playlistId: string) {
+    return library.unsavePlaylist(playlistId)
+  }
+
+  fun deletePlaylist(playlistId: string) {
+    if (!library._isSignedIn()) return Future.value(null)
+    return library.deletePlaylist(playlistId)
+  }
+}
+
+export { PlaylistEndpoint }

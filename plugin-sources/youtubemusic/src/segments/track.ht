@@ -1,33 +1,91 @@
 import '../innertube.ht'
+import '../parser.ht'
+import '../converter.ht'
+import 'library.ht'
 
+/// Track metadata and the "radio" queue.
+///
+/// The unauthenticated `player` endpoint is blocked, but `next` is open and
+/// carries the full `playlistPanelVideoRenderer` queue for a videoId: title,
+/// artist, real duration and the video thumbnails. That queue *is* YouTube
+/// Music's radio/autoplay, so it backs both `getTrack` and `radio`.
 class TrackEndpoint {
   var client: InnerTubeClient
+  var parser: YtParser
+  var converter: Converter
+  var library: LibraryEndpoint
 
-  construct (this.client)
+  construct (this.client, this.library) {
+    parser = YtParser()
+    converter = Converter()
+  }
+
+  fun _panels(res) -> List {
+    return parser.findAll(res, "playlistPanelVideoRenderer")
+  }
+
+  /// The panel entry for [id], or the first entry when none is flagged.
+  fun _select(res, id) -> Map {
+    var panels = _panels(res)
+    for (var panel in panels) {
+      if ((panel["videoId"] ?? "") == id) return panel
+    }
+    for (var panel in panels) {
+      if (panel["selected"] == true) return panel
+    }
+    return panels.isEmpty ? {} : panels[0]
+  }
 
   fun getTrack(id: string) {
-    // Requires payload {"videoId": id} to /player endpoint or similar
-    // Actually, track metadata can be fetched from "next" endpoint
-    return client.post("next", { "videoId": id }).then((res) {
-      // Very basic placeholder
-      return {
-        "id": id,
-        "name": "Unknown Track",
-        "artists": [],
-        "album": null,
-        "durationMs": 0,
-        "albumArt": []
-      }.toJson()
+    return client.next(id).then((res) {
+      var panel = _select(res, id)
+      if (panel.isEmpty) {
+        // Fall back to a minimal record so playback can still be attempted.
+        return converter.trackFromId(id)
+      }
+      return converter.panelTrack(panel)
     })
   }
 
-  fun getMany(ids: List) {
-    var tracks = []
-    return { "tracks": tracks }.toJson()
+  fun save(ids: List) {
+    return library.saveTracks(ids)
   }
 
+  fun unsave(ids: List) {
+    return library.unsaveTracks(ids)
+  }
+
+  /// The autoplay queue that YouTube Music builds around [id]. Real data: it is
+  /// exactly the list the web player would play next.
+  fun radio(id: string) -> Future {
+    return client.next(id, playlistId: "RDAMVM" + id).then((res) {
+      var out = []
+      var panels = _panels(res)
+      for (var panel in panels) {
+        var videoId = panel["videoId"] ?? ""
+        if (videoId != "" && videoId != id) {
+          var track = converter.panelTrack(panel)
+          out.add(track)
+        }
+      }
+      return out
+    })
+  }
+
+  fun getMany(ids: List) -> Future {
+    var futures = []
+    for (var id in ids) {
+      futures.add(getTrack(id))
+    }
+    return Future.wait(futures).then((tracks) {
+      return { "tracks": tracks }.toJson()
+    })
+  }
+
+  /// YouTube Music exposes no public lyrics API. Returning null is honest;
+  /// the UI falls back to its own lyrics provider.
   fun getLyrics(id: string) {
-    return { "lyrics": "Lyrics not implemented", "syncedLyrics": null }.toJson()
+    return { "lyrics": null, "syncedLyrics": null }.toJson()
   }
 }
 

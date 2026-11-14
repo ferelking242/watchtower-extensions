@@ -1,90 +1,75 @@
-import { SpotifyGqlApi } from '../../dependencies/hetu_spotify_gql_client/lib/assets/hetu/spotify_gql_api_client.ht'
+import "module:std" as std
+
+import { DeezerApi } from '../api/deezer_api.ht'
+import { UserLibrary } from '../library/user_library.ht'
 import { Converters } from '../converter/converter.ht'
 
-class PlaylistEndpoint {
-  var client: SpotifyGqlApi
+var FutureUtils = std.FutureUtils
 
-  construct (this.client)
+class PlaylistEndpoint {
+  var api: DeezerApi
+  var library: UserLibrary
+
+  construct (this.api, this.library)
 
   fun getPlaylist(id: string) {
-    return client.playlist.getPlaylist(id).then((data) {
-      return Converters.fullPlaylists([data])[0]
+    return api.fetch("/playlist/${id}").then((playlist) {
+      if (playlist == null || playlist["id"] == null) return null
+      return Converters.fullPlaylists([playlist])[0]
     })
   }
 
   fun tracks(id: string, { offset: int, limit: int }) {
-    return client.playlist.tracks(id, offset: offset, limit: limit).then((data) {
-      var paginated = Converters.paginated(
-        data, 
-        (items) => Converters.fullTracks(items.map((item)=>item["track"]).toList())
-      )
-
-      // Spotify playlists can contain local tracks which do not have an ID and cannot be played
-      // We filter them out here to avoid issues in the client
-      paginated["items"] = paginated["items"].where((item) => item != null && item["id"] != null).toList()
-
-      return paginated
+    return api.fetch("/playlist/${id}/tracks", params: { index: offset, limit: limit }).then((data) {
+      return Converters.paginated(data, offset, limit, (items) => Converters.fullTracks(items))
     })
   }
 
-  fun create(userId: string, {
-    name: string,
-    description: string,
-    public: bool,
-    collaborative: bool
-  }) {
-    return client.playlist.create(
-      userId,
-      name: name,
+  /// Editing playlists is a `gw-light` operation: the public catalogue is
+  /// read-only. These require a signed-in ARL session.
+  fun create(userId: string, { name: string, description: string, public: bool, collaborative: bool }) {
+    return api.call("playlist.create", params: {
+      title: name,
       description: description,
-      public: public,
-      collaborative: collaborative
-    ).then((data) {
-      return Converters.fullPlaylists([data])[0]
+    }).then((results) {
+      var id = results?["PLAYLIST_ID"] ?? results?["id"]
+      if (id == null) return null
+      return getPlaylist(id.toString())
     })
   }
 
-  fun update(playlistId: string, {
-    name: string,
-    description: string,
-    public: bool,
-    collaborative: bool
-  }) {
-    return client.playlist.update(
-      playlistId,
-      name: name,
+  fun update(playlistId: string, { name: string, description: string, public: bool, collaborative: bool }) {
+    return api.call("playlist.update", params: {
+      playlist_id: playlistId,
+      title: name,
       description: description,
-      public: public,
-      collaborative: collaborative
-    )
-  }
-
-  fun deletePlaylist(playlistId: string) {
-    return this.unsave(playlistId)
+    }).then((_) => true)
   }
 
   fun addTracks(playlistId: string, { trackIds: List, position: int }) {
-    return client.playlist.addTracks(
-      playlistId,
-      uris: trackIds.map((id)=>"spotify:track:${id}").toList(),
-      position: position
-    )
+    return api.call("playlist.addSongs", params: {
+      playlist_id: playlistId,
+      songs: trackIds.join(","),
+    }).then((_) => true)
   }
 
-
   fun removeTracks(playlistId: string, { trackIds: List }) {
-    return client.playlist.removeTracks(
-      playlistId, 
-      uris: trackIds.map((id)=>"spotify:track:${id}").toList()
-    )
+    return api.call("playlist.deleteSongs", params: {
+      playlist_id: playlistId,
+      songs: trackIds.join(","),
+    }).then((_) => true)
+  }
+
+  fun deletePlaylist(playlistId: string) {
+    return api.call("playlist.delete", params: { playlist_id: playlistId }).then((_) => true)
   }
 
   fun save(playlistId: string) {
-    return client.playlist.follow(playlistId)
+    return library.addFavoritePlaylist([playlistId])
   }
 
   fun unsave(playlistId: string) {
-    return client.playlist.unfollow(playlistId)
+    return library.removeFavoritePlaylist([playlistId])
   }
 }
 

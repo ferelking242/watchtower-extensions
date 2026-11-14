@@ -1,0 +1,227 @@
+import "module:std" as std
+
+import { DeezerApi } from '../api/deezer_api.ht'
+import { Converters } from '../converter/converter.ht'
+
+var FutureUtils = std.FutureUtils
+
+/// The signed-in user's own library.
+///
+/// The public catalogue (`api.deezer.com`) exposes a user's *public* playlists,
+/// albums and artists, so those are read straight from it with the user id we
+/// resolved at login. Favourites (liked tracks) and membership checks live
+/// behind the `gw-light` gateway and need the ARL session.
+///
+/// Every gateway call is best-effort: a rejected or renamed RPC resolves to a
+/// safe default instead of failing the whole page.
+class UserLibrary {
+  var api: DeezerApi
+
+  construct (this.api)
+
+  /// Read a tab of the user's profile via `gw-light`.
+  fun _profileTab(tab: string, { offset: int, limit: int }) -> Future {
+    return api.call("deezer.page.profile", params: {
+      user_id: api.userId,
+      tab: tab,
+      nb: limit,
+      start: offset,
+    }).then((results) {
+      var section = results?[tab] ?? {}
+      var items = section["data"] ?? []
+      return {
+        "data": items,
+        "total": section["total"] ?? items.length,
+        "next": section["next"],
+      }.toJson()
+    })
+  }
+
+  /// Run one gateway call per id, in order, collecting the raw results.
+  fun _each(ids: List, action: (id) -> Future) {
+    var calls = []
+    for (var id in ids) {
+      calls.add(() => action(id))
+    }
+    return FutureUtils.chain(calls)
+  }
+
+  // --- favourites (write) ------------------------------------------------
+
+  fun addFavoriteTrack(trackIds: List) {
+    return _each(trackIds, (id) => api.call("deezer.favorites.add", params: { sng_id: id }))
+  }
+
+  fun removeFavoriteTrack(trackIds: List) {
+    return _each(trackIds, (id) => api.call("deezer.favorites.remove", params: { sng_id: id }))
+  }
+
+  fun addFavoriteAlbum(albumIds: List) {
+    return _each(albumIds, (id) => api.call("deezer.favorites.album.add", params: { alb_id: id }))
+  }
+
+  fun removeFavoriteAlbum(albumIds: List) {
+    return _each(albumIds, (id) => api.call("deezer.favorites.album.remove", params: { alb_id: id }))
+  }
+
+  fun addFavoriteArtist(artistIds: List) {
+    return _each(artistIds, (id) => api.call("deezer.favorites.artist.add", params: { art_id: id }))
+  }
+
+  fun removeFavoriteArtist(artistIds: List) {
+    return _each(artistIds, (id) => api.call("deezer.favorites.artist.remove", params: { art_id: id }))
+  }
+
+  fun addFavoritePlaylist(playlistIds: List) {
+    return _each(playlistIds, (id) => api.call("deezer.favorites.playlist.add", params: { playlist_id: id }))
+  }
+
+  fun removeFavoritePlaylist(playlistIds: List) {
+    return _each(playlistIds, (id) => api.call("deezer.favorites.playlist.remove", params: { playlist_id: id }))
+  }
+
+  // --- favourites (read) -------------------------------------------------
+
+  fun _checkMany(method: string, paramKey: string, ids: List) {
+    return _each(ids, (id) {
+      var params = {}.toJson()
+      params[paramKey] = id
+      return api.call(method, params: params)
+    }).then((results) => results.map((result) => result == true).toList())
+  }
+
+  fun areTracksFavorite(trackIds: List) {
+    return _checkMany("song.isInFavorites", "sng_id", trackIds)
+  }
+
+  fun areAlbumsFavorite(albumIds: List) {
+    return _checkMany("album.isInFavorites", "alb_id", albumIds)
+  }
+
+  fun areArtistsFavorite(artistIds: List) {
+    return _checkMany("artist.isInFavorites", "art_id", artistIds)
+  }
+
+  fun isPlaylistFavorite(playlistId: string) {
+    return _checkMany("playlist.isInFavorites", "playlist_id", [playlistId])
+      .then((results) => results.first ?? false)
+  }
+
+  // --- profile tabs ------------------------------------------------------
+
+  fun savedTracks({ offset: int, limit: int }) {
+    return _profileTab("loved", offset: offset, limit: limit).then(
+      (data) => Converters.paginated(data, offset, limit, (items) => Converters.fullTracks(_normalizeTracks(items)))
+    )
+  }
+
+  fun savedAlbums({ offset: int, limit: int }) {
+    return _profileTab("albums", offset: offset, limit: limit).then(
+      (data) => Converters.paginated(data, offset, limit, (items) => Converters.simpleAlbums(_normalizeAlbums(items)))
+    )
+  }
+
+  fun savedArtists({ offset: int, limit: int }) {
+    return _profileTab("artists", offset: offset, limit: limit).then(
+      (data) => Converters.paginated(data, offset, limit, (items) => Converters.fullArtists(_normalizeArtists(items)))
+    )
+  }
+
+  fun savedPlaylists({ offset: int, limit: int }) {
+    // Public playlists are the reliable source; the profile tab only adds the
+    // private ones the public catalogue hides.
+    return api.fetch("/user/${api.userId}/playlists", params: { index: offset, limit: limit }).then(
+      (data) => Converters.paginated(data, offset, limit, (items) => Converters.simplePlaylists(items))
+    )
+  }
+
+  fun me() {
+    return api.fetch("/user/${api.userId}").then((data) {
+      return Converters.user({
+        "id": data?["id"],
+        "name": data?["name"],
+        "link": data?["link"],
+        "picture_xl": data?["picture_xl"],
+        "picture_big": data?["picture_big"],
+        "picture_medium": data?["picture_medium"],
+        "picture_small": data?["picture_small"],
+      }.toJson())
+    })
+  }
+
+  // --- gw-light item normalisation --------------------------------------
+  // Profile tabs return SCREAMING_SNAKE objects, unlike the REST payloads.
+
+  fun _cover(hash, size: string) -> string {
+    if (hash == null) return null
+    return "https://e-cdns-images.dzcdn.net/images/cover/${hash}/${size}-000000-80-0-0.jpg"
+  }
+
+  fun _normalizeTracks(items: List) -> List {
+    if (items == null) return []
+    return items.map((item) {
+      var cover = item["ALB_PICTURE"] ?? item["album"]?["md5_image"]
+      return {
+        id: item["SNG_ID"] ?? item["id"],
+        title: item["SNG_TITLE"] ?? item["title"] ?? item["SNG_TITLE_FALLBACK"],
+        duration: item["DURATION"] ?? item["duration"],
+        isrc: item["ISRC"],
+        explicit_lyrics: item["EXPLICIT_LYRICS"] == "1" || item["explicit_lyrics"] == true,
+        link: item["link"] ?? (item["SNG_ID"] != null ? "https://www.deezer.com/track/${item["SNG_ID"]}" : null),
+        artist: {
+          id: item["ART_ID"] ?? item["artist"]?["id"],
+          name: item["ART_NAME"] ?? item["artist"]?["name"],
+          link: item["ART_ID"] != null ? "https://www.deezer.com/artist/${item["ART_ID"]}" : null,
+          picture_big: item["ART_PICTURE"],
+        }.toJson(),
+        album: {
+          id: item["ALB_ID"] ?? item["album"]?["id"],
+          title: item["ALB_TITLE"] ?? item["album"]?["title"],
+          link: item["ALB_ID"] != null ? "https://www.deezer.com/album/${item["ALB_ID"]}" : null,
+          cover_big: _cover(cover, "500x500"),
+          cover_medium: _cover(cover, "250x250"),
+          cover_small: _cover(cover, "56x56"),
+        }.toJson(),
+      }.toJson()
+    }).toList()
+  }
+
+  fun _normalizeAlbums(items: List) -> List {
+    if (items == null) return []
+    return items.map((item) {
+      var cover = item["ALB_PICTURE"] ?? item["md5_image"]
+      return {
+        id: item["ALB_ID"] ?? item["id"],
+        title: item["ALB_TITLE"] ?? item["title"],
+        release_date: item["DIGITAL_RELEASE_DATE"] ?? item["release_date"] ?? item["PHYSICAL_RELEASE_DATE"],
+        nb_tracks: item["NUMBER_TRACK"] ?? item["nb_tracks"],
+        record_type: item["__TYPE__"] ?? item["record_type"],
+        link: item["link"] ?? (item["ALB_ID"] != null ? "https://www.deezer.com/album/${item["ALB_ID"]}" : null),
+        cover_big: _cover(cover, "500x500"),
+        cover_medium: _cover(cover, "250x250"),
+        cover_small: _cover(cover, "56x56"),
+        artist: {
+          id: item["ART_ID"] ?? item["artist"]?["id"],
+          name: item["ART_NAME"] ?? item["artist"]?["name"],
+          link: item["ART_ID"] != null ? "https://www.deezer.com/artist/${item["ART_ID"]}" : null,
+          picture_big: item["ART_PICTURE"],
+        }.toJson(),
+      }.toJson()
+    }).toList()
+  }
+
+  fun _normalizeArtists(items: List) -> List {
+    if (items == null) return []
+    return items.map((item) {
+      return {
+        id: item["ART_ID"] ?? item["id"],
+        name: item["ART_NAME"] ?? item["name"],
+        nb_fan: item["NB_FAN"] ?? item["nb_fan"],
+        link: item["link"] ?? (item["ART_ID"] != null ? "https://www.deezer.com/artist/${item["ART_ID"]}" : null),
+        picture_big: item["ART_PICTURE"],
+      }.toJson()
+    }).toList()
+  }
+}
+
+export { UserLibrary }

@@ -4,50 +4,73 @@ import "module:spotube_plugin" as spotube
 import { InnerTubeClient } from './innertube.ht'
 import { YouTubeMusicAuthEndpoint } from './segments/auth.ht'
 import { SearchEndpoint } from './segments/search.ht'
+import { AlbumEndpoint } from './segments/album.ht'
+import { ArtistEndpoint } from './segments/artist.ht'
+import { BrowseEndpoint } from './segments/browse.ht'
+import { PlaylistEndpoint } from './segments/playlist.ht'
 import { TrackEndpoint } from './segments/track.ht'
-// import { AlbumEndpoint } from "./segments/album.ht"
-// import { ArtistEndpoint } from "./segments/artist.ht"
-// import { BrowseEndpoint } from "./segments/browse.ht"
-// import { PlaylistEndpoint } from './segments/playlist.ht'
-// import { UserEndpoint } from './segments/user.ht'
-// import { CorePlugin } from './segments/core.ht'
+import { UserEndpoint } from './segments/user.ht'
+import { LibraryEndpoint } from './segments/library.ht'
+import { CorePlugin } from './segments/core.ht'
 
+// Hetu resolves a getter's declared return type in the *caller's* scope, so
+// every module that touches `authStateStream` needs the `Stream` alias.
+var Stream = std.Stream
+
+/// YouTube Music metadata provider.
+///
+/// Owns one `InnerTubeClient` and one `LibraryEndpoint`, so every segment
+/// shares a single HTTP client and a single session state. The session is
+/// applied to the client whenever the auth stream fires: cookies for browsing,
+/// and a freshly derived `SAPISIDHASH` header per library request (it embeds a
+/// timestamp).
 class YouTubeMusicMetadataProviderPlugin {
-  var auth: YouTubeMusicAuthEndpoint
   var api: InnerTubeClient
+  var auth: YouTubeMusicAuthEndpoint
+  var library: LibraryEndpoint
 
-  // var album: AlbumEndpoint
-  // var artist: ArtistEndpoint
-  // var browse: BrowseEndpoint
-  // var playlist: PlaylistEndpoint
+  var album: AlbumEndpoint
+  var artist: ArtistEndpoint
+  var browse: BrowseEndpoint
+  var playlist: PlaylistEndpoint
   var search: SearchEndpoint
   var track: TrackEndpoint
-  // var user: UserEndpoint
-  // var core: CorePlugin
-  
-  construct (){
+  var user: UserEndpoint
+  var core: CorePlugin
+
+  construct () {
     api = InnerTubeClient()
     auth = YouTubeMusicAuthEndpoint()
+    library = LibraryEndpoint(api, auth)
 
-    // album = AlbumEndpoint(api)
-    // artist = ArtistEndpoint(api)
-    // browse = BrowseEndpoint(api, auth)
-    // playlist = PlaylistEndpoint(api)
+    album = AlbumEndpoint(api)
+    artist = ArtistEndpoint(api, library)
+    browse = BrowseEndpoint(api, auth)
+    playlist = PlaylistEndpoint(api, library)
     search = SearchEndpoint(api)
-    track = TrackEndpoint(api)
-    // user = UserEndpoint(api)
-    // core = CorePlugin()
+    track = TrackEndpoint(api, library)
+    user = UserEndpoint(library)
+    core = CorePlugin()
 
+    _applySession()
     auth.authStateStream.listen((event) {
-      if (auth.credentials != null) {
-        // Apply cookies to InnerTube requests
-        var cookieStr = ""
-        for (var c in auth.credentials["cookies"]) {
-          cookieStr = cookieStr + c["name"] + "=" + c["value"] + "; "
-        }
-        api.cookieHeader = cookieStr
-      }
+      _applySession()
     })
+  }
+
+  /// Pushes the current cookies onto the shared client.
+  fun _applySession() {
+    if (auth.credentials == null) {
+      api.cookieHeader = ""
+      api.authorization = ""
+      return
+    }
+    var cookies = []
+    var cookies = auth.credentials["cookies"] ?? []
+    for (var cookie in cookies) {
+      cookies.add("${cookie["name"]}=${cookie["value"]}")
+    }
+    api.cookieHeader = cookies.join("; ")
   }
 }
 

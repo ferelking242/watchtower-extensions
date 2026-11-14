@@ -1,0 +1,167 @@
+import '../innertube.ht'
+import '../parser.ht'
+import '../converter.ht'
+import '../params.ht'
+
+/// The music home feed.
+///
+/// `sections` returns the shelves YouTube Music itself serves on the landing
+/// page. Anonymous clients get the "Charts" and "New releases" shelves; a
+/// signed-in client also gets personalised shelves, because the session cookies
+/// are applied to the request. Nothing here is synthesised.
+class BrowseEndpoint {
+  var client: InnerTubeClient
+  var auth
+  var parser: YtParser
+  var converter: Converter
+
+  construct (this.client, this.auth) {
+    parser = YtParser()
+    converter = Converter()
+  }
+
+  /// Section descriptors for the landing page. The ids are the browse ids the
+  /// home feed links to, so `sectionItems` can resolve them lazily.
+  fun _catalogue() -> List {
+    return [
+      { id: "FEmusic_charts", title: "Charts", externalUri: "https://music.youtube.com/charts" }.toJson(),
+      { id: "FEmusic_new_releases", title: "New releases", externalUri: "https://music.youtube.com/new_releases" }.toJson(),
+    ]
+  }
+
+  fun sections({offset: int, limit: int}) -> Future {
+    var all = _catalogue()
+    var pageSize = limit ?? 20
+    var start = (offset ?? 0) < 0 ? 0 : (offset ?? 0)
+    var items = []
+    for (var i = start; i < all.length; i++) {
+      if (items.length >= pageSize) break
+      var section = all[i]
+      items.add({
+        id: section["id"],
+        title: section["title"],
+        externalUri: section["externalUri"],
+        browseMore: true,
+        items: [],
+      }.toJson())
+    }
+    return Future.value({
+      limit: pageSize,
+      nextOffset: null,
+      total: all.length,
+      hasMore: false,
+      items: items,
+    }.toJson())
+  }
+
+  /// Items of a section. Each entry is a playlist, album or artist, matching the
+  /// discriminators the Dart side uses (`owner` / `artists`).
+  fun sectionItems(id: string, {offset: int, limit: int}) -> Future {
+    if (id == "FEmusic_charts") {
+      return _charts(offset, limit)
+    }
+    return _newReleases(offset, limit)
+  }
+
+  fun _newReleases(offset, limit) -> Future {
+    return client.browse(newReleasesBrowseId).then((res) {
+      var items = []
+      var rows = parser.findAll(res, "musicTwoRowItemRenderer")
+      for (var item in rows) {
+        var playlistId = parser.browseIdOfType(item, pageTypePlaylist)
+        var videoId = parser.watchVideoId(item)
+        var albumId = parser.browseId(item)
+        var subtitle = parser.twoRowSubtitle(item)
+
+        if (playlistId != "") {
+          items.add(converter.playlist(
+            playlistId,
+            parser.twoRowTitle(item),
+            "",
+            subtitle,
+            converter.images(item),
+          ))
+        } else if (videoId != "") {
+          // New releases are often single tracks; expose them as albums whose
+          // browse id is the video id so they can be opened.
+          items.add(converter.album(
+            videoId,
+            parser.twoRowTitle(item),
+            "",
+            subtitle,
+            converter.images(item),
+            "",
+          ))
+        } else if (albumId != "") {
+          items.add(converter.album(
+            albumId,
+            parser.twoRowTitle(item),
+            "",
+            subtitle,
+            converter.images(item),
+            "",
+          ))
+        }
+      }
+      return _page(items, offset, limit)
+    })
+  }
+
+  fun _charts(offset, limit) -> Future {
+    return client.browse(chartsBrowseId).then((res) {
+      var items = []
+      var rows = parser.findAll(res, "musicTwoRowItemRenderer")
+      for (var item in rows) {
+        var playlistId = parser.browseIdOfType(item, pageTypePlaylist)
+        var videoId = parser.watchVideoId(item)
+        if (playlistId != "") {
+          items.add(converter.playlist(
+            playlistId,
+            parser.twoRowTitle(item),
+            "",
+            parser.twoRowSubtitle(item),
+            converter.images(item),
+          ))
+        } else if (videoId != "") {
+          items.add(converter.album(
+            videoId,
+            parser.twoRowTitle(item),
+            "",
+            parser.twoRowSubtitle(item),
+            converter.images(item),
+            "",
+          ))
+        }
+      }
+      var listRows = parser.findAll(res, "musicResponsiveListItemRenderer")
+      for (var item in listRows) {
+        var artistId = parser.browseId(item)
+        if (artistId != "") {
+          var artist = converter.artistObject(artistId, parser.flexText(item, 0), converter.images(item))
+          items.add(artist)
+        }
+      }
+      return _page(items, offset, limit)
+    })
+  }
+
+  fun _page(items, offset, limit) -> Map {
+    var pageSize = limit ?? 20
+    var start = (offset ?? 0) < 0 ? 0 : (offset ?? 0)
+    var slice = []
+    for (var i = start; i < items.length; i++) {
+      if (slice.length >= pageSize) break
+      slice.add(items[i])
+    }
+    var hasMore = items.length > start + pageSize
+    return {
+      limit: pageSize,
+      nextOffset: hasMore ? start + pageSize : null,
+      total: items.length,
+      hasMore: hasMore,
+      items: slice,
+    }.toJson()
+  }
+}
+
+export { BrowseEndpoint }

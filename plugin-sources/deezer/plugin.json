@@ -1,11 +1,10 @@
 {
-  "version": "0.1.3",
+  "version": "0.2.0",
   "name": "Deezer",
-  "author": "000Tonio",
-  "description": "Spotube plugin for Deezer metadata",
-  "entryPoint": "DeezerARLPlugin",
+  "author": "ferelking242",
+  "description": "Deezer metadata plugin for Watchtower - real Deezer catalogue (search, charts, albums, artists, playlists) plus ARL-authenticated library access.",
+  "entryPoint": "DeezerMetadataProviderPlugin",
   "apis": [
-    "webview",
     "localstorage"
   ],
   "abilities": [

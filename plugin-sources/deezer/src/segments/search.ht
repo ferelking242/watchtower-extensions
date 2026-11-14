@@ -1,62 +1,59 @@
-import { SpotifyGqlApi } from '../../dependencies/hetu_spotify_gql_client/lib/assets/hetu/spotify_gql_api_client.ht'
+import "module:std" as std
+
+import { DeezerApi } from '../api/deezer_api.ht'
 import { Converters } from '../converter/converter.ht'
 
+var FutureUtils = std.FutureUtils
+
 class SearchEndpoint {
-  var client: SpotifyGqlApi
+  var api: DeezerApi
 
-  construct (this.client)
+  construct (this.api)
 
-  get chips -> List { // Set<string>
-    // can be tracks, playlists, artists, albums and all
+  get chips -> List {
     return ["all", "tracks", "albums", "artists", "playlists"]
   }
 
   fun all(query: string) {
-    return client.search.all(
-      query,
-      limit: 20
-    ).then((data){
-      var result = {
-        artists: Converters.simpleArtists(data["artists"]),
-        albums: Converters.simpleAlbums(data["albums"]),
-        tracks: Converters.fullTracks(data["tracks"]),
-        playlists: Converters.simplePlaylistsFromLibraryV3(data["playlists"]),
-      }.toJson()
+    var params = { q: query, limit: 20 }.toJson()
 
-      return result
+    return FutureUtils.chain([
+      () => api.fetch("/search/track", params: params),
+      () => api.fetch("/search/album", params: params),
+      () => api.fetch("/search/artist", params: params),
+      () => api.fetch("/search/playlist", params: params),
+    ]).then((results) {
+      return {
+        artists: Converters.fullArtists(results[2]?["data"] ?? []),
+        albums: Converters.simpleAlbums(results[1]?["data"] ?? []),
+        tracks: Converters.fullTracks(results[0]?["data"] ?? []),
+        playlists: Converters.simplePlaylists(results[3]?["data"] ?? []),
+      }.toJson()
     })
   }
 
-  fun albums(query: string, {offset: int, limit: int}) {
-    return client.search.albums(
-      query,
-      offset: offset,
-      limit: limit
-    ).then((data) => Converters.paginated(data, (items) => Converters.simpleAlbums(items)))
+  fun albums(query: string, { offset: int, limit: int }) {
+    return api.fetch("/search/album", params: { q: query, index: offset, limit: limit }).then(
+      (data) => Converters.paginated(data, offset, limit, (items) => Converters.simpleAlbums(items))
+    )
   }
 
-  fun artists(query: string, {offset: int, limit: int}) {
-    return client.search.artists(
-      query,
-      offset: offset,
-      limit: limit
-    ).then((data) => Converters.paginated(data, (items) => Converters.simpleArtists(items)))
+  fun artists(query: string, { offset: int, limit: int }) {
+    return api.fetch("/search/artist", params: { q: query, index: offset, limit: limit }).then(
+      (data) => Converters.paginated(data, offset, limit, (items) => Converters.fullArtists(items))
+    )
   }
 
-  fun tracks(query: string, {offset: int, limit: int}) {
-    return client.search.tracks(
-      query,
-      offset: offset,
-      limit: limit
-    ).then((data) => Converters.paginated(data, (items) => Converters.fullTracks(items)))
+  fun tracks(query: string, { offset: int, limit: int }) {
+    return api.fetch("/search/track", params: { q: query, index: offset, limit: limit }).then(
+      (data) => Converters.paginated(data, offset, limit, (items) => Converters.fullTracks(items))
+    )
   }
 
-  fun playlists(query: string, {offset: int, limit: int}) {
-    return client.search.playlists(
-      query,
-      offset: offset,
-      limit: limit
-    ).then((data) => Converters.paginated(data, (items) => Converters.simplePlaylistsFromLibraryV3(items)))
+  fun playlists(query: string, { offset: int, limit: int }) {
+    return api.fetch("/search/playlist", params: { q: query, index: offset, limit: limit }).then(
+      (data) => Converters.paginated(data, offset, limit, (items) => Converters.simplePlaylists(items))
+    )
   }
 }
 

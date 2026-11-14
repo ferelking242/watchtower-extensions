@@ -1,0 +1,140 @@
+import "module:std" as std
+
+var HttpClient = std.HttpClient
+var HttpBaseOptions = std.HttpBaseOptions
+var RequestOptions = std.RequestOptions
+var JSON = std.JSON
+
+/// Public catalogue host. Serves tracks, albums, artists, playlists, search
+/// and charts without credentials.
+const publicBaseUrl = "https://api.deezer.com"
+
+/// The RPC gateway the Deezer web player itself calls. Required for anything
+/// the public catalogue does not expose: the signed-in user's own library.
+const gatewayUrl = "https://www.deezer.com/ajax/gw-light.php"
+
+/// Thin client over Deezer's JSON APIs.
+///
+/// Two backends are used:
+/// - [publicBaseUrl]: plain REST, no credentials. Everything the catalogue
+///   exposes (search, albums, artists, playlists, charts) goes through here.
+/// - [gatewayUrl]: the `gw-light` RPC. Needs the `arl` session cookie and the
+///   per-session `checkForm` token; used for the user's own library.
+class DeezerApi {
+  var client: HttpClient
+  var arl: string = ""
+  var checkForm: string = "null"
+  var userId: int = 0
+
+  construct () {
+    client = HttpClient(
+      HttpBaseOptions(
+        headers: {
+          "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept-Language": "en-US,en;q=0.9",
+        }.toJson(),
+      )
+    )
+  }
+
+  fun setCredentials({ arl: string, checkForm: string, userId: int }) {
+    if (arl != null) this.arl = arl
+    if (checkForm != null) this.checkForm = checkForm
+    if (userId != null) this.userId = userId
+  }
+
+  fun isAuthenticated() -> bool {
+    return arl != null && arl.isNotEmpty && userId != null && userId > 0
+  }
+
+  fun _clean(params: Map) -> Map {
+    var clean = {}.toJson()
+    if (params != null) {
+      for (var key in params.keys) {
+        var value = params[key]
+        if (value != null) clean[key] = value
+      }
+    }
+    return clean
+  }
+
+  // --- public REST -------------------------------------------------------
+
+  fun fetch(path: string, { params: Map }) -> Future {
+    return client.get_req(
+      "${publicBaseUrl}${path}",
+      queryParameters: _clean(params),
+    ).then((res) {
+      var data = res.data
+      if (data is Map && data["error"] != null) {
+        throw "Deezer API error on ${path}: ${JSON.encode(data["error"])}"
+      }
+      return data
+    })
+  }
+
+  // --- gw-light RPC ------------------------------------------------------
+
+  fun call(method: string, { params: Map }) -> Future {
+    if (!isAuthenticated()) {
+      throw "Deezer: not authenticated"
+    }
+
+    var query = _clean(params)
+    query["method"] = method
+    query["input"] = "3"
+    query["api_version"] = "1.0"
+    query["api_token"] = checkForm
+
+    return client.get_req(
+      gatewayUrl,
+      queryParameters: query,
+      options: RequestOptions(
+        headers: { "Cookie": "arl=${arl}" }.toJson(),
+      ),
+    ).then((res) {
+      var data = res.data
+      if (data is Map) {
+        if (data["error"] != null && data["error"].isNotEmpty) {
+          throw "Deezer gateway error on ${method}: ${JSON.encode(data["error"])}"
+        }
+        return data["results"] ?? {}.toJson()
+      }
+      return data
+    })
+  }
+
+  /// Resolve a raw ARL into a usable session (`checkForm` token + user id).
+  /// Resolves to null when the ARL is not accepted.
+  fun resolveSession(arl: string) -> Future {
+    var query = {
+      "method": "deezer.getUserData",
+      "input": "3",
+      "api_version": "1.0",
+      "api_token": "null",
+    }.toJson()
+
+    return client.get_req(
+      gatewayUrl,
+      queryParameters: query,
+      options: RequestOptions(
+        headers: { "Cookie": "arl=${arl}" }.toJson(),
+      ),
+    ).then((res) {
+      var results = res.data?["results"]
+      if (results == null) return null
+
+      var user = results["USER"] ?? {}.toJson()
+      var id = user["USER_ID"] ?? 0
+      if (id == null || id <= 0) return null
+
+      return {
+        "arl": arl,
+        "checkForm": results["checkForm"] ?? "null",
+        "userId": id,
+      }.toJson()
+    })
+  }
+}
+
+export { DeezerApi }

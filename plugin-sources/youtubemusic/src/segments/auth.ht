@@ -2,6 +2,8 @@ import 'module:std' as std
 import 'module:spotube_plugin' as spotube
 
 var StreamController = std.StreamController
+var Stream = std.Stream
+var StreamSubscription = std.StreamSubscription
 var LocalStorage = spotube.LocalStorage
 var Webview = spotube.Webview
 

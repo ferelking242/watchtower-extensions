@@ -1,0 +1,158 @@
+import '../innertube.ht'
+import '../parser.ht'
+import '../converter.ht'
+import '../params.ht'
+import 'library.ht'
+
+/// Artist pages.
+///
+/// An unauthenticated artist browse returns an immersive header plus a set of
+/// carousels ("Videos", "Live performances", "Playlists by <artist>"). There is
+/// no anonymous "Albums" or "Singles" shelf, so `albums` reports an empty page
+/// rather than inventing one; `topTracks` uses the video carousel, which is the
+/// artist's most-played material.
+class ArtistEndpoint {
+  var client: InnerTubeClient
+  var parser: YtParser
+  var converter: Converter
+  var library: LibraryEndpoint
+
+  construct (this.client, this.library) {
+    parser = YtParser()
+    converter = Converter()
+  }
+
+  fun _header(res) {
+    var headers = parser.findAll(res, "musicImmersiveHeaderRenderer")
+    if (headers.isEmpty) headers = parser.findAll(res, "musicVisualHeaderRenderer")
+    if (headers.isEmpty) headers = parser.findAll(res, "musicResponsiveHeaderRenderer")
+    return headers.isEmpty ? {} : headers[0]
+  }
+
+  fun _name(res) -> string {
+    var name = parser.runs(_header(res)["title"])
+    if (name != "") return name
+    var twoRow = parser.findAll(res, "musicTwoRowItemRenderer")
+    return twoRow.isEmpty ? "" : parser.twoRowTitle(twoRow[0])
+  }
+
+  fun _carousel(res, index) -> Map {
+    var carousels = parser.findAll(res, "musicCarouselShelfRenderer")
+    if (index >= carousels.length) return {}.toJson()
+    return carousels[index]
+  }
+
+  fun _carouselItems(carousel) -> List {
+    var out = []
+    var contents = carousel["contents"] ?? []
+    for (var item in contents) {
+      out.add(item)
+    }
+    return out
+  }
+
+  fun getArtist(id: string) {
+    return client.browse(id).then((res) {
+      return converter.artistObject(id, _name(res), converter.images(_header(res)))
+    })
+  }
+
+  fun _trackFromTwoRow(item, artistName) -> Map {
+    var videoId = parser.watchVideoId(item)
+    return {
+      id: videoId,
+      name: parser.twoRowTitle(item),
+      externalUri: "https://music.youtube.com/watch?v=${videoId}",
+      artists: [converter.artist("", artistName)],
+      album: converter.pseudoAlbum(videoId, "", artistName),
+      durationMs: 0,
+      isrc: "",
+      explicit: false,
+    }.toJson()
+  }
+
+  /// The artist's most-played videos. YouTube orders this shelf by popularity.
+  fun topTracks(id: string, {offset: int, limit: int}) {
+    return client.browse(id).then((res) {
+      var name = _name(res)
+      var items = []
+      var rows = _carouselItems(_carousel(res, 0))
+      for (var item in rows) {
+        var videoId = parser.watchVideoId(item)
+        if (videoId != "") {
+          var track = _trackFromTwoRow(item, name)
+          items.add(track)
+        }
+      }
+      return _page(items, offset, limit)
+    })
+  }
+
+  fun _page(items, offset, limit) -> Map {
+    var pageSize = limit ?? 20
+    var start = (offset ?? 0) < 0 ? 0 : (offset ?? 0)
+    var slice = []
+    for (var i = start; i < items.length; i++) {
+      if (slice.length >= pageSize) break
+      slice.add(items[i])
+    }
+    var hasMore = items.length > start + pageSize
+    return {
+      limit: pageSize,
+      nextOffset: hasMore ? start + pageSize : null,
+      total: items.length,
+      hasMore: hasMore,
+      items: slice,
+    }.toJson()
+  }
+
+  /// Albums of the artist, taken from the "Playlists by <artist>" carousel.
+  /// YouTube Music exposes no anonymous album shelf, but an artist's album
+  /// playlists (`VL…`) appear here and open as albums.
+  fun albums(id: string, {offset: int, limit: int}) {
+    return client.browse(id).then((res) {
+      var items = []
+      var carousels = parser.findAll(res, "musicCarouselShelfRenderer")
+      for (var carousel in carousels) {
+        var header = carousel["header"] ?? {}
+        var basic = header["musicCarouselShelfBasicHeaderRenderer"] ?? {}
+        var title = parser.runs(basic["title"])
+        var isAlbumShelf = title.startsWith("Playlists") || title.startsWith("Albums")
+        if (isAlbumShelf) {
+          var rows = _carouselItems(carousel)
+          for (var item in rows) {
+            var playlistId = parser.browseIdOfType(item, pageTypePlaylist)
+            if (playlistId != "") {
+              var album = converter.album(
+                playlistId,
+                parser.twoRowTitle(item),
+                id,
+                _name(res),
+                converter.images(item),
+                "",
+              )
+              items.add(album)
+            }
+          }
+        }
+      }
+      return _page(items, offset, limit)
+    })
+  }
+
+  fun save(ids: List) {
+    return library.savePlaylist(ids.isEmpty ? "" : ids[0])
+  }
+
+  fun unsave(ids: List) {
+    return library.unsavePlaylist(ids.isEmpty ? "" : ids[0])
+  }
+
+  /// "Related artists". YouTube Music stopped exposing this shelf to anonymous
+  /// clients, so an empty page is returned instead of a fabricated list.
+  fun related(id: string, {offset: int, limit: int}) {
+    return Future.value(_page([], offset, limit))
+  }
+}
+
+export { ArtistEndpoint }
