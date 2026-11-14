@@ -165,11 +165,56 @@
         "paginated": true
       },
       {
+        "id": "tag_blow-job",
+        "component": "ranked",
+        "title": "Blow Job",
+        "accent": "#FF8A65",
+        "icon": "whatshot",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "tag_big-boobs",
+        "component": "compactRow",
+        "title": "Big Boobs",
+        "accent": "#F06292",
+        "icon": "favorite",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "tag_school-girl",
+        "component": "showcase",
+        "title": "School Girl",
+        "accent": "#4FC3F7",
+        "icon": "school",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
         "id": "brand_poro",
         "component": "banner",
         "title": "PoRO",
         "accent": "#AB47BC",
         "icon": "movie_filter",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "brand_pink-pineapple",
+        "component": "studioExplorer",
+        "title": "Pink Pineapple",
+        "accent": "#EC407A",
+        "icon": "business",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "brand_ms-pictures",
+        "component": "collectionTimeline",
+        "title": "MS Pictures",
+        "accent": "#26A69A",
+        "icon": "movie",
         "seeAll": true,
         "paginated": true
       },

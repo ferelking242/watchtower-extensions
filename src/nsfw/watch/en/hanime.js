@@ -6,11 +6,11 @@ const watchtowerSources = [{
   "iconUrl": "https://hanime.tv/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "2.1.0",
+  "version": "2.2.0",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/hanime.js",
-  "notes": "Adult content (18+) — Hanime hentai streaming. Catalogue browse/search + signed player handshake.",
+  "notes": "Adult content (18+) — Hanime hentai streaming. Guest-API catalogue (browse/search/detail) + signed player handshake.",
   "isNsfw": true
 }];
 
@@ -308,81 +308,13 @@ class DefaultExtension extends MProvider {
     };
   }
 
-  // ── HTML list parsing ─────────────────────────────────────────────────────
-  _cleanTitle(raw) {
-    let t = String(raw || "").replace(/&amp;/g, "&").replace(/&#39;/g, "'").replace(/&quot;/g, '"');
-    t = t.replace(/^Watch\s+/i, "");
-    const cut = t.search(/\s+hentai\b/i);
-    if (cut > 0) t = t.slice(0, cut);
-    return t.trim();
-  }
-
-  _itemsFromHtml(html) {
-    const items = [];
-    const seen = {};
-    // Cards are anchors whose poster carries the cover. The title may live in
-    // an <h3>, a plain span (related grids) or an alt attribute, so read all of
-    // them; a card without any of those is skipped rather than guessed at.
-    const re = /<a href="(\/videos\/hentai\/[^"?#]+)"[^>]*>([\s\S]*?)<\/a>/g;
-    let m;
-    while ((m = re.exec(html)) !== null) {
-      const href = m[1];
-      const inner = m[2];
-      const img = inner.match(/<img[^>]*\bsrc="([^"]+)"/);
-      if (!img) continue;
-      const h3 = inner.match(/<h3[^>]*>([\s\S]*?)<\/h3>/);
-      const alt = inner.match(/<img[^>]*\balt="([^"]*)"/);
-      const span = inner.match(/<span[^>]*class="[^"]*line-clamp-2[^"]*"[^>]*>([\s\S]*?)<\/span>/);
-      const raw = h3 ? h3[1] : span ? span[1] : alt ? alt[1] : "";
-      const title = String(raw).replace(/<[^>]*>/g, "").replace(/ thumbnail$/i, "").trim();
-      if (!title) continue;
-      const link = HV_BASE + href;
-      if (seen[link]) continue;
-      seen[link] = true;
-      items.push({ name: this._cleanTitle(title), imageUrl: img[1], link });
-    }
-    return items;
-  }
-
-  // The site groups a franchise's episodes in a "More from <group>" section.
-  // Those siblings are the real episodes of one title, so the detail page lists
-  // them together instead of a single entry.
-  _siblingsFromHtml(html) {
-    const at = html.indexOf("More from");
-    if (at < 0) return [];
-    const section = html.slice(at, at + 12000);
-    const items = [];
-    const seen = {};
-    const re = /<a href="(\/videos\/hentai\/[^"?#]+)"[^>]*>([\s\S]*?)<\/a>/g;
-    let m;
-    while ((m = re.exec(section)) !== null) {
-      const img = m[2].match(/<img[^>]*\bsrc="([^"]+)"/);
-      if (!img) continue;
-      const title = m[2].match(/<span[^>]*class="[^"]*line-clamp-2[^"]*"[^>]*>([\s\S]*?)<\/span>/);
-      const name = (title ? title[1] : "").replace(/<[^>]*>/g, "").trim();
-      if (!name) continue;
-      const link = HV_BASE + m[1];
-      if (seen[link]) continue;
-      seen[link] = true;
-      items.push({ name: this._cleanTitle(name), imageUrl: img[1], link });
-    }
-    return items;
-  }
-
-  _brandFromHtml(html) {
-    const m = html.match(/href="\/browse\/brands\/([^"?#]+)"[^>]*title="Browse more [^"]* videos"/);
-    return m ? m[1] : "";
-  }
-
-  async _getHtml(url) {
-    const res = await new Client().get(url, this.getHeaders(url));
-    return res && typeof res.body === "string" ? res.body : "";
-  }
-
   // ── Catalogue (the site's own search database) ────────────────────────────
+  // Every list is served from this one endpoint. The public site pages are all
+  // behind a Cloudflare interstitial ("Just a moment…") that a headless fetch
+  // cannot clear, so the extension never scrapes HTML: it reads the guest API
+  // the site's own SPA calls, which stays reachable and returns the full
+  // catalogue (~4.5 MB, one download per session).
   async _catalogue() {
-    // The catalogue is a ~4 MB download and every catalogue-backed list needs
-    // it, so keep it for the session.
     if (this._catalogueCache) return this._catalogueCache;
     const res = await new Client().get(HV_CATALOGUE, this._jsonHeaders(HV_BASE + "/"));
     const data = JSON.parse(res.body);
@@ -394,20 +326,28 @@ class DefaultExtension extends MProvider {
         name: row.name || row.slug,
         slug: row.slug,
         imageUrl: row.cover_url || row.poster_url || "",
+        poster: row.poster_url || row.cover_url || "",
+        description: row.description || "",
         created: Number(row.created_at_unix || 0),
         released: Number(row.released_at_unix || 0),
         views: Number(row.views || 0),
-        haystack: ((row.name || "") + " " + (row.search_titles || "") + " " + row.slug).toLowerCase(),
+        brand: String(row.brand || "").trim(),
         tags: Array.isArray(row.tags) ? row.tags : [],
-        brand: row.brand || ""
+        haystack: ((row.name || "") + " " + (row.search_titles || "") + " " + row.slug).toLowerCase()
       });
     }
     this._catalogueCache = items;
     return items;
   }
 
+  _linkOf(slug) { return HV_BASE + "/videos/hentai/" + slug; }
+
   _fromCatalogItem(it) {
-    return { name: it.name, imageUrl: it.imageUrl, link: HV_BASE + "/videos/hentai/" + it.slug };
+    return {
+      name: it.name,
+      imageUrl: it.imageUrl,
+      link: this._linkOf(it.slug)
+    };
   }
 
   _pageOf(items, page, per) {
@@ -417,30 +357,42 @@ class DefaultExtension extends MProvider {
     return { list: slice.map((it) => this._fromCatalogItem(it)), hasNextPage: start + per < items.length };
   }
 
+  _byNewest(a, b) { return (b.created - a.created) || (b.released - a.released); }
+
+  // Layout ids carry a slug (`tag_blow-job`, `brand_pink-pineapple`) while the
+  // catalogue keeps the human label ("blow job", "Pink Pineapple"). Normalising
+  // both sides lets a dash-separated id address any tag or studio.
+  _slug(s) {
+    return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  }
+
+  // Franchise key: a title and its numbered sequels share one group, so the
+  // detail page lists the whole series as episodes. "Kuroinu 2" → "kuroinu".
+  _franchiseKey(item) {
+    const base = String(item.name || "")
+      .replace(/[\s\-–_:]*(part|vol\.?|episode|ep)\s*\d+\s*$/i, "")
+      .replace(/[\s\-–_:]+\d+\s*$/, "")
+      .trim()
+      .toLowerCase();
+    return String(item.brand || "").toLowerCase() + "\u0000" + base;
+  }
+
+  _episodeOrder(name) {
+    const m = String(name || "").match(/(\d+)\s*$/);
+    return m ? Number(m[1]) : 9999;
+  }
+
   // ── Popular / Latest ──────────────────────────────────────────────────────
   async getPopular(page) {
-    const p = Number(page) > 1 ? Number(page) : 1;
-    const html = await this._getHtml(HV_BASE + "/browse/trending?page=" + p);
-    const list = this._itemsFromHtml(html);
-    return { list, hasNextPage: list.length >= 20 };
+    const catalog = await this._catalogue();
+    const sorted = catalog.slice(0).sort((a, b) => b.views - a.views);
+    return this._pageOf(sorted, page, 36);
   }
 
   async getLatestUpdates(page) {
-    const p = Number(page) > 1 ? Number(page) : 1;
-    try {
-      const catalog = await this._catalogue();
-      catalog.sort((a, b) => (b.created - a.created) || (b.released - a.released));
-      return this._pageOf(catalog, p, 36);
-    } catch (e) {
-      // The catalogue is a large download; the home page's own "Recent Uploads"
-      // rail is enough to cover the first page.
-      if (p === 1) {
-        const html = await this._getHtml(HV_BASE + "/");
-        const list = this._itemsFromHtml(html).slice(0, 36);
-        if (list.length) return { list, hasNextPage: false };
-      }
-      return { list: [], hasNextPage: false };
-    }
+    const catalog = await this._catalogue();
+    const sorted = catalog.slice(0).sort((a, b) => this._byNewest(a, b));
+    return this._pageOf(sorted, page, 36);
   }
 
   // ── Search ────────────────────────────────────────────────────────────────
@@ -464,68 +416,50 @@ class DefaultExtension extends MProvider {
     const sort = this._filterValue(filters, 1).toLowerCase();
     if (sort === "views") items = items.slice(0).sort((a, b) => b.views - a.views);
     else if (sort === "released") items = items.slice(0).sort((a, b) => b.released - a.released);
-    else items = items.slice(0).sort((a, b) => (b.created - a.created) || (b.released - a.released));
+    else items = items.slice(0).sort((a, b) => this._byNewest(a, b));
 
     return this._pageOf(items, page, 36);
   }
 
   // ── Detail ────────────────────────────────────────────────────────────────
   async getDetail(url) {
-    const html = await this._getHtml(url);
-    const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
-    const ogTitle = html.match(/property="og:title"\s+content="([^"]*)"/);
-    const ogImage = html.match(/property="og:image"\s+content="([^"]*)"/);
-    const name = this._cleanTitle(h1 ? h1[1].replace(/<[^>]*>/g, "") : (ogTitle ? ogTitle[1] : ""));
+    const slug = this._slugFromUrl(url);
+    const catalog = await this._catalogue();
+    const item = catalog.find((it) => it.slug === slug);
 
-    let description = "";
-    const synopsis = html.match(/data-expand-panel[^>]*>([\s\S]*?)<\/div><\/div>/);
-    if (synopsis) description = synopsis[1].replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-    if (!description) {
-      const ogDesc = html.match(/property="og:description"\s+content="([^"]*)"/);
-      if (ogDesc) description = ogDesc[1];
-    }
+    // The catalogue carries the poster, the synopsis and the tags; no HTML
+    // fetch is needed (and would be blocked anyway).
+    const name = item ? item.name : slug.replace(/-/g, " ");
+    const description = item && item.description
+      ? String(item.description).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
+      : "";
+    const imageUrl = item ? (item.imageUrl || item.poster) : "";
 
     const genre = [];
     const seenTags = {};
-    // Real tag chips carry title="Browse more videos with <tag> tag"; the
-    // footer repeats the same hrefs without it, so match the marker to avoid
-    // pulling SEO links into the genre list.
-    const tagRe = /<a href="\/browse\/tags\/([^"]+)"[^>]*title="Browse more videos with[^"]*"[^>]*>([^<]*)<\/a>/g;
-    let tm;
-    while ((tm = tagRe.exec(html)) !== null) {
-      const label = (tm[2] || "").replace(/&amp;/g, "&").trim() || decodeURIComponent(tm[1]);
-      const key = label.toLowerCase();
-      if (!label || seenTags[key]) continue;
-      seenTags[key] = true;
-      genre.push({ name: label });
+    if (item) {
+      for (const t of item.tags) {
+        const label = String(t).trim();
+        const key = label.toLowerCase();
+        if (!label || seenTags[key]) continue;
+        seenTags[key] = true;
+        genre.push({ name: label });
+      }
+      if (item.brand && !seenTags[item.brand.toLowerCase()]) {
+        genre.push({ name: item.brand });
+      }
     }
 
-    // Prefer the site's own franchise grouping: "More from <group>" lists every
-    // episode of this title, so they all appear as selectable episodes. When
-    // the page has no such group, the video is a one-off and stays a single
-    // episode.
-    let siblings = this._siblingsFromHtml(html);
-    if (!siblings.some((s) => s.link === url)) siblings.push({ name, link: url });
-    const order = (s) => {
-      const m = String(s).match(/(\d+)\s*$/);
-      return m ? Number(m[1]) : 9999;
-    };
-    siblings.sort((a, b) => order(a.name) - order(b.name));
-    const episodes = siblings.map((s) => ({ name: s.name, url: s.link }));
-
-    const brand = this._brandFromHtml(html);
-    const brandName = brand ? brand.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "";
-    if (brandName && genre.filter((g) => g.name === brandName).length === 0) {
-      genre.push({ name: brandName });
+    // Episodes: every catalogue entry that shares this title's franchise group,
+    // ordered by the trailing episode number.
+    let siblings = item ? catalog.filter((it) => this._franchiseKey(it) === this._franchiseKey(item)) : [];
+    if (!siblings.some((s) => s.slug === slug)) {
+      siblings = [{ slug, name }].concat(siblings);
     }
+    siblings = siblings.slice(0).sort((a, b) => this._episodeOrder(a.name) - this._episodeOrder(b.name));
+    const episodes = siblings.map((s) => ({ name: s.name, url: this._linkOf(s.slug) }));
 
-    return {
-      name,
-      imageUrl: ogImage ? ogImage[1] : "",
-      description,
-      genre,
-      episodes
-    };
+    return { name, imageUrl, description, genre, episodes };
   }
 
   // ── Video list (signed player handshake) ──────────────────────────────────
@@ -596,6 +530,7 @@ class DefaultExtension extends MProvider {
     }
     return "";
   }
+
   async getVideoList(url) {
     const slug = this._slugFromUrl(url);
     if (!slug) return [];
@@ -722,71 +657,76 @@ class DefaultExtension extends MProvider {
     return out;
   }
 
-  // ── Recommendations (the page's "Next Video" / "More from" rails) ─────────
+  // ── Recommendations ───────────────────────────────────────────────────────
+  // The catalogue has no "related" endpoint, so the rail is built from what the
+  // site's own "Next Video"/"More from" rails show: the rest of the franchise
+  // first, then the most-viewed titles sharing the same brand.
   async getRecommendations(url) {
-    const target = String(url || "").split("#")[0];
-    if (!target) return [];
-    const html = await this._getHtml(target);
+    const slug = this._slugFromUrl(url);
+    if (!slug) return [];
+    const catalog = await this._catalogue();
+    const item = catalog.find((it) => it.slug === slug);
+    if (!item) return [];
 
-    const items = [];
+    const out = [];
     const seen = {};
+    seen[slug] = true;
     const add = (it) => {
-      if (!it || !it.link || seen[it.link]) return;
-      seen[it.link] = true;
-      items.push(it);
+      if (!it || seen[it.slug]) return;
+      seen[it.slug] = true;
+      out.push(this._fromCatalogItem(it));
     };
 
-    // "Next Video" is the single sequel/predecessor the site promotes first.
-    for (const it of this._itemsFromHtml(html)) add(it);
-    // "More from <group>" lists the rest of the title's franchise.
-    for (const it of this._siblingsFromHtml(html)) add(it);
+    const key = this._franchiseKey(item);
+    for (const it of catalog.filter((s) => this._franchiseKey(s) === key)) add(it);
 
-    return items;
-  }
-
-  _tagIndex(html) {
-    const out = [];
-    const seen = {};
-    const re = /<a href="\/browse\/tags\/([^"]+)"[^>]*class="tile[^"]*"[^>]*>([\s\S]*?)<\/a>/g;
-    let m;
-    while ((m = re.exec(html)) !== null) {
-      const slug = m[1];
-      if (seen[slug]) continue;
-      seen[slug] = true;
-      const title = m[2].match(/tile-title[^>]*>([\s\S]*?)<\/div>/);
-      const art = m[2].match(/--tile-art-wide:url\('([^']+)'\)/);
-      out.push({
-        name: title ? title[1].replace(/<[^>]*>/g, "").trim() : decodeURIComponent(slug),
-        imageUrl: art ? art[1] : "",
-        collectionId: "tag_" + slug
-      });
+    if (item.brand) {
+      const sameBrand = catalog
+        .filter((s) => s.brand === item.brand && !seen[s.slug])
+        .sort((a, b) => b.views - a.views);
+      for (const it of sameBrand) add(it);
     }
-    return out;
+
+    return out.slice(0, 24);
   }
 
-  _brandIndex(html) {
-    const out = [];
-    const seen = {};
-    const re = /<a href="\/browse\/brands\/([^"?]+)"[^>]*class="group inline-flex[^"]*"[^>]*>\s*<span class="[^"]*font-medium[^"]*"[^>]*>([^<]+)<\/span>/g;
-    let m;
-    while ((m = re.exec(html)) !== null) {
-      const slug = m[1];
-      if (seen[slug]) continue;
-      seen[slug] = true;
-      out.push({
-        name: m[2].replace(/&amp;/g, "&").trim(),
+  // ── Category indexes (tags & studios) ─────────────────────────────────────
+  // Both are derived from the catalogue, so they need no HTML fetch either.
+  _tagIndex(catalog) {
+    const counts = {};
+    for (const it of catalog) for (const t of it.tags) {
+      const label = String(t).trim();
+      if (label) counts[label] = (counts[label] || 0) + 1;
+    }
+    return Object.keys(counts)
+      .sort()
+      .map((label) => ({
+        name: label,
         imageUrl: "",
-        link: HV_BASE + "/browse/brands/" + slug,
-        collectionId: "brand_" + slug
-      });
+        collectionId: "tag_" + encodeURIComponent(label)
+      }));
+  }
+
+  _brandIndex(catalog) {
+    const counts = {};
+    for (const it of catalog) {
+      const b = it.brand;
+      if (b) counts[b] = (counts[b] || 0) + 1;
     }
-    return out;
+    return Object.keys(counts)
+      .sort()
+      .map((brand) => ({
+        name: brand,
+        imageUrl: "",
+        collectionId: "brand_" + encodeURIComponent(brand)
+      }));
   }
 
   // ── Home sections (layout ids) ────────────────────────────────────────────
   async getCustomList(listId, page) {
     const id = String(listId || "");
     const p = Number(page) > 1 ? Number(page) : 1;
+    const catalog = await this._catalogue();
 
     // Category search tabs declared by the layout (browse.search.tabs). The
     // query is appended by the app as `search_tab:<tabId>:<url-encoded query>`.
@@ -800,60 +740,61 @@ class DefaultExtension extends MProvider {
       if (!q) return { list: [], hasNextPage: false };
 
       if (tab === "tags") {
-        const html = await this._getHtml(HV_BASE + "/browse/tags");
-        const list = this._tagIndex(html).filter((t) => t.name.toLowerCase().indexOf(q) >= 0);
-        return { list, hasNextPage: false };
+        return { list: this._tagIndex(catalog).filter((t) => t.name.toLowerCase().indexOf(q) >= 0), hasNextPage: false };
       }
       if (tab === "studios") {
-        const html = await this._getHtml(HV_BASE + "/browse/brands");
-        const list = this._brandIndex(html).filter((b) => b.name.toLowerCase().indexOf(q) >= 0);
-        return { list, hasNextPage: false };
+        return { list: this._brandIndex(catalog).filter((b) => b.name.toLowerCase().indexOf(q) >= 0), hasNextPage: false };
       }
       return { list: [], hasNextPage: false };
     }
 
     if (id === "tags") {
-      const html = await this._getHtml(HV_BASE + "/browse/tags");
-      return { list: this._tagIndex(html), hasNextPage: false };
-    }
-
-    if (id.indexOf("tag_") === 0) {
-      const slug = id.slice(4);
-      const html = await this._getHtml(HV_BASE + "/browse/tags/" + slug + "?page=" + p);
-      const list = this._itemsFromHtml(html);
-      return { list, hasNextPage: list.length >= 20 };
+      return { list: this._tagIndex(catalog), hasNextPage: false };
     }
 
     if (id === "brands") {
-      const html = await this._getHtml(HV_BASE + "/browse/brands");
-      return { list: this._brandIndex(html), hasNextPage: false };
+      return { list: this._brandIndex(catalog), hasNextPage: false };
+    }
+
+    if (id.indexOf("tag_") === 0) {
+      let label = id.slice(4);
+      try { label = decodeURIComponent(label); } catch (e) { /* keep raw */ }
+      const want = this._slug(label);
+      const list = catalog
+        .filter((it) => it.tags.some((t) => this._slug(t) === want))
+        .sort((a, b) => b.views - a.views);
+      return this._pageOf(list, p, 36);
     }
 
     if (id.indexOf("brand_") === 0) {
-      const slug = id.slice(6);
-      const html = await this._getHtml(HV_BASE + "/browse/brands/" + slug + "?page=" + p);
-      const list = this._itemsFromHtml(html);
-      return { list, hasNextPage: list.length >= 20 };
+      let brand = id.slice(6);
+      try { brand = decodeURIComponent(brand); } catch (e) { /* keep raw */ }
+      const want = this._slug(brand);
+      const list = catalog
+        .filter((it) => this._slug(it.brand) === want)
+        .sort((a, b) => this._byNewest(a, b));
+      return this._pageOf(list, p, 36);
     }
 
     if (id === "recent" || id === "new" || id === "top") {
-      let catalog = await this._catalogue();
-      if (id === "top") catalog = catalog.sort((a, b) => b.views - a.views);
-      else if (id === "new") catalog = catalog.sort((a, b) => b.released - a.released);
-      else catalog = catalog.sort((a, b) => (b.created - a.created) || (b.released - a.released));
-      return this._pageOf(catalog, p, 36);
+      let sorted = catalog.slice(0);
+      if (id === "top") sorted.sort((a, b) => b.views - a.views);
+      else sorted.sort((a, b) => this._byNewest(a, b));
+      return this._pageOf(sorted, p, 36);
     }
 
     throw new Error("Unknown custom list: " + id);
   }
 
   getFilterList() {
+    // Tag list mirrors the catalogue's own vocabulary so a filter always has
+    // matches, with the most common tags first.
     const tags = [
-      "anal","bdsm","bondage","censored","comedy","creampie","dark","fantasy","futanari",
-      "gangbang","harem","hd","incest","lactation","maid","milf","monster","nekomimi","ntr",
-      "nurse","orgy","plot","pov","pregnant","public","school","softcore","swimsuit","teacher",
-      "tentacle","threesome","toys","trap","tsundere","ugly","uncensored","vanilla","virgin",
-      "watersports","yaoi","yuri"
+      "anal","bdsm","big boobs","blow job","bondage","censored","comedy","creampie",
+      "dark","facial","fantasy","futanari","gangbang","harem","hd","incest","lactation",
+      "maid","milf","monster","nekomimi","ntr","nurse","orgy","plot","pov","pregnant",
+      "public","school girl","softcore","swimsuit","teacher","tentacle","threesome","toys",
+      "trap","tsundere","ugly","uncensored","vanilla","virgin","watersports","yaoi","yuri"
     ];
     return [
       {
