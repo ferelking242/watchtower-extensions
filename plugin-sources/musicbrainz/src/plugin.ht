@@ -1,0 +1,80 @@
+import "module:std" as std
+
+import { AuthEndpoint } from './segments/auth.ht'
+import { AlbumEndpoint } from "./segments/album.ht"
+import { ArtistEndpoint } from "./segments/artist.ht"
+import { BrowseEndpoint } from "./segments/browse.ht"
+import { PlaylistEndpoint } from './segments/playlist.ht'
+import { SearchEndpoint } from './segments/search.ht'
+import { TrackEndpoint } from './segments/track.ht'
+import { UserEndpoint } from './segments/user.ht'
+import { CorePlugin } from './segments/core.ht'
+
+var Stream = std.Stream
+var HttpClient = std.HttpClient
+var HttpBaseOptions = std.HttpBaseOptions
+
+class BrainzMetadataProviderPlugin {
+  var auth: AuthEndpoint
+  var album: AlbumEndpoint
+  var artist: ArtistEndpoint
+  var browse: BrowseEndpoint
+  var playlist: PlaylistEndpoint
+  var search: SearchEndpoint
+  var track: TrackEndpoint
+  var user: UserEndpoint
+  var core: CorePlugin
+
+  var lbApi: HttpClient
+  var mbApi: HttpClient
+  
+  construct (){
+    mbApi = HttpClient(
+      HttpBaseOptions(
+        baseUrl: "https://musicbrainz.org/ws/2"
+      )
+    )
+    lbApi = HttpClient(
+      HttpBaseOptions(
+        baseUrl: "https://api.listenbrainz.org/1",
+      )
+    )
+    
+    auth = AuthEndpoint(lbApi, mbApi)
+    core = CorePlugin(mbApi, lbApi)
+
+    setAccessToken()
+    auth.authStateStream.listen((event) {
+      setAccessToken()
+    })
+  }
+
+  fun setAccessToken() {
+    mbApi = HttpClient(
+      HttpBaseOptions(
+        baseUrl: auth.credentials?["mb_url"] ?? "https://musicbrainz.org/ws/2",
+      )
+    )
+    lbApi = HttpClient(
+      HttpBaseOptions(
+        baseUrl: auth.credentials?["lb_url"] ?? "https://api.listenbrainz.org/1",
+        headers: auth.credentials == null ? null : {
+          "Authorization": "Token ${auth.credentials['token']}"
+        }.toJson()
+      )
+    )
+
+    var username = auth.credentials == null ? null : auth.credentials['username']
+    
+    album = AlbumEndpoint(lbApi, mbApi, username)
+    artist = ArtistEndpoint(lbApi, mbApi, username)
+    browse = BrowseEndpoint(lbApi, mbApi, username)
+    playlist = PlaylistEndpoint(lbApi, mbApi, username)
+    search = SearchEndpoint(lbApi, mbApi, username)
+    track = TrackEndpoint(lbApi, mbApi, username)
+    user = UserEndpoint(lbApi, mbApi, username)
+    core = CorePlugin(mbApi, lbApi)
+  }
+}
+
+export { BrainzMetadataProviderPlugin }

@@ -1,0 +1,54 @@
+import "module:std" as std
+import "module:spotube_plugin" as spotube
+
+import { InnerTubeClient } from './innertube.ht'
+import { YouTubeMusicAuthEndpoint } from './segments/auth.ht'
+import { SearchEndpoint } from './segments/search.ht'
+import { TrackEndpoint } from './segments/track.ht'
+// import { AlbumEndpoint } from "./segments/album.ht"
+// import { ArtistEndpoint } from "./segments/artist.ht"
+// import { BrowseEndpoint } from "./segments/browse.ht"
+// import { PlaylistEndpoint } from './segments/playlist.ht'
+// import { UserEndpoint } from './segments/user.ht'
+// import { CorePlugin } from './segments/core.ht'
+
+class YouTubeMusicMetadataProviderPlugin {
+  var auth: YouTubeMusicAuthEndpoint
+  var api: InnerTubeClient
+
+  // var album: AlbumEndpoint
+  // var artist: ArtistEndpoint
+  // var browse: BrowseEndpoint
+  // var playlist: PlaylistEndpoint
+  var search: SearchEndpoint
+  var track: TrackEndpoint
+  // var user: UserEndpoint
+  // var core: CorePlugin
+  
+  construct (){
+    api = InnerTubeClient()
+    auth = YouTubeMusicAuthEndpoint()
+
+    // album = AlbumEndpoint(api)
+    // artist = ArtistEndpoint(api)
+    // browse = BrowseEndpoint(api, auth)
+    // playlist = PlaylistEndpoint(api)
+    search = SearchEndpoint(api)
+    track = TrackEndpoint(api)
+    // user = UserEndpoint(api)
+    // core = CorePlugin()
+
+    auth.authStateStream.listen((event) {
+      if (auth.credentials != null) {
+        // Apply cookies to InnerTube requests
+        var cookieStr = ""
+        for (var c in auth.credentials["cookies"]) {
+          cookieStr = cookieStr + c["name"] + "=" + c["value"] + "; "
+        }
+        api.cookieHeader = cookieStr
+      }
+    })
+  }
+}
+
+export { YouTubeMusicMetadataProviderPlugin }

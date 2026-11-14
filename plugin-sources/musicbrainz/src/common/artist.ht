@@ -1,0 +1,141 @@
+import "module:std" as std
+import "module:spotube_plugin" as spotube
+
+var HttpClient = std.HttpClient
+var HttpResponse = std.HttpResponse
+var RequestOptions = std.RequestOptions
+
+class CommonArtistEntity {
+  var lbApi: HttpClient
+  var mbApi: HttpClient
+  final username: string
+
+  construct (this.lbApi, this.mbApi, this.username)
+  
+  fun getMultipleArtistImages(wikiIds: List) {
+    return mbApi.get_req(
+      "https://www.wikidata.org/w/api.php",
+      queryParameters: {
+        format: "json",
+        props: "claims",
+        ids: wikiIds.join("|"),
+        action: "wbgetentities",
+      }.toJson()
+    ).then((res){
+      var data = res.data
+      var idsWithImageNames = wikiIds.map((id){
+        return {
+          id: id,
+          imageName: data?["entities"]?[id]?["claims"]?["P18"]?[0]?["mainsnak"]?["datavalue"]?["value"]
+        }
+      }).toList()
+
+      var titles = idsWithImageNames
+      .where((i) => i.imageName != null)
+      .map((i) => "File:${i.imageName}").join("|")
+      
+      return mbApi.get_req(
+        "https://commons.wikimedia.org/w/api.php",
+        queryParameters: {
+          prop: "imageinfo",
+          action: "query",
+          iiprop: "url|size",
+          iiurlheight: 300,
+          iiurlwidth: 300,
+          format: "json"
+          titles: titles,
+        }.toJson()
+      ).then((res) {
+        var pages = res.data?["query"]?["pages"]
+
+        var imagesMap = Map()
+
+        if(pages == null) {
+          for(var id in wikiIds) {
+            imagesMap[id] = []
+          }
+          return imagesMap
+        }
+
+        for(var page in pages.values) {
+          var imageInfo = page["imageinfo"][0]
+          
+          var wikiId = idsWithImageNames.firstWhere(
+            (i) => i.imageName == page["title"].replaceFirst("File:", ""),
+            orElse: () => null
+          ).id
+
+          imagesMap[wikiId] = [
+            // Too big.
+            // {
+            //   url: imageInfo["url"],
+            //   width: imageInfo["width"],
+            //   height: imageInfo["height"],
+            // }.toJson(),
+            {
+              url: imageInfo["thumburl"],
+              width: imageInfo["thumbwidth"],
+              height: imageInfo["thumbheight"],
+            }.toJson()
+          ]
+        }
+
+        final missingImageArtistIds = idsWithImageNames
+          .where((i) => i.imageName == null)
+          .map((i) => i.id)
+          .toList()
+        
+        for (var id in missingImageArtistIds) {
+          imagesMap[id] = []
+        }
+
+        return imagesMap
+      })
+    })
+  }
+
+  fun listArtists(artistIds: List) -> Future { // Future<List>
+    var ids = artistIds.map((id) => "targetid:${id}").join(" OR ")
+    var query = "relationtype:wikidata AND targettype:artist AND (${ids})"
+    
+    return mbApi.get_req(
+      "/url",
+      queryParameters: {
+        query: query,
+        limit: artistIds.length,
+        fmt: "json"
+      }.toJson()
+    ).then((res) {
+      var urls = res.data["urls"]
+
+      var wikidataIds = urls.map((url) => url["resource"].split("/").last).toList()
+      var urlArtistIds =  urls.map((url) => url["relation-list"][0]["relations"][0]["artist"]["id"]).toList()
+
+      var missingArtistIds = artistIds.where((id) => !urlArtistIds.contains(id)).toList()
+
+      var artistWithImages = wikidataIds.isEmpty ? Future.value([]) : getMultipleArtistImages(wikidataIds).then((imagesMap){
+        return urls.map((url){
+          var images = imagesMap[url["resource"].split("/").last] ?? []
+          var artist = url["relation-list"][0]["relations"][0]["artist"]
+          artist["images"] = images
+          return artist
+        }).toList()
+      })
+
+      var artistWithoutImages = missingArtistIds.isEmpty ? Future.value([]) : mbApi.get_req(
+        "/artist",
+        queryParameters: {
+          fmt: "json",
+          query: missingArtistIds.map((id) => "arid:${id}").join(" OR "),
+          limit: missingArtistIds.length,
+        }.toJson()
+      ).then((res)=>res.data["artists"])
+
+      return Future.wait([artistWithImages, artistWithoutImages]).then((results) {
+        return results.expand((res)=>res).toList()
+      })
+    })
+  }
+}
+
+export { CommonArtistEntity }

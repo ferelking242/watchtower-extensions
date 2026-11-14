@@ -1,0 +1,53 @@
+import '../innertube.ht'
+
+class SearchEndpoint {
+  var client: InnerTubeClient
+
+  construct (this.client)
+
+  get chips -> List {
+    return ["all", "tracks", "albums", "artists", "playlists"]
+  }
+
+  fun all(query: string) {
+    return client.post("search", {
+      "query": query
+    }).then((res) {
+      // Very basic placeholder extraction
+      var tracks = []
+      var artists = []
+      var albums = []
+      
+      // In a full implementation we would walk `res["contents"]["tabbedSearchResultsRenderer"]...`
+      return {
+        "artists": artists,
+        "albums": albums,
+        "tracks": tracks,
+        "playlists": []
+      }.toJson()
+    })
+  }
+
+  fun albums(query: string, {offset: int, limit: int}) {
+    // Requires params: "EgWKAQIYAWoMEAMQBBAJEA4QChAF" or similar for YT Music Albums filter
+    return client.post("search", { "query": query, "params": "EgWKAQIYAWoMEAMQBBAJEA4QChAF" })
+      .then((res) => { "items": [], "totalCount": 0, "hasMore": false }.toJson())
+  }
+
+  fun artists(query: string, {offset: int, limit: int}) {
+    return client.post("search", { "query": query, "params": "EgWKAQIgAWoMEAMQBBAJEA4QChAF" })
+      .then((res) => { "items": [], "totalCount": 0, "hasMore": false }.toJson())
+  }
+
+  fun tracks(query: string, {offset: int, limit: int}) {
+    return client.post("search", { "query": query, "params": "EgWKAQIIAWoMEAMQBBAJEA4QChAF" })
+      .then((res) => { "items": [], "totalCount": 0, "hasMore": false }.toJson())
+  }
+
+  fun playlists(query: string, {offset: int, limit: int}) {
+    return client.post("search", { "query": query, "params": "EgWKAQIQAWoMEAMQBBAJEA4QChAF" })
+      .then((res) => { "items": [], "totalCount": 0, "hasMore": false }.toJson())
+  }
+}
+
+export { SearchEndpoint }

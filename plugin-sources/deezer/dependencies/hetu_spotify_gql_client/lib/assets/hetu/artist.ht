@@ -1,0 +1,250 @@
+import "module:std" as std
+import { SpotifyError } from "error.ht"
+
+var HttpClient = std.HttpClient
+var HttpResponse = std.HttpResponse
+
+class SpotifyArtistEndpoint {
+  var apiClient: HttpClient
+  var gqlClient: HttpClient
+
+  construct (this.apiClient, this.gqlClient)
+
+  fun getArtist(artistId: string) {
+    return this.gqlClient.post(
+      "",
+      data: {
+        "variables": { "uri": "spotify:artist:${artistId}", "locale": "" },
+        "operationName": "queryArtistOverview",
+        "extensions": {
+          "persistedQuery": {
+            "version": 1,
+            "sha256Hash": "446130b4a0aa6522a686aafccddb0ae849165b5e0436fd802f96e0243617b5d8"
+          }
+        }
+      }.toJson()
+    )
+      .then((res: HttpResponse){
+        var data = res.data
+
+        if(SpotifyError.isError(data)) {
+          return SpotifyError(data)
+        }
+
+        var artist = data["data"]["artistUnion"]
+
+        return {
+          "external_urls": {
+            "spotify": "https://open.spotify.com/artist/${artistId}",
+          },
+          "followers": {
+            "href": "https://open.spotify.com/artist/${artistId}/followers",
+            "total": artist["stats"]["followers"],
+          },
+          "genres": [],
+          "href": "https://api.spotify.com/v1/artists/${artistId}",
+          "id": artistId,
+          "images": artist["visuals"]["avatarImage"]["sources"],
+          "name": artist["profile"]["name"],
+          "popularity": 1,
+          "type": "artist",
+          "uri": "spotify:artist:${artistId}"
+        }.toJson()
+      })
+  }
+
+  fun topTracks(artistId: string, {limit: int, offset: int}) {
+    return this.gqlClient.post(
+      "",
+      data: {
+        "variables": { "uri": "spotify:artist:${artistId}", "locale": "" },
+        "operationName": "queryArtistOverview",
+        "extensions": {
+          "persistedQuery": {
+            "version": 1,
+            "sha256Hash": "446130b4a0aa6522a686aafccddb0ae849165b5e0436fd802f96e0243617b5d8"
+          }
+        }
+      }.toJson()
+    )
+      .then((res: HttpResponse){
+        var data = res.data
+
+        if(SpotifyError.isError(data)) {
+          return SpotifyError(data)
+        }
+
+        var artist = data["data"]["artistUnion"]
+        var topTracks = artist["discography"]["topTracks"]["items"].map((track){
+          var item = track["track"]
+          var trackArtists = item["artists"]?["items"]?.map((artist){
+            var id = artist["uri"].split(":").last
+            return {
+              id: id,
+              uri: artist["uri"],
+              name: artist["profile"]["name"],
+              external_urls: {
+                spotify: "https://open.spotify.com/artist/${id}",
+              },
+            }.toJson()
+          }).toList() ?? []
+          var albumId = item["albumOfTrack"]["uri"].split(":").last
+
+          return {
+            id: item["uri"].split(":").last,
+            uri: item["uri"],
+            name: item["name"],
+            album: {
+              album_type: "album",
+              id: albumId,
+              name: item["albumOfTrack"]?["name"] ?? "unknown",
+              images: item["albumOfTrack"]["coverArt"]?["sources"] ?? [],
+              external_urls: {
+                spotify: "https://open.spotify.com/album/${albumId}",
+              },
+              href: "https://api.spotify.com/v1/albums/${albumId}",
+              artists: [trackArtists[0]]
+            },
+            artists: trackArtists,
+            duration_ms: item["duration"]?["totalMilliseconds"],
+            external_urls: {
+              spotify: "https://open.spotify.com/track/${item["uri"].split(":").last}",
+            },
+          }.toJson()
+        })
+
+        return { tracks: topTracks }.toJson()
+      })
+  }
+
+  fun albums(artistId: string, {limit: int, offset: int}) {
+    return this.gqlClient.post(
+      "",
+      data: {
+        "variables": { "uri": "spotify:artist:${artistId}", "locale": "" },
+        "operationName": "queryArtistOverview",
+        "extensions": {
+          "persistedQuery": {
+            "version": 1,
+            "sha256Hash": "446130b4a0aa6522a686aafccddb0ae849165b5e0436fd802f96e0243617b5d8"
+          }
+        }
+      }.toJson()
+    )
+      .then((res: HttpResponse){
+        var data = res.data
+
+        if(SpotifyError.isError(data)) {
+          return SpotifyError(data)
+        }
+
+        var artist = data["data"]["artistUnion"]
+        var totalCount = (artist["discography"]?["albums"]["totalCount"] ?? 0) +
+          (artist["discography"]?["singles"]["totalCount"] ?? 0) +
+          (artist["discography"]?["compilations"]["totalCount"] ?? 0)
+
+        var albums = [
+          ...(artist["discography"]?["albums"]?["items"] ?? []),
+          ...(artist["discography"]?["singles"]?["items"] ?? []),
+          ...(artist["discography"]?["compilations"]?["items"] ?? []),
+        ]
+        .map((releases){
+          var album = releases["releases"]["items"][0]
+          var albumId = album["uri"].split(":").last
+          var date = album["date"]
+          return {
+            id: albumId,
+            album_type: album["type"].toLowerCase(),
+            name: album["name"],
+            images: album["coverArt"]?["sources"] ?? [],
+            external_urls: {
+              spotify: "https://open.spotify.com/album/${albumId}",
+            },
+            href: "https://api.spotify.com/v1/albums/${albumId}",
+            label: album["label"] ?? "",
+            release_date: "${date["year"]}-${date["month"] ?? "01"}-${date["day"] ?? "01"}",
+            release_date_precision:date["precision"].toLowerCase() ?? "day",
+            total_tracks: album["tracks"]["totalCount"] ?? 0,
+            copyrights: album["copyright"]?["items"],
+          }.toJson()
+        })
+
+        return { 
+          href: "https://api.spotify.com/v1/artist/${artistId}/albums?offset=${offset ?? 0}&limit=${limit ?? 20}",
+          limit: limit ?? 50,
+          offset: offset ?? 0,
+          total: totalCount,
+          next: albums.length < (limit ?? 50) ? "https://api.spotify.com/v1/artist/${artistId}/albums?offset=${(offset ?? 0) + albums.length}&limit=${limit ?? 50}" : null,
+          previous: offset != null && offset > 0 ? "https://api.spotify.com/v1/artist/${artistId}/albums?offset=${Math.max(0, (offset ?? 0) - (limit ?? 50))}&limit=${limit ?? 50}" : null,
+          items: albums
+        }.toJson()
+      })
+  }
+
+  fun follow(artistIds: List) {
+    return this.gqlClient.post(
+      "",
+      data: {
+        "variables": {
+          "uris": artistIds.map((id) => "spotify:artist:${id}").toList(),
+        },
+        "operationName": "addToLibrary",
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "a3c1ff58e6a36fec5fe1e3a193dc95d9071d96b9ba53c5ba9c1494fb1ee73915"
+            }
+        }
+      }.toJson()
+    ).then((res: HttpResponse){
+      var data = res.data
+
+      if (SpotifyError.isError(data)) {
+        throw SpotifyError(data)
+      }
+
+      return data
+    })
+  }
+
+  fun unfollow(artistIds: List) {
+    return this.gqlClient.post(
+      "",
+      data: {
+        "variables": {
+            "uris": artistIds.map((id) => "spotify:artist:${id}").toList(),
+        },
+        "operationName": "removeFromLibrary",
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "a3c1ff58e6a36fec5fe1e3a193dc95d9071d96b9ba53c5ba9c1494fb1ee73915"
+            }
+        }
+      }.toJson()
+    ).then((res: HttpResponse){
+      var data = res.data
+
+      if (SpotifyError.isError(data)) {
+        throw SpotifyError(data)
+      }
+
+      return data
+    })
+  }
+
+  fun related(artistId: string) {
+    return this.apiClient.get_req("/artists/${artistId}/related-artists")
+      .then((res: HttpResponse){
+        var data = res.data
+
+        if(SpotifyError.isError(data)) {
+          return SpotifyError(data)
+        }
+
+        return data
+      })
+  }
+}
+
+export { SpotifyArtistEndpoint }

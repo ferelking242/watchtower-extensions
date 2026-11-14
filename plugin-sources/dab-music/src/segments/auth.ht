@@ -1,0 +1,143 @@
+import 'module:std' as std
+import 'module:spotube_plugin' as spotube
+
+var StreamController = std.StreamController
+var Stream = std.Stream
+var StreamSubscription = std.StreamSubscription
+var HttpClient = std.HttpClient
+var HttpResponse = std.HttpResponse
+var RequestOptions = std.RequestOptions
+var SpotubeForm = spotube.SpotubeForm
+var LocalStorage = spotube.LocalStorage
+var JSON = std.JSON
+
+class AuthEndpoint {
+  final api: HttpClient
+  final controller: StreamController
+
+  var credentials: Map
+
+  get authStateStream -> Stream => controller.stream
+
+  construct (this.api){
+    controller = StreamController.broadcast()
+
+    initialize()
+  }
+
+  fun getCookieHeaderValue() -> string {    
+    return credentials?["session"]?.map((d)=>d.split("; ")[0]).join("; ") ?? ""
+  }
+
+  fun login(email: string, password: string) {
+    return api.post(
+      "/auth/login",
+      data: {
+        "email": email,
+        "password": password
+      }.toJson(),
+    ).then((res) {
+      var data = res.data
+
+      if(data["user"] == null) {
+        throw "Invalid email or password"
+      }
+
+      credentials = {
+        "email": email,
+        "password": password,
+        "session": res.headers["Cookie"] ?? res.headers["Set-Cookie"] ?? res.headers["cookie"] ?? res.headers["set-cookie"]
+      }.toJson()
+
+      return LocalStorage.setString("creds", JSON.encode(credentials)).then(() {
+        controller.add({ type: "login" }.toJson())
+      })
+    })
+  }
+
+  fun initialize() {
+    LocalStorage.getString("creds").then((credStr){
+      if (credStr == null || credStr.isEmpty) {
+        return
+      }
+
+      credentials = JSON.decode(credStr)
+      final email = credentials["email"]
+      final password = credentials["password"]
+
+      api.get_req(
+        "/auth/me",
+        options: RequestOptions(headers: {"Cookie": credentials?["session"]}.toJson())
+      ).then((res){
+        if(res.data["user"] != null) {
+          controller.add({ type: "recovered" }.toJson())
+        } else if(email != null && password != null && email.isNotEmpty && password.isNotEmpty) {
+          login(email, password)
+        }
+      })
+    })
+  }
+  
+  fun isAuthenticated() -> bool {
+    return credentials?["session"] != null
+  }
+
+  fun authenticate() -> Future {
+    return SpotubeForm.show(
+      "DAB Music Login",
+      [
+        {
+          objectType: "text",
+          text: "Your email",
+        }.toJson(),
+        {
+          objectType: "input",
+          id: "email",
+          variant: "text",
+          placeholder: "you@example.com",
+          required: true,
+        }.toJson(),
+        {
+          objectType: "text",
+          text: "Your password",
+        }.toJson(),
+        {
+          objectType: "input",
+          id: "password",
+          variant: "text",
+          placeholder: "Enter your DAB Music password",
+          required: true,
+        }.toJson(),
+        {
+          objectType: "text",
+          text: "If you've no accounts, sign up at [dab.yeet.su](https://dab.yeet.su/register)",
+        }.toJson(),
+      ]
+    ).then((values){
+      if (values == null) {
+        return
+      }
+
+      var email
+      var password
+      for (var value in values) {
+        if (value["id"] == "email") {
+          email = value["value"]
+        } else if (value["id"] == "password") {
+          password = value["value"]
+        }
+      }
+
+      return login(email, password)
+    })
+  }
+
+	fun logout() {
+    return LocalStorage.remove("creds").then(() {
+      credentials = null
+      controller.add({ type: "logout" }.toJson())
+    })
+  }
+}
+
+export { AuthEndpoint }

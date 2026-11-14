@@ -1,0 +1,7 @@
+build/
+example/assets/bytecode/plugin.out
+example/.dart_tool/
+example/.packages
+example/pubspec.lock
+example/build/
+*.out

@@ -1,0 +1,215 @@
+import "module:std" as std
+import { EmulatedArtistAlbum } from "../common/album-artist.ht"
+import { Recommendations } from "../common/recommendations.ht"
+import { MbConverter } from "./converter.ht"
+
+var HttpClient = std.HttpClient
+var HttpResponse = std.HttpResponse
+
+class PlaylistEndpoint {
+  var lbApi: HttpClient
+  var mbApi: HttpClient
+  final username: string
+
+  var emulated: EmulatedArtistAlbum
+  var recommendations: Recommendations
+
+  construct (this.lbApi, this.mbApi, this.username) {
+    this.emulated = EmulatedArtistAlbum(this.lbApi, this.mbApi, this.username)
+    this.recommendations = Recommendations(this.lbApi, this.mbApi, this.username)
+  }
+
+  fun getPlaylist(id: string) {
+    if(recommendations.isLbRadioPlaylist(id)) {
+      return recommendations.getCachedPlaylist(id)
+    }
+    
+    return lbApi.get_req(
+      "/playlist/${id}",
+      queryParameters: {
+        fetchMetadata: "false",
+      }.toJson()
+    ).then((res){
+      var data = res.data
+
+      return MbConverter.playlists([data])[0]
+    })
+  }
+
+  fun tracks(id: string, { offset: int, limit: int }) {
+    if(recommendations.isLbRadioPlaylist(id)) {
+      return recommendations.getCachedPlaylistTracks(id)
+    }
+    
+    return emulated.getPlaylistTracks(
+      id,
+      offset: offset ?? 0,
+      limit: limit ?? 20,
+      fetchMetadata: false
+    ).then((tracks){
+      var mbidQuery = tracks["items"].map((track) => "rid:${track["identifier"][0].split("/").last}").join(" OR ")
+
+      return mbApi.get_req(
+        "/recording",
+        queryParameters: {
+          query: mbidQuery,
+          limit: limit ?? 20,
+          fmt: "json",
+        }.toJson()
+      ).then((res){
+        tracks["items"] = MbConverter.recordings(res.data["recordings"])
+        return tracks
+      })
+    })
+  }
+
+  fun create(userId: string, {
+    name: string,
+    description: string,
+    public: bool,
+    collaborative: bool
+  }) {
+    return lbApi.post(
+      "/playlist/create",
+      data: {
+        playlist: {
+          title: name,
+          annotation: description,
+          creator: userId,
+          extension: {
+            "https://musicbrainz.org/doc/jspf#playlist": {
+              creator: userId,
+              public: public ?? false,
+              collaborative: collaborative ?? false,
+            }
+          },
+          
+        }
+      }.toJson()
+    ).then((res) {
+      return this.getPlaylist(res.data["playlist_mbid"])
+    })
+  }
+
+  fun update(playlistId: string, {
+    name: string,
+    description: string,
+    public: bool,
+    collaborative: bool
+  }) {
+    assert(playlistId != null)
+
+    // At least one of these fields must be provided
+    if(name == null && description == null && public == null && collaborative == null) {
+      throw "At least one field must be provided to update the playlist."
+    }
+
+    final body = {
+      playlist: {
+        // title: name,
+        // annotation: description,
+        extension: {
+          "https://musicbrainz.org/doc/jspf#playlist": {
+            // public: public ?? false,
+            // collaborative: collaborative ?? false,
+          }
+        },
+      }
+    }.toJson()
+
+    if(name != null) {
+      body["playlist"]["title"] = name
+    }
+    if(description != null) {
+      body["playlist"]["annotation"] = description
+    }
+    if(public != null) {
+      body["playlist"]["extension"]["https://musicbrainz.org/doc/jspf#playlist"]["public"] = public
+    }
+    if(collaborative != null) {
+      body["playlist"]["extension"]["https://musicbrainz.org/doc/jspf#playlist"]["collaborative"] = collaborative
+    }
+
+    return lbApi.post(
+      "/playlist/edit/${playlistId}",
+      data: body
+    ).then((_) => null)
+  }
+
+  fun deletePlaylist(playlistId: string) {
+    assert(playlistId != null)
+
+    return lbApi.post("/playlist/${playlistId}/delete").then((_) => null)
+  }
+
+  fun addTracks(playlistId: string, { trackIds: List, position: int }) {
+    assert(playlistId != null)
+    assert(trackIds != null && trackIds.isNotEmpty)
+
+    var positionStr = position != null ? "/${position}" : ""
+
+    return lbApi.post(
+      "/playlist/${playlistId}/item/add${positionStr}",
+      data: {
+        playlist: {
+          track: trackIds.map((trackId) {
+            return {
+              identifier: "https://musicbrainz.org/recording/${trackId}",
+              extension: {
+                "https://musicbrainz.org/doc/jspf#track": {
+                  added_by: username
+                }
+              }
+            }
+          }).toList()
+        }
+      }.toJson()
+    ).then((_) => null)
+  }
+
+
+  fun removeTracks(playlistId: string, { trackIds: List }) {
+    return emulated.getPlaylistTracks(
+      playlistId,
+      offset: -1,
+      limit: -1,
+      fetchMetadata: false
+    ).then((res){
+      var tracks = res["items"].map((track) => track["identifier"][0].split("/").last).toList()
+
+      var trackIndexes = []
+
+      for(var i = 0; i < tracks.length; i++) {
+        var track = tracks[i]
+        if(!trackIds.contains(track)) continue
+        trackIndexes.add(i)
+      }
+
+      if(trackIndexes.isEmpty) {
+        throw "No tracks found to remove from the playlist."
+      }
+
+      var deleteFutures = trackIndexes.map((index){
+        return lbApi.post(
+          "/playlist/${playlistId}/item/delete",
+          data: {
+            index: index,
+            count: 1,
+          }.toJson()
+        )
+      }).toList()
+
+      return Future.wait(deleteFutures).then((_) => null)
+    })
+  }
+
+  fun save(playlistId: string) {
+    // TODO: Implement method
+  }
+
+  fun unsave(playlistId: string) {
+    // TODO: Implement method
+  }
+}
+
+export { PlaylistEndpoint }

@@ -1,0 +1,65 @@
+import 'module:std' as std
+import 'module:spotube_plugin' as spotube
+
+var StreamController = std.StreamController
+var LocalStorage = spotube.LocalStorage
+var Webview = spotube.Webview
+
+class YouTubeMusicAuthEndpoint {
+  final controller: StreamController
+  var credentials: Map
+
+  get authStateStream -> Stream => controller.stream
+
+  construct (){
+    controller = StreamController.broadcast()
+    initializeFromLocalStorage()
+  }
+
+  fun initializeFromLocalStorage() {
+    LocalStorage.getString("ytm_credentials").then((credentialsStr){
+      if (credentialsStr != null) {
+        credentials = std.JSON.decode(credentialsStr)
+        controller.add({ type: "recovered" }.toJson())
+      }
+    })
+  }
+
+  fun isAuthenticated() -> bool {
+    return credentials != null
+  }
+
+  fun authenticate() -> Future {
+    var webview = Webview(uri: "https://music.youtube.com/")
+    var handled = false
+
+    var sub = webview.onUrlRequestStream.listen((url){
+      if(handled || !url.startsWith("https://music.youtube.com/")) {
+        return
+      }
+
+      return webview.getCookies("https://music.youtube.com/").then((cookies){
+        var hasSapisid = cookies.any((c) => c["name"] == "SAPISID")
+        if (hasSapisid) {
+          handled = true
+          sub.cancel()
+          return webview.close().then(() {
+            credentials = { "cookies": cookies.map((cookie)=> cookie.toJson()).toList() }
+            LocalStorage.setString("ytm_credentials", std.JSON.encode(credentials.toJson()))
+            controller.add({type: "login"}.toJson())
+          })
+        }
+      })
+    })
+
+    return webview.open()
+  }
+
+  fun logout() {
+    credentials = null
+    LocalStorage.remove("ytm_credentials")
+    controller.add({type: "logout"}.toJson())
+  }
+}
+
+export { YouTubeMusicAuthEndpoint }

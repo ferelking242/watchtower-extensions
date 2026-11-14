@@ -1,0 +1,99 @@
+import "module:std" as std
+import "module:spotube_plugin" as spotube
+import { EmulatedArtistAlbum } from "../common/album-artist.ht"
+import { MbConverter, LbConverter } from "./converter.ht"
+
+var HttpClient = std.HttpClient
+var HttpResponse = std.HttpResponse
+var RequestOptions = std.RequestOptions
+var JSON = std.JSON
+var LocalStorage = spotube.LocalStorage
+
+class AlbumEndpoint {
+  var lbApi: HttpClient
+  var mbApi: HttpClient
+  final username: string
+
+  var emulator: EmulatedArtistAlbum
+
+  construct (this.lbApi, this.mbApi, this.username) {
+    this.emulator = EmulatedArtistAlbum(lbApi, mbApi, username)
+  }
+
+  fun getAlbum(id: string) {
+    return mbApi.get_req(
+      "/release-group/${id}",
+      queryParameters: {
+        "fmt": "json",
+        "inc": "artists"
+      }.toJson()
+    ).then((res){
+      var data = res.data
+
+      return MbConverter.releaseGroups([data]).first
+    })
+  }
+
+  fun tracks(id: string, {offset: int, limit: int}) {
+    return mbApi.get_req(
+      "/release-group/${id}",
+      queryParameters: {
+        "fmt": "json",
+        "inc": "artists+releases"
+      }.toJson()
+    ).then((res){
+      var data = res.data
+      var album = MbConverter.releaseGroups([data]).first
+      var officialRelease = MbConverter.officialRelease(data["releases"])
+      
+      return mbApi.get_req(
+        "/recording",
+        queryParameters: {
+          "fmt": "json",
+          "query": "reid:${officialRelease["id"]}",
+        }.toJson()
+      ).then((res){
+        var data = res.data
+        var items = MbConverter.recordingWithoutAlbum(data["recordings"], album)
+
+        return {
+          limit: limit ?? 20,
+          nextOffset: null,
+          total: data["count"],
+          hasMore: false,
+          items: items
+        }.toJson()
+      })
+    })
+  }
+
+  fun releases({offset: int, limit: int}) {
+    return lbApi.get_req(
+      "/user/${username}/fresh_releases",
+      queryParameters: {
+        "future": "false"
+      }.toJson()
+    ).then((res){
+      var data = res.data
+      var items = LbConverter.freshReleases(data["payload"]["releases"])
+
+      return {
+        limit: limit ?? 20,
+        nextOffset: null,
+        total: items.length,
+        hasMore: false,
+        items: items
+      }.toJson()
+    })
+  }
+
+  fun save(albumIds: List) {
+    return emulator.save("album", albumIds)
+  }
+
+  fun unsave(albumIds: List) {
+    assert(albumIds.isNotEmpty)
+    
+    return emulator.unsave("album", albumIds)
+  }
+}

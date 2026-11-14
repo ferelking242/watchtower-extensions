@@ -1,0 +1,155 @@
+import "module:std" as std
+import "module:spotube_plugin" as spotube
+import { MbConverter } from "./converter.ht"
+import { EmulatedArtistAlbum } from "../common/album-artist.ht"
+
+var HttpClient = std.HttpClient
+var HttpResponse = std.HttpResponse
+var LocalStorage = spotube.LocalStorage
+
+class UserEndpoint {
+  var lbApi: HttpClient
+  var mbApi: HttpClient
+  var emulator: EmulatedArtistAlbum
+
+  final username: string
+
+  construct (this.lbApi, this.mbApi, this.username) {
+    this.emulator = EmulatedArtistAlbum(lbApi, mbApi, username)
+  }
+  
+  fun me() {
+    return Future.value(MbConverter.user(username))
+  }
+
+  fun savedTracks({ offset: int, limit: int }) {
+    assert(username != null)
+    
+    return lbApi.get_req(
+      "/feedback/user/${username}/get-feedback",
+      queryParameters: {
+        score: "1",
+        count: limit ?? 20,
+        offset: offset ?? 0,
+      }.toJson()
+    )
+    .then((res){
+      var data = res.data
+      var hasMore = data["feedback"].length >= (limit ?? 20)
+      var mbids = data["feedback"].map((f) => "rid:${f["recording_mbid"]}").join(" OR ")
+
+      return mbApi.get_req(
+        "/recording",
+        queryParameters: {
+          query: mbids,
+          limit: data["feedback"].length,
+          fmt: "json"
+        }.toJson()
+      ).then((res){
+        var recordings = res.data["recordings"] ?? []
+        
+        return {
+          limit: data["count"], 
+          nextOffset: hasMore ? data["offset"] + data["count"] : null,
+          total: data["total_count"],
+          hasMore: hasMore,
+          items: MbConverter.recordings(recordings)
+        }.toJson()
+      })
+    })
+  }
+
+  fun savedPlaylists({ offset: int, limit: int }) {
+    assert(username != null)
+    
+    return lbApi.get_req(
+      "/user/${username}/playlists",
+      queryParameters: {
+        count: limit ?? 20,
+        offset: offset ?? 0,
+      }.toJson()
+    ).then((res) {
+      var data = res.data
+      var hasMore = data["playlists"].length >= (limit ?? 20)
+
+      var items = MbConverter.playlists(data["playlists"])
+      
+      return {
+        limit: data["count"],
+        nextOffset: hasMore ? data["offset"] + data["count"] : null,
+        total: data["playlist_count"],
+        hasMore: hasMore,
+        items: items.where((item){
+          return item["name"] != "${username} saved artists by Spotube" &&
+            item["name"] != "${username} saved albums by Spotube"
+        }).toList(),
+      }.toJson()
+    })
+  }
+
+  fun savedAlbums({ offset: int, limit: int }) {
+    assert(username != null)
+    return emulator.savedEntities(
+      "album",
+      offset: offset,
+      limit: limit
+    )
+  }
+
+  fun isSavedPlaylist(playlistId: string) { // Future<bool>
+    assert(username != null)
+  
+    return lbApi.get_req(
+      "/playlist/${playlistId}",
+      queryParameters: {
+        fetch_metadata: false
+      }.toJson()
+    ).then((res) {
+      var data = res.data
+      var creator = data["playlist"]["creator"] ?? data["playlist"]["extension"]["https://musicbrainz.org/doc/jspf#playlist"]["creator"]
+
+      return creator == username
+    })
+  }
+
+  fun isSavedTracks(trackIds: List) { // Future<List<bool>>
+    assert(username != null)
+  
+    return lbApi.post(
+      "/feedback/user/${username}/get-feedback-for-recordings",
+      data: {
+        recording_mbids: trackIds
+      }.toJson()
+    ).then((res){
+      var data = res.data
+
+      return trackIds.map((id){
+        var r = data["feedback"].where((f)=>f["recording_mbid"] == id).first
+
+        return r["score"] == 1
+      }).toList()
+    })
+  }
+
+  fun isSavedAlbums(albumIds: List) { // Future<List<bool>>
+    assert(username != null)
+  
+    return emulator.isSavedEntities("album", albumIds)
+  }
+
+  fun savedArtists({ offset: int, limit: int }) { // Future<List>
+    assert(username != null)
+    
+    return emulator.savedEntities(
+      "artist",
+      offset: offset,
+      limit: limit
+    )
+  }
+
+  fun isSavedArtists(artistIds: List) { // Future<List<bool>>
+    return emulator.isSavedEntities("artist", artistIds)
+  }
+}
+
+export { UserEndpoint }

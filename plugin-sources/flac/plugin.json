@@ -1,0 +1,15 @@
+{
+  "version": "2.1.0",
+  "name": "Flac Downloader Audio",
+  "author": "aztecempire",
+  "description": "FLAC audio source plugin for Spotube using flacdownloader.com",
+  "entryPoint": "FlacAudioSourcePlugin",
+  "apis": [
+    "localstorage"
+  ],
+  "abilities": [
+    "audio-source"
+  ],
+  "repository": "https://github.com/ferelking242/watchtower-extensions",
+  "pluginApiVersion": "2.0.0"
+}

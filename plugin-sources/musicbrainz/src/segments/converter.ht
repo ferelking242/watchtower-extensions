@@ -1,0 +1,218 @@
+import "module:std" as std
+
+var Regex = std.Regex
+
+class MbConverter {
+  static fun user(username: string) -> Map {
+    return {
+      id: username,
+      name: username,
+      images: [],
+      externalUri: "https://listenbrainz.org/user/${username}",
+    }.toJson()
+  }
+
+  static fun playlists(pl: List) -> List {
+    pl.sort((a, b) {
+      var at = a["playlist"]["date"]
+      var bt = b["playlist"]["date"]
+      return bt.compareTo(at)
+    })
+    
+    return pl.map((playlist){
+      var p = playlist["playlist"]
+      return {
+        id: p["identifier"].split("/").last,
+        name: p["title"],
+        description: p["annotation"] ?? "",
+        externalUri: p["identifier"],
+        owner: user(p["creator"]),
+        images: p["images"] ?? [],
+        collaborators: [],
+        collaborative: false,
+        public: p["extension"]["https://musicbrainz.org/doc/jspf#playlist"]["public"] ?? false,
+      }.toJson()
+    }).toList()
+  }
+  
+  static fun artistsCredit(artists: List) -> List {
+    return artists.map((credit) => {
+      id: credit["artist"]["id"],
+      name: credit["artist"]["name"],
+      externalUri: "https://musicbrainz.org/artist/${credit["artist"]["id"]}",
+    }).toList()
+  }
+
+  static fun artists(artists: List) -> List {
+    return artists.map((artist){
+      return {
+        id: artist["id"],
+        name: artist["name"],
+        externalUri: "https://musicbrainz.org/artist/${artist["id"]}",
+        images: artist["images"] ?? [],
+      }.toJson()
+    }).toList()
+  }
+
+  static fun officialRelease(releases: List) -> Map {
+    final albums = releases.where(
+        (r)=> 
+          r["status"] == "Official" && r["country"] == "US"
+          && (r["artist-credit"]?.every((a)=>a["artist"]["name"] != "Various Artists") ?? true)
+      ).toList()    
+    return albums.isNotEmpty ? albums.first : releases.first
+  }
+  
+  static fun releases(releases: List) -> Map {
+    return releases.map((album){
+      final releaseGroup = album["release-group"]
+      final releaseType = album["release-group"]["primary-type"]?.toLowerCase() ?? "album"
+
+      return {
+        id: releaseGroup["id"],
+        name: releaseGroup["title"],
+        externalUri: "https://musicbrainz.org/release-group/${releaseGroup["id"]}",
+        artists: album["artist-credit"] == null ? [] : artistsCredit(album["artist-credit"]),
+        images: [
+          {
+            height: 250,
+            width: 250,
+            url: "https://coverartarchive.org/release-group/${releaseGroup["id"]}/front-250.jpg",
+          },
+          {
+            height: 500,
+            width: 500,
+            url: "https://coverartarchive.org/release-group/${releaseGroup["id"]}/front-500.jpg",
+          },
+          // Too big.
+          // "https://coverartarchive.org/release/${album["id"]}/front-1200.jpg",
+        ],
+        albumType: ["album", "single", "compilation"].contains(releaseType) ? releaseType : "album",
+        releaseDate: album["date"],
+      }.toJson()
+    }).toList()
+  }
+
+  static fun releaseGroups(groups: List) -> Map {
+    return groups.map((releaseGroup){      
+      final releaseType = releaseGroup["primary-type"]?.toLowerCase() ?? "album"
+
+      return {
+        id: releaseGroup["id"],
+        name: releaseGroup["title"],
+        externalUri: "https://musicbrainz.org/release-group/${releaseGroup["id"]}",
+        artists: releaseGroup["artist-credit"] == null ? [] : artistsCredit(releaseGroup["artist-credit"]),
+        images: [
+          {
+            height: 250,
+            width: 250,
+            url: "https://coverartarchive.org/release-group/${releaseGroup["id"]}/front-250.jpg",
+          },
+          {
+            height: 500,
+            width: 500,
+            url: "https://coverartarchive.org/release-group/${releaseGroup["id"]}/front-500.jpg",
+          },
+          // Too big.
+          // "https://coverartarchive.org/release-group/${album["id"]}/front-1200.jpg",
+        ],
+        albumType: ["album", "single", "compilation"].contains(releaseType) ? releaseType : "album",
+        releaseDate: releaseGroup["first-release-date"],
+      }.toJson()
+    }).toList()
+  }
+  
+  static fun recordings(recordings: List) -> List {
+    return recordings
+    .where((recording) => 
+      recording["releases"] != null && recording["releases"].isNotEmpty
+      && recording["artist-credit"] != null && recording["artist-credit"].isNotEmpty
+    )
+    .map((recording){
+      var album = officialRelease(recording["releases"])
+      var explicit = recording["disambiguation"]?.toLowerCase() == "explicit"
+
+      return {
+        id: recording["id"],
+        name: recording["title"],
+        externalUri: "https://musicbrainz.org/recording/${recording["id"]}",
+        artists: artistsCredit(recording["artist-credit"]),
+        album: releases([album])[0],
+        durationMs: recording["length"] ?? 0,
+        isrc: recording["isrcs"]?.isEmpty ?? true ? "" : recording["isrcs"].first,
+        explicit: explicit,
+      }.toJson()
+    }).toList()
+  }
+
+  static fun recordingWithoutAlbum(recordings: List, album: Map) -> List {
+    return recordings.map((recording){
+      return {
+        id: recording["id"],
+        name: recording["title"],
+        externalUri: "https://musicbrainz.org/recording/${recording["id"]}",
+        artists: artistsCredit(recording["artist-credit"]),
+        album: album,
+        durationMs: recording["length"] ?? 0,
+        isrc: recording["isrcs"]?.isEmpty ?? true ? "" : recording["isrcs"].first,
+        explicit: recording["disambiguation"]?.toLowerCase() == "explicit",
+      }.toJson()
+    })
+    .toList()
+  }
+}
+
+class LbConverter {
+  static fun freshReleases(releases: List) -> List {
+    return releases
+    .where((r)=>r["release_group_secondary_type"] != "Live")
+    .map((release) {
+      final regex = Regex("\\s*(x|X|&|and|vs\\.?|with|feat\\.?|featuring|ft\\.?|presents|/|;|×|\\+|,)\\s*")
+      var artistNames = Regex.splitString(release["artist_credit_name"], regex).toList()
+      var albumType = release["release_group_primary_type"].toLowerCase() ?? "album"
+
+      var artists = []
+
+      if(artistNames.length < release["artist_mbids"].length) {
+        artistNames = release["artist_credit_name"].split(".")
+      }
+      for (var i = 0; i < release["artist_mbids"].length; i++) {
+        var id = release["artist_mbids"][i]
+        artists.add({
+          id: id,
+          name: artistNames[i],
+          externalUri: "https://musicbrainz.org/artist/${id}"
+        })
+      }
+      
+      return {
+        id: release["release_group_mbid"],
+        name: release["release_name"],
+        externalUri: "https://musicbrainz.org/release-group/${release["release_group_mbid"]}",
+        artists: artists,
+        images: [
+          {
+            height: 250,
+            width: 250,
+            url: "https://coverartarchive.org/release-group/${release["release_group_mbid"]}/front-250.jpg",
+          },
+          {
+            height: 500,
+            width: 500,
+            url: "https://coverartarchive.org/release-group/${release["release_group_mbid"]}/front-500.jpg",
+          },
+          // Too big.
+          // "https://coverartarchive.org/release-group/${release["release_group_mbid"]}/front-1200.jpg",
+        ],
+        albumType: ["album", "single", "compilation"].contains(albumType) ? albumType : "album",
+        releaseDate: release["release_date"],
+      }.toJson()
+    }).toList()
+  }
+
+  static fun tracks(tracks: List) -> List {
+    
+  }
+}
+
+export { MbConverter, LbConverter }

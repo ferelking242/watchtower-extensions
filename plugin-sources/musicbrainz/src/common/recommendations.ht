@@ -1,0 +1,276 @@
+import "module:std" as std
+import "module:spotube_plugin" as spotube
+import { MbConverter } from "../segments/converter.ht"
+
+var HttpClient = std.HttpClient
+var HttpResponse = std.HttpResponse
+var LocalStorage = spotube.LocalStorage
+var JSON = std.JSON
+var DateTime = std.DateTime
+var FutureUtils = std.FutureUtils
+var Duration = std.Duration
+
+const _delay = Duration(milliseconds: 200)
+
+class Recommendations {
+  var lbApi: HttpClient
+  var mbApi: HttpClient
+  final username: string
+
+  construct (this.lbApi, this.mbApi, this.username)
+
+  fun getCreatedForPlaylists() {
+    return lbApi.get_req(
+      "/user/${username}/playlists/createdfor",
+      queryParameters: {
+        count: 25,
+        offset: 0
+      }.toJson()
+    ).then((res){
+      var playlists = res.data["playlists"]
+
+      for(var i = 0; i < playlists.length; i++) {
+        var playlist = playlists[i]
+        var imageName;
+        final title = playlist["playlist"]["title"]
+
+        if(title.contains("Weekly Exploration")) {
+          imageName = "weekly-exploration"
+        } else {
+          imageName = "weekly-jams"
+        } 
+
+        playlists[i]["playlist"]["images"] = [
+          {
+            url: "https://res.cloudinary.com/dszpk1pk9/image/upload/t_media_lib_thumb/spotube-plugin-musicbrainz-listenbrainz/created_for/${imageName}.webp",
+            width: 360,
+            height: 360,
+          }.toJson()
+        ]
+      }
+
+      return MbConverter.playlists(playlists)
+    }).then((playlists){
+      return {
+        id: "created-for-playlists",
+        title: "Created for you",
+        externalUri: "https://listenbrainz.org/user/${username}/recommendations/",
+        browseMore: false,
+        items: playlists
+      }.toJson()
+    })
+  }
+
+  fun getUserListens({maxTs: int, minTs: int, count: int}) {
+    var query = Map()
+    if (maxTs != null) {
+      query["max_ts"] = maxTs
+    }
+    if (minTs != null) {
+      query["min_ts"] = minTs
+    }
+    if (count != null) {
+      query["count"] = count
+    }
+
+    return lbApi.get_req(
+      "/user/${username}/listens",
+      queryParameters: query,
+    ).then((res) => res.data["payload"]["listens"])
+  }
+
+  fun isLbRadioPlaylist(playlistId: string) {
+    return playlistId.startsWith("lb-radio-playlist-")
+  }
+
+  fun getCachedPlaylist(playlistId: string) {
+    return LocalStorage.getString(playlistId).then((cachedPlaylist) {
+      if (cachedPlaylist != null) {
+        return MbConverter.playlists([JSON.decode(cachedPlaylist)])[0]
+      }
+      return null
+    })
+  }
+
+  fun getCachedPlaylistTracks(playlistId: string) -> Future { // Future<List<string>>
+    return LocalStorage.getString(playlistId).then((cachedPlaylist) {
+      var playlist = JSON.decode(cachedPlaylist)
+      if (playlist == null) {
+        return null
+      }
+
+      var mbidQuery = playlist["playlist"]["track"].map((track)=>"rid:${track["identifier"][0].split("/").last}").join(" OR ")
+
+      return mbApi.get_req(
+        "/recording",
+        queryParameters: {
+          query: mbidQuery,
+          limit: playlist["playlist"]["track"].length,
+          fmt: "json",
+        }.toJson()
+      ).then((res){
+        var items = MbConverter.recordings(res.data["recordings"])
+        return {
+          limit: items.length,
+          nextOffset: null,
+          total: items.length,
+          hasMore: false,
+          items: items
+        }.toJson()
+      })
+    })
+  }
+
+  fun generateAndCacheLbRadioPlaylist({
+    prompt: string,
+    mode: string,
+    title: string,
+    annotation: string,
+    imageUrl: string,
+  }) {
+    assert(prompt != null && mode != null && title != null)
+    assert(["easy", "medium", "hard"].contains(mode))
+    var playlistId = "lb-radio-playlist-${prompt}-${mode}"
+
+    return LocalStorage.getString(playlistId).then((cachedPlaylist) {
+      if (cachedPlaylist != null) {
+        cachedPlaylist = JSON.decode(cachedPlaylist)
+        var createdAt = cachedPlaylist["created_at"] == null ? null 
+          : DateTime.fromMillisecondsSinceEpoch(cachedPlaylist["created_at"] ?? 0)
+
+        var current = DateTime.now()
+        // If it's been a new day since the playlist was created, regenerate it
+        if (createdAt != null && createdAt.day == current.day &&
+            createdAt.month == current.month &&
+            createdAt.year == current.year) {
+          return MbConverter.playlists([cachedPlaylist])[0]
+        }
+      }
+
+      return lbApi.get_req(
+        "/explore/lb-radio",
+        queryParameters: {
+          prompt: prompt,
+          mode: mode
+        }.toJson()
+      ).then((res){
+        var playlist = res.data["payload"]["jspf"]
+
+        playlist["playlist"]["identifier"] = "https://listenbrainz.org/playlist/${playlistId}"
+        playlist["playlist"]["title"] = title
+
+        if (annotation != null) {
+          playlist["playlist"]["annotation"] = annotation
+        }
+
+        playlist['created_at'] = DateTime.now().millisecondsSinceEpoch
+
+        if(imageUrl != null) {
+          playlist["playlist"]["images"] = [
+            {
+              url: imageUrl,
+              width: 360,
+              height: 360,
+            }.toJson()
+          ]
+        }
+
+        // Cache the playlist in local storage
+        LocalStorage.setString(playlistId, JSON.encode(playlist))
+
+        return MbConverter.playlists([playlist])[0]
+      })
+    })
+  }
+
+  final moods = {
+    chill: ['ambient', "Chill playlist", "Yo chill my friend!"],
+    energetic: ['energetic', "Pump it up!", "Get ready to move!"],
+    happy: ['upbeat', "Happy Vibes", "Feel good tunes to brighten your day!"],
+    sad: ['melancholy', "Melancholy Moments", "For those reflective times."],
+    focus: ['instrumental', "Focus Beats", "Concentration is key."],
+    workout: ['electronic', "Workout Jams", "Get pumped with these beats!"],
+    party: ['dance', "Party Anthems", "Let's get this party started!"],
+    romantic: ['romantic', "Romantic Evenings", "For those special moments."],
+  }
+
+  fun generateMoodPlaylists() -> Future { // Future<List>
+    var playlistsFuture = [] // List of callbacks returning future
+
+    for(int i =0; i < moods.values.length; i++) {
+      var mood = moods.values.elementAt(i)
+      var moodKey = moods.keys.elementAt(i)
+      var tag = mood[0]
+      var title = mood[1]
+      var annotation = mood[2]
+      
+      playlistsFuture.add(
+        ()=> generateAndCacheLbRadioPlaylist(
+          prompt: 'tag:(${tag}) stats:${username}::all_time',
+          mode: 'hard',
+          title: title,
+          annotation: annotation,
+          imageUrl: "https://res.cloudinary.com/dszpk1pk9/image/upload/t_media_lib_thumb/spotube-plugin-musicbrainz-listenbrainz/moods/${moodKey}.webp"
+        )
+      )
+    }
+
+    return FutureUtils.chain(playlistsFuture, delay: _delay)
+    .then((playlists) {
+      return {
+        id: "mood-playlists",
+        title: "Based on your mood",
+        externalUri: "https://listenbrainz.org/explore/lb-radio",
+        browseMore: false,
+        items: playlists
+      }.toJson()
+    })
+  }
+
+  fun getUserTopArtists() -> Future {
+    return  lbApi.get_req(
+      "/stats/user/${username}/artists",
+      queryParameters: {
+        count: 10,
+        offset: 0,
+        range: "quarter"
+      }.toJson()
+    ).then((res){
+      var artists = res.data?["payload"]?["artists"] ?? []
+      
+      return artists.where((artist) => artist["artist_mbid"] != null).toList()
+    })
+  }
+
+  fun generateTopArtistRadios() -> Future {
+    return getUserTopArtists().then((artists){
+      var playlistsFuture = [] // List of callbacks returning future
+
+      for (var artist in artists) {
+        var mbid = artist["artist_mbid"]
+
+        playlistsFuture.add(
+          () => generateAndCacheLbRadioPlaylist(
+            prompt: "artist:(${mbid})",
+            mode: "easy",
+            title: "${artist["artist_name"]} Radio",
+            annotation: "A radio playlist based on ${artist["artist_name"]}'s music"
+          )
+        )
+      }
+
+      return FutureUtils.chain(playlistsFuture, delay: _delay)
+      .then((playlists) {
+        return {
+          id: "top-artist-radios",
+          title: "Top Artist Radios",
+          externalUri: "https://listenbrainz.org/explore/lb-radio",
+          browseMore: false,
+          items: playlists
+        }.toJson()
+      })
+    })
+  }
+}
+
+export { Recommendations }

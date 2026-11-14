@@ -2,7 +2,7 @@
   "_comment": "Plugin registry — submit a PR to add your plugin",
   "_schema": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/plugins/schema.json",
   "_templates": "https://github.com/ferelking242/watchtower-extensions/tree/main/plugins/_templates",
-  "_lastUpdated": "2026-07-06",
+  "_lastUpdated": "2026-11-14",
   "plugins": [
     {
       "id": "com.watchtower.tiktok-downloader",
@@ -320,7 +320,7 @@
       "author": "Kingkor Roy Tirtho",
       "description": "YouTube audio source plugin for the Watchtower Music Hub.",
       "longDescription": "Streams audio directly from YouTube. Supports track matching, quality selection, and local cache. Required to play music via the Music Hub when no other audio source is configured.",
-      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-youtube-audio/main/assets/logo.png",
+      "icon": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/plugins/youtubeaudio.png",
       "banner": "",
       "screenshots": [],
       "category": "music-audio-source",
@@ -343,7 +343,7 @@
         "streaming"
       ],
       "license": "MIT",
-      "repository": "https://github.com/ferelking242/spotube-plugin-youtube-audio",
+      "repository": "https://github.com/ferelking242/watchtower-extensions",
       "isNsfw": false,
       "requiresAccount": false,
       "paywall": "free",
@@ -355,7 +355,7 @@
           "Cache"
         ]
       },
-      "zipUrl": "https://github.com/ferelking242/spotube-plugin-youtube-audio/releases/download/continuous/plugin.smplug"
+      "zipUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/youtubeaudio.smplug"
     },
     {
       "id": "com.spotube.jiosaavn-audio",
@@ -364,7 +364,7 @@
       "author": "Kingkor Roy Tirtho",
       "description": "Jiosaavn audio source plugin for the Watchtower Music Hub.",
       "longDescription": "Streams audio from JioSaavn — large catalog of Hindi, Tamil, Telugu, and other South Asian music. Great alternative to YouTube Audio for regional content.",
-      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-jiosaavn-audio/main/assets/logo.png",
+      "icon": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/plugins/jiosaavn.png",
       "banner": "",
       "screenshots": [],
       "category": "music-audio-source",
@@ -388,7 +388,7 @@
         "south-asian"
       ],
       "license": "MIT",
-      "repository": "https://github.com/ferelking242/spotube-plugin-jiosaavn-audio",
+      "repository": "https://github.com/ferelking242/watchtower-extensions",
       "isNsfw": false,
       "requiresAccount": false,
       "paywall": "free",
@@ -400,7 +400,7 @@
           "Cache"
         ]
       },
-      "zipUrl": "https://github.com/ferelking242/spotube-plugin-jiosaavn-audio/releases/download/continuous/plugin.smplug"
+      "zipUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/jiosaavn.smplug"
     },
     {
       "id": "com.spotube.dab-music",
@@ -409,7 +409,7 @@
       "author": "Kingkor Roy Tirtho",
       "description": "dab.yeet.su HiFi audio source plugin for the Watchtower Music Hub.",
       "longDescription": "Streams lossless HiFi audio (up to 24-bit/96 kHz) from dab.yeet.su. Requires account authentication. Best quality audio source available in the Music Hub.",
-      "icon": "https://raw.githubusercontent.com/ferelking242/spotube-plugin-dab-music/main/assets/logo.png",
+      "icon": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/plugins/dabmusic.png",
       "banner": "",
       "screenshots": [],
       "category": "music-audio-source",
@@ -433,7 +433,7 @@
         "streaming"
       ],
       "license": "MIT",
-      "repository": "https://github.com/ferelking242/spotube-plugin-dab-music",
+      "repository": "https://github.com/ferelking242/watchtower-extensions",
       "isNsfw": false,
       "requiresAccount": true,
       "paywall": "free",
@@ -446,7 +446,7 @@
           "SecureStorage"
         ]
       },
-      "zipUrl": "https://github.com/ferelking242/spotube-plugin-dab-music/releases/download/continuous/plugin.smplug"
+      "zipUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/dabmusic.smplug"
     },
     {
       "id": "com.spotube.musicbrainz-listenbrainz",
@@ -481,7 +481,7 @@
         "listenbrainz"
       ],
       "license": "MIT",
-      "repository": "https://github.com/ferelking242/spotube-plugin-musicbrainz-listenbrainz",
+      "repository": "https://github.com/ferelking242/watchtower-extensions",
       "isNsfw": false,
       "requiresAccount": false,
       "paywall": "free",
@@ -494,7 +494,7 @@
           "SecureStorage"
         ]
       },
-      "zipUrl": "https://github.com/ferelking242/spotube-plugin-musicbrainz-listenbrainz/releases/download/continuous/plugin.smplug"
+      "zipUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/musicbrainz.smplug"
     },
     {
       "id": "com.spotube.spotify",
@@ -527,7 +527,7 @@
         "streaming"
       ],
       "license": "MIT",
-      "repository": "https://github.com/ferelking242/spotube-plugin-spotify",
+      "repository": "https://github.com/ferelking242/watchtower-extensions",
       "isNsfw": false,
       "requiresAccount": true,
       "paywall": "free",
@@ -540,7 +540,7 @@
           "Webview"
         ]
       },
-      "zipUrl": "https://github.com/ferelking242/spotube-plugin-spotify/releases/download/continuous/plugin.smplug"
+      "zipUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/spotify.smplug"
     },
     {
       "id": "com.spotube.flac-audio",
@@ -570,7 +570,7 @@
         "lossless"
       ],
       "license": "MIT",
-      "repository": "https://github.com/ferelking242/spotube-plugin-flac-audio",
+      "repository": "https://github.com/ferelking242/watchtower-extensions",
       "isNsfw": false,
       "requiresAccount": false,
       "paywall": "free",
@@ -582,7 +582,7 @@
           "Cache"
         ]
       },
-      "zipUrl": "https://github.com/ferelking242/spotube-plugin-flac-audio/releases/download/continuous/plugin.smplug"
+      "zipUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/flac.smplug"
     },
     {
       "id": "com.spotube.applemusic",
@@ -614,7 +614,7 @@
         "streaming"
       ],
       "license": "MIT",
-      "repository": "https://github.com/ferelking242/spotube-plugin-applemusic",
+      "repository": "https://github.com/ferelking242/watchtower-extensions",
       "isNsfw": false,
       "requiresAccount": true,
       "paywall": "free",
@@ -627,7 +627,7 @@
           "Webview"
         ]
       },
-      "zipUrl": "https://github.com/ferelking242/spotube-plugin-applemusic/releases/download/continuous/plugin.smplug"
+      "zipUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/applemusic.smplug"
     },
     {
       "id": "com.spotube.deezer",
@@ -659,7 +659,7 @@
         "streaming"
       ],
       "license": "MIT",
-      "repository": "https://github.com/ferelking242/spotube-plugin-deezer",
+      "repository": "https://github.com/ferelking242/watchtower-extensions",
       "isNsfw": false,
       "requiresAccount": true,
       "paywall": "free",
@@ -672,7 +672,7 @@
           "Webview"
         ]
       },
-      "zipUrl": "https://github.com/ferelking242/spotube-plugin-deezer/releases/download/continuous/plugin.smplug"
+      "zipUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/deezer.smplug"
     },
     {
       "id": "com.spotube.youtube-music",
@@ -705,7 +705,7 @@
         "streaming"
       ],
       "license": "MIT",
-      "repository": "https://github.com/ferelking242/spotube-plugin-youtube-music",
+      "repository": "https://github.com/ferelking242/watchtower-extensions",
       "isNsfw": false,
       "requiresAccount": true,
       "paywall": "free",
@@ -718,7 +718,7 @@
           "Webview"
         ]
       },
-      "zipUrl": "https://github.com/ferelking242/spotube-plugin-youtube-music/releases/download/continuous/plugin.smplug"
+      "zipUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/plugins/youtubemusic.smplug"
     }
   ]
 }

@@ -1,0 +1,40 @@
+import "module:std" as std
+
+import { AudioSourceEndpoint } from './segments/audio_source.ht'
+import { CorePlugin } from './segments/core.ht'
+
+var HttpClient = std.HttpClient
+var HttpBaseOptions = std.HttpBaseOptions
+
+class FlacAudioSourcePlugin {
+  var audioSource: AudioSourceEndpoint
+  var core: CorePlugin
+
+  var api: HttpClient
+  var deezerApi: HttpClient
+
+  construct (){
+    api = HttpClient(
+      HttpBaseOptions(
+        baseUrl: "https://flacdownloader.com",
+        followRedirects: true,
+        headers: {
+          "Referer": "https://flacdownloader.com/",
+          "Origin": "https://flacdownloader.com",
+        }.toJson(),
+      )
+    )
+
+    deezerApi = HttpClient(
+      HttpBaseOptions(
+        baseUrl: "https://api.deezer.com",
+        followRedirects: true,
+      )
+    )
+
+    audioSource = AudioSourceEndpoint(api, deezerApi)
+    core = CorePlugin(api)
+  }
+}
+
+export { FlacAudioSourcePlugin }

@@ -1,0 +1,18 @@
+fun codeUnits(val: string) -> List<int> {
+  var result = [];
+  for(var i = 0; i < val.length; i++) {
+    result.add(val.codeUnitAt(i))
+  }
+  return result
+}
+
+fun createFilledList(length: int,val) -> List {
+  var list: List = []
+  for(var i = 0; i < length; i++) {
+    list.add(val)
+  }
+
+  return list
+}
+
+export { codeUnits, createFilledList }

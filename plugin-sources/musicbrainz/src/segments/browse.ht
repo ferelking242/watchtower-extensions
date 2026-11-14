@@ -1,0 +1,49 @@
+import "module:std" as std
+import "module:spotube_plugin" as spotube
+import { MbConverter } from "./converter.ht"
+import { Recommendations } from "../common/recommendations.ht"
+
+var HttpClient = std.HttpClient
+var HttpResponse = std.HttpResponse
+var LocalStorage = spotube.LocalStorage
+var JSON = std.JSON
+var delayed = std.delayed
+var Duration = std.Duration
+var FutureUtils = std.FutureUtils
+
+class BrowseEndpoint {
+  var lbApi: HttpClient
+  var mbApi: HttpClient
+  final username: string
+
+  var recommendations: Recommendations
+
+  construct (this.lbApi, this.mbApi, this.username) {
+    this.recommendations = Recommendations(this.lbApi, this.mbApi, this.username)
+  }
+
+  fun sections({offset: int, limit: int}) {    
+    var sectionsFutures = [
+      () => recommendations.generateTopArtistRadios(),
+      () => recommendations.generateMoodPlaylists(),
+      () => recommendations.getCreatedForPlaylists(),
+    ]
+
+    return FutureUtils.chain(sectionsFutures, delay: Duration(milliseconds: 200))
+    .then((sections) {
+      return {
+        limit: limit ?? 25,
+        nextOffset: null,
+        total: 1,
+        hasMore: false,
+        items: sections
+      }.toJson()
+    })
+  }
+
+  fun sectionItems(id: string, {offset: int, limit: int}) {
+    // TODO: Implement method
+  }
+}
+
+export { BrowseEndpoint }

@@ -1,0 +1,122 @@
+import "module:std" as std
+
+var HttpClient = std.HttpClient
+var HttpResponse = std.HttpResponse
+var RequestOptions = std.RequestOptions
+
+class Converter {
+  static fun toSpotubeMatchObject(res: List) -> List<Map> {
+    return res.map((d){
+      return {
+        "id": d["id"].toString(),
+        "title": d["title"],
+        "artists": [d["artist"]],
+        "duration": d["duration"] * 1000,
+        "thumbnail": d["albumCover"],
+        "externalUri": "https://dab.yeet.su/search?q=${d["title"]}%20${d["artist"]}",
+      }.toJson()
+    }).toList()
+  }
+
+  static fun toSpotubeStreamObject(streams: List) -> List<Map> {
+    return [
+      {
+        "url": streams[0]["url"],
+        "container": "flac",
+        "type": "lossless",
+        "bitDepth": 24,
+        "sampleRate": 96000,
+      }.toJson(),
+      {
+        "url": streams[1]["url"],
+        "container": "mp3",
+        "type": "lossless",
+        "codec": "aac",
+        "bitrate": 320000,
+      }.toJson()
+    ]
+  }
+}
+
+
+class AudioSourceEndpoint {
+  var api: HttpClient
+  construct (this.api)
+
+  // List of containers and their supported qualities
+  get supportedPresets -> List {
+    return [
+      { 
+        type: "lossless", 
+        name: "flac",
+        qualities: [
+          { bitDepth: 24, sampleRate: 96000 },
+          { bitDepth: 24, sampleRate: 44100 },
+          { bitDepth: 16, sampleRate: 44100 }
+        ]
+      }.toJson(),
+      { type: "lossy", name: "mp3", qualities: [ { bitrate: 320000 } ] }.toJson(),
+    ]
+  }
+  
+  /// Find matching audio sources for a given track. It can return one or multiple matches.
+  /// The first match is considered the best match.
+  /// @param track - Map<SpotubeTrackObject>
+  /// @returns Future<List<SpotubeAudioSourceMatchObject>>
+  fun matches(track: Map) -> List {
+    final hasISRC = track["isrc"] != null && track["isrc"].isNotEmpty
+    var query = hasISRC ? track["isrc"] 
+      : "${track["name"]} ${track["artists"][0]["name"]}"
+
+    return api.get_req(
+      "/search",
+      queryParameters: {
+        "q": query,
+        "type": "track",
+        "limit": "5"
+      }.toJson()
+    ).then((res) {
+      if(hasISRC && (res.data["tracks"] == null || res.data["tracks"].isEmpty)) {
+        return api.get_req(
+          "/search",
+          queryParameters: {
+            "q": "${track["name"]} ${track["artists"][0]["name"]}",
+            "type": "track",
+            "limit": "5"
+          }.toJson()
+        ).then((res)=> Converter.toSpotubeMatchObject(res.data["tracks"]))
+      }
+      
+      return Converter.toSpotubeMatchObject(res.data["tracks"])
+    })
+  }
+
+  /// For the given match, return all available streams.
+  /// Each stream represents a unique combination of container and quality.
+  /// @param match - Map<SpotubeAudioSourceStreamObject>
+  /// @returns Future<List<SpotubeAudioSourceStreamObject>>
+  fun streams(match: Map) -> List {
+    return api.get_req(
+      "/stream",
+      queryParameters: {
+        "trackId": match["id"],
+        "quality": 27
+      }.toJson()
+    ).then((hiRes){
+      return api.get_req(
+        "/stream",
+        queryParameters: {
+          "trackId": match["id"],
+          "quality": 5
+        }.toJson()
+      ).then((lowRes){
+        return Converter.toSpotubeStreamObject([
+          hiRes.data,
+          lowRes.data,
+        ])
+      })
+    })
+  }
+}
+
+export { AudioSourceEndpoint }

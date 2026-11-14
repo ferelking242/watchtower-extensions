@@ -1,0 +1,38 @@
+import "module:std" as std
+
+var HttpClient = std.HttpClient
+var RequestOptions = std.RequestOptions
+
+class CorePlugin {
+  var client: HttpClient
+
+  construct (this.client)
+
+  fun checkUpdate(currentConfig: Map) -> Future {
+    return null
+  }
+
+  get support -> string {
+    return "
+# Flac Downloader Audio Plugin
+
+Audio source plugin for Spotube that downloads from [flacdownloader.com](https://flacdownloader.com).
+
+## Supported formats
+- FLAC (lossless)
+- MP3 (lossy, 320kbps)
+
+## Notes
+- The plugin uses flacdownloader.com's internal API
+- Download tokens are generated on each request
+
+## Source code
+https://github.com/tuusuario/spotube-plugin-flac-audio
+"
+  }
+
+  fun scrobble(details: Map) {
+  }
+}
+
+export { CorePlugin }

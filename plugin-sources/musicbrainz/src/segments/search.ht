@@ -1,0 +1,180 @@
+import "module:std" as std
+import { MbConverter } from "./converter.ht"
+import { CommonArtistEntity } from "../common/artist.ht"
+
+var HttpClient = std.HttpClient
+var HttpResponse = std.HttpResponse
+
+class SearchEndpoint {
+  var lbApi: HttpClient
+  var mbApi: HttpClient
+  final username: string
+  var artistCommon: CommonArtistEntity
+
+  construct (this.lbApi, this.mbApi, this.username) {
+    this.artistCommon = CommonArtistEntity(lbApi, mbApi, username)
+  }
+
+  get chips -> List { // Set<string>
+    // can be tracks, playlists, artists, albums and all
+    return ["tracks", "albums", "artists", "playlists"]
+  }
+
+  fun all(query: string) {
+    return Future.wait([
+      playlists(query),
+      tracks(query),
+    ]).then((results){
+      var playlistRes = results[0]["items"]
+      var trackRes = results[1]["items"]
+      return artists(query).then((res){
+        var artistRes = res["items"]
+        return albums(query).then((res){
+          var albumRes = res["items"]
+          return {
+            "playlists": playlistRes,
+            "tracks": trackRes,
+            "artists": artistRes,
+            "albums": albumRes
+          }.toJson()
+        })
+      })
+    })
+  }
+
+  fun albums(query: string, {offset: int, limit: int}) {
+    return mbApi.get_req(
+      "/release-group",
+      queryParameters: {
+        query: query,
+        limit: limit ?? 10,
+        offset: offset ?? 0,
+        fmt: "json",
+      }.toJson()
+    ).then((res){
+      if (res.data["release-groups"].isEmpty) {
+        return {
+          limit: limit ?? 10,
+          nextOffset: null,
+          total: 0,
+          hasMore: false,
+          items: []
+        }.toJson()
+      }      
+
+      var items = MbConverter.releaseGroups(res.data["release-groups"])
+      var hasMore = items.length >= (limit ?? 10)
+
+      return {
+        limit: limit ?? 10,
+        nextOffset: hasMore ? res.data["offset"] + (limit ?? 10) : null,
+        total: res.data["count"],
+        hasMore: hasMore,
+        items: items
+      }.toJson()
+    })
+  }
+
+  fun artists(query: string, {offset: int, limit: int}) {
+    return mbApi.get_req(
+      "/artist",
+      queryParameters: {
+        query: query,
+        limit: limit ?? 10,
+        offset: offset ?? 0,
+        fmt: "json",
+      }.toJson()
+    ).then((res){
+      var artistIds = res.data["artists"].map((artist) => artist["id"]).toList()
+
+      if (artistIds.isEmpty) {
+        return {
+          limit: limit ?? 10,
+          nextOffset: null,
+          total: 0,
+          hasMore: false,
+          items: []
+        }.toJson()
+      }
+
+      return artistCommon.listArtists(artistIds).then((artists) {
+        var items = MbConverter.artists(artists)
+        var hasMore = items.length >= (limit ?? 10)
+        return {
+          limit: limit ?? 10,
+          nextOffset: hasMore ? res.data["offset"] + (limit ?? 10) : null,
+          total: res.data["count"],
+          hasMore: hasMore,
+          items: items
+        }.toJson()
+      })
+    })
+  }
+
+  fun tracks(query: string, {offset: int, limit: int}) {
+    return mbApi.get_req(
+      "/recording",
+      queryParameters: {
+        query: query,
+        limit: limit ?? 10,
+        offset: offset ?? 0,
+        fmt: "json",
+      }.toJson()
+    ).then((res){
+      if (res.data["recordings"].isEmpty) {
+        return {
+          limit: limit ?? 10,
+          nextOffset: null,
+          total: 0,
+          hasMore: false,
+          items: []
+        }.toJson()
+      }
+      
+      var items = MbConverter.recordings(res.data["recordings"])
+      var hasMore = items.length >= (limit ?? 10)
+
+      return {
+        limit: limit ?? 10,
+        nextOffset: hasMore ? res.data["offset"] + (limit ?? 10) : null,
+        total: res.data["count"],
+        hasMore: hasMore,
+        items: items
+      }.toJson()
+    })
+  }
+
+  fun playlists(query: string, {offset: int, limit: int}) {
+    return lbApi.get_req(
+      "/playlist/search",
+      queryParameters: {
+        query: query,
+        count: limit ?? 10,
+        offset: offset ?? 0,
+      }.toJson()
+    ).then((res){
+      if (res.data["playlists"].isEmpty) {
+        return {
+          limit: limit ?? 10,
+          nextOffset: null,
+          total: 0,
+          hasMore: false,
+          items: []
+        }.toJson()
+      }
+      
+      var items = MbConverter.playlists(res.data["playlists"])
+      var hasMore = items.length >= (limit ?? 10)
+      
+      return {
+        limit: limit ?? 10,
+        nextOffset: hasMore ? res.data["offset"] + (limit ?? 10) : null,
+        total: res.data["playlist_count"],
+        hasMore: hasMore,
+        items: items
+      }.toJson()
+    })
+  }
+}
+
+export { SearchEndpoint }

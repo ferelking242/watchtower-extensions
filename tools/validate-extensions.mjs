@@ -18,6 +18,57 @@ import fs from "node:fs";
 import path from "node:path";
 import { sourceLoginFlag } from "./source_manifest.mjs";
 import { validateTags } from "./catalog_taxonomy.mjs";
+import zlib from "node:zlib";
+
+/**
+ * Minimal ZIP reader — enough for `.smplug` archives (plugin.json + plugin.out).
+ * The repository has no runtime dependencies, so instead of pulling in a zip
+ * library we walk the central directory and inflate the two members we need.
+ */
+class ZipReader {
+  constructor(buf) {
+    this.buf = buf;
+    this.files = [];
+    this._readCentralDirectory();
+  }
+
+  _readCentralDirectory() {
+    const buf = this.buf;
+    // End of central directory: 0x06054b50, scanned backwards because the
+    // trailing comment length is variable.
+    let eocd = -1;
+    for (let i = buf.length - 22; i >= 0 && i > buf.length - 22 - 0xffff; i--) {
+      if (buf.readUInt32LE(i) === 0x06054b50) { eocd = i; break; }
+    }
+    if (eocd < 0) throw new Error("not a ZIP archive (no end-of-central-directory)");
+    const count = buf.readUInt16LE(eocd + 10);
+    let ptr = buf.readUInt32LE(eocd + 16);
+
+    for (let n = 0; n < count; n++) {
+      if (buf.readUInt32LE(ptr) !== 0x02014b50) throw new Error("bad central directory record");
+      const method = buf.readUInt16LE(ptr + 10);
+      const compressedSize = buf.readUInt32LE(ptr + 20);
+      const nameLen = buf.readUInt16LE(ptr + 28);
+      const extraLen = buf.readUInt16LE(ptr + 30);
+      const commentLen = buf.readUInt16LE(ptr + 32);
+      const localOffset = buf.readUInt32LE(ptr + 42);
+      const name = buf.toString("utf8", ptr + 46, ptr + 46 + nameLen);
+
+      // Local header: name/extra lengths may differ from the central copy.
+      const lNameLen = buf.readUInt16LE(localOffset + 26);
+      const lExtraLen = buf.readUInt16LE(localOffset + 28);
+      const dataStart = localOffset + 30 + lNameLen + lExtraLen;
+      const raw = buf.subarray(dataStart, dataStart + compressedSize);
+      const content = method === 0 ? raw : zlib.inflateRawSync(raw);
+
+      this.files.push({ name, content });
+      ptr += 46 + nameLen + extraLen + commentLen;
+    }
+  }
+
+  entries() { return this.files; }
+}
+
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const problems = [];
@@ -362,7 +413,12 @@ for (const rel of jsonFiles.filter((file) => file.startsWith("index/"))) {
   for (const entry of data) {
     iconEntries++;
     const iconUrl = typeof entry.iconUrl === "string" ? entry.iconUrl : "";
-    if (!iconUrl.startsWith(iconBaseUrl + "assets/icons/")) {
+    // Source icons live in `assets/icons/`; music plugin logos live in
+    // `assets/plugins/` (see AGENTS.md). Both are repository-hosted, so both
+    // satisfy the "cacheable local asset" rule.
+    const hostedPrefix = [iconBaseUrl + "assets/icons/", iconBaseUrl + "assets/plugins/"]
+      .find((prefix) => iconUrl.startsWith(prefix));
+    if (!hostedPrefix) {
       missingIcons++;
       problems.push(
         `ICON: ${rel} / ${entry.name || entry.id} must use a repository-hosted asset`,
@@ -422,6 +478,60 @@ console.log("▶ plugin icon distinctness");
     }
     console.log(`   ${byHash.size} distinct plugin logo(s) across ${plugins.length} plugin(s)`);
   }
+}
+
+// ── 5c. `.smplug` archives must be internally consistent ────────────────────
+// The plugin loader resolves `plugin.json#entryPoint` by name inside the
+// compiled bytecode. A manifest that names a class the bytecode does not
+// export makes the app throw `invalidPluginByteCode` at install time, and the
+// user sees an installed plugin that never loads. Both bundled plugins once
+// exported a placeholder class while their manifest pointed at the real one,
+// so this is checked mechanically rather than by eye.
+console.log("▶ .smplug archive integrity");
+{
+  const dir = path.join(ROOT, "plugins");
+  const archives = fs.existsSync(dir)
+    ? fs.readdirSync(dir).filter((f) => f.endsWith(".smplug"))
+    : [];
+  if (archives.length === 0) {
+    console.log("   no .smplug archives to check");
+  }
+  for (const name of archives) {
+    const buf = fs.readFileSync(path.join(dir, name));
+    const zip = new ZipReader(buf);
+    const entries = zip.entries();
+    const byName = new Map(entries.map((e) => [e.name, e]));
+    const rel = "plugins/" + name;
+    for (const required of ["plugin.json", "plugin.out"]) {
+      if (!byName.has(required)) {
+        problems.push(`SMPLUG: ${rel} is missing ${required}`);
+      }
+    }
+    if (problems.some((p) => p.startsWith(`SMPLUG: ${rel} `))) continue;
+    let manifest;
+    try {
+      manifest = JSON.parse(byName.get("plugin.json").content.toString("utf8"));
+    } catch (e) {
+      problems.push(`SMPLUG: ${rel} plugin.json is not valid JSON — ${e.message}`);
+      continue;
+    }
+    for (const field of ["name", "entryPoint", "abilities", "version"]) {
+      if (!manifest[field]) {
+        problems.push(`SMPLUG: ${rel} plugin.json has no ${field}`);
+      }
+    }
+    const bytecode = byName.get("plugin.out").content;
+    if (manifest.entryPoint && !bytecode.includes(Buffer.from(manifest.entryPoint))) {
+      problems.push(
+        `SMPLUG: ${rel} entryPoint '${manifest.entryPoint}' is absent from plugin.out — ` +
+          `the plugin will fail to load with invalidPluginByteCode`,
+      );
+    }
+    if (Buffer.from(bytecode.slice(0, 11)).toString("utf8") === "WTPLUG_STUB") {
+      problems.push(`SMPLUG: ${rel} ships a stub bytecode placeholder, not real output`);
+    }
+  }
+  console.log(`   ${archives.length} archive(s) checked`);
 }
 
 // ── 4. Every extension must declare getSourcePreferences ────────────────────

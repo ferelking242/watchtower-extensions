@@ -1,0 +1,127 @@
+import "module:std" as std
+import { SpotifyError } from "error.ht"
+
+var HttpClient = std.HttpClient
+var HttpResponse = std.HttpResponse
+
+class SpotifyTrackEndpoint {
+  var apiClient: HttpClient
+  var gqlClient: HttpClient
+
+  construct (this.apiClient, this.gqlClient)
+
+  fun getTrack(trackId: string) {
+    return this.gqlClient.post(
+      "",
+      data: {
+        "variables": { "uri": "spotify:track:${trackId}" },
+        "operationName": "getTrack",
+        "extensions": {
+          "persistedQuery": {
+            "version": 1,
+            "sha256Hash": "612585ae06ba435ad26369870deaae23b5c8800a256cd8a57e08eddc25a37294"
+          }
+        }
+      }.toJson()
+    ).then((res: HttpResponse) {
+      var data = res.data
+
+      if (SpotifyError.isError(data)) {
+        throw SpotifyError(data)
+      }
+
+      var track = data["data"]["trackUnion"]
+      var trackArtists = [...(track["firstArtist"]?["items"] ?? []), ...(track["otherArtists"]?["items"] ?? [])]
+      .map((artist){
+        var id = artist["uri"].split(":").last
+        return {
+          id: id,
+          uri: artist["uri"],
+          name: artist["profile"]["name"],
+          external_urls: {
+            spotify: "https://open.spotify.com/artist/${id}",
+          },
+          images: artist["visuals"]?["avatarImage"]?["sources"] ?? []
+        }.toJson()
+      }).toList() ?? []
+
+      return {
+        id: track["id"],
+        name: track["name"],
+        duration_ms: track["duration"]["totalMilliseconds"],
+        album: {
+          id: track["albumOfTrack"]["id"],
+          name: track["albumOfTrack"]["name"],
+          images: track["albumOfTrack"]["coverArt"]["sources"],
+          album_type: track["albumOfTrack"]["type"].toLowerCase(),
+          uri: track["albumOfTrack"]["uri"],
+          artists: [trackArtists[0]],
+          release_date: track["albumOfTrack"]["date"]?["isoString"] ?? "",
+          release_date_precision: track["albumOfTrack"]["date"]?["precision"]?.toLowerCase() ?? "",
+          external_urls: {
+            spotify: "https://open.spotify.com/album/${track["albumOfTrack"]["id"]}",
+          }, 
+        },
+        artists: trackArtists,
+        uri: track["uri"],
+        external_urls: {
+          spotify: "https://open.spotify.com/track/${track["id"]}",
+        },
+      }.toJson()
+    })
+  }
+
+  fun save(trackIds: List) {
+    return this.gqlClient.post(
+      "",
+      data: {
+        "variables": {
+            "uris": trackIds.map((id) => "spotify:track:${id}").toList()
+        },
+        "operationName": "addToLibrary",
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "a3c1ff58e6a36fec5fe1e3a193dc95d9071d96b9ba53c5ba9c1494fb1ee73915"
+            }
+        }
+      }.toJson()
+    ).then((res: HttpResponse){
+      var data = res.data
+
+      if (SpotifyError.isError(data)) {
+        throw SpotifyError(data)
+      }
+
+      return data
+    })
+  }
+
+  fun unsave(trackIds: List) {
+    return this.gqlClient.post(
+      "",
+      data: {
+        "variables": {
+            "uris": trackIds.map((id) => "spotify:track:${id}").toList()
+        },
+        "operationName": "removeFromLibrary",
+        "extensions": {
+            "persistedQuery": {
+                "version": 1,
+                "sha256Hash": "a3c1ff58e6a36fec5fe1e3a193dc95d9071d96b9ba53c5ba9c1494fb1ee73915"
+            }
+        }
+      }.toJson()
+    ).then((res: HttpResponse){
+      var data = res.data
+
+      if (SpotifyError.isError(data)) {
+        throw SpotifyError(data)
+      }
+
+      return data
+    })
+  }
+}
+
+export { SpotifyTrackEndpoint}

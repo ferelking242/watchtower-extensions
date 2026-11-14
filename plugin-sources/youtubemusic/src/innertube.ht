@@ -1,0 +1,57 @@
+import 'module:std' as std
+
+var HttpClient = std.HttpClient
+var JSON = std.JSON
+var RequestOptions = std.RequestOptions
+var DateTime = std.DateTime
+var Random = std.Random
+
+class InnerTubeClient {
+  var client: HttpClient
+  var cookieHeader: string = ""
+  
+  construct () {
+    client = HttpClient()
+  }
+
+  fun getContext() -> Map {
+    return {
+      "client": {
+        "clientName": "WEB_REMIX",
+        "clientVersion": "1.20231214.00.00",
+        "hl": "en",
+        "gl": "US"
+      }
+    }
+  }
+
+  fun post(endpoint: string, body: Map) -> Future {
+    var url = "https://music.youtube.com/youtubei/v1/" + endpoint + "?prettyPrint=false"
+    
+    // Merge context into body
+    body["context"] = getContext()
+
+    var headers = {
+      "Content-Type": "application/json",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    if (cookieHeader != "") {
+      headers["Cookie"] = cookieHeader
+    }
+
+    return client.post_req(
+      url,
+      data: JSON.encode(body.toJson()),
+      options: RequestOptions(
+        headers: headers.toJson()
+      )
+    ).then((res) {
+      if (res.data is string) {
+        return JSON.decode(res.data)
+      }
+      return res.data
+    })
+  }
+}
+
+export { InnerTubeClient }

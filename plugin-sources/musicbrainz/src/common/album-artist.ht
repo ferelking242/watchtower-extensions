@@ -1,0 +1,433 @@
+import "module:std" as std
+import "module:spotube_plugin" as spotube
+import { MbConverter } from "../segments/converter.ht"
+import { CommonArtistEntity } from "./artist.ht"
+
+var HttpClient = std.HttpClient
+var HttpResponse = std.HttpResponse
+var RequestOptions = std.RequestOptions
+var JSON = std.JSON
+var LocalStorage = spotube.LocalStorage
+
+class PlaylistTracksCacheStorage {
+  static final map = Map()
+
+  static fun getValue(key: string)  {
+    if (!map.containsKey(key)) {
+      return null
+    }
+    return map[key]
+  }
+
+  static fun setValue(key: string, value) {
+    map[key] = value
+    return null
+  }
+
+  static fun remove(key: string) {
+    if (map.containsKey(key)) {
+      map.remove(key)
+    }
+    return null
+  }
+}
+
+class EmulatedArtistAlbum {
+  var lbApi: HttpClient
+  var mbApi: HttpClient
+  final username: string
+
+  var artistCommon: CommonArtistEntity
+
+  construct (this.lbApi, this.mbApi, this.username) {
+    this.artistCommon = CommonArtistEntity(lbApi, mbApi, username)
+  }
+
+  fun getEntityCachedIds(entity: string) -> Future {
+    return LocalStorage.getString("saved_${entity}_ids")
+    .then((ids) => ids?.split(","))
+  }
+
+  fun saveEntityCachedIds(entity: string, ids: List) -> Future {
+    return LocalStorage.setString("saved_${entity}_ids", ids.join(","))
+  }
+
+  fun addEntityCachedIds(entity: string, ids: List) -> Future {
+    return getEntityCachedIds(entity)
+    .then((cachedIds) {
+      if(cachedIds == null) {
+        return saveEntityCachedIds(entity, ids)
+      }
+
+      var newIds = List(Set(cachedIds).union(Set(ids)))
+      return saveEntityCachedIds(entity, newIds)
+    })
+  }
+
+  fun removeEntityCachedIds(entity: string, ids: List) -> Future {
+    return getEntityCachedIds(entity)
+    .then((cachedIds) {
+      if(cachedIds == null) {
+        return Future.value()
+      }
+
+      var newIds = List(Set(cachedIds).difference(Set(ids)))
+      return saveEntityCachedIds(entity, newIds)
+    })
+  }
+
+  /// Emulates pagination for playlist tracks
+  fun getPlaylistTracks(playlistId: string, {
+    offset: int,
+    limit: int,
+    fetchMetadata: bool
+  }) -> Future {
+    offset ??= 0
+    limit ??= 20
+
+    var isAll = offset == -1 && limit == -1
+
+    var tracks = PlaylistTracksCacheStorage.getValue(playlistId)
+
+    var hasMore = tracks != null && tracks.length > offset + limit
+    var response = {
+      "limit": limit,
+      "nextOffset": hasMore ? offset + limit : null,
+      "total": tracks?.length ?? 0,
+      "hasMore": tracks != null && tracks.length > offset + limit,
+    }
+
+    if (tracks != null && tracks.isNotEmpty) {
+      return {
+        ...response,
+        "items": isAll ? tracks : tracks.skip(offset).take(limit).toList()
+      }.toJson()
+    }
+
+
+    return lbApi.get_req(
+      "/playlist/${playlistId}",
+      queryParameters: {
+        fetchMetadata: fetchMetadata == null || fetchMetadata ? "true" : "false",
+      }.toJson(),
+    )
+    .then((res) {
+      var tracks = res.data["playlist"]["track"]
+
+      PlaylistTracksCacheStorage.setValue(playlistId, tracks)
+
+      return {
+        ...response,
+        "items": isAll ? tracks : tracks.skip(offset).take(limit).toList()
+      }.toJson()
+    })
+  }
+
+  /// @tracks - List of tracks from a playlist
+  /// @entity - "album" or "artist"
+  fun getEntityFromPlaylistTracks(tracks: List, entity: string) -> Future {
+    assert(entity == "album" || entity == "artist")
+    var entityIds = tracks
+      .map((t) {
+        if(entity == "artist") {
+          var id = t["extension"]["https://musicbrainz.org/doc/jspf#track"]["additional_metadata"]["artists"][0]["artist_mbid"]
+          return "arid:${id}"
+        }
+
+        var id = t["extension"]["https://musicbrainz.org/doc/jspf#track"]["additional_metadata"]["caa_release_mbid"]
+        return "reid:${id}"
+      })
+
+    if(entityIds.isEmpty) {
+      return Future.value([])
+    }
+
+    if(entity == "artist") {
+      return artistCommon.listArtists(entityIds.map((id) => id.split(":").last).toList())
+      .then((artists) => MbConverter.artists(artists))
+    }
+
+    return mbApi.get_req(
+      "/release",
+      queryParameters: {
+        query: entityIds.join(" OR "),
+        limit: tracks.length,
+        fmt: "json"
+      }.toJson()
+    ).then((res){
+      return MbConverter.releases(res.data["releases"])
+    })
+  }
+
+  /// @entity - album or artist
+  fun getEntityFromPlaylist(
+    entity: string, 
+    playlistId: string, {
+    offset: int = 0,
+    limit: int = 20
+  }) -> Future {
+    assert(entity == "album" || entity == "artist")
+
+    return getPlaylistTracks(playlistId, offset: offset, limit: limit)
+    .then((tracks) {
+      return getEntityFromPlaylistTracks(tracks["items"], entity).then((entities){
+        tracks["items"] = entities
+        return tracks
+      })
+    })
+  }
+
+  /// @entity - album or artist
+  fun getOrCreatePlaylist(entity: string) -> Future { // Future<string>
+    assert(entity == "album" || entity == "artist")
+  
+    var name = "${username} saved ${entity}s by Spotube"
+
+    return LocalStorage.getString("saved_${entity}_playlist_id")
+    .then((playlistId){
+      if(playlistId == null) {
+        return lbApi.get_req(
+          "/user/${username}/playlists/search",
+          queryParameters: {
+            count: 1,
+            offset: 0,
+            query: name
+          }.toJson()
+        ).then((res){
+          var userPlaylists = res.data["playlists"]
+              .where((p)=>p["playlist"]["creator"] == username && p["playlist"]["title"] == name)
+              .toList()
+
+            if(userPlaylists.isEmpty) {
+              // We have to create the playlist first
+              return lbApi.post(
+                "/playlist/create",
+                data: {
+                  playlist: {
+                    title: name,
+                    annotation: "This playlist contains all ${entity}s saved by ${username} on Spotube. Autogenerated. Do not edit.",
+                    extension: {
+                      "https://musicbrainz.org/doc/jspf#playlist": {
+                        collaborators: [],
+                        public: false,
+                      },
+                    },
+                  }
+                }.toJson()
+              ).then((res)=>res.data["playlist_mbid"])
+            }
+
+            return userPlaylists[0]["playlist"]["identifier"].split("/").last
+        })
+        .then((playlistId){
+          return LocalStorage
+          .setString("saved_${entity}_playlist_id", playlistId)
+          .then((_)=> playlistId)
+        })
+      }
+      return playlistId
+    })
+  }
+
+  /// @entity - album or artist
+  fun savedEntities(entity: string, { offset: int, limit: int }) -> Future {
+    assert(entity == "album" || entity == "artist")
+
+    return getOrCreatePlaylist(entity)
+    .then((playlistId) {
+      return getEntityFromPlaylist(
+        entity,
+        playlistId,
+        offset: offset,
+        limit: limit
+      )
+      .then((items){
+        var ids = items["items"].map((i) => i["id"])
+        return saveEntityCachedIds(entity, ids).then((_)=>items)
+      })
+    })
+  }
+
+  /// @entity - album or artist
+  /// Returns `Future<List<bool>>` in order of `ids`
+  fun isSavedEntities(entity: string, ids: List) -> Future {
+    assert(entity == "album" || entity == "artist")
+
+    return getEntityCachedIds(entity)
+    .then((cachedIds) {
+      if(cachedIds == null) {
+        return savedEntities(entity)
+        .then((entities) {
+          var savedIds = entities["items"].map((item) => item["id"]).toList()
+          return ids.map((id) => savedIds.contains(id)).toList()
+        })
+      }
+      
+      var saved = ids.map((id) => cachedIds.contains(id)).toList()
+      return saved
+    })
+  }
+
+  fun save(entity: string, entityIds: List) -> Future {
+    assert(entity == "album" || entity == "artist")
+
+    return isSavedEntities(entity, entityIds)
+    .then((savedEntities) {
+      if(savedEntities.contains(true)) {
+        throw "Some ${entity}s are already saved."
+      }
+
+      return getOrCreatePlaylist(entity).then((playlistId){
+        var tracksFutures = entityIds.map((entityId){
+          var qs = {
+            fmt: "json",
+            limit: 1,
+            offset: 0,
+          }.toJson()
+
+          if(entity == "artist") {
+            qs["artist"] = entityId
+          } else {
+            qs["query"] = "rgid:${entityId}"
+          }
+
+          return mbApi.get_req(
+            "/recording",
+            queryParameters: qs,
+          ).then((res) => res.data["recordings"].first["id"])
+        }).toList()
+
+        return Future.wait(tracksFutures)
+        .then((tracks){
+          var data = {
+            playlist: {
+                track: tracks.map((track) {
+                  return {
+                    identifier: "https://musicbrainz.org/recording/${track}"
+                  }
+                }).toList()
+            }
+          }
+
+          return lbApi.post(
+            "/playlist/${playlistId}/item/add",
+            data: data.toJson(),
+            options: RequestOptions(
+              headers: {
+                "Content-Type": "application/json"
+              }.toJson()
+            )
+          ).then((res){
+            // Reset playlist tracks cache
+            PlaylistTracksCacheStorage.remove(playlistId)
+            return addEntityCachedIds(entity, entityIds).then((_) => res.data)
+          })
+        })
+      })
+    })
+  }
+
+  fun unsave(entity: string, entityIds: List) -> Future {
+    assert(entity == "album" || entity == "artist")
+
+    return getOrCreatePlaylist(entity).then((playlistId) {
+      return getPlaylistTracks(playlistId, offset: -1, limit: -1).then((res){
+        var tracks = res["items"]
+        var savedEntityIds = tracks
+          .map((t) {
+            if(entity == "artist") {
+              return t["extension"]["https://musicbrainz.org/doc/jspf#track"]["additional_metadata"]["artists"][0]["artist_mbid"]
+            }
+
+            return t["extension"]["https://musicbrainz.org/doc/jspf#track"]["additional_metadata"]["caa_release_mbid"]
+          })
+          .toList()
+          
+        var releaseGroups = []
+
+        // Since these are release ids, we need to fetch the release-group id
+        if(entity == "album") {
+          savedEntityIds = savedEntityIds.map((id) => "reid:${id}").toList()
+          releaseGroups = mbApi.get_req(
+            "/release-group",
+            queryParameters: {
+              query: savedEntityIds.join(" OR "),
+              limit: savedEntityIds.length,
+              fmt: "json"
+            }.toJson()
+          ).then((res) {
+            print("Release groups: ${res.data}")
+            return res.data["release-groups"]
+          })
+
+          savedEntityIds = releaseGroups.then((releases) {
+            return releases.map((r) => r["id"]).toList()
+          })
+        } else {
+          savedEntityIds = Future.value(savedEntityIds)
+        }
+        
+        return Future.wait([savedEntityIds, releaseGroups]).then((res) {
+          var savedEntityIds = res[0]
+          var releaseGroups = res[1]
+          
+          if(entityIds.any((id) => !savedEntityIds.contains(id))) {
+            throw "Some ${entity}s are not saved."
+          }
+
+          var trackIndexes = []
+          for(var i = 0; i < tracks.length; i++) {
+            var track = tracks[i]
+
+            if(entity == "artist") {
+              var trackEntityId = track["extension"]["https://musicbrainz.org/doc/jspf#track"]["additional_metadata"]["artists"][0]["artist_mbid"] 
+
+              if(entityIds.contains(trackEntityId)) {
+                trackIndexes.add(i)
+              }
+            } else {
+              var trackReleaseId = track["extension"]["https://musicbrainz.org/doc/jspf#track"]["additional_metadata"]["caa_release_mbid"]
+              var trackReleaseGroupId = releaseGroups.firstWhere(
+                (rg){
+                  return rg["releases"].any((r) => r["id"] == trackReleaseId)
+                },
+                orElse: () => null
+              )["id"]
+
+              if(entityIds.contains(trackReleaseGroupId)) {
+                trackIndexes.add(i)
+              }
+            }
+          }
+
+          if(trackIndexes.isEmpty) {
+            throw "No ${entity}s to unsave."
+          }
+
+          var deleteRequests = trackIndexes.map((index) {
+            return lbApi.post(
+              "/playlist/${playlistId}/item/delete",
+              data: {
+                index: index,
+                count: 1
+              }.toJson(),
+              options: RequestOptions(
+                headers: {
+                  "Content-Type": "application/json"
+                }.toJson()
+              )
+            ).then((res) => res.data)
+          }).toList()
+
+          return Future.wait(deleteRequests).then((res){
+            // Reset playlist tracks cache
+            PlaylistTracksCacheStorage.remove(playlistId)
+            return removeEntityCachedIds(entity, entityIds).then((_) => res)
+          })
+        })
+      })
+    })
+  }
+}
+
+export { EmulatedArtistAlbum }

@@ -1,0 +1,34 @@
+import '../innertube.ht'
+
+class TrackEndpoint {
+  var client: InnerTubeClient
+
+  construct (this.client)
+
+  fun getTrack(id: string) {
+    // Requires payload {"videoId": id} to /player endpoint or similar
+    // Actually, track metadata can be fetched from "next" endpoint
+    return client.post("next", { "videoId": id }).then((res) {
+      // Very basic placeholder
+      return {
+        "id": id,
+        "name": "Unknown Track",
+        "artists": [],
+        "album": null,
+        "durationMs": 0,
+        "albumArt": []
+      }.toJson()
+    })
+  }
+
+  fun getMany(ids: List) {
+    var tracks = []
+    return { "tracks": tracks }.toJson()
+  }
+
+  fun getLyrics(id: string) {
+    return { "lyrics": "Lyrics not implemented", "syncedLyrics": null }.toJson()
+  }
+}
+
+export { TrackEndpoint }

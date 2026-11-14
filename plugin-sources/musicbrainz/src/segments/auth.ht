@@ -1,0 +1,139 @@
+import 'module:std' as std
+import 'module:spotube_plugin' as spotube
+
+var StreamController = std.StreamController
+var Stream = std.Stream
+var StreamSubscription = std.StreamSubscription
+var HttpClient = std.HttpClient
+var HttpResponse = std.HttpResponse
+var SpotubeForm = spotube.SpotubeForm
+var LocalStorage = spotube.LocalStorage
+var JSON = std.JSON
+
+class AuthEndpoint {
+  final lbApi: HttpClient
+  final mbApi: HttpClient
+  final controller: StreamController
+
+  var credentials: Map
+
+  get authStateStream -> Stream => controller.stream
+
+  construct (this.lbApi, this.mbApi){
+    controller = StreamController.broadcast()
+
+    initialize()
+  }
+
+  fun initialize() {
+    LocalStorage.getString("lb_creds").then((credStr){
+      if (credStr == null || credStr.isEmpty) {
+        return
+      }
+      credentials = JSON.decode(credStr)
+      controller.add({ type: "recovered" }.toJson())
+    })
+  }
+  
+  fun isAuthenticated() -> bool {
+    return credentials != null
+  }
+
+  fun authenticate() -> Future {
+    return SpotubeForm.show(
+      "Listenbrainz Login",
+      [
+        {
+          objectType: "text",
+          text: "Custom Musicbrainz instance URL",
+        }.toJson(),
+        {
+          objectType: "input",
+          id: "mb_url",
+          variant: "text",
+          placeholder: "Musicbrainz Instance URL",
+          defaultValue: "https://musicbrainz.org/ws/2",
+          required: true,
+        }.toJson(),
+        {
+          objectType: "text",
+          text: "Custom Listenbrainz API URL",
+        }.toJson(),
+        {
+          objectType: "input",
+          id: "lb_url",
+          variant: "text",
+          placeholder: "Listenbrainz Instance URL",
+          defaultValue: "https://api.listenbrainz.org/1",
+          required: true,
+        }.toJson(),
+        {
+          objectType: "input",
+          id: "token",
+          variant: "text",
+          placeholder: "Enter your Listenbrainz token",
+          required: true,
+        }.toJson(),
+        {
+          objectType: "text",
+          text: "You can get your token from [Listenbrainz > Settings > User token](https://listenbrainz.org/settings/)",
+        }.toJson(),
+      ]
+    ).then((values){
+      if (values == null) {
+        return
+      }
+
+      var token;
+      var mbUrl = "https://musicbrainz.org/ws/2";
+      var lbUrl = "https://api.listenbrainz.org/1";
+
+      for (var value in values) {
+        if (value["id"] == "token") {
+          token = value["value"]
+        } else if (value["id"] == "mb_url") {
+          mbUrl = value["value"]
+        } else if (value["id"] == "lb_url") {
+          lbUrl = value["value"]
+        }
+      }
+
+      if (token == null || token.isEmpty) {
+        throw "Token cannot be empty"
+      }
+
+      return lbApi.get_req(
+        "/validate-token",
+        queryParameters: {
+          "token": token
+        }.toJson(),
+      ).then((res) {
+        var data = res.data
+
+        if(data["valid"] != true) {
+          throw "Invalid token"
+        }
+
+        credentials = {
+          "token": token,
+          "username": data["user_name"],
+          "lb_url": lbUrl,
+          "mb_url": mbUrl
+        }.toJson()
+
+        return LocalStorage.setString("lb_creds", JSON.encode(credentials)).then(() {
+          controller.add({ type: "login" }.toJson())
+        })
+      })
+    })
+  }
+
+	fun logout() {
+    return LocalStorage.remove("lb_creds").then(() {
+      credentials = null
+      controller.add({ type: "logout" }.toJson())
+    })
+  }
+}
+
+export { AuthEndpoint }

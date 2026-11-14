@@ -1,0 +1,136 @@
+import "module:std" as std
+
+var HttpClient = std.HttpClient
+var HttpResponse = std.HttpResponse
+var RequestOptions = std.RequestOptions
+var DateTime = std.DateTime
+
+class CorePlugin {
+  var client: HttpClient
+  var lbApi: HttpClient
+
+  construct (this.client, this.lbApi)
+
+  /// Scrobble the provided details to the scrobbling service supported by the plugin.
+  /// "scrobbling" must be set as an ability in the plugin.json
+  /// [details] is a map containing the scrobble information, such as:
+  /// - [id] -> The unique identifier of the track.
+  /// - [title] -> The title of the track.
+  /// - [artists] -> List of artists
+  ///   - [id] -> The unique identifier of the artist.
+  ///   - [name] -> The name of the artist.
+  /// - [album] -> The album of the track
+  ///   - [id] -> The unique identifier of the album.
+  ///   - [name] -> The name of the album.
+  /// - [timestamp] -> The timestamp of the scrobble (optional).
+  /// - [duration_ms] -> The duration of the track in milliseconds (optional).
+  /// - [isrc] -> The ISRC code of the track (optional).
+  fun scrobble(details: Map) {
+    return lbApi.post(
+      "/submit-listens",
+      data: {
+        listen_type: "single",
+        payload: [
+          {
+            listened_at: details["timestamp"] ?? DateTime.now().millisecondsSinceEpoch ~/ 1000,
+            track_metadata: {
+              track_name: details["title"],
+              artist_name: details["artists"][0]["name"],
+              release_name: details["album"]["name"],
+              additional_info: {
+                media_player: "Spotube",
+                submission_client: "Spotube Plugin - MusicBrainz ListenBrainz",
+                artist_mbids: details["artists"].map((artist) => artist["id"]).toList(),
+                release_group_mbid: details["album"]["id"],
+                recording_mbid: details["id"],
+                isrc: details["isrc"],
+                duration_ms: details["duration_ms"]
+              }
+            }
+          }
+        ]
+      }.toJson()
+    ).then((res)=> null)
+  }
+
+  /// Checks for updates to the plugin.
+  /// [currentConfig] is just plugin.json's file content.
+  ///
+  /// If there's an update available, it will return a map of:
+  /// - [downloadUrl] -> direct download url to the new plugin.smplug file.
+  /// - [version] of the new plugin.
+  /// - [changelog] Optionally, a changelog for the update (markdown supported).
+  ///
+  /// If no update is available, it will return null.
+  fun checkUpdate(currentConfig: Map) -> Future {
+    var versionParts = currentConfig["version"].split(".")
+    var major = int.parse(versionParts[0])
+    var minor = int.parse(versionParts[1])
+    var patch = int.parse(versionParts[2])
+
+    var repoSlug = (currentConfig["repository"] ?? "").replaceAll("https://github.com/", "")
+    var releasesUrl = "https://api.github.com/repos/${repoSlug}/releases/latest"
+    return client.get_req(
+      releasesUrl,
+      options: RequestOptions(
+        headers: {
+          "Accept": "application/vnd.github.v3+json"
+        }.toJson()
+      ),
+    ).then((res) {
+      var data = res.data
+      var latestVersion = data["tag_name"].split(".")
+
+      if (latestVersion.length < 3) {
+        throw "Invalid version format from GitHub API. Expected format: <major>.<minor>.<patch>. Got: ${data["tag_name"]}"
+      }
+
+      var latestMajor = int.parse(latestVersion[0])
+      var latestMinor = int.parse(latestVersion[1])
+      var latestPatch = int.parse(latestVersion[2])
+
+      var isUpdateAvailable = latestMajor > major ||
+        (latestMajor == major && latestMinor > minor) ||
+        (latestMajor == major && latestMinor == minor && latestPatch > patch)
+
+      if (!isUpdateAvailable) return null
+
+      var downloadUrl = data["assets"].firstWhere(
+        (asset) => asset["name"] == "plugin.smplug",
+        orElse: () => null
+      )?["browser_download_url"]
+
+      if (downloadUrl == null) {
+        throw "No download URL found for the plugin update"
+      }
+
+      var changelog = data["body"] ?? "No changelog available"
+      return {
+        "downloadUrl": downloadUrl,
+        "version": data["tag_name"],
+        "changelog": changelog
+      }.toJson()
+    })
+  }
+
+    /// Returns the support information for the plugin in Markdown or plain text.
+  /// Supports images and links.
+  get support -> string {
+    return '# Support
+![Metabrainz](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/MetaBrainz_Logo_with_text_%282016%29.svg/512px-MetaBrainz_Logo_with_text_%282016%29.svg.png)
+
+[MusicBrainz](https://musicbrainz.org) and [Listenbrainz](https://listenbrainz.org) are community-maintained open music database and scrobbling service respectively.
+
+These are developed by [MetaBrainz Foundation](https://metabrainz.org/), a non-profit organization.
+
+
+To keep these services running, they rely on donations from users like you.
+
+So please donate to MetaBrainz Foundation: 
+
+# [💝 Donate](https://metabrainz.org/donate)
+'
+  }
+}
+
+export { CorePlugin }

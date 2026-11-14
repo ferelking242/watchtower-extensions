@@ -1,0 +1,347 @@
+import 'module:std' as std
+
+var Crypto = std.Crypto
+var DateTime = std.DateTime
+var Duration = std.Duration
+var Bitwise = std.Bitwise
+var Base32 = std.Base32
+
+enum OTPAlgorithm { SHA1, SHA256, SHA512 }
+
+enum OTPType { TOTP, HOTP }
+
+class AlgorithmUtil {
+  static fun createHmacFor({
+      algorithm: OTPAlgorithm = OTPAlgorithm.SHA1, 
+      key: List,
+      data: List
+    }) -> List {
+    return when (algorithm) {
+      OTPAlgorithm.SHA1 -> Crypto.hmacSha1(key, data)
+      OTPAlgorithm.SHA256 -> Crypto.hmacSha256(key, data)
+      OTPAlgorithm.SHA512 -> Crypto.hmacSha512(key, data)
+      else -> Crypto.hmacSha1(sha1, key)
+    }
+  }
+
+  static fun rawValue({algorithm: OTPAlgorithm = OTPAlgorithm.SHA1}) -> string {
+    return when (algorithm) {
+      OTPAlgorithm.SHA1 -> 'SHA1'
+      OTPAlgorithm.SHA256 -> 'SHA256'
+      OTPAlgorithm.SHA384 -> 'SHA384'
+      OTPAlgorithm.SHA512 -> 'SHA512'
+      else -> 'SHA1'
+    }
+  }
+}
+
+class Util {
+  ///
+  /// format the time string to int
+  ///
+  /// @param {time}
+  /// @type {Date}
+  /// @desc the time need to be format
+  ///
+  /// @param {interval}
+  /// @type {Int}
+  /// @desc interval means the one-time password's life,
+  /// default to be 30.
+  ///
+  /// @return {Int}
+  ///
+  static fun timeFormat({time: DateTime, interval: int}) -> int {
+    final _timeStr = time.millisecondsSinceEpoch.toString();
+    final _formatTime = _timeStr.substring(0, _timeStr.length - 3);
+
+    return int.parse(_formatTime) ~/ interval;
+  }
+
+  ///
+  /// transfer the int type to List type
+  ///
+  /// @param {input}
+  /// @type {int}
+  /// @desc input param, maybe counter or time
+  ///
+  /// @return {List}
+  ///
+  static fun intToBytelist({input: int, padding: int = 8}) -> List {
+    var _result = List()
+    var _input = input
+    while (_input != 0) {
+      _result.add(Bitwise.and(_input, 0xff))
+      _input = Bitwise.rightShift(_input, padding)
+    }
+
+    for(var i = _result.length; i < padding; i++) {
+      _result.add(0)
+    }
+  
+    _result = _result.sublist(0, padding)
+    _result = _result.reversed.toList()
+    return _result
+  }
+}
+
+class OTPUtil {
+  static fun otpTypeValue({type: OTPType = OTPType.TOTP}) -> string {
+    return when(type){
+      OTPType.TOTP -> 'totp'
+      OTPType.HOTP -> 'hotp'
+      else -> 'totp'
+    }
+  }
+}
+
+class OTP {
+  /// The length of the one-time password, between 6 and 8.
+  var digits: int
+
+  /// The Base32 secret key used to generate the one-time password.
+  var secret: string
+
+  /// The crypto algorithm used on HMAC encoding.
+  var algorithm: OTPAlgorithm
+
+  /// The type of the token.
+  get type -> OTPType {
+    return null
+  }
+
+  /// To access custom properties when generating the url.
+  get extraUrlProperties {
+    return {}
+  }
+
+  ///
+  /// This constructor will create an OTP instance.
+  ///
+  /// All parameters are mandatory however [digits] and
+  /// [algorithm] have a default value, so can be ignored.
+  /// Will throw an exception if the line above isn't satisfied.
+  ///
+  construct ({
+    secret: string,
+    digits: int = 6,
+    algorithm: OTPAlgorithm = OTPAlgorithm.SHA1
+  }){
+    assert(secret != null)
+    assert(digits >= 6 && digits <= 8)
+    this.secret = secret
+    this.digits = digits
+    this.algorithm = algorithm
+  }
+
+  ///
+  /// When class HOTP or TOTP pass the input params to this
+  /// function, it will generate the OTP object with params,
+  /// the params may be counter or time.
+  ///
+  /// All parameters are mandatory however [algorithm] have
+  /// a default value, so can be ignored.
+  ///
+  fun generateOTP({input: int, algorithm: OTPAlgorithm = OTPAlgorithm.SHA1}) -> string {
+    /// base32 decode the secret
+    var hmacKey = Base32.decode(secret);
+
+
+    /// get hmac answer
+    var hmac = AlgorithmUtil.createHmacFor(
+      algorithm: algorithm,
+      key: hmacKey,
+      data: Util.intToBytelist(input: input)
+    )
+
+    /// calculate the init offset
+    var offset = Bitwise.and(hmac[hmac.length - 1], 0xf);
+
+    /// calculate the code
+    var code = Bitwise.or(
+      Bitwise.leftShift(Bitwise.and(hmac[offset], 0x7f), 24),
+      Bitwise.leftShift(Bitwise.and(hmac[offset + 1], 0xff), 16),
+      Bitwise.leftShift(Bitwise.and(hmac[offset + 2], 0xff), 8),
+      Bitwise.and(hmac[offset + 3], 0xff)
+    )
+
+    /// get the initial string code
+    var strCode = (code % Math.pow(10, digits)).toString()
+    strCode = strCode.padLeft(digits, '0')
+
+    return strCode
+  }
+
+  ///
+  /// Generate a url with OTP instance.
+  ///
+  /// Use [issuer] and [account] parameters to specify the token information.
+  /// All the remaining OTP fields will be exported.
+  ///
+  // String generateUrl({String? issuer, String? account}) {
+  //   final _secret = this.secret;
+  //   final _type = OTPUtil.otpTypeValue(type: type);
+  //   final _account = Uri.encodeComponent(account ?? '');
+  //   final _issuer = Uri.encodeQueryComponent(issuer ?? '');
+
+  //   final _algorithm = AlgorithmUtil.rawValue(algorithm: algorithm);
+  //   final _extra = extraUrlProperties
+  //       .map((key, value) => MapEntry(key, "$key=$value"))
+  //       .values
+  //       .join('&');
+
+  //   return 'otpauth://$_type/$_account?secret=$_secret&issuer=$_issuer&digits=$digits&algorithm=$_algorithm&$_extra';
+  // }
+}
+
+class TOTP extends OTP {
+  /// Period in which should be generated new tokens.
+  var interval: int = 60
+
+  get type -> OTPType => OTPType.TOTP
+
+  get extraUrlProperties => {period: interval}
+
+  ///
+  /// This constructor will create an TOTP instance.
+  ///
+  /// All parameters are mandatory however [interval],
+  /// [digits] and [algorithm] have a default values, so can be ignored.
+  ///
+  /// Will throw an exception if the line above isn't satisfied.
+  ///
+  construct ({
+    secret: string = '',
+    digits: int = 6,
+    interval: int  = 30,
+    algorithm: OTPAlgorithm = OTPAlgorithm.SHA1
+  }): super(secret: secret, digits: digits, algorithm: algorithm) {
+    this.interval = interval
+  }
+
+  ///
+  /// Generate the TOTP value with current time.
+  ///
+  /// ```dart
+  /// TOTP totp = TOTP(secret: 'BASE32ENCODEDSECRET');
+  /// totp.now(); // => 432143
+  /// ```
+  ///
+  fun now() -> string {
+    var _formatTime = Util.timeFormat(time: DateTime.now(), interval: interval)
+    return generateOTP(input: _formatTime)
+  }
+
+  ///
+  /// Generate the OTP with a custom time.
+  ///
+  /// All parameters are mandatory.
+  ///
+  /// ```dart
+  /// TOTP totp = TOTP(secret: 'BASE32ENCODEDSECRET');
+  /// totp.value(date: DateTime.now()); // => 803013
+  /// ```
+  ///
+  fun value({date: DateTime}) -> string {
+    if (date == null) {
+      return ''
+    }
+
+    var _formatTime = Util.timeFormat(time: date, interval: interval)
+    return generateOTP(input: _formatTime)
+  }
+
+  ///
+  /// Verifies the TOTP value passed in against the current time.
+  ///
+  /// All parameters are mandatory.
+  ///
+  /// ```dart
+  /// TOTP totp = TOTP(secret: 'BASE32ENCODEDSECRET');
+  /// totp.now(); // => 803013
+  /// // Verify for current time
+  /// totp.verify(otp: 803013); // => true
+  /// // Verify after 30s
+  /// totp.verify(otp: 803013); // => false
+  /// ```
+  ///
+  fun verify({otp: string, time: DateTime}) -> bool {
+    if (otp == null) {
+      return false
+    }
+
+    var _time = time ?? DateTime.now()
+    var _input = Util.timeFormat(time: _time, interval: interval)
+
+    var otpTime = generateOTP(input: _input)
+    return otp == otpTime
+  }
+}
+
+///
+/// HOTP class will generate the OTP (One Time Password) object with given counter.
+class HOTP extends OTP {
+  /// The counter value for one-time password.
+  var counter: int
+
+  get type -> OTPType => OTPType.HOTP
+
+  get extraUrlProperties => {counter: counter}
+
+  ///
+  /// This constructor will create an HOTP instance.
+  ///
+  /// All parameters are mandatory however [counter],
+  /// [digits] and [algorithm] have a default values, so can be ignored.
+  ///
+  /// Will throw an exception if the line above isn't satisfied.
+  ///
+  construct ({
+    secret: string,
+    counter: int = 0,
+    digits: int = 6,
+    algorithm: OTPAlgorithm = OTPAlgorithm.SHA1
+  }): super(secret: secret, digits: digits, algorithm: algorithm) {
+    this.counter = counter
+  }
+
+  ///
+  /// Generate the HOTP value with the given count
+  ///
+  /// ```dart
+  /// HOTP hotp = HOTP(secret: 'BASE32ENCODEDSECRET');
+  /// hotp.at(counter: 0); // => 145089
+  /// ```
+  ///
+  fun at({counter: int}) -> string {
+    if (counter == null || counter < 0) {
+      return ''
+    }
+
+    return generateOTP(input: counter)
+  }
+
+  ///
+  /// Verifies the HOTP value passed in against the a given counter.
+  ///
+  /// All parameters are mandatory.
+  ///
+  /// ```dart
+  /// HOTP hotp = HOTP(secret: 'BASE32ENCODEDSECRET');
+  /// hotp.at(counter: 0); // => 145089
+  /// // Verify for current time
+  /// hotp.verify(otp: 145089, counter: 0); // => true
+  /// // Verify after 30s
+  /// hotp.verify(otp: 145089, counter: 10); // => false
+  /// ```
+  ///
+  fun verify({otp: string, counter: int}) -> bool {
+    if (otp == null || counter == null) {
+      return false
+    }
+
+    var otpCount = at(counter: counter)
+    return otp == otpCount
+  }
+}
+
+export { HOTP, TOTP, OTPAlgorithm, OTPType, Util }

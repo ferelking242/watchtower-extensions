@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "name": "Musicbrainz and Listenbrainz",
+  "author": "Kingkor Roy Tirtho",
+  "description": "Musicbrainz and Listenbrainz integration for Spotube",
+  "entryPoint": "BrainzMetadataProviderPlugin",
+  "apis": [
+    "webview",
+    "localstorage",
+    "timezone"
+  ],
+  "abilities": [
+    "authentication",
+    "scrobbling",
+    "metadata"
+  ],
+  "repository": "https://github.com/ferelking242/watchtower-extensions",
+  "pluginApiVersion": "2.0.0"
+}

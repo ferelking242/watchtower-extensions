@@ -1,0 +1,49 @@
+import "module:std" as std
+
+import { AuthEndpoint } from "./segments/auth.ht"
+import { AudioSourceEndpoint } from './segments/audio_source.ht'
+import { CorePlugin } from './segments/core.ht'
+
+var HttpClient = std.HttpClient
+var HttpBaseOptions = std.HttpBaseOptions
+var Stream = std.Stream
+var StreamSubscription = std.StreamSubscription
+
+class DABMusicAudioSourcePlugin {
+  var auth: AuthEndpoint
+  var audioSource: AudioSourceEndpoint
+  var core: CorePlugin
+
+  var api: HttpClient
+  
+  construct (){
+    api = HttpClient(
+      HttpBaseOptions(
+        baseUrl: "https://dab.yeet.su/api"
+      )
+    )
+    
+    auth = AuthEndpoint(api)
+    core = CorePlugin(api)
+    audioSource = AudioSourceEndpoint(api)
+
+    auth.authStateStream.listen((event) {
+      setAccessToken()
+    })
+  }
+
+  fun setAccessToken() {
+    api = HttpClient(
+      HttpBaseOptions(
+        baseUrl: "https://dab.yeet.su/api",
+        headers: {
+            "Cookie": auth.getCookieHeaderValue()
+        }.toJson()
+      )
+    )
+
+    audioSource = AudioSourceEndpoint(api)
+  }
+}
+
+export { DABMusicAudioSourcePlugin }
