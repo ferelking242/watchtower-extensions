@@ -885,7 +885,7 @@
     "typeSource": "single",
     "itemType": 0,
     "version": "0.1.6",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124953596b836facf3d4b63b7fc38cb57435c4dd/src/manga/en/allmanga.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@72891cd63bbda90705b30b83e89dab33ddca869a/src/manga/en/allmanga.js",
     "isManga": true,
     "isNsfw": false,
     "hasCloudflare": true,
@@ -5427,7 +5427,7 @@
     "typeSource": "single",
     "itemType": 0,
     "version": "0.2.0",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/manga/en/mkissa.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@72891cd63bbda90705b30b83e89dab33ddca869a/src/manga/en/mkissa.js",
     "isManga": true,
     "isNsfw": false,
     "hasCloudflare": true,
@@ -5442,6 +5442,7 @@
     "tags": [
       "read",
       "english"
-    ]
+    ],
+    "addedAt": "2026-11-14"
   }
 ]
