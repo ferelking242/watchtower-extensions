@@ -1,11 +1,12 @@
 // AllManga extension for Watchtower
 // Uses the same GraphQL API as AllAnime (api.allanime.day)
 // Manga listing  : https://allmanga.to/manga?cty=ALL
-// Chapter reader : https://mkissa.to  (redirect from AllManga)
+// Chapter reader : served from the youtube-anime image CDN
+// v0.1.6 — POST the GraphQL body (a GET is answered 403 cf-mitigated:
+// challenge); read availableChaptersDetail as an untyped Object; fetch
+// chapter pages through chaptersForRead and prefix the relative image paths
+// with the youtube-anime CDN head.
 // v0.1.5 — fix the detail query field separator
-// v0.1.4 — detect localised Cloudflare interstitials and map a cut
-// connection (statusCode 0) to the anti-bot error with the exact failing URL,
-// so the app opens the challenged request (the site root shows no challenge)
 
 const watchtowerSources = [{
     "name": "AllManga",
@@ -18,7 +19,7 @@ const watchtowerSources = [{
     "itemType": 0,
     "isNsfw": false,
     "hasCloudflare": true,
-    "version": "0.1.5",
+    "version": "0.1.6",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -29,71 +30,66 @@ const watchtowerSources = [{
     "appMinVerReq": "0.5.0",
     "additionalParams": "",
     "sourceCodeLanguage": 1,
-    "notes": "Uses AllAnime GraphQL API. Chapter images served via api.allanime.day.",
+    "notes": "Uses AllAnime GraphQL API. Chapter images served via the youtube-anime CDN.",
     "requiresAccount": false,
     "hasDRM": false,
     "isAggregator": true,
     "paywall": "free",
     "subCategories": ["Multi-lang"],
-    "supportsComments": false,
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/manga/en/allmanga.js"
+    "supportsComments": false
 }];
 
 const BASE_URL  = "https://allmanga.to";
 const API_URL   = "https://api.allanime.day/api";
+// Relative reader paths (`images133/<id>/<chap>/<type>/<n>.jpg`) are served by
+// the youtube-anime image CDN. `pictureUrlHead` is null on every source seen so
+// far, so this constant is the default head.
+const IMAGE_HEAD = "https://aln.youtube-anime.com";
 
 class DefaultExtension extends MProvider {
 
     // ── HTTP helper ──────────────────────────────────────────────────────────
-    async request(queryString) {
-        // Keep the exact URL: the app opens it in the bypass WebView, and
-        // Cloudflare must serve the challenge there (the site root does not).
-        const requestUrl = API_URL + queryString;
-        const res = await new Client().get(
-            requestUrl,
+    // The API is behind Cloudflare: a GET with the query in the URL is answered
+    // `403 cf-mitigated: challenge`, while the same payload as a JSON POST
+    // returns `200`. The extension must therefore POST the body.
+    async gql(query, variables) {
+        const res = await new Client().post(
+            API_URL,
             {
-                "Accept": "application/json, text/plain, */*",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
                 "Origin": BASE_URL,
-                "Referer": BASE_URL + "/"
-            }
+                "Referer": BASE_URL + "/",
+                "from-app": "true"
+            },
+            { query, variables }
         );
-        const status = Number(res.statusCode ?? 200);
-        const body = String(res.body || "");
-        // Cloudflare serves the interstitial in the page language, so the check
-        // must not be English-only. `status === 0` means the connection was cut
-        // before any response (anti-bot): both cases carry the exact URL so the
-        // app can open the bypass panel on the request that was actually cut.
-        const isCloudflare = /cloudflare|cf-chl|cf_chl|just a moment|attention required|verifying you are human|checking your browser|vérification de sécurité|un instant|verificación de seguridad|verificação de segurança|sicherheitsüberprüfung/i.test(body);
-
-        if (isCloudflare) {
-            throw new Error(
-                `[AllManga] Cloudflare challenge blocked the API request (${requestUrl})`
-            );
-        }
-        if (status === 0) {
-            throw new Error(
-                `[AllManga] Cloudflare blocked the API request — connection closed ` +
-                `before any response (HTTP 0) (${requestUrl})`
-            );
-        }
-        if (status < 200 || status >= 300) {
-            throw new Error(`[AllManga] API returned HTTP ${status} (${requestUrl})`);
-        }
-
         let payload;
         try {
-            payload = JSON.parse(body);
+            payload = JSON.parse(res.body || "{}");
         } catch (_) {
             throw new Error("[AllManga] API returned invalid JSON");
         }
         if (Array.isArray(payload.errors) && payload.errors.length) {
             const message = payload.errors
-                .map(error => error?.message)
+                .map((error) => error && error.message)
                 .filter(Boolean)
                 .join("; ");
             throw new Error(`[AllManga] GraphQL error${message ? `: ${message}` : ""}`);
         }
-        return payload;
+        return payload.data;
+    }
+
+    // ── Image URL ────────────────────────────────────────────────────────────
+    // The API returns covers and reader pages as relative CDN paths
+    // (`mcovers/…`, `images133/…`), so they must be prefixed with the head.
+    imageUrl(path, head) {
+        const raw = String(path || "").trim();
+        if (!raw) return "";
+        if (raw.startsWith("//")) return `https:${raw}`;
+        if (/^https?:\/\//i.test(raw)) return raw;
+        const base = String(head || IMAGE_HEAD).replace(/\/$/, "");
+        return `${base}/${raw.replace(/^\//, "")}`;
     }
 
     // ── Title preference ─────────────────────────────────────────────────────
@@ -116,7 +112,7 @@ class DefaultExtension extends MProvider {
         const list = [];
         for (const m of edges) {
             const name     = this.pickTitle(m, pref);
-            const imageUrl = m.thumbnail || "";
+            const imageUrl = this.imageUrl(m.thumbnail);
             const link     = `/manga/${m._id}/${this.slugify(m.name)}`;
             list.push({ name, imageUrl, link });
         }
@@ -125,29 +121,21 @@ class DefaultExtension extends MProvider {
 
     // ── Popular ──────────────────────────────────────────────────────────────
     async getPopular(page) {
-        const vars = encodeURIComponent(JSON.stringify({
-            type: "manga",
-            size: 26,
-            dateRange: 1,
-            page
-        }));
-        const gql = encodeURIComponent(
-            `query($type:VaildPopularTypeEnumType!,$size:Int!,$dateRange:Int,$page:Int){` +
-            `queryPopular(type:$type,size:$size,dateRange:$dateRange,page:$page){` +
-            `recommendations{anyCard{_id name englishName nativeName thumbnail slugTime}}` +
-            `}}`
+        const data = await this.gql(
+            "query($type:VaildPopularTypeEnumType!,$size:Int!,$dateRange:Int,$page:Int){" +
+            "queryPopular(type:$type,size:$size,dateRange:$dateRange,page:$page){" +
+            "recommendations{anyCard{_id name englishName nativeName thumbnail}}}}",
+            { type: "manga", size: 26, dateRange: 1, page }
         );
-        const raw = await this.request(`?variables=${vars}&query=${gql}`);
-        const recommendations = raw?.data?.queryPopular?.recommendations;
+        const recommendations = data && data.queryPopular && data.queryPopular.recommendations;
         if (!Array.isArray(recommendations)) {
             throw new Error("[AllManga] Popular response did not contain recommendations");
         }
-        const recs = recommendations.filter(r => r?.anyCard);
-
+        const recs = recommendations.filter((r) => r && r.anyCard);
         const pref = new SharedPreferences().get("preferred_title_style") || "eng";
-        const list = recs.map(r => ({
+        const list = recs.map((r) => ({
             name:     this.pickTitle(r.anyCard, pref),
-            imageUrl: r.anyCard.thumbnail || "",
+            imageUrl: this.imageUrl(r.anyCard.thumbnail),
             link:     `/manga/${r.anyCard._id}/${this.slugify(r.anyCard.name)}`
         }));
         return { list, hasNextPage: list.length === 26 };
@@ -160,58 +148,58 @@ class DefaultExtension extends MProvider {
 
     // ── Search ───────────────────────────────────────────────────────────────
     async search(query, page, filters) {
-        // Collect filter values
         let countryOrigin = "ALL";
         let allowAdult    = false;
         for (const f of (filters || [])) {
-            if (f.type === "SelectFilter" && f.name === "Country") {
-                const opts = ["ALL","JP","KR","CN","TW","HK","US"];
-                countryOrigin = opts[f.state] || "ALL";
-            }
-            if (f.type === "SelectFilter" && f.name === "Adult") {
-                allowAdult = f.state === 1;
+            if (!f) continue;
+            // The app models a SelectFilter with `type_name`; accept `type` too
+            // so the extension keeps working if the runtime ever sends it.
+            const kind = f.type_name || f.type;
+            if (kind !== "SelectFilter") continue;
+            if (f.name === "Country") {
+                const options = Array.from(f.values || []);
+                const picked = options[f.state];
+                countryOrigin = (picked && picked.value) || "ALL";
+            } else if (f.name === "Adult") {
+                const options = Array.from(f.values || []);
+                const picked = options[f.state];
+                allowAdult = picked && picked.value === "true";
             }
         }
 
-        const vars = encodeURIComponent(JSON.stringify({
-            search: { query: query || "", allowAdult, allowUnknown: false },
-            countryOrigin,
-            limit: 26,
-            page
-        }));
-        const gql = encodeURIComponent(
-            `query($search:SearchInput,$limit:Int,$countryOrigin:VaildCountryOriginEnumType,$page:Int){` +
-            `mangas(search:$search,limit:$limit,countryOrigin:$countryOrigin,page:$page){` +
-            `edges{_id name englishName nativeName thumbnail slugTime}` +
-            `}}`
+        const data = await this.gql(
+            "query($search:SearchInput,$limit:Int,$countryOrigin:VaildCountryOriginEnumType,$page:Int){" +
+            "mangas(search:$search,limit:$limit,countryOrigin:$countryOrigin,page:$page){" +
+            "edges{_id name englishName nativeName thumbnail}}}",
+            {
+                search: { query: query || "", allowAdult, allowUnknown: false },
+                countryOrigin,
+                limit: 26,
+                page
+            }
         );
-        const raw = await this.request(`?variables=${vars}&query=${gql}`);
-        const edges = raw?.data?.mangas?.edges;
+        const edges = data && data.mangas && data.mangas.edges;
         if (!Array.isArray(edges)) {
             throw new Error("[AllManga] Search response did not contain manga results");
         }
-
         const pref = new SharedPreferences().get("preferred_title_style") || "eng";
         return this.parseMangaList(edges, pref, edges.length === 26);
     }
 
     // ── Detail (manga info + chapter list) ───────────────────────────────────
     async getDetail(url) {
-        // URL format: /manga/{id}/{slug}  or full https://allmanga.to/manga/{id}/{slug}
         const id = url.includes("allmanga.to")
             ? url.split("/manga/")[1].split("/")[0]
             : url.replace(/^\/manga\//, "").split("/")[0];
 
-        const vars = encodeURIComponent(JSON.stringify({ id }));
-        const gql  = encodeURIComponent(
-            `query($id:String!){` +
-            `manga(_id:$id){` +
-            `name englishName nativeName thumbnail description genres status score ` +
-            `availableChaptersDetail{sub raw}` +
-            `}}`
+        // `availableChaptersDetail` is an untyped Object: selecting subfields
+        // (`{sub raw}`) is a GraphQL validation error. Reading it whole returns
+        // `{sub:[…], raw:[…]}`.
+        const data = await this.gql(
+            "query($id:String!){manga(_id:$id){name englishName nativeName thumbnail description genres status score availableChaptersDetail}}",
+            { id }
         );
-        const raw = await this.request(`?variables=${vars}&query=${gql}`);
-        const manga = raw?.data?.manga;
+        const manga = data && data.manga;
         if (!manga) {
             throw new Error(`[AllManga] Manga not found for id ${id}`);
         }
@@ -220,24 +208,22 @@ class DefaultExtension extends MProvider {
         const status      = this.parseStatus(manga.status);
         const pref        = new SharedPreferences().get("preferred_title_style") || "eng";
         const name        = this.pickTitle(manga, pref);
-        const imageUrl    = manga.thumbnail || "";
+        const imageUrl    = this.imageUrl(manga.thumbnail);
         const description = [
             manga.description || "",
             manga.score ? `\nScore: ${manga.score}★` : ""
         ].join("").trim();
 
-        // Chapter list — prefer "sub" (scanlation) over "raw"
-        const chapNums = manga.availableChaptersDetail?.sub?.length > 0
-            ? manga.availableChaptersDetail.sub
-            : (manga.availableChaptersDetail?.raw || []);
-        const chapType = manga.availableChaptersDetail?.sub?.length > 0 ? "sub" : "raw";
+        const detail = manga.availableChaptersDetail || {};
+        const subList = Array.isArray(detail.sub) ? detail.sub : [];
+        const rawList = Array.isArray(detail.raw) ? detail.raw : [];
+        const chapNums = subList.length > 0 ? subList : rawList;
+        const chapType = subList.length > 0 ? "sub" : "raw";
 
-        // Sort ascending (lowest chapter first)
         const sorted = [...chapNums].sort((a, b) => parseFloat(a) - parseFloat(b));
-
-        const chapters = sorted.map(chapNum => ({
+        const chapters = sorted.map((chapNum) => ({
             name: `Chapter ${chapNum}`,
-            url:  JSON.stringify({ mangaId: id, chapNum: String(chapNum), chapType }),
+            url:  JSON.stringify({ mangaId: id, chapterString: String(chapNum), chapType }),
             dateUpload: ""
         }));
 
@@ -246,27 +232,38 @@ class DefaultExtension extends MProvider {
 
     // ── Page list (images for one chapter) ───────────────────────────────────
     async getPageList(url) {
-        let mangaId, chapNum, chapType;
+        let mangaId, chapterString, chapType;
         try {
             const obj = JSON.parse(url);
-            mangaId  = obj.mangaId;
-            chapNum  = String(obj.chapNum);
-            chapType = obj.chapType || "sub";
+            mangaId        = obj.mangaId;
+            chapterString  = String(obj.chapterString ?? obj.chapNum);
+            chapType       = obj.chapType || "sub";
         } catch (_) { return []; }
 
-        const vars = encodeURIComponent(JSON.stringify({ mangaId, chapNum, chapType }));
-        const gql  = encodeURIComponent(
-            `query($mangaId:String!,$chapNum:String!,$chapType:VaildTranslationTypeEnumType!){` +
-            `chapterPages(mangaId:$mangaId,chapNum:$chapNum,translationType:$chapType){` +
-            `pictureUrls{url}` +
-            `}}`
+        // `chaptersForRead` returns the reader pages of one chapter. Its
+        // `pictureUrls[].url` values are relative to the image CDN head.
+        const data = await this.gql(
+            "query($mangaId:String!,$chapterString:String!,$translationType:VaildTranslationTypeMangaEnumType!){" +
+            "chaptersForRead(mangaId:$mangaId,chapterString:$chapterString,translationType:$translationType){" +
+            "edges{pictureUrls pictureUrlHead}}}",
+            { mangaId, chapterString, translationType: chapType }
         );
-        const raw = await this.request(`?variables=${vars}&query=${gql}`);
-        const pages = raw?.data?.chapterPages?.pictureUrls;
-        if (!Array.isArray(pages)) {
+        const edges = data && data.chaptersForRead && data.chaptersForRead.edges;
+        if (!Array.isArray(edges) || edges.length === 0) {
             throw new Error("[AllManga] Chapter response did not contain page images");
         }
-        return pages.map(p => p?.url).filter(Boolean);
+        const pages = [];
+        for (const edge of edges) {
+            const head = edge && edge.pictureUrlHead ? edge.pictureUrlHead : IMAGE_HEAD;
+            for (const picture of ((edge && edge.pictureUrls) || [])) {
+                const pageUrl = this.imageUrl(picture && picture.url, head);
+                if (pageUrl) pages.push(pageUrl);
+            }
+        }
+        if (pages.length === 0) {
+            throw new Error("[AllManga] Chapter response did not contain page images");
+        }
+        return pages;
     }
 
     // ── Status parser ────────────────────────────────────────────────────────
@@ -296,7 +293,7 @@ class DefaultExtension extends MProvider {
                     ["Taiwan",            "TW"],
                     ["Hong Kong",         "HK"],
                     ["USA",               "US"],
-                ].map(x => ({ type_name: "SelectOption", name: x[0], value: x[1] }))
+                ].map((x) => ({ type_name: "SelectOption", name: x[0], value: x[1] }))
             },
             {
                 type_name: "SelectFilter",
@@ -305,7 +302,7 @@ class DefaultExtension extends MProvider {
                 values: [
                     ["No adult content", "false"],
                     ["Include adult",    "true"],
-                ].map(x => ({ type_name: "SelectOption", name: x[0], value: x[1] }))
+                ].map((x) => ({ type_name: "SelectOption", name: x[0], value: x[1] }))
             }
         ];
     }
@@ -328,7 +325,7 @@ class DefaultExtension extends MProvider {
 
     // ── Custom lists ─────────────────────────────────────────────────────────
     async getCustomList(listId, page) {
-        if (listId === "popular")  return this.getPopular(page);
+        if (listId === "popular") return this.getPopular(page);
         return this.getLatestUpdates(page);
     }
 }
