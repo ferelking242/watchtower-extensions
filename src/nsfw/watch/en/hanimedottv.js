@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://hanime.tv/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "2.3.1",
+  "version": "2.4.0",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/hanimedottv.js",
@@ -335,6 +335,54 @@ class DefaultExtension extends MProvider {
     };
   }
 
+  // The guest API is reachable directly from most networks, but Cloudflare
+  // answers a challenge (403 HTML) on others — the same wall the player
+  // handshake hits. Re-issue the GET through the app's Worker proxy, which
+  // runs outside the challenged network and returns the upstream response as
+  // `{statusCode, headers, body}`, the contract the web build already relies on.
+  async _getViaProxy(url, headers) {
+    const res = await new Client().post(
+      HV_PROXY,
+      { "Content-Type": "application/json", "Accept": "application/json" },
+      { method: "GET", url: url, headers: headers }
+    );
+    if (!res || typeof res.body !== "string" || !res.body) return "";
+    let payload;
+    try {
+      payload = JSON.parse(res.body);
+    } catch (e) {
+      return "";
+    }
+    if (payload && payload.error) return "";
+    const status = Number((payload && payload.statusCode) || 0) || 0;
+    if (status && (status < 200 || status >= 400)) return "";
+    return typeof payload.body === "string" ? payload.body : "";
+  }
+
+  // One guest-API GET parsed as JSON: direct first, then the proxy. A challenge
+  // page is HTML, so a body that does not parse is discarded and the proxy is
+  // tried, rather than letting `JSON.parse` throw on the interstitial.
+  async _guestJson(url, headers) {
+    try {
+      const res = await new Client().get(url, headers);
+      const body = res && typeof res.body === "string" ? res.body : "";
+      if (body) {
+        try {
+          return JSON.parse(body);
+        } catch (e) { /* not JSON: a challenge page, try the proxy */ }
+      }
+    } catch (e) {
+      extLog("warn", "hanime: guest GET failed (direct): " + (e && e.message ? e.message : e));
+    }
+    const proxied = await this._getViaProxy(url, headers);
+    if (proxied) {
+      try {
+        return JSON.parse(proxied);
+      } catch (e) { /* the proxy did not return JSON either */ }
+    }
+    return null;
+  }
+
   // ── Catalogue (the site's own search database) ────────────────────────────
   // Every list is served from this one endpoint. The public site pages are all
   // behind a Cloudflare interstitial ("Just a moment…") that a headless fetch
@@ -343,8 +391,8 @@ class DefaultExtension extends MProvider {
   // catalogue (~4.5 MB, one download per session).
   async _catalogue() {
     if (this._catalogueCache) return this._catalogueCache;
-    const res = await new Client().get(HV_CATALOGUE, this._jsonHeaders(HV_BASE + "/"));
-    const data = JSON.parse(res.body);
+    const data = await this._guestJson(HV_CATALOGUE, this._jsonHeaders(HV_BASE + "/"));
+    if (!data) throw new Error("hanime: guest catalogue unreachable (direct + proxy)");
     const rows = Array.isArray(data) ? data : (data.data || []);
     const items = [];
     for (const row of rows) {
@@ -697,17 +745,10 @@ class DefaultExtension extends MProvider {
     if (!slug) return [];
     const pageUrl = HV_BASE + "/videos/hentai/" + slug;
 
-    let data;
-    try {
-      const res = await new Client().get(
-        HV_GUEST + "/api/v11/videos/" + encodeURIComponent(slug) + "/comments?page=1&page_size=30&sort=new",
-        this._commentHeaders(pageUrl)
-      );
-      data = JSON.parse(res.body);
-    } catch (e) {
-      extLog("warn", "hanime.getComments: " + (e && e.message ? e.message : e));
-      return [];
-    }
+    const data = await this._guestJson(
+      HV_GUEST + "/api/v11/videos/" + encodeURIComponent(slug) + "/comments?page=1&page_size=30&sort=new",
+      this._commentHeaders(pageUrl)
+    );
 
     const threads = Array.isArray(data && data.comments) ? data.comments : [];
     const out = [];
@@ -718,11 +759,10 @@ class DefaultExtension extends MProvider {
       // is a second request per thread and most threads have none.
       if (thread.has_reply_records || Number(thread.reply_count || 0) > 0) {
         try {
-          const rr = await new Client().get(
+          const rd = await this._guestJson(
             HV_GUEST + "/api/v11/videos/" + encodeURIComponent(slug) + "/comments/" + thread.id + "/replies?page=1&page_size=30&sort=new",
             this._commentHeaders(pageUrl)
           );
-          const rd = JSON.parse(rr.body);
           const replies = Array.isArray(rd && rd.replies) ? rd.replies : [];
           mapped.replies = replies.map((r) => this._mapComment(r)).filter(Boolean);
         } catch (e) {
