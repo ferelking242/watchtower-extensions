@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://hanime.tv/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "2.3.0",
+  "version": "2.3.1",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/hanimedottv.js",
@@ -385,6 +385,13 @@ class DefaultExtension extends MProvider {
   }
 
   _byNewest(a, b) { return (b.created - a.created) || (b.released - a.released); }
+
+  // Layout ids carry a slug (`tag_blow-job`, `brand_pink-pineapple`) while the
+  // catalogue keeps the human label ("blow job", "Pink Pineapple"). Normalising
+  // both sides lets a dash-separated id address any tag or studio.
+  _slug(s) {
+    return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  }
 
   // Franchise key: a title and its numbered sequels share one group, so the
   // detail page lists the whole series as episodes. "Kuroinu 2" → "kuroinu".
@@ -829,9 +836,9 @@ class DefaultExtension extends MProvider {
     if (id.indexOf("tag_") === 0) {
       let label = id.slice(4);
       try { label = decodeURIComponent(label); } catch (e) { /* keep raw */ }
-      const want = label.toLowerCase();
+      const want = this._slug(label);
       const list = catalog
-        .filter((it) => it.tags.some((t) => String(t).toLowerCase() === want))
+        .filter((it) => it.tags.some((t) => this._slug(t) === want))
         .sort((a, b) => b.views - a.views);
       return this._pageOf(list, p, 36);
     }
@@ -839,9 +846,9 @@ class DefaultExtension extends MProvider {
     if (id.indexOf("brand_") === 0) {
       let brand = id.slice(6);
       try { brand = decodeURIComponent(brand); } catch (e) { /* keep raw */ }
-      const want = brand.toLowerCase();
+      const want = this._slug(brand);
       const list = catalog
-        .filter((it) => it.brand.toLowerCase() === want)
+        .filter((it) => this._slug(it.brand) === want)
         .sort((a, b) => this._byNewest(a, b));
       return this._pageOf(list, p, 36);
     }

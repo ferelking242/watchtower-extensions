@@ -4645,7 +4645,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000146.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "2.3.0",
+    "version": "2.3.1",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@1896984814b52b23cd0726eb55c2e70cf9433b54/src/nsfw/watch/en/hanimedottv.js",
     "isManga": false,
     "isNsfw": true,
