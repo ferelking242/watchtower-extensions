@@ -12,11 +12,30 @@ class BrowseEndpoint {
 
   construct (this.client, this.auth)
 
+  /// The `sp_t` cookie Spotify's browse endpoint needs. Returns "" when the
+  /// user is not logged in yet, so the caller raises a clear auth error
+  /// instead of crashing on a null `credentials` map.
+  fun getSpTCookie() -> string {
+    final cookies = auth.credentials?["cookies"]
+    if (cookies == null) {
+      return ""
+    }
+    final spT = cookies.where((c) => c["name"] == "sp_t").toList()
+    if (spT.isEmpty) {
+      return ""
+    }
+    return spT.elementAt(0)["value"] ?? ""
+  }
+
   fun sections({offset: int, limit: int}) {
+    final spTCookie = getSpTCookie()
+    if (spTCookie == "") {
+      throw "Spotify home requires you to sign in. Open the plugin settings and log in with your Spotify account."
+    }
     return Timezone.getLocalTimeZone().then((timeZone){
       return client.browse.home(
         timeZone: timeZone,
-        spTCookie: auth.credentials["cookies"].where((c)=>c["name"] == "sp_t").elementAt(0)["value"]
+        spTCookie: spTCookie,
         limit: limit,
       ).then((sections){
         return {
@@ -47,11 +66,15 @@ class BrowseEndpoint {
   }
 
   fun sectionItems(id: string, {offset: int, limit: int}) {
+    final spTCookie = getSpTCookie()
+    if (spTCookie == "") {
+      throw "Spotify home requires you to sign in. Open the plugin settings and log in with your Spotify account."
+    }
     return Timezone.getLocalTimeZone().then((timeZone) {
       return client.browse.homeSection(
-        id, 
+        id,
         timeZone: timeZone,
-        spTCookie: auth.credentials["cookies"].where((c)=>c["name"] == "sp_t").elementAt(0)["value"],
+        spTCookie: spTCookie,
         offset: offset,
         limit: limit,
       ).then((section){

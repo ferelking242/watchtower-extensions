@@ -42,7 +42,10 @@ class SpotifyMetadataProviderPlugin {
     core = CorePlugin()
 
     auth.authStateStream.listen((event) {
-      api.setAccessToken(auth.credentials["accessToken"])
+      final accessToken = auth.credentials?["accessToken"]
+      if (accessToken != null) {
+        api.setAccessToken(accessToken)
+      }
     })
   }
 }
