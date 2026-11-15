@@ -19,7 +19,7 @@ const watchtowerSources = [{
     "itemType": 0,
     "isNsfw": false,
     "hasCloudflare": true,
-    "version": "0.1.6",
+    "version": "0.1.7",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -89,7 +89,14 @@ class DefaultExtension extends MProvider {
         if (raw.startsWith("//")) return `https:${raw}`;
         if (/^https?:\/\//i.test(raw)) return raw;
         const base = String(head || IMAGE_HEAD).replace(/\/$/, "");
-        return `${base}/${raw.replace(/^\//, "")}`;
+        let rel = raw.replace(/^\//, "");
+        // The youtube-anime CDN stores every asset as WebP, but the API still
+        // returns a few covers with a `.jpg`/`.jpeg`/`.png` suffix. Those 404;
+        // rewrite the extension so the image resolves.
+        if (/youtube-anime\.com$/i.test(base)) {
+            rel = rel.replace(/\.(jpe?g|png|gif|bmp|avif)$/i, ".webp");
+        }
+        return `${base}/${rel}`;
     }
 
     // ── Title preference ─────────────────────────────────────────────────────

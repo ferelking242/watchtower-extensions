@@ -32,3 +32,5 @@ jobs:
         run: npm run test:imhentai
       - name: Test AllManga request wrapper
         run: npm run test:allmanga
+      - name: Test MKissa manga source
+        run: npm run test:mkissa-manga

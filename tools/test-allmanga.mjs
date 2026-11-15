@@ -101,6 +101,12 @@ const ok = (data) => ({ statusCode: 200, body: JSON.stringify({ data }) });
             englishName: "Absolute",
             thumbnail: "https://cdn.example/already.jpg",
           },
+          {
+            _id: "jpg",
+            name: "Legacy suffix",
+            englishName: "Legacy suffix",
+            thumbnail: "mcovers/m_tbs/jpg/001.jpg",
+          },
         ],
       },
     }),
@@ -112,6 +118,11 @@ const ok = (data) => ({ statusCode: 200, body: JSON.stringify({ data }) });
     page.list[1].imageUrl,
     "https://cdn.example/already.jpg",
     "an absolute URL must not be prefixed",
+  );
+  assert.equal(
+    page.list[2].imageUrl,
+    `${IMAGE_HEAD}/mcovers/m_tbs/jpg/001.webp`,
+    "the CDN only stores WebP, so a legacy .jpg suffix must be rewritten",
   );
 }
 
