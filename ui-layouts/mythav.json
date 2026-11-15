@@ -14,11 +14,46 @@
       {
         "id": "latest",
         "component": "showcase",
-        "title": "Latest",
+        "title": "New Uploads",
         "accent": "tertiary",
         "icon": "fiber_new",
         "seeAll": true,
         "paginated": true
+      },
+      {
+        "id": "beingwatched",
+        "component": "rankedWide",
+        "title": "Being Watched",
+        "accent": "error",
+        "icon": "visibility",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "release",
+        "component": "showcase",
+        "title": "New Releases",
+        "accent": "secondary",
+        "icon": "new_releases",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "rated",
+        "component": "rankedWide",
+        "title": "Top Rated",
+        "accent": "#F5A623",
+        "icon": "emoji_events",
+        "seeAll": true,
+        "paginated": true
+      },
+      {
+        "id": "studios",
+        "component": "studioExplorer",
+        "title": "Studios",
+        "accent": "#7986CB",
+        "icon": "business",
+        "seeAll": true
       },
       {
         "id": "actresses",
@@ -33,7 +68,7 @@
         "component": "studioExplorer",
         "title": "Makers",
         "accent": "#7986CB",
-        "icon": "business",
+        "icon": "factory",
         "seeAll": true
       },
       {
@@ -45,24 +80,19 @@
         "seeAll": true
       },
       {
+        "id": "directors",
+        "component": "creatorRow",
+        "title": "Directors",
+        "accent": "#FFB74D",
+        "icon": "movie",
+        "seeAll": true
+      },
+      {
         "id": "tags",
         "component": "grid",
         "title": "Tags",
         "accent": "#64D8CB",
         "icon": "tag",
-        "seeAll": true,
-        "columns": 3,
-        "rows": 3,
-        "gridOrder": "column",
-        "scrollDirection": "horizontal",
-        "cardStyle": "thumbnail"
-      },
-      {
-        "id": "directors",
-        "component": "grid",
-        "title": "Directors",
-        "accent": "#FFB74D",
-        "icon": "movie",
         "seeAll": true,
         "columns": 3,
         "rows": 3,

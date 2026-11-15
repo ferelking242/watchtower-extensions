@@ -6,243 +6,417 @@ const watchtowerSources = [{
   "iconUrl": "https://mythav.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.5",
+  "version": "1.1.0",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/mythav.js",
-  "notes": "MyThav — JAV streaming portal",
+  "notes": "MyThav — JAV streaming portal. Direct HLS extraction (helvid CDN) + studios/actresses/tags sections.",
   "isNsfw": true
 }];
 
 const BASE_URL = "https://mythav.com";
+// The catalogue is served on mythav.com, but every asset (covers, player
+// iframe, media) lives on mythav.org — page requests must carry a mythav
+// referer to pass the origin check.
+const ORIGIN = "https://mythav.org";
+const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
 class DefaultExtension extends MProvider {
+  // Headers for the mythav pages themselves (HTML + covers).
   getHeaders(url) {
+    const pageUrl = /^https?:\/\//i.test(String(url || "")) ? String(url) : BASE_URL + "/";
     return {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-      "Referer": "https://mythav.com/"
+      "User-Agent": USER_AGENT,
+      "Referer": pageUrl,
+      "Accept-Language": "en-US,en;q=0.9,ja;q=0.8"
     };
   }
+
+  // Headers for the helvid.com media CDN. This is a *media* request, not a page
+  // navigation: the CDN rejects `Sec-Fetch-Dest: document`, and it keys the
+  // Referer to the player host upload18.org — a mythav referer is refused
+  // outright. The User-Agent is mandatory too.
+  _mediaHeaders() {
+    return {
+      "User-Agent": USER_AGENT,
+      "Referer": "https://upload18.org/",
+      "Origin": "https://upload18.org",
+      "Accept": "*/*",
+      "Sec-Fetch-Dest": "empty",
+      "Sec-Fetch-Mode": "cors",
+      "Sec-Fetch-Site": "cross-site"
+    };
+  }
+
   async getPopular(page) {
-    const url = page > 1 ? `${BASE_URL}/page/${page}/` : `${BASE_URL}/`;
+    // "Most popular" is the site's Top Rated rail; it is the only ranking that
+    // paginates with /page/N/ (the home feed always serves the same 32 items
+    // whatever ?page= is passed).
+    const p = Number(page) > 1 ? Number(page) : 1;
+    const url = `${BASE_URL}/rate/page/${p}/`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, BASE_URL);
+    return this._parse(res.body, ORIGIN);
   }
+
   get supportsLatest() { return true; }
+
   async getLatestUpdates(page) {
-    const url = `${BASE_URL}/update/page/${page}/`;
+    const p = Number(page) > 1 ? Number(page) : 1;
+    const url = `${BASE_URL}/update/page/${p}/`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, BASE_URL);
+    return this._parse(res.body, ORIGIN);
   }
+
   async search(query, page, filters) {
-    const q = encodeURIComponent(query.trim());
-    const url = page > 1 ? `${BASE_URL}/page/${page}/?s=${q}` : `${BASE_URL}/?s=${q}`;
+    const p = Number(page) > 1 ? Number(page) : 1;
+    const q = encodeURIComponent(String(query || "").trim());
+    const url = p > 1
+      ? `${BASE_URL}/search/page/${p}/?s=${q}`
+      : `${BASE_URL}/search/?s=${q}`;
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, BASE_URL);
+    return this._parse(res.body, ORIGIN);
   }
+
   _parse(html, base) {
     const doc = new Document(html);
     const items = [];
-    const cards = doc.select("article.loop-video, article, .videos-list article");
+    const seen = {};
+    const cards = doc.select("article.loop-video, .videos-list article, article");
     for (const card of cards) {
       const a = card.selectFirst("a[href*='/video/'], h2 a, h3 a, a");
       if (!a) continue;
-      const href = a.attr("href") || "";
+      const href = (a.attr("href") || "").trim();
       if (!href || href.length < 15) continue;
+      const link = href.charAt(0) === "h" ? href : new URL(href, base).href;
+      if (seen[link]) continue;
       const img = card.selectFirst("img");
-      const title = a.attr("title") || img?.attr("alt") || a.text?.trim() || "";
-      const thumb = img?.attr("data-src") || img?.attr("data-lazy-src") || img?.attr("src") || "";
-      if (title && title.length > 2) items.push({ name: title.trim(), imageUrl: thumb, link: href.startsWith("http") ? href : base + href });
+      const title = (a.attr("title") || (img ? img.attr("alt") : "") || a.text || "").trim();
+      if (!title || title.length < 3) continue;
+      const thumb = img ? (img.attr("data-src") || img.attr("data-lazy-src") || img.attr("src") || "") : "";
+      seen[link] = 1;
+      items.push({
+        name: title.replace(/\s+/g, " ").trim(),
+        imageUrl: thumb,
+        link
+      });
     }
-    const hasNext = !!doc.selectFirst(".pagination a.inactive, .pagination a[href*='/page/']");
-    return { list: items, hasNextPage: hasNext || items.length >= 15 };
+    const hasNext = !!doc.selectFirst(".pagination a[href*='/page/'], .pagination a.inactive");
+    return { list: items, hasNextPage: hasNext || items.length >= 20 };
   }
+
   async getDetail(url) {
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
     const doc = new Document(res.body);
-    const title = doc.selectFirst("meta[property='og:title']")?.attr("content") || doc.selectFirst("h1")?.text || "Unknown";
+    const title = (doc.selectFirst("meta[property='og:title']")?.attr("content")
+      || doc.selectFirst("h1")?.text || "Unknown").trim();
     const thumb = doc.selectFirst("meta[property='og:image']")?.attr("content") || "";
-    const tags = doc.select(".tags a, [class*='tag'] a").map(el => ({ name: el.text.trim() }));
-    return { name: title.trim(), imageUrl: thumb, description: "", genre: tags, episodes: [{ name: title.trim() || "Watch", url }] };
+
+    const genre = [];
+    const pushGenre = (name) => {
+      const clean = String(name || "").replace(/\s+/g, " ").trim();
+      if (clean && genre.indexOf(clean) < 0) genre.push(clean);
+    };
+    for (const el of doc.select("a[href*='/tag/']")) pushGenre(el.text);
+    for (const el of doc.select("a[href*='/actress/']")) pushGenre(el.text);
+    for (const el of doc.select("a[href*='/maker/']")) pushGenre(el.text);
+
+    // The page carries its own code line ("MythAV.Org Code: atya-048") and an
+    // ISO duration; both are more useful than the repeated title in the meta.
+    let description = "";
+    const code = res.body.match(/MythAV\.Org\s+Code\s*:\s*([A-Za-z0-9-]+)/i);
+    if (code) description = "Code: " + code[1];
+    const clock = this._isoDurationToClock(doc.selectFirst("meta[itemprop='duration']")?.attr("content") || "");
+    if (clock) description = (description ? description + " · " : "") + "Duration: " + clock;
+
+    return {
+      name: title,
+      imageUrl: thumb,
+      description,
+      genre,
+      episodes: [{ name: title || "Watch", url }]
+    };
   }
+
   async getVideoList(url) {
     const res = await new Client().get(url, { headers: this.getHeaders(url) });
     const html = res.body;
     const videos = [];
-    const seen = new Set();
+    const seen = {};
     const push = (src, quality) => {
-      if (!src || seen.has(src)) return;
-      seen.add(src);
-      videos.push({ url: src, quality, originalUrl: src, headers: this.getHeaders(url) });
+      if (!src) return;
+      const clean = this._clean(src);
+      if (!/^https?:\/\//i.test(clean) || seen[clean]) return;
+      seen[clean] = 1;
+      videos.push({ url: clean, quality, originalUrl: clean, headers: this._mediaHeaders() });
     };
-    // Player is an iframe -> mythav.org/player/r.php?r=<b64 of upload18.org/play/index/<code>>
-    const clean = (s) => (s || "").replace(/\\u0026/g, "&").replace(/\\\//g, "/");
-    const grabM3u8 = (h) => {
-      const src1 = (h.match(/"m3u8"\s*:\s*"([^"]+)"/) || [])[1];
-      if (src1) push(clean(src1), "HLS");
-      const m3u8Rx = /["'`](https?:\\?\/\\?\/[^"'`]+\.[^"'`]*m3u8[^"'`]*)["'`]/g;
-      let m;
-      while ((m = m3u8Rx.exec(h)) !== null) push(clean(m[1]), "HLS");
-      if (videos.length === 0) {
-        const mp4Rx = /["'`](https?:\\?\/\\?\/[^"'`]+\.mp4[^"'`]{0,150})["'`]/g;
-        while ((m = mp4Rx.exec(h)) !== null) { push(clean(m[1]), "MP4"); }
-      }
-    };
-    const iframeRe = /<iframe[^>]+src="([^"]+)"/gi;
-    let m;
-    const frames = [];
-    while ((m = iframeRe.exec(html)) !== null) frames.push(m[1]);
-    for (let src of frames) {
-      if (!src || !/player\/r\.php|play\/index|upload/i.test(src)) continue;
-      if (!src.startsWith("http")) src = new URL(src, url).href;
-      try {
-        // r.php carries a base64 target URL; resolve it directly
-        const rp = src.match(/[?&]r=([^&]+)/);
-        let target = src;
-        if (rp) {
-          try {
-            const dec = Buffer.from(decodeURIComponent(rp[1]), "base64").toString("utf8");
-            if (/^https?:\/\//.test(dec)) target = dec;
-          } catch (_) {}
-        }
-        const ifr = await new Client().get(target, { ...this.getHeaders(url), Referer: url });
-        grabM3u8(ifr.body);
-      } catch (_) {}
-      if (videos.length > 0) break;
-    }
-    if (videos.length === 0) grabM3u8(html);
-        // Drop non-media candidates (script/style/icon matches) before falling back.
-    const direct = videos.filter((v) => /\.(?:m3u8|mp4|webm|m4v)(?:[?#]|$)/i.test(v.url));
-    videos.length = 0;
-    videos.push(...direct);
+
+    // 1. Some posts embed a direct m3u8/mp4 in the page itself.
+    this._grabMedia(html, push);
+
+    // 2. The player is an iframe: mythav.org/player/r.php?r=<base64 of the
+    //    upload18.org/play/index/<code> page>. That page carries the signed
+    //    helvid CDN URL in PLAYER_CONFIG. The URL has no literal ".m3u8" (its
+    //    path is base64: /m/L3Yv...), so it must never be filtered on
+    //    extension — only on the presence of a real http(s) URL.
     if (videos.length === 0) {
-      // Player is assembled client-side, so hand the page to the in-app browser.
-      videos.push({ url, originalUrl: url, quality: "Web player", type: "webview", kind: "webview", headers: this.getHeaders(url) });
+      const frames = [];
+      const iframeRe = /<iframe[^>]+src=["']([^"']+)["']/gi;
+      let m;
+      while ((m = iframeRe.exec(html)) !== null) frames.push(m[1]);
+      const embed = _embedUrl(html);
+      if (embed) frames.push(embed);
+
+      for (let src of frames) {
+        if (!src || !/player\/r\.php|play\/index|upload18/i.test(src)) continue;
+        if (src.charAt(0) !== "h") src = new URL(src, url).href;
+        let target = src;
+        const rp = src.match(/[?&]r=([^&]+)/);
+        if (rp) {
+          const decoded = this._b64decode(decodeURIComponent(rp[1]));
+          if (/^https?:\/\//.test(decoded)) target = decoded;
+        }
+        try {
+          const headers = this.getHeaders(url);
+          headers.Referer = url;
+          const ifr = await new Client().get(target, { headers });
+          this._grabMedia(ifr.body, push);
+        } catch (e) { /* try the next frame */ }
+        if (videos.length > 0) break;
+      }
+    }
+
+    if (videos.length === 0) {
+      // Nothing extractable (a client-side player or a new gate): hand the page
+      // to the in-app browser so playback is still reachable.
+      videos.push({
+        url,
+        originalUrl: url,
+        quality: "Web player",
+        type: "webview",
+        kind: "webview",
+        headers: this.getHeaders(url)
+      });
     }
     return videos;
   }
-  _wtHeaders(url) { return this.getHeaders ? this.getHeaders(url) : {}; }
-  _wtPeople(html, base, rx) {
+
+  // Collect every media URL a player page exposes. The helvid URL sits in
+  // `PLAYER_CONFIG.m3u8` (JSON with escaped slashes and \u0026), so decode the
+  // JSON escapes rather than matching only a literal ".m3u8".
+  _grabMedia(html, push) {
+    const body = String(html || "");
+    const cfg = body.match(/"m3u8"\s*:\s*"([^"]+)"/);
+    if (cfg) push(this._unescape(cfg[1]), "HLS");
+    const alt = body.match(/"alternate\d*"\s*:\s*"([^"]+)"/);
+    if (alt && alt[1]) push(this._unescape(alt[1]), "HLS alt");
+
+    const rx = /["'`](https?:\\?\/\\?\/[^"'`\s]+\.(?:m3u8|mp4|webm|m4v)[^"'`\s]*)["'`]/gi;
+    let m;
+    while ((m = rx.exec(body)) !== null) {
+      push(this._unescape(m[1]), /\.mp4/i.test(m[1]) ? "MP4" : "HLS");
+    }
+
+    // Helvid's own signed URL: /m/<base64> or /s/<hex>, with no extension.
+    const helvid = body.match(/["'`](https?:\\?\/\\?\/[^"'`\s]*\/m\/[A-Za-z0-9_\-=%]+[^"'`\s]*)["'`]/i);
+    if (helvid) push(this._unescape(helvid[1]), "HLS");
+  }
+
+  _unescape(s) {
+    return String(s || "")
+      .replace(/\\u0026/gi, "&")
+      .replace(/\\u003d/gi, "=")
+      .replace(/\\\//g, "/")
+      .replace(/\\"/g, '"')
+      .replace(/&amp;/g, "&")
+      .trim();
+  }
+
+  _clean(s) {
+    return this._unescape(s).replace(/[\\"',;]+$/, "").trim();
+  }
+
+  // The QuickJS bridge exposes neither Buffer nor atob, so decode by hand.
+  _b64decode(str) {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    const input = String(str || "").replace(/[^A-Za-z0-9+/=]/g, "");
+    let output = "";
+    for (let i = 0; i < input.length; i += 4) {
+      const c0 = chars.indexOf(input.charAt(i));
+      const c1 = chars.indexOf(input.charAt(i + 1));
+      const c2 = chars.indexOf(input.charAt(i + 2));
+      const c3 = chars.indexOf(input.charAt(i + 3));
+      if (c0 < 0 || c1 < 0) break;
+      output += String.fromCharCode((c0 << 2) | (c1 >> 4));
+      if (c2 >= 0) output += String.fromCharCode(((c1 & 15) << 4) | (c2 >> 2));
+      if (c3 >= 0) output += String.fromCharCode(((c2 & 3) << 6) | c3);
+    }
+    return output;
+  }
+
+  _isoDurationToClock(iso) {
+    const m = String(iso || "").match(/P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+    if (!m) return "";
+    const days = Number(m[1] || 0), hours = Number(m[2] || 0), mins = Number(m[3] || 0), secs = Number(m[4] || 0);
+    const totalMins = days * 1440 + hours * 60 + mins;
+    if (!totalMins && !secs) return "";
+    const hh = Math.floor(totalMins / 60);
+    const mm = String(totalMins % 60).padStart(2, "0");
+    const ss = String(secs).padStart(2, "0");
+    return (hh > 0 ? hh + ":" + mm : mm) + ":" + ss;
+  }
+
+  // ── Home / browse sections ────────────────────────────────────────────────
+  // Layout ids are resolved here. Routes verified live:
+  //   /update/page/N/  /release/page/N/  /rate/page/N/  /beingwatched/page/N/
+  //   /tag/<id>/<slug>/page/N/   /site/<id>/<slug>/page/N/
+  // The directory ids (actresses, makers, labels, directors, tags) return
+  // entity cards; tapping one opens its listing through collectionId.
+  async getCustomList(listId, page) {
+    const id = String(listId || "");
+    const p = Number(page) > 1 ? Number(page) : 1;
+
+    const lists = {
+      "latest": "/update/",
+      "update": "/update/",
+      "new": "/update/",
+      "release": "/release/",
+      "newreleases": "/release/",
+      "rated": "/rate/",
+      "toprated": "/rate/",
+      "popular": "/rate/",
+      "beingwatched": "/beingwatched/",
+      "watching": "/beingwatched/"
+    };
+    if (lists[id]) {
+      const url = `${BASE_URL}${lists[id]}page/${p}/`;
+      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      return this._parse(res.body, ORIGIN);
+    }
+
+    const directories = {
+      "actresses": ["/actresses/", "/actress/"],
+      "makers": ["/makers/", "/maker/"],
+      "labels": ["/labels/", "/label/"],
+      "directors": ["/directors/", "/director/"],
+      "tags": ["/tags/", "/tag/"]
+    };
+    if (directories[id]) {
+      const dir = directories[id];
+      const url = `${BASE_URL}${dir[0]}page/${p}/`;
+      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      const items = this._directory(res.body, ORIGIN, dir[1]);
+      return { list: items, hasNextPage: items.length >= 20 };
+    }
+
+    // Studios have no directory page: the only complete list is the site menu,
+    // repeated on the home page.
+    if (id === "sites" || id === "studios") {
+      const url = `${BASE_URL}/`;
+      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      return { list: this._directory(res.body, ORIGIN, "/site/"), hasNextPage: false };
+    }
+
+    // A single tag/studio/actress listing, e.g. `tag_343_vr`,
+    // `site_7_uncensored-leak`, `actress_27390_honoka-ashina`.
+    const keyed = id.match(/^(tag|site|maker|label|director|actress)_(.+)$/);
+    if (keyed) {
+      const kind = keyed[1];
+      const parts = keyed[2].split("_");
+      const numericId = /^\d+$/.test(parts[0]) ? parts.shift() : null;
+      const slug = parts.join("-");
+      const path = numericId ? `/${kind}/${numericId}/${slug}/` : `/${kind}/`;
+      const url = `${BASE_URL}${path}page/${p}/`;
+      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      return this._parse(res.body, ORIGIN);
+    }
+
+    // profile_<hex of the target path> — used by the person screen to page a
+    // studio/actress listing. The hex is UTF-16 code units, matching the app.
+    if (id.indexOf("profile_") === 0) {
+      const path = this._fromHex(id.slice(8));
+      if (!path) return { list: [], hasNextPage: false };
+      const base = path.charAt(0) === "h" ? path : BASE_URL + path;
+      const pageUrl = p > 1 ? base.replace(/\/$/, "") + `/page/${p}/` : base;
+      const res = await new Client().get(pageUrl, { headers: this.getHeaders(pageUrl) });
+      const own = this._parse(res.body, ORIGIN);
+      if (own.list.length) return own;
+      return { list: this._videos(res.body, ORIGIN), hasNextPage: false };
+    }
+
+    throw new Error("Unknown custom list: " + id);
+  }
+
+  _directory(html, base, prefix) {
     const doc = new Document(html);
     const out = [];
     const seen = {};
+    const kind = prefix.replace(/\//g, "");
     for (const a of doc.select("a")) {
       const href = (a.attr("href") || "").trim();
       if (!href || href.charAt(0) === "#" || /^javascript:/i.test(href)) continue;
       let path;
       try { path = new URL(href, base).pathname; } catch (e) { continue; }
-      const m = path.match(rx);
-      if (!m) continue;
-      const slug = decodeURIComponent(m[1] || path.split("/").filter(Boolean).pop() || "");
-      const NAV_RX = /^(?:all|page|popular|rated|subscribed|videos?|photos|pornstars|users|login|signup|new|hot|recent|latest|top|best|browse|uncensored|censored|index|[a-z])$/i;
-      if (!slug || NAV_RX.test(slug) || /^\d+$/.test(slug) || slug.indexOf("$") >= 0) continue;
-      const key = slug.toLowerCase();
-      if (seen[key]) continue;
-      seen[key] = 1;
-      const img = a.selectFirst("img");
-      const name = ((a.attr("title") || (img ? img.attr("alt") : "") || a.text || slug) || "").trim();
-      if (!name) continue;
-      const link = href.charAt(0) === "h" ? href : new URL(href, base).href;
-      const imageUrl = img ? (img.attr("data-src") || img.attr("src") || "") : "";
-      out.push({ name: name, imageUrl: imageUrl, link: link });
-      if (out.length >= 240) break;
-    }
-    return out;
-  }
-  _wtVideos(html, base) {
-    const doc = new Document(html);
-    const out = [];
-    const seen = {};
-    for (const a of doc.select("a")) {
-      const href = (a.attr("href") || "").trim();
-      if (!href || href.charAt(0) === "#" || /^javascript:/i.test(href)) continue;
-      let u;
-      try { u = new URL(href, base); } catch (e) { continue; }
-      const path = u.pathname;
-      const slug = decodeURIComponent(path.split("/").filter(Boolean).pop() || "");
-      if (!/(\/video|\/videos|\/watch|-\d{2,}\/|-\d{2,}$|\/[a-z0-9]{5,}-\d{2,}|\/\d{4,}\/|dm\d+\/|\.html$)/i.test(path)) continue;
-      if (/\/(tags?|categor|genres?|models?|pornstars?|actress|performers?|idols?|channels?|studios?|makers?|labels?|series)\//i.test(path)) continue;
+      if (path.indexOf(prefix) !== 0) continue;
+      const segs = path.split("/").filter(Boolean);
+      if (segs.length < 2) continue;
+      const slug = segs[segs.length - 1];
+      const numericId = /^\d+$/.test(segs[segs.length - 2]) ? segs[segs.length - 2] : null;
+      if (!slug || /^\d+$/.test(slug)) continue;
       if (seen[path]) continue;
       seen[path] = 1;
       const img = a.selectFirst("img");
-      const name = ((a.attr("title") || (img ? img.attr("alt") : "") || a.text || slug) || "").trim();
-      if (!name) continue;
-      const imageUrl = img ? (img.attr("data-src") || img.attr("src") || "") : "";
-      out.push({ name: name, imageUrl: imageUrl, link: u.href });
-    }
-    return out;
-  }
-  async getCustomList(listId, page) {
-    const p = Number(page) > 1 ? Number(page) : 1;
-    const base = this.source && this.source.baseUrl ? this.source.baseUrl : "";
-    const sections = {
-      "actresses": ["https://mythav.com/actresses/", "^/actress/(?:\\d+/)?([^/?#]+)", {}],
-      "makers": ["https://mythav.com/makers/", "^/maker/(?:\\d+/)?([^/?#]+)", {}],
-      "labels": ["https://mythav.com/labels/", "^/label/(?:\\d+/)?([^/?#]+)", {}],
-      "directors": ["https://mythav.com/directors/", "^/director/(?:\\d+/)?([^/?#]+)", {}],
-      "tags": ["https://mythav.com/tags/", "^/tag/(?:\\d+/)?([^/?#]+)", {}],
-    };
-    if (sections[listId]) {
-      const url = sections[listId][0];
-      const rx = new RegExp(sections[listId][1], "i");
-      const pageUrl = p === 1 ? url : (url.indexOf("?") >= 0
-        ? url + "page=" + p
-        : url + (url.endsWith("/") ? "page/" + p + "/" : "?page=" + p));
-      const res = await new Client().get(pageUrl, this._wtHeaders(pageUrl));
-      const people = this._wtDirectory(res.body, pageUrl, rx, sections[listId][2]);
-      if (people.length) return { list: people, hasNextPage: people.length >= 240 };
-      const own = this._parse(res.body, pageUrl);
-      if (own && own.list && own.list.length) return own;
-      return { list: [], hasNextPage: false };
-    }
-    if (listId && listId.indexOf("profile_") === 0) {
-      const hex = listId.slice(8);
-      let path = "";
-      for (let i = 0; i + 4 <= hex.length; i += 4) path += String.fromCharCode(parseInt(hex.substr(i, 4), 16));
-      const pageUrl = path.charAt(0) === "h" ? path : base + path;
-      const res = await new Client().get(pageUrl, this._wtHeaders(pageUrl));
-      const own = this._parse(res.body, pageUrl);
-      let list = own && own.list && own.list.length ? own.list : [];
-      if (!list.length) list = this._wtVideos(res.body, pageUrl);
-      return { list: list, hasNextPage: false };
-    }
-    throw new Error("Unknown custom list: " + listId);
-  }
-
-
-  _wtDirectory(html, base, rx, opts) {
-    const o = opts || {};
-    const skip = (o.skip || []).map((s) => new RegExp(s, "i"));
-    const doc = new Document(html);
-    const out = [];
-    const seen = {};
-    for (const a of doc.select("a")) {
-      const href = (a.attr("href") || "").trim();
-      if (!href || href.charAt(0) === "#" || /^javascript:/i.test(href)) continue;
-      let path;
-      try { path = new URL(href, base).pathname; } catch (e) { continue; }
-      const m = path.match(rx);
-      if (!m) continue;
-      const slug = decodeURIComponent(m[1] || path.split("/").filter(Boolean).pop() || "");
-      if (!slug || /^\d+$/.test(slug)) continue;
-      if (skip.some((s) => s.test(slug))) continue;
-      const key = slug.toLowerCase();
-      if (seen[key]) continue;
-      seen[key] = 1;
-      const img = a.selectFirst("img");
-      const nameEl = o.nameSel ? a.selectFirst(o.nameSel) : null;
-      const name = ((nameEl ? nameEl.text : "") || a.attr("title") || (img ? img.attr("alt") : "") || a.text || slug || "")
+      const name = ((a.attr("title") || (img ? img.attr("alt") : "") || a.text || slug) || "")
         .replace(/\s+/g, " ").replace(/\s+\d[\d,]*$/, "").trim();
       if (!name) continue;
-      const link = href.charAt(0) === "h" ? href : new URL(href, base).href;
       const imageUrl = img ? (img.attr("data-src") || img.attr("src") || "") : "";
-      out.push({ name: name, imageUrl: imageUrl, link: link });
+      // Encode the listing as a collection id so tapping the card opens it
+      // instead of treating the card as a person/detail entry.
+      const collectionId = kind + "_" + (numericId ? numericId + "_" : "") + slug;
+      out.push({ name, imageUrl, link: new URL(path, base).href, collectionId });
       if (out.length >= 240) break;
     }
     return out;
   }
 
-  
+  _videos(html, base) {
+    const doc = new Document(html);
+    const out = [];
+    const seen = {};
+    for (const a of doc.select("a[href*='/video/']")) {
+      const href = (a.attr("href") || "").trim();
+      if (!href) continue;
+      const link = href.charAt(0) === "h" ? href : new URL(href, base).href;
+      if (seen[link]) continue;
+      seen[link] = 1;
+      const img = a.selectFirst("img");
+      const name = ((a.attr("title") || (img ? img.attr("alt") : "") || a.text || "") || "").trim();
+      if (!name) continue;
+      const imageUrl = img ? (img.attr("data-src") || img.attr("src") || "") : "";
+      out.push({ name, imageUrl, link });
+    }
+    return out;
+  }
+
+  _fromHex(hex) {
+    const raw = String(hex || "");
+    if (!raw || raw.length % 4 !== 0 || !/^[0-9a-f]+$/i.test(raw)) return "";
+    let out = "";
+    for (let i = 0; i < raw.length; i += 4) {
+      out += String.fromCharCode(parseInt(raw.slice(i, i + 4), 16));
+    }
+    return out;
+  }
+
   getFilterList() { return []; }
+
   getSourcePreferences() { return []; }
+}
+
+// The itemprop embedURL repeats the player iframe source and is present even
+// when the iframe markup is lazy-loaded.
+function _embedUrl(html) {
+  const body = String(html || "");
+  const m = body.match(/itemprop=["']embedURL["'][^>]*content=["']([^"']+)["']/i)
+    || body.match(/content=["']([^"']*player\/r\.php[^"']*)["']/i);
+  return m ? m[1] : "";
 }

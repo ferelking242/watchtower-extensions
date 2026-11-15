@@ -8032,14 +8032,14 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000219.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.5",
+    "version": "1.1.0",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@853c84ec4f031f436adc1af4c4eac933ae088c6e/src/nsfw/watch/ja/mythav.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
-    "notes": "MyThav — JAV streaming portal",
+    "notes": "MyThav — JAV streaming portal. Direct HLS extraction (helvid CDN) + studios/actresses/tags sections.",
     "login": false,
     "forYou": false,
     "requiresAccount": false,
@@ -8073,7 +8073,7 @@
       "zh": "最佳 JAV（日本成人视频）色情网站，提供中文 AV 和亚洲 AV，超过 450,000 个视频，每日更新，MythAV、missav.com 替代品。"
     },
     "uiLayout": "ui-layouts/mythav.json",
-    "uiLayoutVersion": "1.0.5"
+    "uiLayoutVersion": "1.1.0"
   },
   {
     "name": "NJAV",
