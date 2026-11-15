@@ -8,8 +8,8 @@
         "title": "Trending Now",
         "accent": "#FE628E",
         "icon": "whatshot",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "latest",
@@ -17,8 +17,8 @@
         "title": "Recently Uploaded",
         "accent": "tertiary",
         "icon": "fiber_new",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "top",
@@ -26,8 +26,8 @@
         "title": "Most Viewed",
         "accent": "error",
         "icon": "trending_up",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "recent",
@@ -35,10 +35,10 @@
         "title": "New Releases",
         "accent": "secondary",
         "icon": "new_releases",
-        "columns": 2,
-        "rows": 2,
+        "paginated": true,
         "seeAll": true,
-        "paginated": true
+        "columns": 2,
+        "rows": 2
       },
       {
         "id": "brands",
@@ -46,7 +46,7 @@
         "title": "Studios",
         "accent": "#7C4DFF",
         "icon": "business",
-        "seeAll": true,
+        "seeAll": false,
         "paginated": false
       },
       {
@@ -70,17 +70,8 @@
         "title": "Uncensored",
         "accent": "#FF5C8A",
         "icon": "lock_open",
-        "seeAll": true,
-        "paginated": true
-      },
-      {
-        "id": "tag_plot",
-        "component": "compactRow",
-        "title": "Story Driven",
-        "accent": "#4DB6AC",
-        "icon": "auto_stories",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "tag_hd",
@@ -91,8 +82,26 @@
         "columns": 2,
         "rows": 2,
         "cardStyle": "landscape",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "tag_3d",
+        "component": "hero",
+        "title": "3D & CGI",
+        "accent": "#00ACC1",
+        "icon": "view_in_ar",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "tag_plot",
+        "component": "compactRow",
+        "title": "Story Driven",
+        "accent": "#4DB6AC",
+        "icon": "auto_stories",
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "tag_anal",
@@ -103,8 +112,8 @@
         "columns": 4,
         "rows": 1,
         "scrollDirection": "horizontal",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "tag_ntr",
@@ -114,8 +123,8 @@
         "icon": "heart_broken",
         "columns": 3,
         "rows": 2,
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "tag_vanilla",
@@ -123,8 +132,8 @@
         "title": "Vanilla",
         "accent": "#66BB6A",
         "icon": "favorite",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "tag_harem",
@@ -132,8 +141,8 @@
         "title": "Harem",
         "accent": "#FF7043",
         "icon": "groups",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "tag_creampie",
@@ -143,8 +152,8 @@
         "icon": "water_drop",
         "columns": 3,
         "rows": 2,
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "tag_futanari",
@@ -152,8 +161,8 @@
         "title": "Futanari",
         "accent": "#9C27B0",
         "icon": "wc",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "tag_milf",
@@ -161,8 +170,8 @@
         "title": "MILF",
         "accent": "#8D6E63",
         "icon": "woman",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "tag_blow-job",
@@ -170,8 +179,8 @@
         "title": "Blow Job",
         "accent": "#FF8A65",
         "icon": "whatshot",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "tag_big-boobs",
@@ -179,8 +188,8 @@
         "title": "Big Boobs",
         "accent": "#F06292",
         "icon": "favorite",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "tag_school-girl",
@@ -188,8 +197,139 @@
         "title": "School Girl",
         "accent": "#4FC3F7",
         "icon": "school",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "tag_tentacle",
+        "component": "landscapeStacked",
+        "title": "Tentacle",
+        "accent": "#8E24AA",
+        "icon": "bug_report",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "tag_yuri",
+        "component": "editorialSplit",
+        "title": "Yuri",
+        "accent": "#EC407A",
+        "icon": "diversity_3",
+        "columns": 3,
+        "rows": 2,
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "tag_yaoi",
+        "component": "doubleFeature",
+        "title": "Yaoi",
+        "accent": "#5C6BC0",
+        "icon": "diversity_1",
+        "columns": 2,
+        "rows": 1,
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "tag_monster",
+        "component": "playlistCarousel",
+        "title": "Monster",
+        "accent": "#6D4C41",
+        "icon": "pets",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "tag_nurse",
+        "component": "categoryPills",
+        "title": "Nurse",
+        "accent": "#26C6DA",
+        "icon": "medical_services",
+        "columns": 4,
+        "rows": 1,
+        "scrollDirection": "horizontal",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "tag_maid",
+        "component": "creatorRow",
+        "title": "Maid",
+        "accent": "#9CCC65",
+        "icon": "cleaning_services",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "tag_pov",
+        "component": "backdropWide",
+        "title": "POV",
+        "accent": "#FFA726",
+        "icon": "videocam",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "tag_fantasy",
+        "component": "newHot",
+        "title": "Fantasy",
+        "accent": "#AB47BC",
+        "icon": "auto_awesome",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "tag_comedy",
+        "component": "catalogue",
+        "title": "Comedy",
+        "accent": "#FFCA28",
+        "icon": "theater_comedy",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "tag_incest",
+        "component": "discoverGrid",
+        "title": "Taboo",
+        "accent": "#EF5350",
+        "icon": "family_restroom",
+        "columns": 2,
+        "rows": 2,
+        "cardStyle": "landscape",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "tag_lactation",
+        "component": "masonry",
+        "title": "Lactation",
+        "accent": "#4DD0E1",
+        "icon": "water_drop",
+        "columns": 2,
+        "rows": 2,
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "tag_threesome",
+        "component": "feed",
+        "title": "Threesome",
+        "accent": "#BA68C8",
+        "icon": "group_work",
+        "columns": 3,
+        "rows": 2,
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "tag_public-sex",
+        "component": "compactRow",
+        "title": "Public",
+        "accent": "#81C784",
+        "icon": "location_on",
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "brand_poro",
@@ -197,8 +337,8 @@
         "title": "PoRO",
         "accent": "#AB47BC",
         "icon": "movie_filter",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "brand_pink-pineapple",
@@ -206,8 +346,8 @@
         "title": "Pink Pineapple",
         "accent": "#EC407A",
         "icon": "business",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "brand_ms-pictures",
@@ -215,8 +355,8 @@
         "title": "MS Pictures",
         "accent": "#26A69A",
         "icon": "movie",
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
       },
       {
         "id": "brand_meltdown",
@@ -226,8 +366,129 @@
         "icon": "local_movies",
         "columns": 2,
         "rows": 1,
-        "seeAll": true,
-        "paginated": true
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "brand_queen-bee",
+        "component": "rankedWide",
+        "title": "Queen Bee",
+        "accent": "#FFB300",
+        "icon": "emoji_events",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "brand_studio-fow",
+        "component": "hero",
+        "title": "Studio FOW",
+        "accent": "#7E57C2",
+        "icon": "star",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "brand_umemaro-3d",
+        "component": "showcase",
+        "title": "Umemaro-3D",
+        "accent": "#26A69A",
+        "icon": "3d_rotation",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "brand_green-bunny",
+        "component": "landscapeStacked",
+        "title": "Green Bunny",
+        "accent": "#66BB6A",
+        "icon": "energy_savings_leaf",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "brand_milky",
+        "component": "editorialSplit",
+        "title": "Milky",
+        "accent": "#42A5F5",
+        "icon": "water_drop",
+        "columns": 3,
+        "rows": 2,
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "brand_bunnywalker",
+        "component": "creatorRow",
+        "title": "Bunnywalker",
+        "accent": "#FF7043",
+        "icon": "person",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "brand_seven",
+        "component": "playlistCarousel",
+        "title": "Seven",
+        "accent": "#8D6E63",
+        "icon": "looks_7",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "brand_t-rex",
+        "component": "backdropWide",
+        "title": "T-Rex",
+        "accent": "#558B2F",
+        "icon": "forest",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "brand_mary-jane",
+        "component": "statusPoster",
+        "title": "Mary Jane",
+        "accent": "#43A047",
+        "icon": "local_florist",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "brand_ziz",
+        "component": "newHot",
+        "title": "ZIZ",
+        "accent": "#F4511E",
+        "icon": "bolt",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "brand_tys-work",
+        "component": "catalogue",
+        "title": "TYS Work",
+        "accent": "#546E7A",
+        "icon": "work",
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "brand_pixy-soft",
+        "component": "masonry",
+        "title": "Pixy Soft",
+        "accent": "#D81B60",
+        "icon": "auto_awesome_mosaic",
+        "columns": 2,
+        "rows": 2,
+        "paginated": true,
+        "seeAll": true
+      },
+      {
+        "id": "brand_collaboration-works",
+        "component": "compactRow",
+        "title": "Collaboration Works",
+        "accent": "#00897B",
+        "icon": "handshake",
+        "paginated": true,
+        "seeAll": true
       }
     ]
   },

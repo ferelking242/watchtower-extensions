@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://hanime.tv/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "2.2.0",
+  "version": "2.3.0",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/hanime.js",
@@ -29,6 +29,15 @@ const HV_SIGN_HOST = "https://hanime.tv";
 const HV_SIGN_MODE = "mn2";
 const HV_GCM_KEY_SEED = "htv-insecure-handshake-v1";
 const HV_GCM_AAD = "htv-insecure-v1";
+
+// The app's own Cloudflare Worker proxy — the same endpoint the web build and
+// the other NSFW sources route through. `auth.hanime.tv` is behind Cloudflare
+// bot management: a plain client (the app's native Rust/TLS stack included)
+// is answered with a 403 challenge page, so the signed handshake never returns
+// its `x-token` and `getVideoList` comes back empty. The Worker runs outside
+// this network and is already accepted by the site, so it mints the token when
+// the direct call is refused.
+const HV_PROXY = "https://watchtower-proxy.aivos-dev.workers.dev/proxy";
 
 // ── Pure-JS SHA-256 (QuickJS has no WebCrypto) ───────────────────────────────
 const HV_K = [
@@ -299,6 +308,24 @@ class DefaultExtension extends MProvider {
     };
   }
 
+  // Headers attached to every media entry returned by getVideoList. They reach
+  // both the player and the downloader, so they describe a cross-site media
+  // request (never a page navigation) and carry the exact video page as
+  // Referer: the CDN rejects a request whose Origin/Referer is missing, and the
+  // app's browser fallback needs that same page to establish the context.
+  _mediaHeaders(pageUrl) {
+    return {
+      "User-Agent": HV_UA,
+      "Referer": pageUrl || (HV_BASE + "/"),
+      "Origin": HV_BASE,
+      "Accept": "*/*",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Sec-Fetch-Dest": "empty",
+      "Sec-Fetch-Mode": "cors",
+      "Sec-Fetch-Site": "cross-site"
+    };
+  }
+
   _jsonHeaders(url) {
     return {
       "User-Agent": HV_UA,
@@ -518,6 +545,15 @@ class DefaultExtension extends MProvider {
   }
 
   async _handshakeHttp(token, headers) {
+    const direct = await this._handshakeDirect(token, headers);
+    if (direct) return direct;
+    const viaProxy = await this._handshakeViaProxy(token, headers);
+    if (viaProxy) return viaProxy;
+    extLog("warn", "hanime: handshake refused (direct + proxy)");
+    return "";
+  }
+
+  async _handshakeDirect(token, headers) {
     try {
       // The runtime serialises a Map body to JSON itself (and would
       // double-encode a pre-stringified one), so pass the object.
@@ -527,6 +563,47 @@ class DefaultExtension extends MProvider {
       extLog("warn", "hanime: handshake HTTP refused (status " + (res.statusCode || "?") + ")");
     } catch (e) {
       extLog("warn", "hanime: handshake HTTP failed: " + (e && e.message ? e.message : e));
+    }
+    return "";
+  }
+
+  // Cloudflare answers `auth.hanime.tv` with a 403 challenge for any plain
+  // client, so the direct handshake cannot mint the player token. Re-issue the
+  // exact same signed POST through the app's Worker proxy, which the site
+  // accepts; the proxy returns the upstream response (headers + body) verbatim.
+  async _handshakeViaProxy(token, headers) {
+    try {
+      const res = await new Client().post(
+        HV_PROXY,
+        { "Content-Type": "application/json", "Accept": "application/json" },
+        {
+          method: "POST",
+          url: HV_AUTH + "/api/v11/handshake",
+          headers: headers,
+          body: JSON.stringify({ token })
+        }
+      );
+      if (!res || typeof res.body !== "string" || !res.body) {
+        extLog("warn", "hanime: handshake proxy returned no body");
+        return "";
+      }
+      let payload;
+      try {
+        payload = JSON.parse(res.body);
+      } catch (e) {
+        extLog("warn", "hanime: handshake proxy returned unparseable JSON");
+        return "";
+      }
+      if (payload && payload.error) {
+        extLog("warn", "hanime: handshake proxy error: " + payload.error);
+        return "";
+      }
+      const xt = this._headerOf(payload.headers, "x-token");
+      if (xt) return xt;
+      const status = Number((payload && payload.statusCode) || 0) || "?";
+      extLog("warn", "hanime: handshake proxy refused (status " + status + ")");
+    } catch (e) {
+      extLog("warn", "hanime: handshake proxy failed: " + (e && e.message ? e.message : e));
     }
     return "";
   }
@@ -563,7 +640,7 @@ class DefaultExtension extends MProvider {
         url: src.src.charAt(0) === "/" ? HV_BASE + src.src : src.src,
         quality,
         originalUrl: src.src,
-        headers: this.getHeaders(pageUrl),
+        headers: this._mediaHeaders(pageUrl),
         height: Number(src.height || 0)
       });
     }

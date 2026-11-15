@@ -4645,7 +4645,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000146.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "2.2.0",
+    "version": "2.3.0",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@dc2a530c69214019d704209b89a1e9f4549831b3/src/nsfw/watch/en/hanimedottv.js",
     "isManga": false,
     "isNsfw": true,
@@ -4685,7 +4685,7 @@
       "zh": "Hanime.tv — 免费无尽动漫流媒体，仅限 18 岁以上。热门和最新视频，可按标题搜索。"
     },
     "uiLayout": "ui-layouts/hanimedottv.json",
-    "uiLayoutVersion": "1.1.0"
+    "uiLayoutVersion": "1.2.0"
   },
   {
     "name": "Hentai0",
@@ -8073,7 +8073,7 @@
       "zh": "最佳 JAV（日本成人视频）色情网站，提供中文 AV 和亚洲 AV，超过 450,000 个视频，每日更新，MythAV、missav.com 替代品。"
     },
     "uiLayout": "ui-layouts/mythav.json",
-    "uiLayoutVersion": "1.1.0"
+    "uiLayoutVersion": "1.2.0"
   },
   {
     "name": "NJAV",
@@ -12593,7 +12593,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900001320.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "2.2.0",
+    "version": "2.3.0",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@dc2a530c69214019d704209b89a1e9f4549831b3/src/nsfw/watch/en/hanime.js",
     "isManga": false,
     "isNsfw": true,
@@ -12633,7 +12633,7 @@
     },
     "apiUrl": "https://guest.freeanimehentai.net",
     "uiLayout": "ui-layouts/hanime.json",
-    "uiLayoutVersion": "1.1.0"
+    "uiLayoutVersion": "1.2.0"
   },
   {
     "name": "hdeasyporn",
@@ -15545,7 +15545,7 @@
     "itemType": 1,
     "version": "1.2.0",
     "uiLayout": "ui-layouts/noodlemagazine.json",
-    "uiLayoutVersion": "1.1.0",
+    "uiLayoutVersion": "1.2.0",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@8213005cbe33194eff8af799d31e48d4fd19dac6/src/nsfw/watch/en/noodlemagazine.js",
     "isManga": false,
     "isNsfw": true,
