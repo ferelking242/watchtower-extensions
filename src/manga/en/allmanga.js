@@ -19,7 +19,7 @@ const watchtowerSources = [{
     "itemType": 0,
     "isNsfw": false,
     "hasCloudflare": true,
-    "version": "0.1.7",
+    "version": "0.1.8",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -83,20 +83,41 @@ class DefaultExtension extends MProvider {
     // ── Image URL ────────────────────────────────────────────────────────────
     // The API returns covers and reader pages as relative CDN paths
     // (`mcovers/…`, `images133/…`), so they must be prefixed with the head.
-    imageUrl(path, head) {
+    //
+    // `coverOnly` must stay on for covers and off for reader pages: the CDN
+    // stores *covers* as WebP even when the API still reports a legacy
+    // `.jpg`/`.jpeg`/`.png` suffix (those 404), but it serves *reader pages* in
+    // exactly the extension the API reports — a chapter is `.png`, another is
+    // `.webp`, another is `.jpg`. Rewriting a reader page to `.webp` therefore
+    // 404s every chapter that is not stored as WebP.
+    imageUrl(path, head, coverOnly) {
         const raw = String(path || "").trim();
         if (!raw) return "";
         if (raw.startsWith("//")) return `https:${raw}`;
         if (/^https?:\/\//i.test(raw)) return raw;
         const base = String(head || IMAGE_HEAD).replace(/\/$/, "");
         let rel = raw.replace(/^\//, "");
-        // The youtube-anime CDN stores every asset as WebP, but the API still
-        // returns a few covers with a `.jpg`/`.jpeg`/`.png` suffix. Those 404;
-        // rewrite the extension so the image resolves.
-        if (/youtube-anime\.com$/i.test(base)) {
+        if (coverOnly && /youtube-anime\.com$/i.test(base)) {
             rel = rel.replace(/\.(jpe?g|png|gif|bmp|avif)$/i, ".webp");
         }
         return `${base}/${rel}`;
+    }
+
+    // Cover variant of [imageUrl]: applies the legacy-suffix → WebP rewrite.
+    coverUrl(path) {
+        return this.imageUrl(path, null, true);
+    }
+
+    // ── Request headers for the image CDN ────────────────────────────────────
+    // The youtube-anime CDN is hotlink-protected: `aln.youtube-anime.com` 301s
+    // to `ytimgf.youtube-anime.com`, which answers `403` to every request that
+    // arrives without the reader site's `Referer`. The reader renders covers and
+    // page images with these headers, so the Referer must be declared here.
+    // The User-Agent is deliberately omitted: the app injects the browser UA of
+    // the Cloudflare-cleared session (the `cf_clearance` cookie is bound to it),
+    // and a hard-coded UA here would replace it and break that binding.
+    getHeaders() {
+        return { "Referer": BASE_URL + "/" };
     }
 
     // ── Title preference ─────────────────────────────────────────────────────
@@ -119,7 +140,7 @@ class DefaultExtension extends MProvider {
         const list = [];
         for (const m of edges) {
             const name     = this.pickTitle(m, pref);
-            const imageUrl = this.imageUrl(m.thumbnail);
+            const imageUrl = this.coverUrl(m.thumbnail);
             const link     = `/manga/${m._id}/${this.slugify(m.name)}`;
             list.push({ name, imageUrl, link });
         }
@@ -142,7 +163,7 @@ class DefaultExtension extends MProvider {
         const pref = new SharedPreferences().get("preferred_title_style") || "eng";
         const list = recs.map((r) => ({
             name:     this.pickTitle(r.anyCard, pref),
-            imageUrl: this.imageUrl(r.anyCard.thumbnail),
+            imageUrl: this.coverUrl(r.anyCard.thumbnail),
             link:     `/manga/${r.anyCard._id}/${this.slugify(r.anyCard.name)}`
         }));
         return { list, hasNextPage: list.length === 26 };
@@ -215,7 +236,7 @@ class DefaultExtension extends MProvider {
         const status      = this.parseStatus(manga.status);
         const pref        = new SharedPreferences().get("preferred_title_style") || "eng";
         const name        = this.pickTitle(manga, pref);
-        const imageUrl    = this.imageUrl(manga.thumbnail);
+        const imageUrl    = this.coverUrl(manga.thumbnail);
         const description = [
             manga.description || "",
             manga.score ? `\nScore: ${manga.score}★` : ""
@@ -259,13 +280,21 @@ class DefaultExtension extends MProvider {
         if (!Array.isArray(edges) || edges.length === 0) {
             throw new Error("[AllManga] Chapter response did not contain page images");
         }
+        // `chaptersForRead` answers with several mirrors of the SAME chapter (an
+        // `images133/…` edge plus a `file/imghub/…` one). Concatenating them
+        // doubles the page count and appends a dead mirror; keep the first edge
+        // that actually yields pages. `pictureUrlHead` is null on every source
+        // seen so far, so IMAGE_HEAD is the default head. Each page carries the
+        // CDN Referer so the reader's image request is not answered with 403.
+        const headers = this.getHeaders();
         const pages = [];
         for (const edge of edges) {
             const head = edge && edge.pictureUrlHead ? edge.pictureUrlHead : IMAGE_HEAD;
             for (const picture of ((edge && edge.pictureUrls) || [])) {
-                const pageUrl = this.imageUrl(picture && picture.url, head);
-                if (pageUrl) pages.push(pageUrl);
+                const url = this.imageUrl(picture && picture.url, head);
+                if (url) pages.push({ url, headers });
             }
+            if (pages.length > 0) break;
         }
         if (pages.length === 0) {
             throw new Error("[AllManga] Chapter response did not contain page images");

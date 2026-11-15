@@ -215,11 +215,16 @@ const ok = (data) => ({ statusCode: 200, body: JSON.stringify({ data }) });
     JSON.stringify({ mangaId: "abc", chapterString: "1", chapType: "sub" }),
   );
   assert.equal(
-    pages.join(","),
+    pages.map((page) => page.url).join(","),
     [
       `${IMAGE_HEAD}/images133/abc/1/sub_1/1.webp`,
       `${IMAGE_HEAD}/images133/abc/1/sub_1/2.webp`,
     ].join(","),
+  );
+  assert.equal(
+    pages[0].headers.Referer,
+    "https://allmanga.to/",
+    "reader pages must carry the CDN Referer or the hotlink CDN answers 403",
   );
 
   const empty = loadExtension(ok({ chaptersForRead: { edges: [] } }));

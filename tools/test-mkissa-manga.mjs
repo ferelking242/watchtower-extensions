@@ -160,7 +160,7 @@ const ok = (data) => ({ statusCode: 200, body: JSON.stringify({ data }) });
   assert.equal(detail.chapters[0].name, "Chapter 1");
 }
 
-// ── 5. The reader returns absolute page URLs from chaptersForRead ─────────────
+// ── 5. The reader keeps the API's page extension and carries CDN headers ─────
 {
   const { provider } = loadExtension(
     ok({
@@ -168,7 +168,12 @@ const ok = (data) => ({ statusCode: 200, body: JSON.stringify({ data }) });
         edges: [
           {
             pictureUrlHead: null,
-            pictureUrls: [{ url: "images125/abc/0/sub_1/1.webp" }],
+            // A `.png` page must NOT be rewritten to `.webp`: the CDN serves
+            // reader pages in exactly the extension the API reports.
+            pictureUrls: [
+              { url: "images125/abc/0/sub_1/1.png" },
+              { url: "images125/abc/0/sub_1/2.webp" },
+            ],
           },
         ],
       },
@@ -177,13 +182,54 @@ const ok = (data) => ({ statusCode: 200, body: JSON.stringify({ data }) });
   const pages = await provider.getPageList(
     JSON.stringify({ mangaId: "abc", chapterString: "0", chapType: "sub" }),
   );
+  assert.equal(pages.length, 2);
+  assert.equal(pages[0].url, `${IMAGE_HEAD}/images125/abc/0/sub_1/1.png`);
+  assert.equal(pages[1].url, `${IMAGE_HEAD}/images125/abc/0/sub_1/2.webp`);
   assert.equal(
-    pages.join(","),
-    `${IMAGE_HEAD}/images125/abc/0/sub_1/1.webp`,
+    pages[0].headers.Referer,
+    "https://mkissa.to/",
+    "reader pages must carry the CDN Referer or the hotlink CDN answers 403",
+  );
+  assert.equal(
+    pages[0].headers["User-Agent"],
+    undefined,
+    "the UA must be left to the app's cleared browser session, not pinned here",
   );
 }
 
-// ── 6. A manga source must not expose a video method ──────────────────────────
+// ── 6. Mirror edges of one chapter are not concatenated ───────────────────────
+{
+  const { provider } = loadExtension(
+    ok({
+      chaptersForRead: {
+        edges: [
+          {
+            pictureUrlHead: null,
+            pictureUrls: [
+              { url: "images133/abc/1/sub/1.png" },
+              { url: "images133/abc/1/sub/2.png" },
+            ],
+          },
+          {
+            // Second mirror of the SAME chapter (dead `file/imghub` host).
+            pictureUrlHead: null,
+            pictureUrls: [
+              { url: "file/imghub/abc/1/1.jpg" },
+              { url: "file/imghub/abc/1/2.jpg" },
+            ],
+          },
+        ],
+      },
+    }),
+  );
+  const pages = await provider.getPageList(
+    JSON.stringify({ mangaId: "abc", chapterString: "1", chapType: "sub" }),
+  );
+  assert.equal(pages.length, 2, "only the first usable mirror is returned");
+  assert.equal(pages[0].url, `${IMAGE_HEAD}/images133/abc/1/sub/1.png`);
+}
+
+// ── 7. A manga source must not expose a video method ──────────────────────────
 {
   const { provider } = loadExtension(ok({}));
   assert.equal(
