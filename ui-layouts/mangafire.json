@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "home": {
     "sections": [
-      { "id": "new_manga", "component": "carousel", "title": "✨ New Manga", "accent": "tertiary", "icon": "fiber_new",   "seeAll": true },
+      { "id": "new_manga", "component": "spotlight", "title": "✨ New Manga", "accent": "tertiary", "icon": "fiber_new",   "seeAll": true },
       { "id": "trending",  "component": "ranked",   "title": "🔥 Trending", "accent": "error",    "icon": "trending_up", "seeAll": true }
     ]
   },

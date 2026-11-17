@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "home": {
     "sections": [
-      { "id": "carousel",   "component": "banner",        "title": null,                   "accent": "#1CB7FF" },
+      { "id": "carousel", "component": "spotlight", "title": "✨ À la une", "accent": "primary", "icon": "auto_awesome", "seeAll": true },
       { "id": "cat_action", "component": "categoryPills", "title": "Action",               "accent": "#C0392B" },
       { "id": "cat_anime",  "component": "categoryPills", "title": "Anime",                "accent": "#8E44AD" },
       { "id": "cat_drama",  "component": "categoryPills", "title": "Drame",                "accent": "#00897B" },

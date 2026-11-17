@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "home": {
     "sections": [
+      { "id": "spotlight", "component": "spotlight", "title": "✨ À la une", "accent": "primary", "icon": "auto_awesome", "seeAll": true, "params": { "dataSource": "popular" } },
       { "id": "niche_blonde",    "component": "categoryPills", "title": "Blonde",       "accent": "#1A1A2E" },
       { "id": "niche_brunette",  "component": "categoryPills", "title": "Brunette",     "accent": "#1A1A2E" },
       { "id": "niche_latina",    "component": "categoryPills", "title": "Latinas",      "accent": "#1A1A2E" },

@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "home": {
     "sections": [
+      { "id": "spotlight", "component": "spotlight", "title": "✨ À la une", "accent": "primary", "icon": "auto_awesome", "seeAll": true, "params": { "dataSource": "popular" } },
       { "id": "all",            "component": "categoryPills", "title": "📺 Toutes les chaînes", "accent": "#1565C0" },
       { "id": "sport",          "component": "categoryPills", "title": "⚽ Sport",               "accent": "#2E7D32" },
       { "id": "info",           "component": "categoryPills", "title": "📰 Info & Actualités",   "accent": "#BF360C" },

@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "home": {
     "sections": [
+      { "id": "spotlight", "component": "spotlight", "title": "✨ À la une", "accent": "primary", "icon": "auto_awesome", "seeAll": true, "params": { "dataSource": "popular" } },
       { "id": "popular", "component": "ranked",   "title": "🔥 Popular",        "accent": "error",    "seeAll": true },
       { "id": "latest",  "component": "carousel", "title": "✨ Latest Updates", "accent": "tertiary", "seeAll": true }
     ]

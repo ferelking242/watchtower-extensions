@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "home": {
     "sections": [
-      { "id": "trending",    "component": "carousel", "title": "🔥 Tendances",       "accent": "error",     "seeAll": true },
+      { "id": "trending",    "component": "spotlight", "title": "🔥 Tendances",       "accent": "error",     "seeAll": true },
       { "id": "vf",          "component": "carousel", "title": "🇫🇷 VF",              "accent": "primary",   "seeAll": true },
       { "id": "vostfr",      "component": "carousel", "title": "🌐 VOSTFR",          "accent": "secondary", "seeAll": true },
       { "id": "action",      "component": "carousel", "title": "💥 Action",          "accent": "#E53935",   "seeAll": true },

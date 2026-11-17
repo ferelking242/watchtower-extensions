@@ -529,6 +529,18 @@ Toute extension dont le `uiLayout` change doit aussi porter un
 layout ne se déclenche jamais chez une installation existante. XVideos en était
 dépourvu (seule du catalogue).
 
+### Règle : tout `ui-layouts/*.json` commence par le spotlight partagé
+
+Le premier `home.sections[]` de **chaque** layout doit être
+`{ "component": "spotlight" }` (l'alias `carousel` est accepté : c'est le même
+renderer). Ce composant est le seul hero que l'app sait rendre partout
+(`MediaHeroCarousel`, plein écran) ; un home qui démarre sur `banner`,
+`ranked`, `categoryPills` ou un hero maison donne un rendu différent par
+extension et casse le contrat de design. Le validateur
+(`tools/validate-extensions.mjs`) refuse désormais un premier composant autre
+que `spotlight`/`carousel`. Le composant `banner` est déprécié côté accueil :
+ne plus l'utiliser comme ouverture.
+
 ### Budget réseau : ne jamais se fier au timeout par défaut du client
 
 `new Client()` sans options hérite du timeout HTTP **par défaut de l'app (60 s)**,

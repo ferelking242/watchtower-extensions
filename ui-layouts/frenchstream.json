@@ -2,6 +2,7 @@
   "schemaVersion": 1,
   "home": {
     "sections": [
+      { "id": "spotlight", "component": "spotlight", "title": "✨ À la une", "accent": "primary", "icon": "auto_awesome", "seeAll": true, "params": { "dataSource": "popular" } },
       { "id": "trending",         "component": "compactRow", "title": "🔥 À l'affiche",        "accent": "error",    "icon": "local_fire_department", "seeAll": true },
       { "id": "films",            "component": "compactRow", "title": "🎬 Films",              "accent": "#1565C0",  "icon": "movie",                 "seeAll": true },
       { "id": "series",           "component": "compactRow", "title": "📺 Séries",             "accent": "#6A1B9A",  "icon": "live_tv",               "seeAll": true },

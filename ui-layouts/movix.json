@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "home": {
     "sections": [
-      { "id": "accueil",     "component": "banner",    "title": null,                "accent": "#7C3AED" },
+      { "id": "accueil", "component": "spotlight", "title": "✨ À la une", "accent": "primary", "icon": "auto_awesome", "seeAll": true },
       { "id": "popular",     "component": "carousel",  "title": "🔥 Populaires",     "accent": "#EF4444",  "icon": "trending_up",    "seeAll": true },
       { "id": "latest",      "component": "carousel",  "title": "🆕 Derniers ajouts","accent": "#06B6D4",  "icon": "fiber_new",      "seeAll": true },
       { "id": "top_rated",   "component": "ranked",    "title": "⭐ Mieux notés",    "accent": "#F59E0B",  "icon": "star",           "seeAll": true },

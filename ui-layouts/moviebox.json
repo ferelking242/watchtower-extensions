@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "home": {
     "sections": [
-      { "id": "carousel",      "component": "banner",        "title": null,               "accent": "#1CB7FF" },
+      { "id": "carousel", "component": "spotlight", "title": "✨ À la une", "accent": "primary", "icon": "auto_awesome", "seeAll": true },
       { "id": "cat_all",       "component": "categoryPills", "title": "All",              "accent": "#2C3E50" },
       { "id": "cat_action",    "component": "categoryPills", "title": "Action",           "accent": "#C0392B" },
       { "id": "cat_comedy",    "component": "categoryPills", "title": "Comédie",          "accent": "#D4AC0D" },

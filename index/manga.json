@@ -5428,6 +5428,8 @@
     "itemType": 0,
     "version": "0.2.3",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@cf3f910d6406cd395f862444a5504c48c0ef8520/src/manga/en/mkissa.js",
+    "uiLayout": "ui-layouts/mkissa.json",
+    "uiLayoutVersion": "1.0.0",
     "isManga": true,
     "isNsfw": false,
     "hasCloudflare": true,

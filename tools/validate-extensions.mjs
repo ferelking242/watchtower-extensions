@@ -260,6 +260,18 @@ for (const rel of jsonFiles.filter((file) => file.startsWith("ui-layouts/"))) {
       }
     }
   }
+  // Every extension home opens with the shared spotlight hero. The app renders
+  // this one component everywhere, so a home that starts on another rail (or on
+  // a source-specific hero) looks different per extension and drifts from the
+  // design contract. `carousel` is the spotlight alias and is accepted.
+  if (sections.length > 0) {
+    const opener = sections[0]?.component;
+    if (opener !== "spotlight" && opener !== "carousel") {
+      problems.push(
+        `LAYOUT: ${rel} must open with the "spotlight" component as its first home section (got ${opener || "(missing)"})`,
+      );
+    }
+  }
 }
 console.log("   layout structure is valid");
 
