@@ -75,7 +75,14 @@ class LibraryEndpoint {
   }
 
   /// Adds the session cookies and the SAPISIDHASH header to the client.
+  /// Signed out, there are no credentials to read: leave the client
+  /// unauthenticated instead of dereferencing a null map.
   fun _authenticate() {
+    if (!_isSignedIn()) {
+      client.cookieHeader = ""
+      client.authorization = ""
+      return
+    }
     var cookies = []
     var rows = auth.credentials["cookies"] ?? []
     for (var cookie in rows) {
