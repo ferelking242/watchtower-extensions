@@ -5,3 +5,5 @@ example/.packages
 example/pubspec.lock
 example/build/
 *.out
+plugin.smplug
+*.smplug
