@@ -23,6 +23,7 @@ const extensionSource = fs.readFileSync(
 
 const API = "https://api.allanime.day/api";
 const IMAGE_HEAD = "https://aln.youtube-anime.com";
+const READER_HEAD = "https://ytimgf.youtube-anime.com";
 
 function loadExtension(response) {
   const calls = [];
@@ -217,8 +218,8 @@ const ok = (data) => ({ statusCode: 200, body: JSON.stringify({ data }) });
   assert.equal(
     pages.map((page) => page.url).join(","),
     [
-      `${IMAGE_HEAD}/images133/abc/1/sub_1/1.webp`,
-      `${IMAGE_HEAD}/images133/abc/1/sub_1/2.webp`,
+      `${READER_HEAD}/images133/abc/1/sub_1/1.webp`,
+      `${READER_HEAD}/images133/abc/1/sub_1/2.webp`,
     ].join(","),
   );
   assert.equal(

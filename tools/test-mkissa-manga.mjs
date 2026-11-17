@@ -23,6 +23,7 @@ const extensionSource = fs.readFileSync(
 
 const API = "https://api.mkissa.net/api";
 const IMAGE_HEAD = "https://aln.youtube-anime.com";
+const READER_HEAD = "https://ytimgf.youtube-anime.com";
 
 function loadExtension(response) {
   const calls = [];
@@ -183,8 +184,11 @@ const ok = (data) => ({ statusCode: 200, body: JSON.stringify({ data }) });
     JSON.stringify({ mangaId: "abc", chapterString: "0", chapType: "sub" }),
   );
   assert.equal(pages.length, 2);
-  assert.equal(pages[0].url, `${IMAGE_HEAD}/images125/abc/0/sub_1/1.png`);
-  assert.equal(pages[1].url, `${IMAGE_HEAD}/images125/abc/0/sub_1/2.webp`);
+  // Reader pages are requested from `ytimgf` directly: `aln` only 301s them to
+  // `ytimgf`, and the app's Rust client rewrites `Referer` to the redirecting
+  // `aln` URL on that 301, which the CDN answers with 403 (the download bug).
+  assert.equal(pages[0].url, `${READER_HEAD}/images125/abc/0/sub_1/1.png`);
+  assert.equal(pages[1].url, `${READER_HEAD}/images125/abc/0/sub_1/2.webp`);
   assert.equal(
     pages[0].headers.Referer,
     "https://mkissa.to/",
@@ -226,10 +230,55 @@ const ok = (data) => ({ statusCode: 200, body: JSON.stringify({ data }) });
     JSON.stringify({ mangaId: "abc", chapterString: "1", chapType: "sub" }),
   );
   assert.equal(pages.length, 2, "only the first usable mirror is returned");
-  assert.equal(pages[0].url, `${IMAGE_HEAD}/images133/abc/1/sub/1.png`);
+  assert.equal(pages[0].url, `${READER_HEAD}/images133/abc/1/sub/1.png`);
 }
 
-// ── 7. A manga source must not expose a video method ──────────────────────────
+// ── 7. Reader pages use the ytimgf head, never the aln head ───────────────────
+{
+  // `aln` 301s every reader page to `ytimgf`; the app's Rust client then rewrites
+  // `Referer` to the `aln` URL on the redirect, which the CDN answers with 403.
+  // The download worker only has that client, so it must never receive an `aln`
+  // reader URL. A non-`aln` `pictureUrlHead` is still respected.
+  const { provider } = loadExtension(
+    ok({
+      chaptersForRead: {
+        edges: [
+          {
+            pictureUrlHead: "https://aln.youtube-anime.com",
+            pictureUrls: [{ url: "images133/abc/9/sub/1.jpg" }],
+          },
+        ],
+      },
+    }),
+  );
+  const pages = await provider.getPageList(
+    JSON.stringify({ mangaId: "abc", chapterString: "9", chapType: "sub" }),
+  );
+  assert.equal(pages[0].url, `${READER_HEAD}/images133/abc/9/sub/1.jpg`);
+
+  const custom = loadExtension(
+    ok({
+      chaptersForRead: {
+        edges: [
+          {
+            pictureUrlHead: "https://cdn.example.com",
+            pictureUrls: [{ url: "images133/abc/9/sub/1.jpg" }],
+          },
+        ],
+      },
+    }),
+  );
+  const customPages = await custom.provider.getPageList(
+    JSON.stringify({ mangaId: "abc", chapterString: "9", chapType: "sub" }),
+  );
+  assert.equal(
+    customPages[0].url,
+    "https://cdn.example.com/images133/abc/9/sub/1.jpg",
+    "a non-aln pictureUrlHead must be kept",
+  );
+}
+
+// ── 8. A manga source must not expose a video method ──────────────────────────
 {
   const { provider } = loadExtension(ok({}));
   assert.equal(

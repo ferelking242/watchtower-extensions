@@ -19,7 +19,7 @@ const watchtowerSources = [{
     "itemType": 0,
     "isNsfw": false,
     "hasCloudflare": true,
-    "version": "0.1.8",
+    "version": "0.1.9",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -44,7 +44,19 @@ const API_URL   = "https://api.allanime.day/api";
 // Relative reader paths (`images133/<id>/<chap>/<type>/<n>.jpg`) are served by
 // the youtube-anime image CDN. `pictureUrlHead` is null on every source seen so
 // far, so this constant is the default head.
+//
+// The CDN splits the two families across hosts: `aln` serves *covers* directly
+// (200) but answers every *reader page* with a 301 to `ytimgf`, which serves the
+// page. That redirect is fatal in the app's Rust HTTP client: reqwest rewrites
+// `Referer` to the redirecting URL on a 301, and `ytimgf` answers `403` to any
+// `aln` Referer (measured 2026-11-17: `Referer: https://allmanga.to/` → 200,
+// `Referer: https://aln.youtube-anime.com/…` → 403, no Referer → 403). The
+// reader survives only because it retries over the plain Dart client, which
+// does not rewrite the Referer; the download worker uses the Rust client alone
+// and dies on the 403. Asking `ytimgf` for the page directly skips the 301, so
+// the extension's `Referer` reaches the CDN intact.
 const IMAGE_HEAD = "https://aln.youtube-anime.com";
+const READER_HEAD = "https://ytimgf.youtube-anime.com";
 
 class DefaultExtension extends MProvider {
 
@@ -108,11 +120,20 @@ class DefaultExtension extends MProvider {
         return this.imageUrl(path, null, true);
     }
 
+    // Reader-page head. `aln` only 301s reader pages to `ytimgf`, and the app's
+    // Rust client turns that 301 into a `Referer: aln…` request that the CDN
+    // answers with 403, so the page is requested from `ytimgf` directly. A real
+    // (non-null) `pictureUrlHead` is respected unless it is the `aln` head.
+    readerHead(head) {
+        const base = String(head || IMAGE_HEAD).replace(/\/$/, "");
+        if (/^https?:\/\/aln\.youtube-anime\.com$/i.test(base)) return READER_HEAD;
+        return base;
+    }
+
     // ── Request headers for the image CDN ────────────────────────────────────
-    // The youtube-anime CDN is hotlink-protected: `aln.youtube-anime.com` 301s
-    // to `ytimgf.youtube-anime.com`, which answers `403` to every request that
-    // arrives without the reader site's `Referer`. The reader renders covers and
-    // page images with these headers, so the Referer must be declared here.
+    // The youtube-anime CDN is hotlink-protected: it answers `403` to any request
+    // that arrives without the reader site's `Referer`. The reader renders covers
+    // and page images with these headers, so the Referer must be declared here.
     // The User-Agent is deliberately omitted: the app injects the browser UA of
     // the Cloudflare-cleared session (the `cf_clearance` cookie is bound to it),
     // and a hard-coded UA here would replace it and break that binding.
@@ -284,12 +305,13 @@ class DefaultExtension extends MProvider {
         // `images133/…` edge plus a `file/imghub/…` one). Concatenating them
         // doubles the page count and appends a dead mirror; keep the first edge
         // that actually yields pages. `pictureUrlHead` is null on every source
-        // seen so far, so IMAGE_HEAD is the default head. Each page carries the
-        // CDN Referer so the reader's image request is not answered with 403.
+        // seen so far, so IMAGE_HEAD is the default head. Reader pages are
+        // requested from the `ytimgf` head (see [readerHead]) and each page
+        // carries the CDN Referer so the request is not answered with 403.
         const headers = this.getHeaders();
         const pages = [];
         for (const edge of edges) {
-            const head = edge && edge.pictureUrlHead ? edge.pictureUrlHead : IMAGE_HEAD;
+            const head = this.readerHead(edge && edge.pictureUrlHead);
             for (const picture of ((edge && edge.pictureUrls) || [])) {
                 const url = this.imageUrl(picture && picture.url, head);
                 if (url) pages.push({ url, headers });
