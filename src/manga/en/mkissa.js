@@ -13,6 +13,14 @@
 // on every page. Same fix applied to AllManga.
 // v0.2.4 — getCustomList answers each home section id with its own feed
 // (spotlight / popular / latest / new) instead of one list for every rail.
+// v0.3.0 — the home layout uses the full AllAnime surface: a "top rated" and a
+// "trending" rail plus one rail per genre (`category_<genre>`), all served by
+// the `mangas(search:{genres:[…],sortBy:…})` query. `api.mkissa.net` throttles
+// hard (measured 2026-11-17: a 13-request burst answers 9 with "Too many
+// requests, please try again in N seconds"), so the extension now retries a
+// throttled call after the advertised delay and memoises every rail for a few
+// minutes: the home fires one request per section and the cache keeps a revisit
+// from re-requesting them all.
 
 const watchtowerSources = [{
     "name": "MKissa",
@@ -25,7 +33,7 @@ const watchtowerSources = [{
     "itemType": 0,
     "isNsfw": false,
     "hasCloudflare": true,
-    "version": "0.2.4",
+    "version": "0.3.0",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -64,38 +72,114 @@ const API_URL    = "https://api.mkissa.net/api";
 const IMAGE_HEAD = "https://aln.youtube-anime.com";
 const READER_HEAD = "https://ytimgf.youtube-anime.com";
 
+// The API throttles hard: a burst of a dozen calls answers most with
+// "Too many requests, please try again in N seconds" (measured 2026-11-17),
+// while the same calls spaced ~1 s apart all succeed. [gql] therefore paces
+// requests with [MIN_REQUEST_INTERVAL_MS], retries a throttled response after
+// the delay it advertises, and [memo] keeps every home rail for a few minutes
+// so re-opening the home does not re-fire the whole set of sections.
+const RATE_LIMIT_PATTERN = /too many requests|rate.?limit/i;
+const RAIL_CACHE_TTL_MS = 5 * 60 * 1000;
+const RAIL_CACHE_LIMIT = 64;
+const MAX_THROTTLE_RETRIES = 3;
+const MIN_REQUEST_INTERVAL_MS = 700;
+
 class DefaultExtension extends MProvider {
+
+    constructor() {
+        super();
+        this._railCache = new Map();
+        this._requestChain = Promise.resolve();
+        this._lastRequestAt = 0;
+    }
 
     // ── HTTP helper ──────────────────────────────────────────────────────────
     // The API is behind Cloudflare: a GET with the query in the URL is answered
     // `403 cf-mitigated: challenge`, while the same payload as a JSON POST
     // returns `200`. The extension must therefore POST the body.
     async gql(query, variables) {
-        const res = await new Client().post(
-            API_URL,
-            {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "Origin": BASE_URL,
-                "Referer": BASE_URL + "/",
-                "from-app": "true"
-            },
-            { query, variables }
-        );
-        let payload;
-        try {
-            payload = JSON.parse(res.body || "{}");
-        } catch (_) {
-            throw new Error("[MKissa] API returned invalid JSON");
+        return this._serialize(async () => {
+            let attempt = 0;
+            for (;;) {
+                await this._pace();
+                const res = await new Client().post(
+                    API_URL,
+                    {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                        "Origin": BASE_URL,
+                        "Referer": BASE_URL + "/",
+                        "from-app": "true"
+                    },
+                    { query, variables }
+                );
+                let payload;
+                try {
+                    payload = JSON.parse(res.body || "{}");
+                } catch (_) {
+                    throw new Error("[MKissa] API returned invalid JSON");
+                }
+                if (Array.isArray(payload.errors) && payload.errors.length) {
+                    const message = payload.errors
+                        .map((error) => error && error.message)
+                        .filter(Boolean)
+                        .join("; ");
+                    // A throttled call is retried after the delay the API
+                    // advertises ("… please try again in 8 seconds"), otherwise
+                    // every rail that loses the race renders an error card.
+                    const waitMs = this._throttleDelay(payload.errors[0] && payload.errors[0].message);
+                    if (waitMs !== null && attempt < MAX_THROTTLE_RETRIES) {
+                        attempt += 1;
+                        await new Promise((resolve) => setTimeout(resolve, waitMs));
+                        continue;
+                    }
+                    throw new Error(`[MKissa] GraphQL error${message ? `: ${message}` : ""}`);
+                }
+                return payload.data;
+            }
+        });
+    }
+
+    // Requests run one at a time and never closer than [MIN_REQUEST_INTERVAL_MS]:
+    // the app fires every home shelf at once and the API throttles a burst.
+    _serialize(task) {
+        const run = this._requestChain.then(task, task);
+        this._requestChain = run.then(() => undefined, () => undefined);
+        return run;
+    }
+
+    async _pace() {
+        const elapsed = Date.now() - this._lastRequestAt;
+        const wait = MIN_REQUEST_INTERVAL_MS - elapsed;
+        if (wait > 0) await new Promise((resolve) => setTimeout(resolve, wait));
+        this._lastRequestAt = Date.now();
+    }
+
+    // Delay (ms) advertised by a throttle error, or null when the error is not
+    // a throttle. The API phrases it as "Too many requests, please try again in
+    // N seconds."; a small floor keeps a same-second retry from re-tripping it.
+    _throttleDelay(message) {
+        const text = String(message || "");
+        if (!RATE_LIMIT_PATTERN.test(text)) return null;
+        const match = /in (\d+(?:\.\d+)?) seconds?/i.exec(text);
+        const seconds = match ? parseFloat(match[1]) : 2;
+        return Math.max(seconds, 1) * 1000 + 250;
+    }
+
+    // ── Rail memoisation ─────────────────────────────────────────────────────
+    // The home asks one request per section; without a cache a single visit
+    // fires them all at once and the API throttles the tail. A short TTL keeps
+    // the home instant on re-entry and after a refresh a moment later.
+    async memo(key, ttlMs, loader) {
+        const now = Date.now();
+        const hit = this._railCache.get(key);
+        if (hit && now - hit.at < (ttlMs || RAIL_CACHE_TTL_MS)) return hit.value;
+        const value = await loader();
+        if (this._railCache.size >= RAIL_CACHE_LIMIT) {
+            this._railCache.delete(this._railCache.keys().next().value);
         }
-        if (Array.isArray(payload.errors) && payload.errors.length) {
-            const message = payload.errors
-                .map((error) => error && error.message)
-                .filter(Boolean)
-                .join("; ");
-            throw new Error(`[MKissa] GraphQL error${message ? `: ${message}` : ""}`);
-        }
-        return payload.data;
+        this._railCache.set(key, { at: now, value });
+        return value;
     }
 
     // ── Image URL ────────────────────────────────────────────────────────────
@@ -412,18 +496,105 @@ class DefaultExtension extends MProvider {
     // ── Custom lists ─────────────────────────────────────────────────────────
     // The home layout asks for one rail per section id. Every id must resolve
     // to its OWN feed, otherwise the home shows the same list three times:
-    //   spotlight → the hero slice of the weekly ranking
-    //   popular   → the full weekly ranking
-    //   latest    → the latest chapter updates
-    //   new       → the new-series rail
-    // An unknown id falls back to the latest updates so a rail is never empty.
+    //   spotlight        → the hero slice of the weekly ranking
+    //   popular          → the weekly ranking
+    //   top_rated        → the all-time ranking (`sortBy: Top`)
+    //   trending         → the site's trending ranking
+    //   latest           → the latest chapter updates
+    //   new              → the new-series rail
+    //   category_<genre> → the most popular titles of one genre
+    // Every rail is memoised for a few minutes so a single home visit fires each
+    // request once, even though the app re-reads a section while it refreshes.
     async getCustomList(listId, page) {
-        if (listId === "spotlight") {
-            const popular = await this.getPopular(1);
-            return { list: popular.list.slice(0, 8), hasNextPage: false };
+        const id = String(listId || "");
+        return this.memo(`list:${id}:${page}`, RAIL_CACHE_TTL_MS, async () => {
+            if (id === "spotlight") {
+                const popular = await this.getPopular(1);
+                return { list: popular.list.slice(0, 8), hasNextPage: false };
+            }
+            if (id === "popular") return this.getPopular(page);
+            if (id === "new") return this.getNewSeries();
+            const genre = this.genreFromListId(id);
+            if (genre) {
+                return this.getRanked(
+                    { genres: [genre], sortBy: "Popular", sortDirection: "DSC" },
+                    page
+                );
+            }
+            const sort = this.sortFromListId(id);
+            if (sort) {
+                return this.getRanked(
+                    { sortBy: sort[0], sortDirection: sort[1] },
+                    page
+                );
+            }
+            return this.getLatestUpdates(page);
+        });
+    }
+
+    // `category_<genre>` (the layout convention) or the bare genre name. Section
+    // ids are lowercase and hyphenated (`category_slice-of-life`), so both sides
+    // are normalised to lowercase words and the API's canonical spelling wins.
+    genreFromListId(listId) {
+        const id = String(listId || "");
+        const value = this._genreKey(
+            id.startsWith("category_") ? id.slice("category_".length) : id
+        );
+        if (!value) return "";
+        return this.knownGenres().find((g) => this._genreKey(g) === value) || "";
+    }
+
+    _genreKey(value) {
+        return String(value || "").toLowerCase().replace(/[-_]+/g, " ").trim();
+    }
+
+    sortFromListId(listId) {
+        const map = {
+            top_rated: ["Top", "DSC"],
+            trending: ["Trending", "DSC"],
+            popular_weekly: ["Popular", "DSC"]
+        };
+        return map[String(listId || "")] || null;
+    }
+
+    // Genres the API's `genres:[…]` filter actually answers with results. The
+    // vocabulary is measured from the popular set, not invented: a name the API
+    // does not know returns an empty list rather than an error, so an unknown
+    // genre would silently render an empty rail.
+    knownGenres() {
+        return [
+            "Action", "Adventure", "Comedy", "Drama", "Fantasy", "Horror",
+            "Mystery", "Romance", "Sci-Fi", "Slice of Life", "Supernatural",
+            "Thriller", "Isekai", "Shounen", "Seinen", "Shoujo", "Josei",
+            "Harem", "Ecchi", "Historical", "Mecha", "Music", "Psychological",
+            "School", "Sports", "Tragedy", "Vampire", "Demons", "Magic",
+            "Martial Arts", "Military", "Reincarnation", "Super Power",
+            "Time Travel", "Webtoons", "Manhwa"
+        ];
+    }
+
+    // Ranking query: `mangas(search:{…,sortBy,sortDirection})` is the only
+    // surface that sorts and filters at once, and it is what powers the genre
+    // rails (`genres:[…]`) and the top/trending rails (`sortBy`).
+    async getRanked(search, page) {
+        const data = await this.gql(
+            "query($search:SearchInput,$limit:Int,$page:Int){" +
+            "mangas(search:$search,limit:$limit,page:$page){" +
+            "edges{_id name englishName nativeName thumbnail}}}",
+            {
+                search: Object.assign(
+                    { query: "", allowAdult: false, allowUnknown: false },
+                    search
+                ),
+                limit: 26,
+                page
+            }
+        );
+        const edges = data && data.mangas && data.mangas.edges;
+        if (!Array.isArray(edges)) {
+            throw new Error("[MKissa] Ranking response did not contain manga results");
         }
-        if (listId === "popular") return this.getPopular(page);
-        if (listId === "new") return this.getNewSeries();
-        return this.getLatestUpdates(page);
+        const pref = new SharedPreferences().get("preferred_title_style") || "eng";
+        return this.parseMangaList(edges, pref, edges.length === 26);
     }
 }

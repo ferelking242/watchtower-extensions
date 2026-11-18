@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      { "id": "spotlight",        "component": "spotlight",  "title": "✨ À la une",          "accent": "primary",   "icon": "auto_awesome",         "seeAll": true },
+      { "id": "popular",          "component": "ranked",     "title": "🔥 Les plus lus",      "accent": "error",     "icon": "trending_up",          "seeAll": true },
+      { "id": "latest",           "component": "compactRow", "title": "🆕 Dernières sorties", "accent": "tertiary",  "icon": "fiber_new",            "seeAll": true },
+      { "id": "trending",         "component": "ranked",     "title": "📈 Tendance",          "accent": "#FF7043",   "icon": "local_fire_department", "seeAll": true },
+      { "id": "top_rated",        "component": "compactRow", "title": "⭐ Les mieux notés",   "accent": "#FFC107",   "icon": "star",                 "seeAll": true },
+      { "id": "new",              "component": "grid",       "title": "🌱 Nouveautés",        "accent": "secondary", "icon": "auto_awesome", "columns": 3, "rows": 2, "cardStyle": "poster", "seeAll": true },
+      { "id": "category_action",  "component": "compactRow", "title": "⚔️ Action",            "accent": "#42A5F5",   "icon": "bolt",                 "seeAll": true },
+      { "id": "category_romance", "component": "compactRow", "title": "💕 Romance",           "accent": "#E91E63",   "icon": "favorite",             "seeAll": true },
+      { "id": "category_fantasy", "component": "compactRow", "title": "🐉 Fantasy",           "accent": "#8E44AD",   "icon": "auto_awesome",         "seeAll": true },
+      { "id": "category_comedy",  "component": "compactRow", "title": "😂 Comédie",           "accent": "#FFB300",   "icon": "emoji_emotions",       "seeAll": true },
+      { "id": "category_drama",   "component": "compactRow", "title": "🎭 Drame",             "accent": "#00897B",   "icon": "theater_comedy",       "seeAll": true },
+      { "id": "category_slice-of-life", "component": "compactRow", "title": "🌿 Tranche de vie", "accent": "#66BB6A", "icon": "spa",                 "seeAll": true }
+    ],
+    "note": "Chaque section est un rail horizontal (compactRow/ranked) sauf la grille « Nouveautés » ; chaque id résout son propre flux via getCustomList (classements, nouveautés, genres)."
+  },
+  "browse": {
+    "popular": { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "latest":  { "component": "grid", "columns": 3, "cardStyle": "poster" },
+    "search":  { "results": { "component": "grid", "columns": 3, "cardStyle": "poster" }, "filters": "chips" }
+  },
+  "player": { "mode": "standard" }
+}
