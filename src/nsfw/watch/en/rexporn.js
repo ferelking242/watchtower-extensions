@@ -1,12 +1,12 @@
 const watchtowerSources = [{
   "name": "RexPorn",
   "lang": "en",
-  "baseUrl": "https://www.rexporn.st",
+  "baseUrl": "https://www.rexporn.sex",
   "apiUrl": "",
-  "iconUrl": "https://www.rexporn.st/favicon.ico",
+  "iconUrl": "https://www.rexporn.sex/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.0",
+  "version": "1.3.1",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/rexporn.js",
@@ -16,7 +16,7 @@ const watchtowerSources = [{
 
 class DefaultExtension extends MProvider {
 
-  static get BASE_URL() { return "https://www.rexporn.st"; }
+  static get BASE_URL() { return "https://www.rexporn.sex"; }
 
   // ── Category & sort definitions ──────────────────────────────────────────
   static get CATEGORIES() {
@@ -79,15 +79,15 @@ class DefaultExtension extends MProvider {
   getPageHeaders(url) {
     return {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-      "Referer": url || "https://www.rexporn.st/",
-      "Origin": "https://www.rexporn.st"
+      "Referer": url || "https://www.rexporn.sex/",
+      "Origin": "https://www.rexporn.sex"
     };
   }
 
   getVideoHeaders(pageUrl) {
     return {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-      "Referer": pageUrl || "https://www.rexporn.st/"
+      "Referer": pageUrl || "https://www.rexporn.sex/"
     };
   }
 
@@ -117,16 +117,16 @@ class DefaultExtension extends MProvider {
   _sortedUrl(sortState, page) {
     const path = DefaultExtension.SORT_PATHS[sortState] || "";
     if (!path) {
-      return page > 1 ? `https://www.rexporn.st/page-${page}.html` : "https://www.rexporn.st/";
+      return page > 1 ? `https://www.rexporn.sex/page-${page}.html` : "https://www.rexporn.sex/";
     }
-    if (page > 1) return `https://www.rexporn.st/${path}/page-${page}.html`;
-    return `https://www.rexporn.st/${path}`;
+    if (page > 1) return `https://www.rexporn.sex/${path}/page-${page}.html`;
+    return `https://www.rexporn.sex/${path}`;
   }
 
   // Build URL for category browse
   _categoryUrl(slug, page) {
-    if (page > 1) return `https://www.rexporn.st/${slug}-page-${page}.html`;
-    return `https://www.rexporn.st/${slug}`;
+    if (page > 1) return `https://www.rexporn.sex/${slug}-page-${page}.html`;
+    return `https://www.rexporn.sex/${slug}`;
   }
 
   // Build URL for a text search, honouring the sort selector. The site keeps
@@ -135,8 +135,8 @@ class DefaultExtension extends MProvider {
   _searchUrl(query, page, sortState) {
     const path = DefaultExtension.SORT_PATHS[sortState] || "";
     const base = path
-      ? `https://www.rexporn.st/videos/search/${path}/`
-      : "https://www.rexporn.st/videos/search/";
+      ? `https://www.rexporn.sex/videos/search/${path}/`
+      : "https://www.rexporn.sex/videos/search/";
     const params = `query=${encodeURIComponent(query)}`;
     return page > 1 ? `${base}?${params}&page=${page}` : `${base}?${params}`;
   }
@@ -243,7 +243,7 @@ class DefaultExtension extends MProvider {
   // that returns real markup wins. The proxy runs outside the blocked network,
   // so it is the transport of last resort.
   static get MIRRORS() {
-    return ["https://www.rexporn.sex"];
+    return ["https://www.rexporn.st"];
   }
   static get PROXY_URL() {
     return "https://watchtower-proxy.aivos-dev.workers.dev/proxy";
@@ -410,8 +410,8 @@ class DefaultExtension extends MProvider {
 
   async getLatestUpdates(page) {
     const url = page > 1
-      ? `https://www.rexporn.st/page-${page}.html`
-      : "https://www.rexporn.st/";
+      ? `https://www.rexporn.sex/page-${page}.html`
+      : "https://www.rexporn.sex/";
     const res = await this._get(url);
     return this._parseList(res.body, url, page, "popular");
   }
@@ -456,7 +456,7 @@ class DefaultExtension extends MProvider {
       if (!a) continue;
       const href = a.attr("href") || "";
       if (!href.includes("/watch/")) continue;
-      const link = href.startsWith("http") ? href : "https://www.rexporn.st" + href;
+      const link = href.startsWith("http") ? href : "https://www.rexporn.sex" + href;
       if (seen[link]) continue;
       seen[link] = 1;
 
@@ -499,7 +499,7 @@ class DefaultExtension extends MProvider {
       if (!href) continue;
       const link = href.startsWith("http")
         ? href
-        : "https://www.rexporn.st" + href;
+        : "https://www.rexporn.sex" + href;
       if (seen[link]) continue;
       seen[link] = 1;
 
@@ -549,7 +549,7 @@ class DefaultExtension extends MProvider {
       if (!a) continue;
       const href = a.attr("href") || "";
       if (!href) continue;
-      const link = href.startsWith("http") ? href : "https://www.rexporn.st" + href;
+      const link = href.startsWith("http") ? href : "https://www.rexporn.sex" + href;
       if (seen[link]) continue;
       seen[link] = 1;
       const img = card.selectFirst("img");
@@ -601,8 +601,8 @@ class DefaultExtension extends MProvider {
     }
     if (listId === "pornstars") {
       const url = page > 1
-        ? `https://www.rexporn.st/pornstars-page-${page}.html`
-        : "https://www.rexporn.st/pornstars";
+        ? `https://www.rexporn.sex/pornstars-page-${page}.html`
+        : "https://www.rexporn.sex/pornstars";
       const res = await this._get(url);
       return this._parseCollectionList(res.body, ".pornstar", page, "pornstars");
     }
@@ -614,8 +614,8 @@ class DefaultExtension extends MProvider {
       // and sidebar), so the rail filled with garbage. Only `.pornstudio` is a
       // studio card.
       const url = page > 1
-        ? `https://www.rexporn.st/channels-page-${page}.html`
-        : "https://www.rexporn.st/channels";
+        ? `https://www.rexporn.sex/channels-page-${page}.html`
+        : "https://www.rexporn.sex/channels";
       const res = await this._get(url);
       return this._parseCollectionList(res.body, ".pornstudio", page, "studios");
     }
@@ -623,7 +623,7 @@ class DefaultExtension extends MProvider {
       // `/categories` is a single-page index of 29 category cards, each with a
       // cover image, unlike the per-category listings the thumbnail borrow used
       // to crawl (29 requests). Parse the index directly.
-      const url = "https://www.rexporn.st/categories";
+      const url = "https://www.rexporn.sex/categories";
       const res = await this._get(url);
       return this._parseCategoriesIndex(res.body, "categories");
     }
@@ -636,7 +636,7 @@ class DefaultExtension extends MProvider {
         while (nextCategory < categories.length) {
           const index = nextCategory++;
           const [name, slug] = categories[index];
-          const link = `https://www.rexporn.st/${slug}`;
+          const link = `https://www.rexporn.sex/${slug}`;
           const imageUrl = await this._getCategoryThumbnail(slug);
           items[index] = {
             name,

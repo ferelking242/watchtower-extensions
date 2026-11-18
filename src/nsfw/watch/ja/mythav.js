@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://mythav.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/mythav.js",
@@ -34,18 +34,25 @@ class DefaultExtension extends MProvider {
 
   // Headers for the helvid.com media CDN. This is a *media* request, not a page
   // navigation: the CDN rejects `Sec-Fetch-Dest: document`, and it keys the
-  // Referer to the player host upload18.org — a mythav referer is refused
-  // outright. The User-Agent is mandatory too.
-  _mediaHeaders() {
-    return {
+  // Referer to the player host that served the page — `upload18.org` before the
+  // migration, `upload18.to` today — refusing any other host outright (a mythav
+  // referer included). The host is therefore taken from the resolved player URL
+  // instead of being hardcoded. When it is unknown, no Referer is sent at all:
+  // an absent Referer is accepted, a wrong one is not.
+  _mediaHeaders(refererOrigin) {
+    const origin = String(refererOrigin || "").replace(/\/+$/, "");
+    const headers = {
       "User-Agent": USER_AGENT,
-      "Referer": "https://upload18.org/",
-      "Origin": "https://upload18.org",
       "Accept": "*/*",
       "Sec-Fetch-Dest": "empty",
       "Sec-Fetch-Mode": "cors",
       "Sec-Fetch-Site": "cross-site"
     };
+    if (origin) {
+      headers["Referer"] = origin + "/";
+      headers["Origin"] = origin;
+    }
+    return headers;
   }
 
   async getPopular(page) {
@@ -54,7 +61,7 @@ class DefaultExtension extends MProvider {
     // whatever ?page= is passed).
     const p = Number(page) > 1 ? Number(page) : 1;
     const url = `${BASE_URL}/rate/page/${p}/`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, ORIGIN);
   }
 
@@ -63,18 +70,21 @@ class DefaultExtension extends MProvider {
   async getLatestUpdates(page) {
     const p = Number(page) > 1 ? Number(page) : 1;
     const url = `${BASE_URL}/update/page/${p}/`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, ORIGIN);
   }
 
   async search(query, page, filters) {
-    const p = Number(page) > 1 ? Number(page) : 1;
     const q = encodeURIComponent(String(query || "").trim());
-    const url = p > 1
-      ? `${BASE_URL}/search/page/${p}/?s=${q}`
-      : `${BASE_URL}/search/?s=${q}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
-    return this._parse(res.body, ORIGIN);
+    const url = `${BASE_URL}/search/?s=${q}`;
+    const res = await new Client().get(url, this.getHeaders(url));
+    const parsed = this._parse(res.body, ORIGIN);
+    // The search route renders every match on one page and exposes no
+    // pagination links; `/search/page/N/` just 301s back to page 1. A query
+    // shorter than the form's minlength=2 is rejected by the site and the
+    // request is redirected to the /update/ feed — whose own `/page/` links
+    // would otherwise be mistaken for search pagination.
+    return { list: parsed.list, hasNextPage: false };
   }
 
   _parse(html, base) {
@@ -105,7 +115,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const doc = new Document(res.body);
     const title = (doc.selectFirst("meta[property='og:title']")?.attr("content")
       || doc.selectFirst("h1")?.text || "Unknown").trim();
@@ -138,16 +148,21 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const html = res.body;
     const videos = [];
     const seen = {};
+    // The player host is only known once the iframe target is resolved; every
+    // media URL discovered afterwards is served by a CDN that keys its Referer
+    // to that host. The variable is read at push time, so it applies to the
+    // media found in the player page.
+    let mediaOrigin = "";
     const push = (src, quality) => {
       if (!src) return;
       const clean = this._clean(src);
       if (!/^https?:\/\//i.test(clean) || seen[clean]) return;
       seen[clean] = 1;
-      videos.push({ url: clean, quality, originalUrl: clean, headers: this._mediaHeaders() });
+      videos.push({ url: clean, quality, originalUrl: clean, headers: this._mediaHeaders(mediaOrigin) });
     };
 
     // 1. Some posts embed a direct m3u8/mp4 in the page itself.
@@ -175,10 +190,19 @@ class DefaultExtension extends MProvider {
           const decoded = this._b64decode(decodeURIComponent(rp[1]));
           if (/^https?:\/\//.test(decoded)) target = decoded;
         }
+        // The CDN keys the Referer to the player host (upload18.to today). It
+        // is the target's origin, whatever the player domain is at the time.
+        // A still-unresolved mythav iframe must not be used: sending the mythav
+        // origin would be a *wrong* referer, which the CDN rejects, whereas an
+        // absent one is accepted.
+        try {
+          const origin = new URL(target).origin;
+          mediaOrigin = /mythav\./i.test(origin) ? "" : origin;
+        } catch (e) { mediaOrigin = ""; }
         try {
           const headers = this.getHeaders(url);
-          headers.Referer = url;
-          const ifr = await new Client().get(target, { headers });
+          headers.Referer = target;
+          const ifr = await new Client().get(target, headers);
           this._grabMedia(ifr.body, push);
         } catch (e) { /* try the next frame */ }
         if (videos.length > 0) break;
@@ -289,7 +313,7 @@ class DefaultExtension extends MProvider {
     };
     if (lists[id]) {
       const url = `${BASE_URL}${lists[id]}page/${p}/`;
-      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      const res = await new Client().get(url, this.getHeaders(url));
       return this._parse(res.body, ORIGIN);
     }
 
@@ -303,7 +327,7 @@ class DefaultExtension extends MProvider {
     if (directories[id]) {
       const dir = directories[id];
       const url = `${BASE_URL}${dir[0]}page/${p}/`;
-      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      const res = await new Client().get(url, this.getHeaders(url));
       const items = this._directory(res.body, ORIGIN, dir[1]);
       return { list: items, hasNextPage: items.length >= 20 };
     }
@@ -312,7 +336,7 @@ class DefaultExtension extends MProvider {
     // repeated on the home page.
     if (id === "sites" || id === "studios") {
       const url = `${BASE_URL}/`;
-      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      const res = await new Client().get(url, this.getHeaders(url));
       return { list: this._directory(res.body, ORIGIN, "/site/"), hasNextPage: false };
     }
 
@@ -326,7 +350,7 @@ class DefaultExtension extends MProvider {
       const slug = parts.join("-");
       const path = numericId ? `/${kind}/${numericId}/${slug}/` : `/${kind}/`;
       const url = `${BASE_URL}${path}page/${p}/`;
-      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      const res = await new Client().get(url, this.getHeaders(url));
       return this._parse(res.body, ORIGIN);
     }
 
@@ -337,7 +361,7 @@ class DefaultExtension extends MProvider {
       if (!path) return { list: [], hasNextPage: false };
       const base = path.charAt(0) === "h" ? path : BASE_URL + path;
       const pageUrl = p > 1 ? base.replace(/\/$/, "") + `/page/${p}/` : base;
-      const res = await new Client().get(pageUrl, { headers: this.getHeaders(pageUrl) });
+      const res = await new Client().get(pageUrl, this.getHeaders(pageUrl));
       const own = this._parse(res.body, ORIGIN);
       if (own.list.length) return own;
       return { list: this._videos(res.body, ORIGIN), hasNextPage: false };
