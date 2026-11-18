@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.rexporn.st/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.2.11",
+  "version": "1.3.0",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/rexporn.js",
@@ -509,12 +509,16 @@ class DefaultExtension extends MProvider {
         card.selectFirst(".name");
       let title = (titleNode ? titleNode.text : (img ? img.attr("alt") : ""))
         .replace(/^Pornstar$/i, "")
+        // Studio cards (`.pornstudio`) carry no `.vname`: their name lives in
+        // the image alt as "Channel <name>", so drop that label.
+        .replace(/^Channel\s+/i, "")
         .trim();
       // Pornstar names are ROT13-encoded in `.vname.rtt` nodes.
       if (titleNode && /(^|\s)rtt(\s|$)/.test(titleNode.attr("class") || "")) {
         title = this._rot13(title);
       }
       const descriptionNode = card.selectFirst(".vidcount") ||
+        card.selectFirst(".chcount") ||
         card.selectFirst(".length");
       const description = descriptionNode ? descriptionNode.text.trim() : "";
 
@@ -531,6 +535,38 @@ class DefaultExtension extends MProvider {
     const hasNextPage = page < 50 && this._hasNextPage(doc);
 
     return { list: items, hasNextPage };
+  }
+
+  // `/categories` is one flat page of `.category` cards, each carrying an
+  // `<img itemprop="thumbnail">` cover, a `.vname` label and a `.vidcount`
+  // count. There is no pagination block, so the list is complete in one call.
+  _parseCategoriesIndex(html, style) {
+    const doc = new Document(html);
+    const items = [];
+    const seen = {};
+    for (const card of doc.select(".category")) {
+      const a = card.selectFirst("a");
+      if (!a) continue;
+      const href = a.attr("href") || "";
+      if (!href) continue;
+      const link = href.startsWith("http") ? href : "https://www.rexporn.st" + href;
+      if (seen[link]) continue;
+      seen[link] = 1;
+      const img = card.selectFirst("img");
+      const nameNode = card.selectFirst(".vname");
+      const countNode = card.selectFirst(".vidcount");
+      const slug = link.split("/").filter(Boolean).pop() || "";
+      items.push({
+        name: (nameNode ? nameNode.text : "").trim() || slug,
+        imageUrl: img ? (img.attr("src") || img.attr("data-src") || "") : "",
+        link,
+        url: link,
+        collectionId: `category_${slug}`,
+        description: countNode ? countNode.text.trim() : "",
+        metadata: { collection: true, collectionType: style }
+      });
+    }
+    return { list: items, hasNextPage: false };
   }
 
   async getCustomList(listId, page) {
@@ -571,19 +607,27 @@ class DefaultExtension extends MProvider {
       return this._parseCollectionList(res.body, ".pornstar", page, "pornstars");
     }
     if (listId === "studios") {
+      // `/channels` renders each studio as `.pornstudio` (24/page, paginated as
+      // `/channels-page-N.html`). The old selector also matched `.studio`,
+      // `.producer`, `[class*='studio']` and `[class*='channel']`; on the live
+      // page those loose substrings matched 209 unrelated nodes (the whole nav
+      // and sidebar), so the rail filled with garbage. Only `.pornstudio` is a
+      // studio card.
       const url = page > 1
         ? `https://www.rexporn.st/channels-page-${page}.html`
         : "https://www.rexporn.st/channels";
       const res = await this._get(url);
-      const studios = this._parseCollectionList(
-        res.body,
-        ".pornstudio, .studio, .producer, [class*='studio'], [class*='channel']",
-        page,
-        "studios"
-      );
-      return studios;
+      return this._parseCollectionList(res.body, ".pornstudio", page, "studios");
     }
-    if (listId === "categories" || listId === "tags") {
+    if (listId === "categories") {
+      // `/categories` is a single-page index of 29 category cards, each with a
+      // cover image, unlike the per-category listings the thumbnail borrow used
+      // to crawl (29 requests). Parse the index directly.
+      const url = "https://www.rexporn.st/categories";
+      const res = await this._get(url);
+      return this._parseCategoriesIndex(res.body, "categories");
+    }
+    if (listId === "tags") {
       const categories = DefaultExtension.CATEGORIES
         .filter(([, slug]) => !!slug);
       const items = new Array(categories.length);
@@ -631,10 +675,16 @@ class DefaultExtension extends MProvider {
     const ogImg = doc.selectFirst('meta[property="og:image"]');
     const thumbLink = doc.selectFirst('link[itemprop="thumbnailUrl"]');
     const thumb = (thumbLink ? thumbLink.attr("href") : null) || (ogImg ? ogImg.attr("content") : "");
+    // Person and studio pages render the name ROT13-encoded inside an
+    // `<h1><span class="rtt">…</span> HD Porn Videos</h1>` heading. Reading the
+    // raw h1 yields "Nnyvlnu Ybir HD Porn Videos"; decode the span and drop the
+    // trailing label so the profile screen shows "Aaliyah Love".
+    const rttName = doc.selectFirst("h1 .rtt");
+    const personTitle = rttName ? this._rot13(rttName.text.trim()) : title;
     if (url.includes("/pornstar/") || url.includes("/pornstars/")) {
       const videos = this._parseList(res.body, url, 1, "pornstar").list;
       return {
-        name: title,
+        name: personTitle,
         imageUrl: thumb,
         description: "Videos from this pornstar",
         genre: [],
@@ -645,7 +695,7 @@ class DefaultExtension extends MProvider {
         url.includes("/channel/") || url.includes("/channels/")) {
       const videos = this._parseList(res.body, url, 1, "studio").list;
       return {
-        name: title,
+        name: personTitle,
         imageUrl: thumb,
         description: "Videos from this studio",
         genre: [],

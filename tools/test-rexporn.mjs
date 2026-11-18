@@ -50,11 +50,24 @@ class TestClient {
       return {
         statusCode: 200,
         body: `
-          <div class="studio">
-            <a href="/channels/demo-studio">
-              <img src="https://images.example/studio.jpg" />
+          <div class="pornstudio">
+            <a href="/channel/demo-studio">
+              <img src="https://images.example/studio.jpg" alt="Channel Demo Studio" />
+              <div class="chcount">12 videos</div>
             </a>
-            <div class="name">Demo Studio</div>
+          </div>`,
+      };
+    }
+    if (pathname === "/categories") {
+      return {
+        statusCode: 200,
+        body: `
+          <div class="category">
+            <a href="/anal">
+              <img src="https://images.example/cat-anal.jpg" alt="Anal videos" />
+              <div class="vname">Anal</div>
+              <div class="vidcount">1389 videos</div>
+            </a>
           </div>`,
       };
     }
@@ -94,6 +107,25 @@ class TestClient {
     }
     if (pathname === "/watch/no-player-test") {
       return { statusCode: 200, body: `<div class="viewmov" data-id="1"></div>` };
+    }
+    // Person and studio detail pages render the heading with the name
+    // ROT13-encoded in an `<h1><span class="rtt">` span, followed by the video
+    // grid. The slug is the first path segment, exactly like the generic
+    // listing fallback below.
+    if (pathname.startsWith("/pornstar/") || pathname.startsWith("/channel/")) {
+      const slug = pathname.split("/").filter(Boolean)[0];
+      const encoded = pathname.startsWith("/pornstar/") ? "Nnyvlnu Ybir" : "Qrzb Fghqvb";
+      return {
+        statusCode: 200,
+        body: `
+          <h1><span class="rtt">${encoded}</span> HD Porn Videos</h1>
+          <div class="pitem">
+            <a href="/watch/${slug}-sample.html">
+              <img src="https://images.example/${slug}.jpg" />
+            </a>
+            <div class="ftitle">${slug} sample</div>
+          </div>`,
+      };
     }
     // The live site degrades the page for non-browser clients: HTTP 200 with
     // "Video is not available" and no `data-q`. The player payload then only
@@ -175,10 +207,24 @@ const expectedCategories = context.RexPornForTest.CATEGORIES
 assert.equal(layout.home.sections[0].component, "spotlight");
 assert.equal(
   layout.home.sections.some((section) =>
-    ["tags", "pornstars", "studios"].includes(section.id),
+    ["tags"].includes(section.id),
   ),
   false,
-  "unsupported category/person sections are not exposed on the home page",
+  "the tags section is not exposed on the home page (category covers are borrowed)",
+);
+// Pornstars, Studios and Top Categories are first-class home sections again:
+// `/pornstars`, `/channels` and `/categories` each render real card markup.
+assert.equal(
+  layout.home.sections.find((section) => section.id === "pornstars").component,
+  "creatorRow",
+);
+assert.equal(
+  layout.home.sections.find((section) => section.id === "studios").component,
+  "studioExplorer",
+);
+assert.equal(
+  layout.home.sections.find((section) => section.id === "categories").component,
+  "collectionCards",
 );
 assert.equal(
   layout.home.sections.find((section) => section.id === "popular").component,
@@ -196,22 +242,45 @@ const [tags, categories] = await Promise.all([
   provider.getCustomList("categories", 1),
 ]);
 
+// `tags` borrows each category's cover from its first listing, so it makes one
+// request per category and shares the covers (fetched once).
 assert.equal(tags.list.length, expectedCategories.length);
-assert.equal(categories.list.length, expectedCategories.length);
-assert.equal(requests.length, expectedCategories.length, "category previews are fetched once and shared");
 assert.ok(tags.list.every((item) => item.imageUrl.startsWith("https://images.example/")));
 assert.equal(new Set(tags.list.map((item) => item.imageUrl)).size, expectedCategories.length);
 assert.equal(tags.list[0].link, "https://www.rexporn.st/anal");
 assert.equal(tags.list[0].metadata.collectionType, "tags");
 assert.equal(tags.list[0].collectionId, "category_anal");
 
+// `categories` reads the `/categories` index directly: one request, no
+// per-category thumbnail crawl.
+assert.equal(categories.list.length, 1, "the categories index is parsed from /categories");
+assert.equal(categories.list[0].metadata.collectionType, "categories");
+
 const studios = await provider.getCustomList("studios", 1);
 assert.equal(studios.list.length, 1, "studio listings contain profiles, not videos");
-assert.equal(studios.list[0].link, "https://www.rexporn.st/channels/demo-studio");
+assert.equal(
+  studios.list[0].link,
+  "https://www.rexporn.st/channel/demo-studio",
+);
+assert.equal(
+  studios.list[0].name,
+  "Demo Studio",
+  "the 'Channel ' alt prefix is stripped from studio names",
+);
+assert.equal(studios.list[0].description, "12 videos");
+assert.equal(studios.list[0].imageUrl, "https://images.example/studio.jpg");
 const studio = await provider.getDetail(studios.list[0].link);
 assert.equal(studio.episodes.length, 1);
-assert.equal(studio.episodes[0].url, "https://www.rexporn.st/watch/channels-sample.html");
-assert.equal(studio.episodes[0].thumbnailUrl, "https://images.example/channels.jpg");
+assert.equal(studio.episodes[0].url, "https://www.rexporn.st/watch/channel-sample.html");
+assert.equal(studio.episodes[0].thumbnailUrl, "https://images.example/channel.jpg");
+
+const categoriesIndex = await provider.getCustomList("categories", 1);
+assert.equal(categoriesIndex.list.length, 1, "the /categories index yields category cards");
+assert.equal(categoriesIndex.list[0].name, "Anal");
+assert.equal(categoriesIndex.list[0].link, "https://www.rexporn.st/anal");
+assert.equal(categoriesIndex.list[0].collectionId, "category_anal");
+assert.equal(categoriesIndex.list[0].imageUrl, "https://images.example/cat-anal.jpg");
+assert.equal(categoriesIndex.hasNextPage, false, "the categories index is a single page");
 
 const performers = await provider.getCustomList("pornstars", 1);
 assert.equal(performers.list.length, 1, "performer listings contain profiles");
@@ -224,6 +293,17 @@ assert.equal(performer.episodes.length, 1);
 assert.equal(
   performer.episodes[0].url,
   "https://www.rexporn.st/watch/pornstars-sample.html",
+);
+
+// Person and studio detail headings carry the name ROT13-encoded in an
+// `<h1><span class="rtt">` span; the raw h1 reads "Nnyvlnu Ybir HD Porn Videos".
+const encodedPerson = await provider.getDetail(
+  "https://www.rexporn.st/pornstar/Aaxliyah-Loxve",
+);
+assert.equal(
+  encodedPerson.name,
+  "Aaliyah Love",
+  "the ROT13-encoded person name is decoded for the profile screen",
 );
 
 const parsed = provider._parseList(

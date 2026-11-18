@@ -35,6 +35,30 @@
         "seeAll": true
       },
       {
+        "id": "pornstars",
+        "component": "creatorRow",
+        "title": "Pornstars",
+        "accent": "#B388FF",
+        "icon": "star",
+        "seeAll": true
+      },
+      {
+        "id": "studios",
+        "component": "studioExplorer",
+        "title": "Studios",
+        "accent": "#7C4DFF",
+        "icon": "business",
+        "seeAll": true
+      },
+      {
+        "id": "categories",
+        "component": "collectionCards",
+        "title": "Top Categories",
+        "accent": "#64D8CB",
+        "icon": "category",
+        "seeAll": true
+      },
+      {
         "id": "category_big-tits",
         "component": "landscape",
         "title": "Big Tits",
