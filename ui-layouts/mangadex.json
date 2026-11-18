@@ -12,7 +12,7 @@
       },
       {
         "id": "latest_updates",
-        "component": "banner",
+        "component": "compactRow",
         "title": "Latest Chapter Updates",
         "accent": "secondary",
         "icon": "update",
@@ -52,7 +52,7 @@
       },
       {
         "id": "new_titles",
-        "component": "banner",
+        "component": "compactRow",
         "title": "✨ Recently Added",
         "accent": "tertiary",
         "icon": "fiber_new",
@@ -78,7 +78,7 @@
       },
       {
         "id": "untranslated",
-        "component": "banner",
+        "component": "compactRow",
         "title": "Untranslated Titles",
         "accent": "#AB47BC",
         "icon": "translate",
