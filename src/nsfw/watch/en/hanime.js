@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://hanime.tv/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "2.4.0",
+  "version": "2.5.0",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/hanime.js",
@@ -406,8 +406,12 @@ class DefaultExtension extends MProvider {
         created: Number(row.created_at_unix || 0),
         released: Number(row.released_at_unix || 0),
         views: Number(row.views || 0),
+        likes: Number(row.likes || 0),
+        dislikes: Number(row.dislikes || 0),
         brand: String(row.brand || "").trim(),
-        tags: Array.isArray(row.tags) ? row.tags : [],
+        tags: Array.isArray(row.tags)
+          ? row.tags.map((t) => String(t).trim()).filter(Boolean)
+          : [],
         haystack: ((row.name || "") + " " + (row.search_titles || "") + " " + row.slug).toLowerCase()
       });
     }
@@ -505,7 +509,7 @@ class DefaultExtension extends MProvider {
     // The catalogue carries the poster, the synopsis and the tags; no HTML
     // fetch is needed (and would be blocked anyway).
     const name = item ? item.name : slug.replace(/-/g, " ");
-    const description = item && item.description
+    let description = item && item.description
       ? String(item.description).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
       : "";
     const imageUrl = item ? (item.imageUrl || item.poster) : "";
@@ -518,11 +522,15 @@ class DefaultExtension extends MProvider {
         const key = label.toLowerCase();
         if (!label || seenTags[key]) continue;
         seenTags[key] = true;
-        genre.push({ name: label });
+        genre.push(label);
       }
       if (item.brand && !seenTags[item.brand.toLowerCase()]) {
-        genre.push({ name: item.brand });
+        seenTags[item.brand.toLowerCase()] = true;
+        genre.push(item.brand);
       }
+      // Country, ·-prefixed so the app renders it as the country row instead
+      // of a genre chip. Hanime's catalogue is Japanese-produced.
+      if (!seenTags["\u00b7japan"]) genre.push("\u00b7Japan");
     }
 
     // Episodes: every catalogue entry that shares this title's franchise group,
@@ -533,6 +541,23 @@ class DefaultExtension extends MProvider {
     }
     siblings = siblings.slice(0).sort((a, b) => this._episodeOrder(a.name) - this._episodeOrder(b.name));
     const episodes = siblings.map((s) => ({ name: s.name, url: this._linkOf(s.slug) }));
+
+    // Rating: the catalogue exposes no star score, so derive one from the
+    // like/dislike ratio (5-point scale, two decimals). Encoded as a `★ x.xx`
+    // token the app's meta row parses. Seasons: hanime lists one season per
+    // franchise, so publish the count explicitly for the meta row.
+    let rating = 0;
+    if (item) {
+      const total = (item.likes || 0) + (item.dislikes || 0);
+      if (total > 0) rating = Math.round((item.likes / total) * 5 * 100) / 100;
+    }
+    const seasonCount = episodes.length > 0 ? 1 : 0;
+    const info = [];
+    if (rating > 0) info.push("\u2605 " + rating.toFixed(2));
+    if (seasonCount > 0) info.push(seasonCount + " season");
+    if (info.length) {
+      description = (description ? description + "\n\n" : "") + info.join(" \u00b7 ");
+    }
 
     return { name, imageUrl, description, genre, episodes };
   }

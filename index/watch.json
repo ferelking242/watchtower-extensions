@@ -12593,7 +12593,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900001320.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "2.4.0",
+    "version": "2.5.0",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@42e59f48faae2ece04e4b25f45f9d5995bcb0d40/src/nsfw/watch/en/hanime.js",
     "isManga": false,
     "isNsfw": true,
