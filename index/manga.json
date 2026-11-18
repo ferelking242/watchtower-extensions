@@ -5427,7 +5427,7 @@
     "typeSource": "single",
     "itemType": 0,
     "version": "0.2.4",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@cf3f910d6406cd395f862444a5504c48c0ef8520/src/manga/en/mkissa.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@a8a3c6332dd8abfa60f2d6959733572b0f02a646/src/manga/en/mkissa.js",
     "uiLayout": "ui-layouts/mkissa.json",
     "uiLayoutVersion": "1.0.1",
     "isManga": true,
