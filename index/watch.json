@@ -12594,7 +12594,7 @@
     "typeSource": "single",
     "itemType": 1,
     "version": "2.5.0",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@42e59f48faae2ece04e4b25f45f9d5995bcb0d40/src/nsfw/watch/en/hanime.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@b45312a0c4965df06153779a306fbbcb1c6b54c8/src/nsfw/watch/en/hanime.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": true,
