@@ -44,7 +44,7 @@
         "icon": "category",
         "seeAll": true,
         "columns": 3,
-        "rows": 3,
+        "rows": 1,
         "gridOrder": "column",
         "scrollDirection": "horizontal",
         "cardStyle": "thumbnail"
@@ -57,7 +57,7 @@
         "icon": "tag",
         "seeAll": true,
         "columns": 3,
-        "rows": 3,
+        "rows": 1,
         "gridOrder": "column",
         "scrollDirection": "horizontal",
         "cardStyle": "thumbnail"

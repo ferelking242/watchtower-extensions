@@ -13,7 +13,7 @@
       },
       {
         "id": "latest",
-        "component": "banner",
+        "component": "compactRow",
         "title": "Recently Uploaded",
         "accent": "tertiary",
         "icon": "fiber_new",
@@ -56,7 +56,7 @@
         "accent": "#64D8CB",
         "icon": "category",
         "columns": 3,
-        "rows": 2,
+        "rows": 1,
         "gridOrder": "column",
         "scrollDirection": "horizontal",
         "cardStyle": "tag",
@@ -87,7 +87,7 @@
       },
       {
         "id": "tag_3d",
-        "component": "hero",
+        "component": "compactRow",
         "title": "3D & CGI",
         "accent": "#00ACC1",
         "icon": "view_in_ar",
@@ -333,7 +333,7 @@
       },
       {
         "id": "brand_poro",
-        "component": "banner",
+        "component": "compactRow",
         "title": "PoRO",
         "accent": "#AB47BC",
         "icon": "movie_filter",
@@ -380,7 +380,7 @@
       },
       {
         "id": "brand_studio-fow",
-        "component": "hero",
+        "component": "compactRow",
         "title": "Studio FOW",
         "accent": "#7E57C2",
         "icon": "star",

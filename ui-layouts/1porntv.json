@@ -65,10 +65,11 @@
         "accent": "#64D8CB",
         "icon": "local_offer",
         "columns": 3,
-        "rows": 2,
+        "rows": 1,
         "cardStyle": "tag",
         "seeAll": true,
-        "seeAllPage": "tags"
+        "seeAllPage": "tags",
+        "scrollDirection": "horizontal"
       },
       {
         "id": "category_milf",

@@ -98,9 +98,10 @@
         "accent": "#7C4DFF",
         "icon": "trending_up",
         "columns": 2,
-        "rows": 4,
+        "rows": 1,
         "cardStyle": "tag",
-        "seeAll": true
+        "seeAll": true,
+        "scrollDirection": "horizontal"
       },
       {
         "id": "quick_searches",
@@ -109,9 +110,10 @@
         "accent": "#7C4DFF",
         "icon": "search",
         "columns": 2,
-        "rows": 4,
+        "rows": 1,
         "cardStyle": "tag",
-        "seeAll": true
+        "seeAll": true,
+        "scrollDirection": "horizontal"
       }
     ]
   },

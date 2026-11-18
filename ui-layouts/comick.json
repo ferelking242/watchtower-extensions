@@ -2,15 +2,55 @@
   "schemaVersion": 1,
   "home": {
     "sections": [
-      { "id": "spotlight", "component": "spotlight", "title": "✨ À la une", "accent": "primary", "icon": "auto_awesome", "seeAll": true, "params": { "dataSource": "popular" } },
-      { "id": "trending",   "component": "ranked",   "title": "🔥 Trending",   "accent": "error",    "icon": "trending_up", "seeAll": true },
-      { "id": "new_titles", "component": "carousel", "title": "✨ New Titles", "accent": "tertiary", "icon": "fiber_new",   "seeAll": true }
+      {
+        "id": "spotlight",
+        "component": "spotlight",
+        "title": "✨ À la une",
+        "accent": "primary",
+        "icon": "auto_awesome",
+        "seeAll": true,
+        "params": {
+          "dataSource": "popular"
+        }
+      },
+      {
+        "id": "trending",
+        "component": "ranked",
+        "title": "🔥 Trending",
+        "accent": "error",
+        "icon": "trending_up",
+        "seeAll": true
+      },
+      {
+        "id": "new_titles",
+        "component": "compactRow",
+        "title": "✨ New Titles",
+        "accent": "tertiary",
+        "icon": "fiber_new",
+        "seeAll": true
+      }
     ]
   },
   "browse": {
-    "popular": { "component": "grid", "columns": 3, "cardStyle": "poster" },
-    "latest":  { "component": "grid", "columns": 3, "cardStyle": "poster" },
-    "search":  { "results": { "component": "grid", "columns": 3 }, "filters": "chips" }
+    "popular": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "poster"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "poster"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 3
+      },
+      "filters": "chips"
+    }
   },
-  "player": { "mode": "standard" }
+  "player": {
+    "mode": "standard"
+  }
 }

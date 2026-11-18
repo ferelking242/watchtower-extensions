@@ -76,11 +76,12 @@
         "accent": "#00B8D4",
         "icon": "local_offer",
         "columns": 2,
-        "rows": 3,
+        "rows": 1,
         "cardStyle": "tag",
         "seeAll": true,
         "seeAllPage": "tags",
-        "paginated": true
+        "paginated": true,
+        "scrollDirection": "horizontal"
       },
       {
         "id": "languages",
@@ -89,9 +90,10 @@
         "accent": "#FFB300",
         "icon": "translate",
         "columns": 2,
-        "rows": 3,
+        "rows": 1,
         "cardStyle": "tag",
-        "seeAll": true
+        "seeAll": true,
+        "scrollDirection": "horizontal"
       },
       {
         "id": "explore",
@@ -100,10 +102,11 @@
         "accent": "#42A5F5",
         "icon": "explore",
         "columns": 2,
-        "rows": 3,
+        "rows": 1,
         "cardStyle": "tag",
         "seeAll": true,
-        "seeAllPage": "tags"
+        "seeAllPage": "tags",
+        "scrollDirection": "horizontal"
       }
     ]
   },

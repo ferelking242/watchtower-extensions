@@ -177,7 +177,7 @@ const supportedLayoutComponents = new Set([
   "home-spotlight-rail", "hover-movie", "interactive-movie", "landscape",
   "landscape-discovery", "landscape-genre-row", "landscape-playlist",
   "landscape-rail", "landscape-showcase", "language-badge", "latest-episode",
-  "manga-banner", "manga-card", "manga-category-ranking", "manga-chapter",
+  "manga-card", "manga-category-ranking", "manga-chapter",
   "manga-chapter-badge", "manga-chapter-group", "manga-chapter-list",
   "manga-chapter-navigation", "manga-chapter-next", "manga-chapter-progress",
   "manga-chapter-range", "manga-chapter-release", "manga-chapter-search",
@@ -196,9 +196,8 @@ const supportedLayoutComponents = new Set([
   "manga-reader-history", "manga-reader-settings", "manga-reading-direction",
   "manga-reading-mode", "manga-reading-progress", "manga-relation-list",
   "manga-relation-type", "manga-release-timeline", "manga-reports",
-  "manga-resume", "manga-same-universe", "manga-scan-group",
-  "manga-serialization", "manga-special-edition", "manga-spotlight",
-  "manga-stats-grid", "manga-status", "manga-tags", "manga-themes",
+  "manga-same-universe", "manga-scan-group",
+  "manga-serialization", "manga-special-edition", "manga-stats-grid", "manga-status", "manga-tags", "manga-themes",
   "manga-top3", "manga-trending-list", "manga-universe-chronology",
   "manga-universe-map", "manga-universe-showcase", "manga-universe-timeline",
   "manga-upcoming-volume", "manga-update-row", "manga-volume",
@@ -272,6 +271,17 @@ for (const rel of jsonFiles.filter((file) => file.startsWith("ui-layouts/"))) {
       );
     }
   }
+  // The spotlight hero is a single full-width carousel. `spotlight` and its
+  // `carousel` alias may only open the home — using them further down renders a
+  // second hero mid-page, which is a misuse of the component. A section that
+  // wanted a rail must use `compactRow` / `showcase` / `ranked` instead.
+  sections.forEach((section, index) => {
+    if (index > 0 && (section?.component === "spotlight" || section?.component === "carousel")) {
+      problems.push(
+        `LAYOUT: ${rel} uses the spotlight hero (${section.component}) at section ${index + 1}; only the first section may be a spotlight`,
+      );
+    }
+  });
 }
 console.log("   layout structure is valid");
 

@@ -12,7 +12,7 @@
       },
       {
         "id": "latest",
-        "component": "carousel",
+        "component": "compactRow",
         "title": "Latest",
         "accent": "tertiary",
         "icon": "fiber_new",
@@ -20,7 +20,7 @@
       },
       {
         "id": "hd",
-        "component": "carousel",
+        "component": "compactRow",
         "title": "HD",
         "accent": "#00BCD4",
         "icon": "high_quality",
@@ -28,7 +28,7 @@
       },
       {
         "id": "4k",
-        "component": "carousel",
+        "component": "compactRow",
         "title": "4K",
         "accent": "#8E7CFF",
         "icon": "4k",
@@ -36,7 +36,7 @@
       },
       {
         "id": "vr",
-        "component": "carousel",
+        "component": "compactRow",
         "title": "VR",
         "accent": "#66BB6A",
         "icon": "vrpano",
@@ -44,7 +44,7 @@
       },
       {
         "id": "amateur",
-        "component": "carousel",
+        "component": "compactRow",
         "title": "Amateur",
         "accent": "#EC407A",
         "icon": "videocam",

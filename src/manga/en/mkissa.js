@@ -11,6 +11,8 @@
 // the `aln` URL on that 301, which the CDN answers with 403. The reader retried
 // over the Dart client and survived; the download worker (Rust client only) died
 // on every page. Same fix applied to AllManga.
+// v0.2.4 — getCustomList answers each home section id with its own feed
+// (spotlight / popular / latest / new) instead of one list for every rail.
 
 const watchtowerSources = [{
     "name": "MKissa",
@@ -23,7 +25,7 @@ const watchtowerSources = [{
     "itemType": 0,
     "isNsfw": false,
     "hasCloudflare": true,
-    "version": "0.2.3",
+    "version": "0.2.4",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -384,9 +386,44 @@ class DefaultExtension extends MProvider {
         ];
     }
 
+    // ── New series ───────────────────────────────────────────────────────────
+    // `formatHome` returns the site's "new series" rail. `previewLimit` sizes
+    // it; there is no paging on this rail, so `hasNextPage` is always false.
+    async getNewSeries() {
+        const data = await this.gql(
+            "query($format:String!,$size:Int!){formatHome(format:$format," +
+            "sections:[newSeries],previewLimit:$size){newSeries{" +
+            "_id name englishName nativeName thumbnail}}}",
+            { format: "manga", size: 24 }
+        );
+        const items = data && data.formatHome && data.formatHome.newSeries;
+        if (!Array.isArray(items)) {
+            throw new Error("[MKissa] New series response did not contain items");
+        }
+        const pref = new SharedPreferences().get("preferred_title_style") || "eng";
+        const list = items.map((m) => ({
+            name:     this.pickTitle(m, pref),
+            imageUrl: this.coverUrl(m.thumbnail),
+            link:     `/manga/${m._id}/${this.slugify(m.name)}`
+        }));
+        return { list, hasNextPage: false };
+    }
+
     // ── Custom lists ─────────────────────────────────────────────────────────
+    // The home layout asks for one rail per section id. Every id must resolve
+    // to its OWN feed, otherwise the home shows the same list three times:
+    //   spotlight → the hero slice of the weekly ranking
+    //   popular   → the full weekly ranking
+    //   latest    → the latest chapter updates
+    //   new       → the new-series rail
+    // An unknown id falls back to the latest updates so a rail is never empty.
     async getCustomList(listId, page) {
+        if (listId === "spotlight") {
+            const popular = await this.getPopular(1);
+            return { list: popular.list.slice(0, 8), hasNextPage: false };
+        }
         if (listId === "popular") return this.getPopular(page);
+        if (listId === "new") return this.getNewSeries();
         return this.getLatestUpdates(page);
     }
 }

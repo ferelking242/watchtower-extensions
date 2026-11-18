@@ -34,7 +34,9 @@
         "title": "Genres",
         "accent": "#4DB6AC",
         "icon": "category",
-        "seeAll": true
+        "seeAll": true,
+        "rows": 1,
+        "scrollDirection": "horizontal"
       },
       {
         "id": "studios",
