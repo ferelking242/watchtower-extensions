@@ -29,20 +29,20 @@ const realListing = (slug) => `
     <div class="ftitle">${slug} sample</div>
   </div>
   <div class="pageslinks">
-    <a href="https://www.rexporn.st" class="pagelink" rel="nofollow"><span>&laquo; Prev</span></a>
-    <a href="https://www.rexporn.st/page-3.html" class="pagelink" rel="nofollow"><span>Next &raquo;</span></a>
+    <a href="https://www.rexporn.sex" class="pagelink" rel="nofollow"><span>&laquo; Prev</span></a>
+    <a href="https://www.rexporn.sex/page-3.html" class="pagelink" rel="nofollow"><span>Next &raquo;</span></a>
   </div>`;
-const blockStub = `<html><body>Please visit https://www.rexporn.sex</body></html>`;
+const blockStub = `<html><body>Please visit https://www.rexporn.st</body></html>`;
 class TestClient {
   async get(url) {
     requests.push(url);
     const parsed = new URL(url);
     const host = parsed.origin;
     const pathname = parsed.pathname;
-    if (host === "https://www.rexporn.st" && blockDirect && pathname.startsWith("/page-")) {
+    if (host === "https://www.rexporn.sex" && blockDirect && pathname.startsWith("/page-")) {
       return { statusCode: 200, body: blockStub };
     }
-    if (host === "https://www.rexporn.sex") {
+    if (host === "https://www.rexporn.st") {
       if (blockMirror) return { statusCode: 200, body: blockStub };
       if (pathname.startsWith("/page-")) return { statusCode: 200, body: realListing("mirror") };
     }
@@ -148,8 +148,8 @@ class TestClient {
           <div class="ftitle">${slug} sample</div>
         </div>
         <div class="pageslinks">
-          <a href="https://www.rexporn.st" class="pagelink" rel="nofollow"><span>&laquo; Prev</span></a>
-          <a href="https://www.rexporn.st/page-3.html" class="pagelink" rel="nofollow"><span>Next &raquo;</span></a>
+          <a href="https://www.rexporn.sex" class="pagelink" rel="nofollow"><span>&laquo; Prev</span></a>
+          <a href="https://www.rexporn.sex/page-3.html" class="pagelink" rel="nofollow"><span>Next &raquo;</span></a>
         </div>`,
     };
   }
@@ -247,7 +247,7 @@ const [tags, categories] = await Promise.all([
 assert.equal(tags.list.length, expectedCategories.length);
 assert.ok(tags.list.every((item) => item.imageUrl.startsWith("https://images.example/")));
 assert.equal(new Set(tags.list.map((item) => item.imageUrl)).size, expectedCategories.length);
-assert.equal(tags.list[0].link, "https://www.rexporn.st/anal");
+assert.equal(tags.list[0].link, "https://www.rexporn.sex/anal");
 assert.equal(tags.list[0].metadata.collectionType, "tags");
 assert.equal(tags.list[0].collectionId, "category_anal");
 
@@ -260,7 +260,7 @@ const studios = await provider.getCustomList("studios", 1);
 assert.equal(studios.list.length, 1, "studio listings contain profiles, not videos");
 assert.equal(
   studios.list[0].link,
-  "https://www.rexporn.st/channel/demo-studio",
+  "https://www.rexporn.sex/channel/demo-studio",
 );
 assert.equal(
   studios.list[0].name,
@@ -271,13 +271,13 @@ assert.equal(studios.list[0].description, "12 videos");
 assert.equal(studios.list[0].imageUrl, "https://images.example/studio.jpg");
 const studio = await provider.getDetail(studios.list[0].link);
 assert.equal(studio.episodes.length, 1);
-assert.equal(studio.episodes[0].url, "https://www.rexporn.st/watch/channel-sample.html");
+assert.equal(studio.episodes[0].url, "https://www.rexporn.sex/watch/channel-sample.html");
 assert.equal(studio.episodes[0].thumbnailUrl, "https://images.example/channel.jpg");
 
 const categoriesIndex = await provider.getCustomList("categories", 1);
 assert.equal(categoriesIndex.list.length, 1, "the /categories index yields category cards");
 assert.equal(categoriesIndex.list[0].name, "Anal");
-assert.equal(categoriesIndex.list[0].link, "https://www.rexporn.st/anal");
+assert.equal(categoriesIndex.list[0].link, "https://www.rexporn.sex/anal");
 assert.equal(categoriesIndex.list[0].collectionId, "category_anal");
 assert.equal(categoriesIndex.list[0].imageUrl, "https://images.example/cat-anal.jpg");
 assert.equal(categoriesIndex.hasNextPage, false, "the categories index is a single page");
@@ -286,19 +286,19 @@ const performers = await provider.getCustomList("pornstars", 1);
 assert.equal(performers.list.length, 1, "performer listings contain profiles");
 assert.equal(
   performers.list[0].link,
-  "https://www.rexporn.st/pornstars/demo-performer",
+  "https://www.rexporn.sex/pornstars/demo-performer",
 );
 const performer = await provider.getDetail(performers.list[0].link);
 assert.equal(performer.episodes.length, 1);
 assert.equal(
   performer.episodes[0].url,
-  "https://www.rexporn.st/watch/pornstars-sample.html",
+  "https://www.rexporn.sex/watch/pornstars-sample.html",
 );
 
 // Person and studio detail headings carry the name ROT13-encoded in an
 // `<h1><span class="rtt">` span; the raw h1 reads "Nnyvlnu Ybir HD Porn Videos".
 const encodedPerson = await provider.getDetail(
-  "https://www.rexporn.st/pornstar/Aaxliyah-Loxve",
+  "https://www.rexporn.sex/pornstar/Aaxliyah-Loxve",
 );
 assert.equal(
   encodedPerson.name,
@@ -311,7 +311,7 @@ const parsed = provider._parseList(
     <a href="/watch/preview-test"><img src="/placeholder.jpg" data-src="https://images.example/preview.jpg"></a>
     <div class="ftitle">Preview test</div>
   </div>`,
-  "https://www.rexporn.st/anal",
+  "https://www.rexporn.sex/anal",
   1,
   "category",
 );
@@ -321,7 +321,7 @@ assert.equal(parsed.list[0].imageUrl, "https://images.example/preview.jpg");
 // hard-coded id returned 0 videos after the rename, which broke both playback
 // and download, so pin the attribute-anchored behaviour for both shapes.
 const syncSources = await provider.getVideoList(
-  "https://www.rexporn.st/watch/player-sync-test",
+  "https://www.rexporn.sex/watch/player-sync-test",
 );
 assert.equal(syncSources.length, 2, "current #sync player markup yields sources");
 assert.ok(
@@ -338,13 +338,13 @@ assert.ok(
 );
 
 const legacySources = await provider.getVideoList(
-  "https://www.rexporn.st/watch/player-legacy-test",
+  "https://www.rexporn.sex/watch/player-legacy-test",
 );
 assert.equal(legacySources.length, 1, "legacy #player markup still yields sources");
 assert.ok(legacySources[0].url.includes("cdn-legacy.vstor.top"));
 
 const missingSources = await provider.getVideoList(
-  "https://www.rexporn.st/watch/no-player-test",
+  "https://www.rexporn.sex/watch/no-player-test",
 );
 assert.equal(missingSources.length, 0, "a page without a player payload yields no sources");
 
@@ -352,7 +352,7 @@ assert.equal(missingSources.length, 0, "a page without a player payload yields n
 // real browser session. The extension must fall back to the WebView bridge and
 // build the sources from the player element it returns.
 const webviewSources = await provider.getVideoList(
-  "https://www.rexporn.st/watch/webview-only-test",
+  "https://www.rexporn.sex/watch/webview-only-test",
 );
 assert.equal(webviewSources.length, 2, "WebView fallback yields sources when HTTP has none");
 assert.ok(
@@ -373,44 +373,44 @@ assert.ok(
 // silently ignored and returned page 1 forever.
 assert.equal(
   provider._sortedUrl(0, 1),
-  "https://www.rexporn.st/",
+  "https://www.rexporn.sex/",
   "home page 1 is the bare host",
 );
 assert.equal(
   provider._sortedUrl(0, 2),
-  "https://www.rexporn.st/page-2.html",
+  "https://www.rexporn.sex/page-2.html",
   "home page 2 uses the /page-N.html route, not a query string",
 );
 assert.equal(
   provider._sortedUrl(4, 3),
-  "https://www.rexporn.st/most-popular/page-3.html",
+  "https://www.rexporn.sex/most-popular/page-3.html",
   "sorted listings keep the path + /page-N.html shape",
 );
 
 // Search keeps the sort as a path segment on the search route.
 assert.equal(
   provider._searchUrl("big tits", 1, 0),
-  "https://www.rexporn.st/videos/search/?query=big%20tits",
+  "https://www.rexporn.sex/videos/search/?query=big%20tits",
 );
 assert.equal(
   provider._searchUrl("teen", 2, 1),
-  "https://www.rexporn.st/videos/search/top-rated/?query=teen&page=2",
+  "https://www.rexporn.sex/videos/search/top-rated/?query=teen&page=2",
 );
 
 // A listing with a "Next" anchor reports more pages; one without does not.
 const nextDoc = new Document(
-  `<div class="pageslinks"><a class="pagelink" href="https://www.rexporn.st/page-3.html"><span>Next &raquo;</span></a></div>`,
+  `<div class="pageslinks"><a class="pagelink" href="https://www.rexporn.sex/page-3.html"><span>Next &raquo;</span></a></div>`,
 );
 const lastDoc = new Document(
-  `<div class="pageslinks"><a class="pagelink" href="https://www.rexporn.st"><span>&laquo; Prev</span></a></div>`,
+  `<div class="pageslinks"><a class="pagelink" href="https://www.rexporn.sex"><span>&laquo; Prev</span></a></div>`,
 );
 assert.equal(provider._hasNextPage(nextDoc), true, "a Next link means more pages");
 assert.equal(provider._hasNextPage(lastDoc), false, "a Prev-only block is the last page");
 
 const pagedList = provider._parseList(
   `<div class="pitem"><a href="/watch/paged.html"><img src="https://images.example/a.jpg"/></a><div class="ftitle">Paged</div></div>
-   <div class="pageslinks"><a class="pagelink" href="https://www.rexporn.st/page-2.html"><span>Next &raquo;</span></a></div>`,
-  "https://www.rexporn.st/",
+   <div class="pageslinks"><a class="pagelink" href="https://www.rexporn.sex/page-2.html"><span>Next &raquo;</span></a></div>`,
+  "https://www.rexporn.sex/",
   1,
   "popular",
 );
@@ -442,7 +442,7 @@ blockDirect = true;
 const viaMirror = await provider.getPopular(2);
 assert.equal(viaMirror.list[0].name, "mirror sample", "the alternate domain serves the blocked page");
 assert.ok(
-  requests.some((u) => u.startsWith("https://www.rexporn.sex/page-2.html")),
+  requests.some((u) => u.startsWith("https://www.rexporn.st/page-2.html")),
   "the mirror host is tried when the primary is blocked",
 );
 
@@ -467,7 +467,7 @@ context.RexPornForTest._historyCache = undefined;
 // never delay the video URL), so let the pending promise chain drain before
 // reading the rail back.
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
-const historyPage = "https://www.rexporn.st/watch/history-test";
+const historyPage = "https://www.rexporn.sex/watch/history-test";
 await provider.getVideoList(historyPage);
 await flush();
 await flush();
@@ -491,7 +491,7 @@ assert.equal(deduped.list.length, 1, "re-opening a page does not duplicate the e
 
 // The fallback label comes from the URL slug when the page carries no title.
 const untitled = await provider.getVideoList(
-  "https://www.rexporn.st/watch/my-drunken-stepmother",
+  "https://www.rexporn.sex/watch/my-drunken-stepmother",
 );
 assert.ok(
   untitled.length === 0,

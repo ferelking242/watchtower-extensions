@@ -48,7 +48,7 @@ const sandbox = { Client, MProvider, Document, SharedPreferences, extLog: () => 
 vm.createContext(sandbox);
 vm.runInContext(code + "\n;this.__E = DefaultExtension;", sandbox, { timeout: 10000 });
 const ext = new sandbox.__E();
-ext.source = { name: "RexPorn", baseUrl: "https://www.rexporn.st", prefs: [] };
+ext.source = { name: "RexPorn", baseUrl: "https://www.rexporn.sex", prefs: [] };
 const show = (label, r) => console.log(label, "count=" + (r && r.list ? r.list.length : "ERR"), "hasNext=" + (r && r.hasNextPage), "sample=" + (r && r.list && r.list[0] ? JSON.stringify(r.list[0].name).slice(0, 60) : ""));
 console.log("== filters ==");
 console.log(JSON.stringify(ext.getFilterList()));
