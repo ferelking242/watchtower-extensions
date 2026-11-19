@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "itemType": 1,
     "isNsfw": true,
-    "version": "0.0.1.3",
+    "version": "0.0.1.4",
     "login": false,
     "forYou": false,
     "apiUrl": "",
@@ -133,14 +133,10 @@ const watchtowerSources = [{
     }
   
     async getVideoList(url) {
-      return [{
-        url,
-        originalUrl: url,
-        quality: "Web player",
-        type: "webview",
-        kind: "webview",
-        headers: { Referer: this.source.baseUrl }
-      }];
+      // Returning the page as a "Web player" entry does not open a browser: the
+      // app's Video model has no kind field, so mpv gets HTML, never decodes a
+      // frame, and the watchdog fails the chapter ~20 s later. Fail fast instead.
+      throw new Error("123av: no playable stream found — " + url);
     }
   
     getFilterList() {

@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://mythav.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.1.1",
+  "version": "1.1.2",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/mythav.js",
@@ -210,16 +210,10 @@ class DefaultExtension extends MProvider {
     }
 
     if (videos.length === 0) {
-      // Nothing extractable (a client-side player or a new gate): hand the page
-      // to the in-app browser so playback is still reachable.
-      videos.push({
-        url,
-        originalUrl: url,
-        quality: "Web player",
-        type: "webview",
-        kind: "webview",
-        headers: this.getHeaders(url)
-      });
+      // Returning the page as a "Web player" entry does not open a browser: the
+      // app's Video model has no kind field, so mpv gets HTML, never decodes a
+      // frame, and the watchdog fails the chapter ~20 s later. Fail fast instead.
+      throw new Error("mythav: no playable stream found — " + url);
     }
     return videos;
   }

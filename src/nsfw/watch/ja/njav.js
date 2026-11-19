@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://njav.tv/assets/123av/images/favicon.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.8",
+  "version": "1.0.9",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/njav.js",
@@ -99,7 +99,10 @@ class DefaultExtension extends MProvider {
     videos.length = 0;
     videos.push(...direct);
     if (videos.length === 0) {
-      videos.push({ url, originalUrl: url, quality: "Web player", type: "webview", kind: "webview", headers: this.getHeaders(url) });
+      // Returning the page as a "Web player" entry does not open a browser: the
+      // app's Video model has no kind field, so mpv gets HTML, never decodes a
+      // frame, and the watchdog fails the chapter ~20 s later. Fail fast instead.
+      throw new Error("njav: no playable stream found — " + url);
     }
     return videos;
   }
