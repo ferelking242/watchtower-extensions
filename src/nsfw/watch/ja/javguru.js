@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://cdn.javnorth.com/wp-content/uploads/2018/12/logofinal6.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.13",
+  "version": "1.0.14",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javguru.js",
@@ -163,7 +163,17 @@ class DefaultExtension extends MProvider {
       return rank(a) - rank(b);
     });
 
-    return masters.map((entry, index) => {
+    // The `/stream/...` gateway URL is written by the embed script before the
+    // upstream provisions the rendition, so it regularly answers 404 with the
+    // watch page as HTML. Handing that to mpv burns the watchdog timeout and
+    // fails a chapter whose CDN URL was fine, so probe each candidate and keep
+    // only the ones that really serve a playlist.
+    const playable = await this._playableMasters(masters, url);
+    if (playable.length === 0) {
+      throw new Error("JAV.guru: no playable stream found — " + url);
+    }
+
+    return playable.map((entry, index) => {
       const host = (entry.url.match(/^https?:\/\/([^/]+)/) || [])[1] || "auto";
       return {
         url: entry.url,
@@ -172,6 +182,31 @@ class DefaultExtension extends MProvider {
         headers: this._mediaHeaders(url)
       };
     });
+  }
+
+  /**
+   * Drops masters that do not answer with an HLS playlist.
+   *
+   * Probes run in parallel, so a dead gateway costs one request instead of a
+   * full player timeout. A thrown request is treated as "unknown" and the entry
+   * is kept: a transient network failure must never empty a working list.
+   */
+  async _playableMasters(masters, watchUrl) {
+    const checks = await Promise.all(
+      masters.map(async (entry) => {
+        try {
+          const res = await new Client().get(entry.url, this._mediaHeaders(watchUrl));
+          const status = (res && res.statusCode) || 0;
+          const body = String((res && res.body) || "");
+          if (status === 404 || status === 410) return null;
+          if (!/^#EXTM3U/m.test(body.slice(0, 512))) return null;
+          return entry;
+        } catch (error) {
+          return entry;
+        }
+      })
+    );
+    return checks.filter(Boolean);
   }
 
   // Media requests go to a third-party CDN whose playlist is not

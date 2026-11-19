@@ -86,7 +86,17 @@ export const LANGUAGE_TAGS = [
 ];
 
 /** Curation tags. Only explicit opt-ins or real signals may produce these. */
-export const CURATION_TAGS = ["featured", "popular", "trending", "new"];
+export const CURATION_TAGS = ["featured", "popular", "trending", "new", "dead"];
+
+/**
+ * Tags describing the source's health rather than its content.
+ *
+ * `dead` is written only from the explicit `dead` flag on an index entry, which
+ * a maintainer sets after verifying the site is gone (NXDOMAIN, parked lander,
+ * or no origin behind the DNS record). It is never inferred from a single failed
+ * request: a Cloudflare 403 or a timeout from one network is not evidence.
+ */
+export const HEALTH_TAGS = ["dead"];
 
 export const ALL_TAGS = [
   ...CONTENT_TAGS,

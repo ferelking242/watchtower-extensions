@@ -206,6 +206,10 @@ function tagsFor(entry, labels) {
   // Curation. `forYou` is the repository's existing opt-in flag.
   if (entry.forYou === true) tags.add("featured");
 
+  // Health. Only the explicit flag a maintainer sets after verifying the site
+  // is gone; a failed request is never enough (see HEALTH_TAGS).
+  if (entry.dead === true) tags.add("dead");
+
   return orderTags([...tags]);
 }
 
