@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.javmost.ws/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.7",
+  "version": "1.0.8",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javmost.js",
@@ -26,19 +26,19 @@ class DefaultExtension extends MProvider {
 
   async getPopular(page) {
     const url = `${BASE_URL}/rating/all/page/${page}/`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   get supportsLatest() { return true; }
   async getLatestUpdates(page) {
     const url = page > 1 ? `${BASE_URL}/release/new/page/${page}/` : `${BASE_URL}/release/new/`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
     const url = `${BASE_URL}/search/${q}/page/${page}/`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   _parse(html, base) {
@@ -64,7 +64,7 @@ class DefaultExtension extends MProvider {
     return { list: items, hasNextPage: hasNext || items.length >= 20 };
   }
   async getDetail(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const doc = new Document(res.body);
     const title = doc.selectFirst("meta[property='og:title']")?.attr("content")
       || doc.selectFirst("h1, h2")?.text || "Unknown";
@@ -77,7 +77,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const html = res.body;
     const videos = [];
     const m3u8Rx = /["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/g;

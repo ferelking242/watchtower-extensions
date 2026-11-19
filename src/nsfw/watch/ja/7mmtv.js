@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.7mmtv.sx/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.1.1",
+  "version": "1.1.2",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/7mmtv.js",
@@ -155,18 +155,18 @@ class DefaultExtension extends MProvider {
     if (!q) return { list: [], hasNextPage: false };
     const res = await new Client().get(
       `${BASE_URL}/en/searchall_search/all/${encodeURIComponent(q)}/${page || 1}.html`,
-      { headers: this.getHeaders() }
+      this.getHeaders()
     );
     return this._parseList(res.body, page);
   }
 
   async getCustomList(id, page) {
     if (id === "categories") {
-      const res = await new Client().get(`${BASE_URL}/en/censored_categorylist/list/index.html`, { headers: this.getHeaders() });
+      const res = await new Client().get(`${BASE_URL}/en/censored_categorylist/list/index.html`, this.getHeaders());
       return this._parseDirectory(res.body, /\/en\/censored_category\/\d+\//);
     }
     if (id === "makers") {
-      const res = await new Client().get(`${BASE_URL}/en/uncensored_makersr/list/index.html`, { headers: this.getHeaders() });
+      const res = await new Client().get(`${BASE_URL}/en/uncensored_makersr/list/index.html`, this.getHeaders());
       return this._parseDirectory(res.body, /\/en\/uncensored_makersr\/\d+\//);
     }
     const path = SECTIONS[id];
@@ -178,7 +178,7 @@ class DefaultExtension extends MProvider {
     const sections = [];
     for (const key of Object.keys(SECTIONS)) {
       try {
-        const res = await new Client().get(`${BASE_URL}/en/${SECTIONS[key]}/1.html`, { headers: this.getHeaders() });
+        const res = await new Client().get(`${BASE_URL}/en/${SECTIONS[key]}/1.html`, this.getHeaders());
         const parsed = this._parseList(res.body, 1);
         if (parsed.list.length) {
           sections.push({
@@ -201,7 +201,7 @@ class DefaultExtension extends MProvider {
 
   async _listPage(path, page) {
     const p = page || 1;
-    const res = await new Client().get(`${BASE_URL}/en/${path}/${p}.html`, { headers: this.getHeaders() });
+    const res = await new Client().get(`${BASE_URL}/en/${path}/${p}.html`, this.getHeaders());
     return this._parseList(res.body, p);
   }
 
@@ -284,7 +284,7 @@ class DefaultExtension extends MProvider {
   // `<lang>/<section>_category/<id>/<name>/1.html`, idols at `_avperformer`
   // and studios at `_makersr`.
   async getDetail(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders() });
+    const res = await new Client().get(url, this.getHeaders());
     const html = res.body;
     const doc = new Document(html);
 
@@ -349,7 +349,7 @@ class DefaultExtension extends MProvider {
   // AES-128-CBC encrypted player URLs. The site only ever reads them back
   // through that script, so the same three steps have to be replayed here.
   async getVideoList(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders() });
+    const res = await new Client().get(url, this.getHeaders());
     const html = res.body;
     const videos = [];
     const push = (streamUrl, quality, referer) => {
@@ -435,7 +435,7 @@ class DefaultExtension extends MProvider {
   async _streamsFromEmbed(embedUrl, pageUrl, quality) {
     let body;
     try {
-      body = (await new Client().get(embedUrl, { headers: this.getHeaders(pageUrl) })).body;
+      body = (await new Client().get(embedUrl, this.getHeaders(pageUrl))).body;
     } catch (e) {
       return [];
     }

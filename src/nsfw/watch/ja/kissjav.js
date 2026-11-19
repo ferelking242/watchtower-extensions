@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://kissjav.li/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.6",
+  "version": "1.0.7",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/kissjav.js",
@@ -26,19 +26,19 @@ class DefaultExtension extends MProvider {
 
   async getPopular(page) {
     const url = page > 1 ? `${BASE_URL}/most-popular/?from=${(page - 1) * 30}` : `${BASE_URL}/most-popular/`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   get supportsLatest() { return true; }
   async getLatestUpdates(page) {
     const url = page > 1 ? `${BASE_URL}/latest-updates/?from=${(page - 1) * 30}` : `${BASE_URL}/latest-updates/`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
     const url = page > 1 ? `${BASE_URL}/search/${q}/?from=${(page - 1) * 30}` : `${BASE_URL}/search/${q}/`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const parsed = this._parse(res.body, BASE_URL);
     if (parsed.list.length) return parsed;
     // One-letter queries return an empty shell page; filter latest locally.
@@ -68,7 +68,7 @@ class DefaultExtension extends MProvider {
     return { list: items, hasNextPage: hasNext || items.length >= 15 };
   }
   async getDetail(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const doc = new Document(res.body);
     const title = doc.selectFirst("meta[property='og:title']")?.attr("content") || doc.selectFirst("h1")?.text || "Unknown";
     const thumb = doc.selectFirst("meta[property='og:image']")?.attr("content") || "";
@@ -77,7 +77,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const html = res.body;
     const videos = [];
     const m3u8Rx = /["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/g;

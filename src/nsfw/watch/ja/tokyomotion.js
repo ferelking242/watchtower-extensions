@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://cdn.tokyo-motion.net/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.6",
+  "version": "1.0.7",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/tokyomotion.js",
@@ -26,7 +26,7 @@ class DefaultExtension extends MProvider {
 
   async getPopular(page) {
     const url = `${BASE_URL}/?page=${page}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
 
@@ -34,14 +34,14 @@ class DefaultExtension extends MProvider {
 
   async getLatestUpdates(page) {
     const url = `${BASE_URL}/search?search_query=japanese&search_type=videos&page=${page}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
 
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
     const url = `${BASE_URL}/search?search_query=${q}&search_type=videos&page=${page}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
 
@@ -63,7 +63,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const doc = new Document(res.body);
     const title = doc.selectFirst("meta[property='og:title']")?.attr("content")
       || doc.selectFirst("h1, .video-title")?.text || "Unknown";
@@ -76,7 +76,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const html = res.body;
     const doc = new Document(html);
     const videos = [];
@@ -110,7 +110,7 @@ class DefaultExtension extends MProvider {
     const p = Number(page) > 1 ? Number(page) : 1;
     if (listId === "categories") {
       const url = `${BASE_URL}/categories`;
-      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      const res = await new Client().get(url, this.getHeaders(url));
       const doc = new Document(res.body);
       const out = [];
       const seen = {};
@@ -128,7 +128,7 @@ class DefaultExtension extends MProvider {
     }
     if (listId === "tags") {
       const url = `${BASE_URL}/tags`;
-      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      const res = await new Client().get(url, this.getHeaders(url));
       const doc = new Document(res.body);
       const out = [];
       const seen = {};
@@ -148,7 +148,7 @@ class DefaultExtension extends MProvider {
       let path = "";
       for (let i = 0; i + 4 <= hex.length; i += 4) path += String.fromCharCode(parseInt(hex.substr(i, 4), 16));
       const url = path.charAt(0) === "h" ? path : BASE_URL + path;
-      const res = await new Client().get(url, { headers: this.getHeaders(url) });
+      const res = await new Client().get(url, this.getHeaders(url));
       return this._parse(res.body, BASE_URL);
     }
     throw new Error("TokyoMotion: unknown section \"" + listId + "\"");

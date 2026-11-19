@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javleak.com/wp-content/uploads/2023/08/favicon.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javleak.js",
@@ -25,39 +25,39 @@ class DefaultExtension extends MProvider {
   }
   async getPopular(page) {
     const url = `${BASE_URL}/page/${page}/`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   get supportsLatest() { return true; }
   async getLatestUpdates(page) {
     const url = `${BASE_URL}/page/${page}/`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
     const url = `${BASE_URL}/?s=${q}&paged=${page}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   _parse(html, base) {
     const doc = new Document(html);
     const items = [];
-    const cards = doc.select("article, .post, .movie-item, .video-item");
+    const cards = doc.select(".item_1 .item, .item_1.items .item, .item");
     for (const card of cards) {
-      const a = card.selectFirst("a[rel='bookmark'], h2 a, h3 a, .entry-title a");
+      const a = card.selectFirst("a[href]");
       if (!a) continue;
       const href = a.attr("href") || "";
       if (!href || href === base + "/") continue;
-      const title = a.text?.trim() || a.attr("title") || "";
-      const img = card.selectFirst("img.wp-post-image, .post-thumbnail img, img");
+      const img = card.selectFirst("img");
+      const title = card.selectFirst("h2")?.text?.trim() || img?.attr("alt") || a.attr("title") || "";
       const thumb = img?.attr("data-lazy-src") || img?.attr("data-src") || img?.attr("src") || "";
       if (title && title.length > 2) items.push({ name: title, imageUrl: thumb, link: href });
     }
     return { list: items, hasNextPage: !!doc.selectFirst(".next.page-numbers, a[rel='next']") || items.length >= 10 };
   }
   async getDetail(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const doc = new Document(res.body);
     const title = doc.selectFirst("meta[property='og:title']")?.attr("content") || doc.selectFirst("h1")?.text || "Unknown";
     const thumb = doc.selectFirst("meta[property='og:image']")?.attr("content") || "";
@@ -65,7 +65,7 @@ class DefaultExtension extends MProvider {
     return { name: title.trim(), imageUrl: thumb, description: "", genre: tags, episodes: [{ name: title.trim() || "Watch", url }] };
   }
   async getVideoList(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const html = res.body;
     const videos = [];
     const m3u8Rx = /["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/g;

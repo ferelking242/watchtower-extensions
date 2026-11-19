@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javhd.today/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.8",
+  "version": "1.0.9",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javhdtoday.js",
@@ -33,7 +33,7 @@ class DefaultExtension extends MProvider {
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
     const url = `${BASE_URL}/search/video/?s=${q}&ajax=1&page=${page}`;
-    const res = await new Client().get(url, { headers: this._ajaxHeaders(url) });
+    const res = await new Client().get(url, this._ajaxHeaders(url));
     const parsed = this._parseJson(res.body, BASE_URL);
     if (parsed.list.length) return parsed;
     // Short queries return nothing from the search index; filter recent locally.
@@ -48,7 +48,7 @@ class DefaultExtension extends MProvider {
   async _browse(path, page) {
     // ?page=N is ignored by the backend; only the /path/N/ form advances.
     const url = page > 1 ? `${path}${page}/?ajax=browse_videos` : `${path}?ajax=browse_videos`;
-    const res = await new Client().get(url, { headers: this._ajaxHeaders(url) });
+    const res = await new Client().get(url, this._ajaxHeaders(url));
     return this._parseJson(res.body, BASE_URL);
   }
   _ajaxHeaders(url) {
@@ -76,7 +76,7 @@ class DefaultExtension extends MProvider {
     return { list: items, hasNextPage: !!data.next_url || items.length >= 20 };
   }
   async getDetail(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const doc = new Document(res.body);
     const title = doc.selectFirst("meta[property='og:title']")?.attr("content") || doc.selectFirst("h1")?.text || "Unknown";
     const thumb = doc.selectFirst("meta[property='og:image']")?.attr("content") || "";
@@ -84,7 +84,7 @@ class DefaultExtension extends MProvider {
     return { name: title.trim(), imageUrl: thumb, description: "", genre: tags, episodes: [{ name: title.trim() || "Watch", url }] };
   }
   async getVideoList(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const html = res.body;
     const videos = [];
     const m3u8Rx = /["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/g;

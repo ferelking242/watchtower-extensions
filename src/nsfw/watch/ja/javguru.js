@@ -3,10 +3,10 @@ const watchtowerSources = [{
   "lang": "ja",
   "baseUrl": "https://jav.guru",
   "apiUrl": "",
-  "iconUrl": "https://cdn.javmiku.com/wp-content/uploads/2018/12/logofinal6.png",
+  "iconUrl": "https://cdn.javnorth.com/wp-content/uploads/2018/12/logofinal6.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.9",
+  "version": "1.0.10",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javguru.js",
@@ -73,18 +73,25 @@ class DefaultExtension extends MProvider {
       const title = a.text?.trim() || a.attr("title") || "";
       const img = card.selectFirst("img.wp-post-image, .post-thumbnail img, img[class*='thumb'], img");
       const thumb = img?.attr("data-lazy-src") || img?.attr("data-src") || img?.attr("src") || "";
-      items.push({ name: title, imageUrl: thumb, link: href });
+      items.push({ name: title, imageUrl: this._cover(thumb), link: href });
     }
     const hasNext = !!doc.selectFirst("a.next.page-numbers, a[rel='next'], .nav-previous a");
     return { list: items, hasNextPage: hasNext || items.length >= 15 };
   }
+
+  // The site's own markup points every poster at cdn.javmiku.com, which answers
+  // 403 to any request — the app then shows an empty tile and retries. The
+  // same paths are served by cdn.javnorth.com (and by jav.guru itself).
+  _cover(url) {
+    return String(url || "").replace(/^https?:\/\/cdn\.javmiku\.com\//i, "https://cdn.javnorth.com/");
+  }
   async getDetail(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await this._get(url);
     const doc = new Document(res.body);
     const title = doc.selectFirst("meta[property='og:title']")?.attr("content")
       || doc.selectFirst("h1.entry-title, h1")?.text || "Unknown";
-    const thumb = doc.selectFirst("meta[property='og:image']")?.attr("content")
-      || doc.selectFirst("img.wp-post-image")?.attr("src") || "";
+    const thumb = this._cover(doc.selectFirst("meta[property='og:image']")?.attr("content")
+      || doc.selectFirst("img.wp-post-image")?.attr("src") || "");
     const tags = doc.select(".tags-links a, .entry-footer a, .genre a").map(el => ({ name: el.text.trim() }));
     return {
       name: title.trim(), imageUrl: thumb, description: "",

@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javdoe.sh/logo/javdoe.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.7",
+  "version": "1.0.8",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javdoe.js",
@@ -34,14 +34,14 @@ class DefaultExtension extends MProvider {
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
     const url = `${BASE_URL}/search/video/?ajax=search_results&s=${q}&o=recent&t=all&d=all&c=0&page=${page}`;
-    const res = await new Client().get(url, { headers: this._ajaxHeaders(url) });
+    const res = await new Client().get(url, this._ajaxHeaders(url));
     return this._parseJson(res.body, BASE_URL);
   }
   // Listing pages ship an empty skeleton and hydrate from ?ajax=browse_videos.
   async _browse(path, page) {
     // ?page=N is ignored by the backend; only the /path/N/ form advances.
     const url = page > 1 ? `${path}${page}/?ajax=browse_videos` : `${path}?ajax=browse_videos`;
-    const res = await new Client().get(url, { headers: this._ajaxHeaders(url) });
+    const res = await new Client().get(url, this._ajaxHeaders(url));
     return this._parseJson(res.body, BASE_URL);
   }
   _ajaxHeaders(url) {
@@ -67,7 +67,7 @@ class DefaultExtension extends MProvider {
     return { list: items, hasNextPage: !!data.next_url || items.length >= 20 };
   }
   async getDetail(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const doc = new Document(res.body);
     const title = doc.selectFirst("meta[property='og:title']")?.attr("content")
       || doc.selectFirst("h1, h2")?.text || "Unknown";
@@ -80,7 +80,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const html = res.body;
     const videos = [];
     const m3u8Rx = /["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/g;

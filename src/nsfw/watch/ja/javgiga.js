@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javgiga.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.7",
+  "version": "1.0.8",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javgiga.js",
@@ -25,19 +25,19 @@ class DefaultExtension extends MProvider {
   }
   async getPopular(page) {
     const url = `${BASE_URL}/page/${page}/`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   get supportsLatest() { return true; }
   async getLatestUpdates(page) {
     const url = page > 1 ? `${BASE_URL}/?filter=latest&paged=${page}` : `${BASE_URL}/?filter=latest`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
     const url = page > 1 ? `${BASE_URL}/page/${page}/?s=${q}` : `${BASE_URL}/?s=${q}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   _parse(html, base) {
@@ -58,7 +58,7 @@ class DefaultExtension extends MProvider {
     return { list: items, hasNextPage: hasNext || items.length >= 20 };
   }
   async getDetail(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const doc = new Document(res.body);
     const title = doc.selectFirst("meta[property='og:title']")?.attr("content") || doc.selectFirst("h1")?.text || "Unknown";
     const thumb = doc.selectFirst("meta[property='og:image']")?.attr("content") || "";
@@ -66,7 +66,7 @@ class DefaultExtension extends MProvider {
     return { name: title.trim(), imageUrl: thumb, description: "", genre: tags, episodes: [{ name: title.trim() || "Watch", url }] };
   }
   async getVideoList(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const html = res.body;
     const videos = [];
     const m3u8Rx = /["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/g;

@@ -1,12 +1,12 @@
 const watchtowerSources = [{
   "name": "BestJavPorn",
   "lang": "ja",
-  "baseUrl": "https://bestjavporn.com",
+  "baseUrl": "https://www.bestjavporn.com",
   "apiUrl": "",
-  "iconUrl": "https://bestjavporn.com/favicon.ico",
+  "iconUrl": "https://www.bestjavporn.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.5",
+  "version": "1.0.6",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/bestjavporn.js",
@@ -14,50 +14,52 @@ const watchtowerSources = [{
   "isNsfw": true
 }];
 
-const BASE_URL = "https://bestjavporn.com";
+const BASE_URL = "https://www.bestjavporn.com";
 
 class DefaultExtension extends MProvider {
   getHeaders(url) {
     return {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-      "Referer": "https://bestjavporn.com/"
+      "Referer": "https://www.bestjavporn.com/"
     };
   }
   async getPopular(page) {
-    const url = `${BASE_URL}/?page=${page}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const url = page > 1 ? `${BASE_URL}/page/${page}/` : `${BASE_URL}/`;
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   get supportsLatest() { return true; }
   async getLatestUpdates(page) {
-    const url = `${BASE_URL}/new/?page=${page}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const url = `${BASE_URL}/page/${page}/`;
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
-    const url = `${BASE_URL}/?s=${q}&page=${page}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const url = page > 1 ? `${BASE_URL}/?s=${q}&page=${page}` : `${BASE_URL}/?s=${q}`;
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   _parse(html, base) {
     const doc = new Document(html);
     const items = [];
-    const cards = doc.select(".item, article, .post, .video-item, [class*='thumb'], [class*='movie']");
+    // Cards are `article.thumb-block`; the `<img>` ships a 1x1 SVG placeholder
+    // in `src` and the real cover in `data-lazy-src`, so `src` must be skipped.
+    const cards = doc.select("article.thumb-block, article");
     for (const card of cards) {
-      const a = card.selectFirst("a[href*='bestjavporn'], h2 a, h3 a, a");
+      const a = card.selectFirst("a[href*='/video/']");
       if (!a) continue;
       const href = a.attr("href") || "";
-      if (!href || href.length < 15) continue;
+      if (!href) continue;
       const img = card.selectFirst("img");
-      const title = img?.attr("alt") || a.attr("title") || a.text?.trim() || card.selectFirst("h2, h3, .title")?.text || "";
-      const thumb = img?.attr("data-src") || img?.attr("data-lazy-src") || img?.attr("src") || "";
+      const title = img?.attr("alt") || a.attr("title") || "";
+      const thumb = img?.attr("data-lazy-src") || img?.attr("data-src") || img?.attr("data-wpsrc") || "";
       if (title && title.length > 2) items.push({ name: title.trim(), imageUrl: thumb, link: href.startsWith("http") ? href : base + href });
     }
     return { list: items, hasNextPage: !!doc.selectFirst(".next, a[rel='next']") || items.length >= 10 };
   }
   async getDetail(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const doc = new Document(res.body);
     const title = doc.selectFirst("meta[property='og:title']")?.attr("content") || doc.selectFirst("h1")?.text || "Unknown";
     const thumb = doc.selectFirst("meta[property='og:image']")?.attr("content") || "";
@@ -65,7 +67,7 @@ class DefaultExtension extends MProvider {
     return { name: title.trim(), imageUrl: thumb, description: "", genre: tags, episodes: [{ name: title.trim() || "Watch", url }] };
   }
   async getVideoList(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const html = res.body;
     const videos = [];
     const m3u8Rx = /["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/g;

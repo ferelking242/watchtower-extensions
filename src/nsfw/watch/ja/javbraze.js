@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://javbraze.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.8",
+  "version": "1.0.9",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javbraze.js",
@@ -25,13 +25,13 @@ class DefaultExtension extends MProvider {
   }
   async getPopular(page) {
     const url = page > 1 ? `${BASE_URL}/popular/${page}/` : `${BASE_URL}/popular/`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   get supportsLatest() { return true; }
   async getLatestUpdates(page) {
     const url = page > 1 ? `${BASE_URL}/recent/${page}/` : `${BASE_URL}/recent/`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
   async search(query, page, filters) {
@@ -39,7 +39,7 @@ class DefaultExtension extends MProvider {
     // the recent listing locally instead.
     const q = query.trim().toLowerCase();
     const url = page > 1 ? `${BASE_URL}/recent/${page}/` : `${BASE_URL}/recent/`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const parsed = this._parse(res.body, BASE_URL);
     const list = q ? parsed.list.filter((i) => (i.name || "").toLowerCase().includes(q)) : parsed.list;
     return { list, hasNextPage: parsed.hasNextPage };
@@ -62,7 +62,7 @@ class DefaultExtension extends MProvider {
     return { list: items, hasNextPage: hasNext || items.length >= 15 };
   }
   async getDetail(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const doc = new Document(res.body);
     const title = doc.selectFirst("meta[property='og:title']")?.attr("content") || doc.selectFirst("h1")?.text || "Unknown";
     const thumb = doc.selectFirst("meta[property='og:image']")?.attr("content") || "";
@@ -70,7 +70,7 @@ class DefaultExtension extends MProvider {
     return { name: title.trim(), imageUrl: thumb, description: "", genre: tags, episodes: [{ name: title.trim() || "Watch", url }] };
   }
   async getVideoList(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const html = res.body;
     const videos = [];
     const m3u8Rx = /["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/g;

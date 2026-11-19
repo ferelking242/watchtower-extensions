@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://avporner.com/favicon.ico?v=1.1",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.6",
+  "version": "1.0.7",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/avporner.js",
@@ -26,7 +26,7 @@ class DefaultExtension extends MProvider {
 
   async getPopular(page) {
     const url = `${BASE_URL}/?page=${page}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
 
@@ -34,23 +34,25 @@ class DefaultExtension extends MProvider {
 
   async getLatestUpdates(page) {
     const url = `${BASE_URL}/?page=${page}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
 
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
     const url = `${BASE_URL}/search/${q}/?page=${page}`;
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     return this._parse(res.body, BASE_URL);
   }
 
   _parse(html, base) {
     const doc = new Document(html);
     const items = [];
-    const cards = doc.select(".video-list, [class*='video_list'], .col-md-3.col-sm-6");
+    // `[class*='video_list']` also matches wrappers like `.video_list_slider`,
+    // which nest whole rows and surface the site logo as the first "card".
+    const cards = doc.select(".videos .video-list, .video-list");
     for (const card of cards) {
-      const a = card.selectFirst("a[href*='/watch/']") || card.selectFirst("a[href*='.html']");
+      const a = card.selectFirst("a[href*='/watch/']");
       if (!a) continue;
       const href = a.attr("href") || "";
       if (!href) continue;
@@ -65,7 +67,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const doc = new Document(res.body);
     const title = doc.selectFirst("meta[property='og:title']")?.attr("content")
       || doc.selectFirst("h1, h2")?.text || "Unknown";
@@ -78,7 +80,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    const res = await new Client().get(url, { headers: this.getHeaders(url) });
+    const res = await new Client().get(url, this.getHeaders(url));
     const html = res.body;
     const videos = [];
     const m3u8Rx = /["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/g;
