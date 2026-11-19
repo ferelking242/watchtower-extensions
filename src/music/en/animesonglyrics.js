@@ -5,7 +5,7 @@ const watchtowerSources = [{
     "apiUrl": "https://animesonglyrics.com",
     "iconUrl": "https://animesonglyrics.com/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 3,
     "version": "0.1.0",
     "pkgPath": "music/en/animesonglyrics.js",
     "notes": "AnimeSongLyrics — anime song lyrics database",

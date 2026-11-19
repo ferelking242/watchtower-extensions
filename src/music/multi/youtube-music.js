@@ -44,15 +44,15 @@ const watchtowerSources = [{
           return items;
       }
 
-      async getPopularList(page) {
+      async getPopular(page) {
           const url = "https://music.youtube.com/";
           const res = await new Client().get(url, this.getHeaders(url));
           return { list: this._parseVideos(res.body).slice(0, this._limit()), hasNextPage: false };
       }
 
-      async getLatestList(page) { return this.getPopularList(page); }
+      async getLatestUpdates(page) { return this.getPopular(page); }
 
-      async getSearchList(query, page, filters) {
+      async search(query, page, filters) {
           const url = `https://music.youtube.com/search?q=${encodeURIComponent(query)}`;
           const res = await new Client().get(url, this.getHeaders(url));
           return { list: this._parseVideos(res.body).slice(0, this._limit()), hasNextPage: false };

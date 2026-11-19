@@ -26,7 +26,7 @@ const watchtowerSources = [{
 
       get supportsLatest() { return true; }
 
-      async getPopularList(page) {
+      async getPopular(page) {
           const url = "https://soundcloud.com/charts/top?genre=all-music&country=all-countries";
           const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
@@ -45,7 +45,7 @@ const watchtowerSources = [{
           return { list: items, hasNextPage: false };
       }
 
-      async getLatestList(page) {
+      async getLatestUpdates(page) {
           const url = "https://soundcloud.com/charts/new?genre=all-music&country=all-countries";
           const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);
@@ -62,7 +62,7 @@ const watchtowerSources = [{
           return { list: items.slice(0, this._limit()), hasNextPage: false };
       }
 
-      async getSearchList(query, page, filters) {
+      async search(query, page, filters) {
           const url = `https://soundcloud.com/search/sounds?q=${encodeURIComponent(query)}&page=${page}`;
           const res = await new Client().get(url, this.getHeaders(url));
           const doc = new Document(res.body);

@@ -26,7 +26,7 @@ const watchtowerSources = [{
 
       get supportsLatest() { return true; }
 
-      async getPopularList(page) {
+      async getPopular(page) {
           const url = `https://api.deezer.com/chart/0/tracks?index=${(page-1)*50}&limit=50`;
           const res = await new Client().get(url, this.getHeaders(url));
           let data;
@@ -40,7 +40,7 @@ const watchtowerSources = [{
           return { list: items.slice(0, this._limit()), hasNextPage: tracks.length === 50 };
       }
 
-      async getLatestList(page) {
+      async getLatestUpdates(page) {
           const url = `https://api.deezer.com/editorial/0/releases?index=${(page-1)*50}&limit=50`;
           const res = await new Client().get(url, this.getHeaders(url));
           let data;
@@ -54,7 +54,7 @@ const watchtowerSources = [{
           return { list: items.slice(0, this._limit()), hasNextPage: albums.length === 50 };
       }
 
-      async getSearchList(query, page, filters) {
+      async search(query, page, filters) {
           const url = `https://api.deezer.com/search?q=${encodeURIComponent(query)}&index=${(page-1)*25}&limit=25`;
           const res = await new Client().get(url, this.getHeaders(url));
           let data;

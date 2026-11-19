@@ -5,7 +5,7 @@ const watchtowerSources = [{
     "apiUrl": "https://openings.moe",
     "iconUrl": "https://openings.moe/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 3,
     "version": "0.1.0",
     "pkgPath": "music/en/openingsmoe.js",
     "notes": "OpeningsMoe — anime openings & endings video database",

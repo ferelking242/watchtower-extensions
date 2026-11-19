@@ -5,7 +5,7 @@ const watchtowerSources = [{
     "apiUrl": "https://anisongdb.com",
     "iconUrl": "https://anisongdb.com/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 3,
     "version": "0.1.0",
     "pkgPath": "music/en/anisongdb.js",
     "notes": "AnisongDB — anime song database with OP/ED info",

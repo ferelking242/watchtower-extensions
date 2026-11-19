@@ -5,7 +5,7 @@ const watchtowerSources = [{
     "apiUrl": "https://musicdex.app",
     "iconUrl": "https://musicdex.app/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 3,
     "version": "0.1.0",
     "pkgPath": "music/multi/musicdex.js",
     "notes": "Musicdex — anime music streaming",

@@ -515,32 +515,6 @@
     "addedAt": "2026-10-08"
   },
   {
-    "name": "AnimeSongLyrics",
-    "id": 3010,
-    "lang": "en",
-    "baseUrl": "https://www.animesonglyrics.com",
-    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/music-3010.png",
-    "typeSource": "single",
-    "itemType": 3,
-    "version": "1.0.0",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@124953596b836facf3d4b63b7fc38cb57435c4dd/src/music/en/anisonglyrics.js",
-    "isManga": false,
-    "isNsfw": false,
-    "hasCloudflare": false,
-    "appMinVerReq": "0.5.0",
-    "sourceCodeLanguage": 1,
-    "notes": "Anime song lyrics — opening, ending, and insert song lyrics",
-    "login": false,
-    "forYou": false,
-    "requiresAccount": false,
-    "hasDRM": false,
-    "tags": [
-      "music",
-      "english"
-    ],
-    "addedAt": "2026-10-08"
-  },
-  {
     "name": "LyricalNonsense",
     "id": 3011,
     "lang": "en",

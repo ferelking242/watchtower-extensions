@@ -5,7 +5,7 @@ const watchtowerSources = [{
     "apiUrl": "https://lyrical-nonsense.com",
     "iconUrl": "https://lyrical-nonsense.com/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 3,
     "version": "0.1.0",
     "pkgPath": "music/en/lyricalnonsense.js",
     "notes": "LyricalNonsense — anime song lyrics & translations",

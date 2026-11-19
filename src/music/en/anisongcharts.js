@@ -5,7 +5,7 @@ const watchtowerSources = [{
     "apiUrl": "https://anison.charts",
     "iconUrl": "https://anison.charts/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 3,
     "version": "0.1.0",
     "pkgPath": "music/en/anisongcharts.js",
     "notes": "AnisonCharts — anime song charts & rankings",

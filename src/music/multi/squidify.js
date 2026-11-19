@@ -5,7 +5,7 @@ const watchtowerSources = [{
     "apiUrl": "https://squidify.com",
     "iconUrl": "https://squidify.com/favicon.ico",
     "typeSource": "single",
-    "itemType": 2,
+    "itemType": 3,
     "version": "0.1.0",
     "pkgPath": "music/multi/squidify.js",
     "notes": "Squidify — anime music streaming",
