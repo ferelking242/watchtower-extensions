@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://cdn.javnorth.com/wp-content/uploads/2018/12/logofinal6.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.11",
+  "version": "1.0.12",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javguru.js",
@@ -169,22 +169,33 @@ class DefaultExtension extends MProvider {
         url: entry.url,
         quality: index === 0 ? "Auto" : "Auto · " + host.replace(/^www\./, ""),
         originalUrl: entry.url,
-        headers: this._mediaHeaders(entry.embedUrl)
+        headers: this._mediaHeaders(url)
       };
     });
   }
 
-  // Media requests go to a third-party CDN, not to jav.guru, so the Referer
-  // must be the embed page that served the signed URL.
-  _mediaHeaders(embedUrl) {
-    const headers = this.getHeaders(embedUrl);
-    if (embedUrl) headers["Referer"] = embedUrl;
+  // Media requests go to a third-party CDN whose playlist is not
+  // origin-locked, so the watch page is the Referer: it stays valid even when
+  // the signed embed URL is rejected by the embed host's domain check.
+  _mediaHeaders(pageUrl) {
+    const headers = this.getHeaders(pageUrl);
+    if (pageUrl) headers["Referer"] = pageUrl;
     return headers;
   }
 
   // The watch page embeds its servers as `"iframe_url":"<base64>"`. The base64
   // payload is `https://jav.guru/searcho/?<name>=<hex>&bg=…`; the interstitial
   // expects the token reversed under `<name[0]>r`.
+  //
+  // The player gateways are served from more than one host and they fail
+  // independently: `jav.guru/searcho/` answers Cloudflare 521 ("origin down")
+  // while `javship.tv/searcho/` answers 200 and 302s to the real embed. Emit
+  // every host per token, player host first, so a dead origin only costs one
+  // request instead of the whole chapter.
+  _gatewayBases() {
+    return ["https://javship.tv", BASE_URL];
+  }
+
   _interstitialUrls(html) {
     const out = [];
     const rx = /"iframe_url"\s*:\s*"([A-Za-z0-9+/=]+)"/g;
@@ -198,7 +209,10 @@ class DefaultExtension extends MProvider {
       const name = param[0] || "";
       const value = param[1] || "";
       if (!name || !value) continue;
-      out.push(`${BASE_URL}/searcho/?${name.charAt(0)}r=${value.split("").reverse().join("")}`);
+      const reversed = value.split("").reverse().join("");
+      for (const base of this._gatewayBases()) {
+        out.push(`${base}/searcho/?${name.charAt(0)}r=${reversed}`);
+      }
     }
     return out;
   }
@@ -224,18 +238,27 @@ class DefaultExtension extends MProvider {
     return out;
   }
 
-  // Fetches a server's embed page through its jav.guru interstitial.
+  // Fetches a server's embed page through the gateway interstitial.
   //
-  // The interstitial 302s to the real embed. The default client follows the
-  // redirect and returns the embed body directly, while the Dart client with
-  // `followRedirects:false` exposes the 302 and its Location header (the same
-  // pattern the repo's other redirect-based extractors use) — that URL is what
-  // the CDN wants as Referer, so it is preferred when available.
+  // Two hops, and each one validates the Referer against a *different* origin:
+  //
+  //  1. `<gateway>/searcho/?<x>r=<token>` only answers with its 302 when the
+  //     Referer is the gateway's own origin. Sending the watch page here gets a
+  //     200 with an empty body and no Location.
+  //  2. The embed it redirects to (e.g. `javclan.com/e/…`) only serves the
+  //     player when the Referer is the *watch* origin — otherwise it renders
+  //     "Video embed restricted for this domain".
+  //
+  // Hence the manual first hop (to read Location) and the watch-page Referer on
+  // the second. Following the redirect in one request cannot satisfy both.
   async _fetchEmbed(gateway, pageUrl) {
-    const headers = this.getHeaders(pageUrl);
+    const gatewayOrigin = (gateway.match(/^https?:\/\/[^/]+/) || [""])[0];
     let res = null;
     try {
-      res = await new Client({ useDartHttpClient: true, followRedirects: false }).get(gateway, headers);
+      res = await new Client({ useDartHttpClient: true, followRedirects: false }).get(
+        gateway,
+        { ...this.getHeaders(pageUrl), Referer: gatewayOrigin + "/" },
+      );
     } catch (error) {
       res = null;
     }
@@ -250,21 +273,24 @@ class DefaultExtension extends MProvider {
         }
       }
       if (location) {
-        const embed = await this._getEmbed(location);
-        return { body: embed.body, url: location };
+        const absolute = /^https?:\/\//i.test(location)
+          ? location
+          : gatewayOrigin + (location.charAt(0) === "/" ? "" : "/") + location;
+        const embed = await this._getEmbed(absolute, pageUrl);
+        if (this._looksLikeEmbed(embed.body)) return { body: embed.body, url: absolute };
       }
       // A followed redirect already carried the embed body in `res`.
       if (this._looksLikeEmbed(res.body)) return { body: res.body, url: res.url || gateway };
     }
 
     // Last resort: the default client follows the redirect itself.
-    const embed = await this._getEmbed(gateway);
+    const embed = await this._getEmbed(gateway, pageUrl);
     return { body: embed.body, url: gateway };
   }
 
-  async _getEmbed(embedUrl) {
+  async _getEmbed(embedUrl, pageUrl) {
     try {
-      const res = await this._get(embedUrl);
+      const res = await new Client().get(embedUrl, this.getHeaders(pageUrl));
       return { body: res.body || "" };
     } catch (error) {
       return { body: "" };
