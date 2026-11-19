@@ -554,6 +554,14 @@ class DefaultExtension extends MProvider {
 
     // 3. Masters first: expand each adaptive playlist into its variants.
     const masters = candidates.filter((c) => isHls(c) && /\/playlist\.m3u8/i.test(c));
+    // The master is always a playable entry, whatever the CDN answers to this
+    // client. Surrit refuses the app's own HTTP stack on TLS fingerprint (a
+    // Dart/BoringSSL handshake gets a Cloudflare-branded 403 while the exact
+    // same request from curl or mpv gets 200), so listing the variants can
+    // legitimately fail here while playback still works. mpv performs the
+    // rendition switch itself on a master playlist, so this entry is the
+    // difference between "no source" and a working video.
+    let masterFallback = masters.length > 0 ? masters[0] : "";
     for (const master of masters.slice(0, 2)) {
       const text = await this._fetchMasterText(master, headers);
       if (!text) continue;
@@ -591,6 +599,7 @@ class DefaultExtension extends MProvider {
       const uuidMatch = html.match(/surrit\.com[\\/]+([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
       if (uuidMatch) {
         const master = "https://surrit.com/" + uuidMatch[1] + "/playlist.m3u8";
+        masterFallback = masterFallback || master;
         const text = await this._fetchMasterText(master, headers);
         if (text) {
           for (const variant of this._parseMasterVariants(text, master)) {
@@ -598,6 +607,16 @@ class DefaultExtension extends MProvider {
           }
         }
       }
+    }
+
+    // 7. The master itself is a playable entry. Listing its variants needs a
+    // second request that the CDN can refuse to the extension's client, but
+    // the player's own stack (FFmpeg/mpv) is accepted — this is the difference
+    // between "no source at all" and a working video, so return it as `Auto`
+    // instead of an empty list. The player expands it itself (expandHlsVariants
+    // on the app side) when the playlist is reachable there.
+    if (videos.length === 0 && masterFallback) {
+      addVideo(masterFallback, "Auto");
     }
 
     if (videos.length === 0) return [];
