@@ -8,7 +8,7 @@ const watchtowerSources = [{
     "itemType": 1,
     "isNsfw": false,
     "hasCloudflare": true,
-    "version": "0.2.0",
+    "version": "0.3.0",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -20,6 +20,7 @@ const watchtowerSources = [{
 
 const BASE_URL = "https://mkissa.to";
 const API_URL = "https://api.mkissa.net/api";
+const GQL_MIN_INTERVAL_MS = 700;
 
 class DefaultExtension extends MProvider {
     getBaseUrl() {
@@ -30,24 +31,57 @@ class DefaultExtension extends MProvider {
     // That endpoint is behind Cloudflare: a GET with the query in the URL is
     // answered `403 cf-mitigated: challenge`, while the same payload as a JSON
     // POST returns `200`. The extension must therefore POST the body.
+    //
+    // The API throttles bursts ("Too many requests, please try again in N
+    // seconds"), so calls are serialised behind a minimum interval and retried
+    // once after the advertised delay. A home fires one call per section, and
+    // without the gate the later rails all came back empty.
     async gql(query, variables) {
-        const base = this.getBaseUrl();
-        const res = await new Client().post(
-            API_URL,
-            {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "Origin": base,
-                "Referer": base + "/",
-                "from-app": "true"
-            },
-            { query, variables }
-        );
-        let payload;
+        const previous = DefaultExtension._chain || Promise.resolve();
+        let release;
+        DefaultExtension._chain = new Promise((resolve) => (release = resolve));
+        await previous;
         try {
-            payload = JSON.parse(res.body || "{}");
-        } catch (_) {
-            throw new Error("[MKissa] API returned invalid JSON");
+            const wait = DefaultExtension._nextAt - Date.now();
+            if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+            const result = await this.gqlOnce(query, variables);
+            return result;
+        } finally {
+            DefaultExtension._nextAt = Date.now() + GQL_MIN_INTERVAL_MS;
+            release();
+        }
+    }
+
+    async gqlOnce(query, variables) {
+        const base = this.getBaseUrl();
+        const send = async () => {
+            const res = await new Client().post(
+                API_URL,
+                {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "Origin": base,
+                    "Referer": base + "/",
+                    "from-app": "true"
+                },
+                { query, variables }
+            );
+            let payload;
+            try {
+                payload = JSON.parse(res.body || "{}");
+            } catch (_) {
+                throw new Error("[MKissa] API returned invalid JSON");
+            }
+            return payload;
+        };
+
+        let payload = await send();
+        const messages = (payload.errors || []).map((e) => e && e.message).filter(Boolean);
+        const throttled = messages.find((m) => /too many requests/i.test(m));
+        if (throttled) {
+            const seconds = parseFloat((throttled.match(/(\d+(?:\.\d+)?)/) || [])[1] || "2");
+            await new Promise((r) => setTimeout(r, Math.min(seconds, 10) * 1000 + 250));
+            payload = await send();
         }
         if (Array.isArray(payload.errors) && payload.errors.length) {
             throw new Error(
@@ -72,25 +106,105 @@ class DefaultExtension extends MProvider {
     }
 
     async getPopular(page) {
-        const data = await this.gql(
-            "query($type:VaildPopularTypeEnumType!,$size:Int!,$dateRange:Int,$page:Int){" +
-            "queryPopular(type:$type,size:$size,dateRange:$dateRange,page:$page){" +
-            "recommendations{anyCard{_id name englishName nativeName thumbnail}}}}",
-            { type: "anime", size: 26, dateRange: 1, page }
-        );
-        const recs = ((data && data.queryPopular && data.queryPopular.recommendations) || [])
-            .filter((e) => e && e.anyCard);
-        const titleStyle = new SharedPreferences().get("preferred_title_style");
-        const list = recs.map((e) => ({
-            name: this.pickTitle(e.anyCard, titleStyle),
-            imageUrl: e.anyCard.thumbnail,
-            link: `/bangumi/${e.anyCard._id}/${this.slug(e.anyCard.name)}`
-        }));
-        return { list, hasNextPage: list.length === 26 };
+        return this.popularWindow(1, page);
     }
 
     async getLatestUpdates(page) {
         return await this.search("", page, []);
+    }
+
+    /// Feeds backing the declarative home. Each layout section id gets its own
+    /// query so the rails never repeat the same shows, and every
+    /// `category_<genre>` id maps to a real genre filter of the same API.
+    async getCustomList(listId, page) {
+        const id = String(listId || "").trim();
+        if (!id) return this.getPopular(page);
+
+        if (id.startsWith("category_")) {
+            return this.searchByGenre(this.genreFromListId(id), page);
+        }
+
+        switch (id) {
+            case "popular":
+            case "spotlight":
+            case "top_rated":
+                return this.getPopular(page);
+            case "latest":
+            case "new":
+                return this.search("", page, []);
+            case "trending":
+                return this.popularWindow(7, page);
+            case "top_week":
+                return this.popularWindow(30, page);
+            default:
+                // Unknown ids fall back to popular rather than throwing, so a
+                // layout can add a section before the feed exists.
+                return this.getPopular(page);
+        }
+    }
+
+    async popularWindow(dateRange, page) {
+        const data = await this.gql(
+            "query($type:VaildPopularTypeEnumType!,$size:Int!,$dateRange:Int,$page:Int){" +
+            "queryPopular(type:$type,size:$size,dateRange:$dateRange,page:$page){" +
+            "recommendations{anyCard{_id name englishName nativeName thumbnail}}}}",
+            { type: "anime", size: 26, dateRange, page }
+        );
+        return this.toList(
+            ((data && data.queryPopular && data.queryPopular.recommendations) || [])
+                .filter((e) => e && e.anyCard)
+                .map((e) => e.anyCard)
+        );
+    }
+
+    /// Section ids are lowercase and hyphenated (`category_slice-of-life`), so
+    /// both sides are reduced to their alphanumeric characters before
+    /// comparing: the API spells the genre `Sci-Fi` while the id is `sci-fi`.
+    /// An unknown genre returns "" and the rail is skipped instead of asking
+    /// the API for a genre it does not know.
+    genreFromListId(listId) {
+        const key = (value) =>
+            String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const value = key(String(listId || "").replace(/^category_/, ""));
+        if (!value) return "";
+        const known = [
+            "Action", "Adventure", "Comedy", "Drama", "Fantasy", "Horror",
+            "Mystery", "Romance", "Sci-Fi", "Slice of Life", "Sports",
+            "Supernatural", "Thriller", "Music", "Mecha", "Psychological"
+        ];
+        return known.find((g) => key(g) === value) || "";
+    }
+
+    async searchByGenre(genre, page) {
+        if (!genre) return { list: [], hasNextPage: false };
+        const data = await this.gql(
+            "query($search:SearchInput,$limit:Int,$countryOrigin:VaildCountryOriginEnumType,$page:Int){" +
+            "shows(search:$search,limit:$limit,countryOrigin:$countryOrigin,page:$page){" +
+            "edges{_id name nativeName englishName thumbnail}}}",
+            {
+                search: {
+                    query: "",
+                    allowAdult: false,
+                    allowUnknown: false,
+                    genres: [genre]
+                },
+                countryOrigin: "ALL",
+                limit: 26,
+                page
+            }
+        );
+        const edges = (data && data.shows && data.shows.edges) || [];
+        return this.toList(edges);
+    }
+
+    toList(cards) {
+        const titleStyle = new SharedPreferences().get("preferred_title_style");
+        const list = (cards || []).map((a) => ({
+            name: this.pickTitle(a, titleStyle),
+            imageUrl: a.thumbnail,
+            link: `/bangumi/${a._id}/${this.slug(a.name)}`
+        }));
+        return { list, hasNextPage: list.length === 26 };
     }
 
     async search(query, page, filters) {
@@ -106,13 +220,7 @@ class DefaultExtension extends MProvider {
             }
         );
         const edges = (data && data.shows && data.shows.edges) || [];
-        const titleStyle = new SharedPreferences().get("preferred_title_style");
-        const list = edges.map((a) => ({
-            name: this.pickTitle(a, titleStyle),
-            imageUrl: a.thumbnail,
-            link: `/bangumi/${a._id}/${this.slug(a.name)}`
-        }));
-        return { list, hasNextPage: list.length === 26 };
+        return this.toList(edges);
     }
 
     async getDetail(url) {

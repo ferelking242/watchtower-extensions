@@ -23491,7 +23491,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900001569.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.2.0",
+    "version": "0.3.0",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@72891cd63bbda90705b30b83e89dab33ddca869a/src/watch/en/mkissa.js",
     "isManga": false,
     "isNsfw": false,
@@ -23508,7 +23508,9 @@
       "english"
     ],
     "addedAt": "2026-10-08",
-    "apiUrl": "https://api.mkissa.net/api"
+    "apiUrl": "https://api.mkissa.net/api",
+    "uiLayout": "ui-layouts/mkissa-anime.json",
+    "uiLayoutVersion": "1.0.0"
   },
   {
     "name": "NEPU",

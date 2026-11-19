@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      {
+        "id": "spotlight",
+        "component": "spotlight",
+        "title": "✨ À la une",
+        "accent": "primary",
+        "icon": "auto_awesome",
+        "seeAll": true
+      },
+      {
+        "id": "popular",
+        "component": "ranked",
+        "title": "🔥 Les plus regardés",
+        "accent": "error",
+        "icon": "trending_up",
+        "seeAll": true
+      },
+      {
+        "id": "latest",
+        "component": "compactRow",
+        "title": "🆕 Derniers ajouts",
+        "accent": "tertiary",
+        "icon": "fiber_new",
+        "seeAll": true
+      },
+      {
+        "id": "trending",
+        "component": "ranked",
+        "title": "📈 Tendance de la semaine",
+        "accent": "#FF7043",
+        "icon": "local_fire_department",
+        "seeAll": true
+      },
+      {
+        "id": "top_week",
+        "component": "compactRow",
+        "title": "🗓️ Populaires du mois",
+        "accent": "#FFC107",
+        "icon": "calendar_month",
+        "seeAll": true
+      },
+      {
+        "id": "new",
+        "component": "grid",
+        "title": "🌱 À découvrir",
+        "accent": "secondary",
+        "icon": "auto_awesome",
+        "seeAll": true,
+        "columns": 3,
+        "rows": 2,
+        "cardStyle": "poster"
+      },
+      {
+        "id": "category_action",
+        "component": "compactRow",
+        "title": "⚔️ Action",
+        "accent": "#42A5F5",
+        "icon": "bolt",
+        "seeAll": true
+      },
+      {
+        "id": "category_fantasy",
+        "component": "compactRow",
+        "title": "🐉 Fantasy",
+        "accent": "#8E44AD",
+        "icon": "auto_awesome",
+        "seeAll": true
+      },
+      {
+        "id": "category_romance",
+        "component": "compactRow",
+        "title": "💕 Romance",
+        "accent": "#E91E63",
+        "icon": "favorite",
+        "seeAll": true
+      },
+      {
+        "id": "category_comedy",
+        "component": "compactRow",
+        "title": "😂 Comédie",
+        "accent": "#FFB300",
+        "icon": "emoji_emotions",
+        "seeAll": true
+      },
+      {
+        "id": "category_sci-fi",
+        "component": "compactRow",
+        "title": "🚀 Science-fiction",
+        "accent": "#00ACC1",
+        "icon": "rocket_launch",
+        "seeAll": true
+      },
+      {
+        "id": "category_slice-of-life",
+        "component": "compactRow",
+        "title": "🌿 Tranche de vie",
+        "accent": "#66BB6A",
+        "icon": "spa",
+        "seeAll": true
+      }
+    ],
+    "note": "MKissa anime — hero then one horizontal rail per feed; each section id is answered by getCustomList with its own query."
+  },
+  "browse": {
+    "popular": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "poster"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 3,
+      "cardStyle": "poster"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 3,
+        "cardStyle": "poster"
+      },
+      "filters": "chips"
+    }
+  },
+  "player": {
+    "mode": "standard"
+  }
+}
