@@ -23,22 +23,37 @@ class DefaultExtension extends MProvider {
       "Referer": "https://www.bestjavporn.com/"
     };
   }
+  // The www host answers Cloudflare's interstitial to the native client.
+  // Throwing the wording the app recognises opens its browser bypass on this
+  // exact URL instead of rendering an empty home.
+  async _get(url) {
+    const res = await new Client().get(url, this.getHeaders(url));
+    const body = (res && res.body) || "";
+    const status = (res && res.statusCode) || 0;
+    if (
+      status === 403 ||
+      status === 503 ||
+      /Just a moment|Attention Required|cf-chl|cf_chl|_cf_chl_opt|cf-challenge-running|Verify you are human/i.test(body)
+    ) {
+      throw new Error("BestJavPorn: Cloudflare challenge (HTTP " + status + ") — " + url);
+    }
+    if (status >= 400) throw new Error("BestJavPorn: HTTP " + status + " — " + url);
+    return body;
+  }
+
   async getPopular(page) {
     const url = page > 1 ? `${BASE_URL}/page/${page}/` : `${BASE_URL}/`;
-    const res = await new Client().get(url, this.getHeaders(url));
-    return this._parse(res.body, BASE_URL);
+    return this._parse(await this._get(url), BASE_URL);
   }
   get supportsLatest() { return true; }
   async getLatestUpdates(page) {
     const url = `${BASE_URL}/page/${page}/`;
-    const res = await new Client().get(url, this.getHeaders(url));
-    return this._parse(res.body, BASE_URL);
+    return this._parse(await this._get(url), BASE_URL);
   }
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
     const url = page > 1 ? `${BASE_URL}/?s=${q}&page=${page}` : `${BASE_URL}/?s=${q}`;
-    const res = await new Client().get(url, this.getHeaders(url));
-    return this._parse(res.body, BASE_URL);
+    return this._parse(await this._get(url), BASE_URL);
   }
   _parse(html, base) {
     const doc = new Document(html);
@@ -59,16 +74,14 @@ class DefaultExtension extends MProvider {
     return { list: items, hasNextPage: !!doc.selectFirst(".next, a[rel='next']") || items.length >= 10 };
   }
   async getDetail(url) {
-    const res = await new Client().get(url, this.getHeaders(url));
-    const doc = new Document(res.body);
+    const doc = new Document(await this._get(url));
     const title = doc.selectFirst("meta[property='og:title']")?.attr("content") || doc.selectFirst("h1")?.text || "Unknown";
     const thumb = doc.selectFirst("meta[property='og:image']")?.attr("content") || "";
     const tags = doc.select(".tags a, [class*='tag'] a").map(el => ({ name: el.text.trim() }));
     return { name: title.trim(), imageUrl: thumb, description: "", genre: tags, episodes: [{ name: title.trim() || "Watch", url }] };
   }
   async getVideoList(url) {
-    const res = await new Client().get(url, this.getHeaders(url));
-    const html = res.body;
+    const html = await this._get(url);
     const videos = [];
     const m3u8Rx = /["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/g;
     let m;

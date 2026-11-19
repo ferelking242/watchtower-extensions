@@ -24,25 +24,40 @@ class DefaultExtension extends MProvider {
     };
   }
 
+  // SupJav sits behind a Cloudflare interstitial. Throwing the wording the
+  // app recognises opens its browser bypass on this exact URL instead of
+  // handing an empty list back to the home screen.
+  async _get(url) {
+    const res = await new Client().get(url, this.getHeaders(url));
+    const body = (res && res.body) || "";
+    const status = (res && res.statusCode) || 0;
+    if (
+      status === 403 ||
+      status === 503 ||
+      /Just a moment|Attention Required|cf-chl|cf_chl|_cf_chl_opt|cf-challenge-running|Verify you are human/i.test(body)
+    ) {
+      throw new Error("SupJav: Cloudflare challenge (HTTP " + status + ") — " + url);
+    }
+    if (status >= 400) throw new Error("SupJav: HTTP " + status + " — " + url);
+    return body;
+  }
+
   async getPopular(page) {
     const url = `${BASE_URL}/page/${page}/`;
-    const res = await new Client().get(url, this.getHeaders(url));
-    return this._parse(res.body, BASE_URL);
+    return this._parse(await this._get(url), BASE_URL);
   }
 
   get supportsLatest() { return true; }
 
   async getLatestUpdates(page) {
     const url = `${BASE_URL}/?page=${page}`;
-    const res = await new Client().get(url, this.getHeaders(url));
-    return this._parse(res.body, BASE_URL);
+    return this._parse(await this._get(url), BASE_URL);
   }
 
   async search(query, page, filters) {
     const q = encodeURIComponent(query.trim());
     const url = `${BASE_URL}/?s=${q}&page=${page}`;
-    const res = await new Client().get(url, this.getHeaders(url));
-    return this._parse(res.body, BASE_URL);
+    return this._parse(await this._get(url), BASE_URL);
   }
 
   _parse(html, base) {
@@ -64,8 +79,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getDetail(url) {
-    const res = await new Client().get(url, this.getHeaders(url));
-    const doc = new Document(res.body);
+    const doc = new Document(await this._get(url));
     const title = doc.selectFirst("meta[property='og:title']")?.attr("content") || doc.selectFirst("h1")?.text || "Unknown";
     const thumb = doc.selectFirst("meta[property='og:image']")?.attr("content") || "";
     const tags = doc.select(".tags a, [class*='genre'] a, [class*='tag'] a").map(el => ({ name: el.text.trim() }));
@@ -73,8 +87,7 @@ class DefaultExtension extends MProvider {
   }
 
   async getVideoList(url) {
-    const res = await new Client().get(url, this.getHeaders(url));
-    const html = res.body;
+    const html = await this._get(url);
     const videos = [];
     const m3u8Rx = /["'`](https?:\/\/[^"'`]+\.m3u8[^"'`]{0,150})["'`]/g;
     let m;

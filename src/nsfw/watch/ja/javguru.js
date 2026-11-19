@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://cdn.javnorth.com/wp-content/uploads/2018/12/logofinal6.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.10",
+  "version": "1.0.11",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javguru.js",
@@ -33,8 +33,19 @@ class DefaultExtension extends MProvider {
     let res;
     for (let attempt = 0; attempt < 4; attempt++) {
       res = await new Client().get(url, this.getHeaders(url));
-      if (res.statusCode !== 429 && res.statusCode !== 503) return res;
+      if (res.statusCode !== 429 && res.statusCode !== 503) break;
       await this._delay(1500 * (attempt + 1));
+    }
+    // A challenge page parses to zero cards, which the UI reports as "no
+    // results" for every query. The app opens its browser bypass when it sees
+    // this wording, so raise it instead of returning the challenge markup.
+    const body = (res && res.body) || "";
+    const status = (res && res.statusCode) || 0;
+    if (
+      status === 403 ||
+      /Just a moment|Attention Required|cf-chl|_cf_chl_opt|cf-challenge-running|Verify you are human/i.test(body)
+    ) {
+      throw new Error("JAV.guru: Cloudflare challenge (HTTP " + status + ") — " + url);
     }
     return res;
   }
@@ -139,12 +150,11 @@ class DefaultExtension extends MProvider {
     }
 
     if (masters.length === 0) {
-      // Player is assembled client-side and nothing could be resolved: hand the
-      // page to the in-app browser rather than returning an empty list.
-      return [{
-        url, originalUrl: url, quality: "Web player",
-        type: "webview", kind: "webview", headers: this.getHeaders(url)
-      }];
+      // Returning the watch page as a "Web player" entry does not open a
+      // browser: the app's Video model has no kind field, so mpv receives HTML,
+      // never decodes a frame, and the watchdog fails the chapter ~20 s later.
+      // Fail fast instead, so the player reports a source error immediately.
+      throw new Error("JAV.guru: no playable stream found — " + url);
     }
 
     // premilkyway first (the working host), then the rest in discovery order.

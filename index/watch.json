@@ -6980,7 +6980,9 @@
       "th": "ABJav — สตรีมมิ่ง JAV (วิดีโอผู้ใหญ่ญี่ปุ่น) ฟรี 18+ เท่านั้น คุณภาพที่ไม่ถูกเซ็นเซอร์ วิดีโอยอดนิยมและล่าสุด ค้นหาได้ตามชื่อเรื่อง",
       "tr": "ABJav — ücretsiz JAV (Japon yetişkin videosu) yayını, yalnızca 18+. sansürsüz kalite. Başlığa göre aranabilen popüler ve en yeni videolar.",
       "zh": "ABJav — 免费 JAV（日本成人视频）流媒体，仅限 18 岁以上。无码画质。热门和最新视频，可按标题搜索。"
-    }
+    },
+    "uiLayout": "ui-layouts/abjav.json",
+    "uiLayoutVersion": "1.1.0"
   },
   {
     "name": "AVPorner",
@@ -7029,7 +7031,9 @@
       "th": "ชมสิ่งที่ดีที่สุด &amp; วิดีโอโป๊เอเชียที่ร้อนแรงที่สุดใน Full HD เพลิดเพลินกับสื่อลามกและวิดีโอเซ็กซ์ของญี่ปุ่น จีน และเกาหลี &amp; ภาพยนตร์ที่มีสาวน่ารัก มือสมัครเล่นและดาราหนังโป๊เอเชียชื่อดัง",
       "tr": "En iyileri ve en iyileri izleyin Full HD'deki en sıcak Asya porno videoları. Japon, Çin ve Kore porno ve seks videolarının ve amp; sevimli kızların, amatörlerin ve ünlü Asyalı porno yıldızlarının yer aldığı filmler.",
       "zh": "观看最好的&amp;最热门的全高清亚洲色情影片。享受日本、中国和韩国的色情和性爱视频以及色情内容。与可爱女孩、业余爱好者和著名亚洲色情明星合作的电影。"
-    }
+    },
+    "uiLayout": "ui-layouts/avporner.json",
+    "uiLayoutVersion": "1.0.7"
   },
   {
     "name": "BestJapanesePornTV",
@@ -7486,7 +7490,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000208.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.10",
+    "version": "1.0.11",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@a7f9ec22/src/nsfw/watch/ja/javguru.js",
     "isManga": false,
     "isNsfw": true,
@@ -7676,7 +7680,9 @@
       "th": "หนังโป๊ JAV HD ออนไลน์, ดูหนังโป๊ JAV, สตรีมมิ่ง JAV HD AV ญี่ปุ่น, JAV เพศฟรี หนัง JAV HD ที่ดีที่สุดอัพเดททุกวันที่ JavLeak.com",
       "tr": "Porno JAV HD Çevrimiçi, JAV Pornosu, JAV HD Akışını İzleyin. Japon AV, JAV Seks Bedava. En İyi JAV HD Filmleri JavLeak.com'da Günlük Olarak Güncellenir.",
       "zh": "在线高清 JAV 色情，观看 JAV 色情，JAV 高清流媒体。日本 AV，免费 JAV 性爱。JavLeak.com 每日更新最佳 JAV 高清影片。"
-    }
+    },
+    "uiLayout": "ui-layouts/javleak.json",
+    "uiLayoutVersion": "1.0.6"
   },
   {
     "name": "JAVMost",
@@ -7776,7 +7782,9 @@
       "th": "JAVsb — สตรีมมิ่ง JAV (วิดีโอผู้ใหญ่ญี่ปุ่น) ฟรี 18+ เท่านั้น วิดีโอยอดนิยมและล่าสุด ค้นหาได้ตามชื่อเรื่อง",
       "tr": "JAVsb — ücretsiz JAV (Japon yetişkin videosu) akışı, yalnızca 18+. Başlığa göre aranabilen popüler ve en yeni videolar.",
       "zh": "JAVsb — 免费 JAV（日本成人视频）流媒体，仅限 18 岁以上。热门和最新视频，可按标题搜索。"
-    }
+    },
+    "uiLayout": "ui-layouts/javsb.json",
+    "uiLayoutVersion": "1.0.7"
   },
   {
     "name": "JAVTasty",
@@ -7874,7 +7882,9 @@
       "th": "JAVWine — สตรีมมิ่ง JAV (วิดีโอผู้ใหญ่ญี่ปุ่น) ฟรี 18+ เท่านั้น วิดีโอยอดนิยมและล่าสุด ค้นหาได้ตามชื่อเรื่อง",
       "tr": "JAVWine — ücretsiz JAV (Japon yetişkin videosu) akışı, yalnızca 18+. Başlığa göre aranabilen popüler ve en yeni videolar.",
       "zh": "JAVWine — 免费 JAV（日本成人视频）流媒体，仅限 18 岁以上。热门和最新视频，可按标题搜索。"
-    }
+    },
+    "uiLayout": "ui-layouts/javwine.json",
+    "uiLayoutVersion": "1.0.6"
   },
   {
     "name": "KissJAV",
@@ -7974,7 +7984,9 @@
       "th": "MaxJav — สตรีมมิ่ง JAV (วิดีโอผู้ใหญ่ญี่ปุ่น) ฟรี 18+ เท่านั้น วิดีโอยอดนิยมและล่าสุด ค้นหาได้ตามชื่อเรื่อง",
       "tr": "MaxJav — ücretsiz JAV (Japon yetişkin videosu) akışı, yalnızca 18+. Başlığa göre aranabilen popüler ve en yeni videolar.",
       "zh": "MaxJav — 免费 JAV（日本成人视频）流媒体，仅限 18 岁以上。热门和最新视频，可按标题搜索。"
-    }
+    },
+    "uiLayout": "ui-layouts/maxjav.json",
+    "uiLayoutVersion": "1.0.7"
   },
   {
     "name": "MissAV",
@@ -8326,7 +8338,9 @@
       "th": "VJav — สตรีมมิ่ง JAV (วิดีโอผู้ใหญ่ญี่ปุ่น) ฟรี 18+ เท่านั้น วิดีโอยอดนิยมและล่าสุด ค้นหาได้ตามชื่อเรื่อง",
       "tr": "VJav — ücretsiz JAV (Japon yetişkin videosu) akışı, yalnızca 18+. Başlığa göre aranabilen popüler ve en yeni videolar.",
       "zh": "VJav — 免费 JAV（日本成人视频）流媒体，仅限 18 岁以上。热门和最新视频，可按标题搜索。"
-    }
+    },
+    "uiLayout": "ui-layouts/vjav.json",
+    "uiLayoutVersion": "1.1.0"
   },
   {
     "name": "ZeroJav",
