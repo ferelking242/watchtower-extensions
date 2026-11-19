@@ -43,14 +43,19 @@ class DefaultExtension extends MProvider {
   _parse(html, base) {
     const doc = new Document(html);
     const items = [];
-    const cards = doc.select("article, .post, .item, [class*='video'], [class*='movie'], [class*='thumb']");
-    for (const card of cards) {
-      const a = card.selectFirst("h2 a, h3 a, a[rel='bookmark'], a");
+    const seen = {};
+    // The theme wraps each entry in `<div class="post post-<id>">` with the
+    // permalink in `h2.title a` and the cover in the first `img` of `.entry`.
+    // The generic `[class*='video']` sweep used to match nested wrappers, so a
+    // single post produced several imageless duplicates.
+    for (const card of doc.select("div.post, article")) {
+      const a = card.selectFirst("h2.title a, h3 a, a[rel='bookmark']");
       if (!a) continue;
       const href = a.attr("href") || "";
-      if (!href || href.length < 15) continue;
-      const img = card.selectFirst("img");
-      const title = img?.attr("alt") || a.attr("title") || a.text?.trim() || card.selectFirst(".title, h2, h3")?.text || "";
+      if (!href || href.length < 15 || seen[href]) continue;
+      seen[href] = 1;
+      const img = card.selectFirst(".entry img, img");
+      const title = (a.attr("title") || img?.attr("alt") || a.text || "").replace(/^Permalink to\s*/i, "");
       const thumb = img?.attr("data-lazy-src") || img?.attr("data-src") || img?.attr("src") || "";
       if (title && title.length > 2) items.push({ name: title.trim(), imageUrl: thumb, link: href.startsWith("http") ? href : base + href });
     }

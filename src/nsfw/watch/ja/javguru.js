@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://cdn.javnorth.com/wp-content/uploads/2018/12/logofinal6.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.12",
+  "version": "1.0.13",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javguru.js",
