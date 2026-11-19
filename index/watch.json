@@ -7509,7 +7509,7 @@
     "typeSource": "single",
     "itemType": 1,
     "version": "1.0.14",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@4211d611c1c8871965194ad518c4e971fbec4ee3/src/nsfw/watch/ja/javguru.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@3992d0515aeae1b7191330339d3ad953e097c39b/src/nsfw/watch/ja/javguru.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
