@@ -435,7 +435,8 @@ async getCustomList(listId, page) {
                 url = this.baseUrl + "/s-tv/page/" + page + "/?orderby=date";
                 break;
             case "vf":
-                url = this.baseUrl + "/xfsearch/version-film/VF/page/" + page + "/";
+                // The CMS exposes the French dub as `French`; `VF` answers 404.
+                url = this.baseUrl + "/xfsearch/version-film/French/page/" + page + "/";
                 break;
             case "vostfr":
                 url = this.baseUrl + "/xfsearch/version-film/VOSTFR/page/" + page + "/";

@@ -7,7 +7,7 @@ const watchtowerSources = [{
       "iconUrl": "https://www.neko-sama.fr/favicon.ico",
       "typeSource": "single",
       "itemType": 1,
-      "version": "0.2.4",
+      "version": "0.3.0",
       "login": false,
       "forYou": true,
       "pkgPath": "watch/fr/nekosama.js",
@@ -69,6 +69,36 @@ const watchtowerSources = [{
               list.push({ link: m[1], imageUrl: m[2], name: m[3].trim() });
           }
           return list;
+      }
+
+      _parseCards(html) {
+          const list = []; const seen = {};
+          // Genre pages emit the poster before the title link:
+          // <img data-src=".../poster/slug.jpg" alt="Title"> ... <a href=".../anime/slug">Title</a>
+          const re = /<img[^>]+data-src="([^"]+)"[^>]*alt="([^"]{2,100})"[\s\S]{0,600}?<a[^>]+href="(https?:\/\/[^"]*\/anime\/[^"]+)"/gi;
+          let m;
+          while ((m = re.exec(html)) !== null) {
+              if (m[3] in seen) continue;
+              seen[m[3]] = 1;
+              list.push({ link: m[3], imageUrl: m[1], name: this._decode(m[2].trim()) });
+          }
+          return list;
+      }
+
+      async getCustomList(listId, page) {
+          if (listId === "popular") return this.getPopular(page);
+          if (listId === "latest") return this.getLatestUpdates(page);
+          const genres = [
+              "action", "aventure", "comedie", "drame", "romance",
+              "fantastique", "isekai", "sci-fi", "sport",
+          ];
+          if (!genres.includes(listId)) return this.getPopular(page);
+          const res = await new Client().get(
+              `${this.baseUrl}/genres/${listId}${page > 1 ? `?page=${page}` : ""}`,
+              this._hdrs()
+          );
+          const list = this._parseCards(res.body);
+          return { list, hasNextPage: list.length >= 12 };
       }
 
       async search(query, page, filterList) {

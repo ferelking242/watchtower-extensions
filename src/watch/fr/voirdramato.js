@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://voirdrama.to/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.7",
+    "version": "0.2.0",
     "login": false,
     "forYou": false,
     "pkgPath": "watch/fr/voirdramato.js",
@@ -65,6 +65,28 @@ class DefaultExtension extends MProvider {
 
     async getLatestUpdates(page) {
         const res = await new Client().get(`${this.baseUrl}/nouveaux-ajouts/?page=${page}`, this._hdrs());
+        const list = this._parse(res.body);
+        return { list, hasNextPage: list.length >= 10 };
+    }
+
+    async getCustomList(listId, page) {
+        if (listId === "popular") return this.getPopular(page);
+        if (listId === "latest") return this.getLatestUpdates(page);
+        const genres = [
+            "action", "affaires", "amitie", "arts-martiaux", "aventure",
+            "comedie", "contexte-scolaire", "crime", "culinaire", "documentaire",
+            "drame", "famille", "fantastique", "guerre", "historique", "horreur",
+            "jeunesse", "judiciaire", "mature", "medical", "melodrame", "militaire",
+            "musique", "mystere", "politique", "psychologique", "romance", "sf",
+            "sitcom", "sport", "surnaturel", "thriller", "tokusatsu",
+            "vie-quotidienne", "wuxia",
+        ];
+        const genre = genres.includes(listId) ? listId : null;
+        if (!genre) return this.getPopular(page);
+        const res = await new Client().get(
+            `${this.baseUrl}/drama-genre/${genre}/page/${page}/`,
+            this._hdrs()
+        );
         const list = this._parse(res.body);
         return { list, hasNextPage: list.length >= 10 };
     }

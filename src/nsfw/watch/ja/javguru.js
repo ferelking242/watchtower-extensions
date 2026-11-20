@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://cdn.javnorth.com/wp-content/uploads/2018/12/logofinal6.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.14",
+  "version": "1.0.15",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javguru.js",
@@ -132,44 +132,50 @@ class DefaultExtension extends MProvider {
       masters.push({ url: candidate, embedUrl: embedUrl });
     };
 
-    // `getVideoList` sits on the video-startup path, so stop at the first
-    // server that yields a master instead of resolving all four: one gateway
-    // already exposes both CDNs, and each extra server costs two round-trips
-    // before the player can start.
+    // Servers are resolved one at a time and playback starts as soon as a
+    // server yields a *playable* master, so the common case still costs a
+    // single gateway. Stopping at the first server that merely *mentions* a
+    // master is not enough: a server can publish a URL before its CDN
+    // provisions the rendition, and then every candidate it offered is dead
+    // while the next server would have played.
+    let playable = [];
     for (const gateway of this._interstitialUrls(html)) {
       const embed = await this._fetchEmbed(gateway, url);
-      for (const master of this._extractMasters(embed.body, embed.url)) {
+      const found = this._extractMasters(embed.body, embed.url);
+      if (!found.length) continue;
+      const batch = [];
+      for (const master of found) {
+        const before = masters.length;
         pushMaster(master, embed.url);
+        if (masters.length > before) batch.push(masters[masters.length - 1]);
       }
-      if (masters.length) break;
+      if (!batch.length) continue;
+      playable = await this._playableMasters(batch, url);
+      if (playable.length) break;
     }
 
     // A few mirrors inline the playlist in the watch page itself.
     if (masters.length === 0) {
-      for (const direct of this._plainMedia(html)) pushMaster(direct, url);
-    }
-
-    if (masters.length === 0) {
-      // Returning the watch page as a "Web player" entry does not open a
-      // browser: the app's Video model has no kind field, so mpv receives HTML,
-      // never decodes a frame, and the watchdog fails the chapter ~20 s later.
-      // Fail fast instead, so the player reports a source error immediately.
-      throw new Error("JAV.guru: no playable stream found — " + url);
+      const inlined = [];
+      for (const direct of this._plainMedia(html)) {
+        const before = masters.length;
+        pushMaster(direct, url);
+        if (masters.length > before) inlined.push(masters[masters.length - 1]);
+      }
+      if (inlined.length) playable = await this._playableMasters(inlined, url);
     }
 
     // premilkyway first (the working host), then the rest in discovery order.
-    masters.sort((a, b) => {
+    playable.sort((a, b) => {
       const rank = (entry) => (/premilkyway/i.test(entry.url) ? 0 : 1);
       return rank(a) - rank(b);
     });
 
-    // The `/stream/...` gateway URL is written by the embed script before the
-    // upstream provisions the rendition, so it regularly answers 404 with the
-    // watch page as HTML. Handing that to mpv burns the watchdog timeout and
-    // fails a chapter whose CDN URL was fine, so probe each candidate and keep
-    // only the ones that really serve a playlist.
-    const playable = await this._playableMasters(masters, url);
     if (playable.length === 0) {
+      // Returning the watch page as a "Web player" entry does not open a
+      // browser: the app's Video model has no kind field, so mpv receives HTML,
+      // never decodes a frame, and the watchdog fails the chapter ~20 s later.
+      // Fail fast instead, so the player reports a source error immediately.
       throw new Error("JAV.guru: no playable stream found — " + url);
     }
 

@@ -159,11 +159,14 @@ async function runOne(filePath) {
     }
   }
 
-  let popular = null, detailUrl = null;
+  let popular = null;
+  // DETAIL_URL pins one chapter so a single reported failure can be replayed
+  // without depending on whatever the first popular card happens to be.
+  let detailUrl = process.env.DETAIL_URL || null;
   if (LIST_STEP.includes("popular")) {
     popular = await step("popular", () => ext.getPopular(1));
     const first = popular?.list?.[0];
-    detailUrl = first ? (first.url || first.link) : null;
+    if (!detailUrl) detailUrl = first ? (first.url || first.link) : null;
   }
   if (LIST_STEP.includes("latest")) await step("latest", () => ext.getLatestUpdates(1));
   // Custom rails: the home layout drives these by id (`getCustomList`), so a

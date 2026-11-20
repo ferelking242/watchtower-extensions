@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://vf24.fr/favicon.svg",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.7",
+    "version": "0.2.0",
     "login": false,
     "forYou": false,
     "pkgPath": "watch/fr/papadustream.js",
@@ -60,6 +60,29 @@ class DefaultExtension extends MProvider {
 
     async getLatestUpdates(page) {
         const res = await new Client().get(`${this.baseUrl}/cat-series/page-${page}.html`, this._hdrs());
+        const list = this._parse(res.body);
+        return { list, hasNextPage: list.length >= 10 };
+    }
+
+    async getCustomList(listId, page) {
+        if (listId === "popular") return this.getPopular(page);
+        if (listId === "latest") return this.getLatestUpdates(page);
+        const filmGenres = {
+            action: "action", aventure: "aventure", comedie: "comedie",
+            drame: "drame", fantastique: "fantastique", horreur: "horreur",
+            science_fiction: "science-fiction", thriller: "thriller",
+            policier: "policier", romance: "romance", documentaire: "documentaire",
+            famille: "famille", guerre: "guerre", mystere: "mystere",
+            western: "western", animation: "animation", crime: "crime",
+        };
+        const genre = filmGenres[listId];
+        if (!genre) return this.getPopular(page);
+        // Genre pages live under /category-films/<genre>/page-N.html; /films/<genre>
+        // answers 200 with an unfiltered grid, so it cannot be used as a filter.
+        const res = await new Client().get(
+            `${this.baseUrl}/category-films/${genre}/page-${page}.html`,
+            this._hdrs()
+        );
         const list = this._parse(res.body);
         return { list, hasNextPage: list.length >= 10 };
     }

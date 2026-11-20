@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://www.animezone.ch/favicon-32x32.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.2.4",
+    "version": "0.3.0",
     "login": false,
     "forYou": false,
     "pkgPath": "watch/fr/animezone.js",
@@ -75,6 +75,30 @@ class DefaultExtension extends MProvider {
     async getLatestUpdates(page) {
         const res = await new Client().get(
             `${this.baseUrl}/animes/?page=${page}&order=latest`,
+            this._hdrs()
+        );
+        if (res.statusCode !== 200) throw new Error(`HTTP ${res.statusCode}`);
+        const list = this._parseList(res.body);
+        const hasNext = /<a[^>]+(?:next|suivant|page-\d+)[^>]*>/i.test(res.body);
+        return { list, hasNextPage: hasNext };
+    }
+
+    async getCustomList(listId, page) {
+        const genres = {
+            action: "action", aventure: "aventure", comedie: "comedie",
+            drame: "drama", fantastique: "fantastique", horreur: "horreur",
+            isekai: "isekai", mecha: "mecha", mystere: "mystere",
+            romance: "romance", shoujo: "shoujo", shounen: "shounen",
+            sport: "sports", surnaturel: "surnaturel", suspense: "suspense",
+            tranche_de_vie: "tranche-de-vie", psychologique: "psychologique",
+            science_fiction: "sci-fi", militaire: "militaire", musique: "musique",
+        };
+        if (listId === "trending") return this.getPopular(page);
+        if (listId === "nouveautes") return this.getLatestUpdates(page);
+        const genre = genres[listId];
+        if (!genre) return this.getPopular(page);
+        const res = await new Client().get(
+            `${this.baseUrl}/genre/${genre}?page=${page}`,
             this._hdrs()
         );
         if (res.statusCode !== 200) throw new Error(`HTTP ${res.statusCode}`);

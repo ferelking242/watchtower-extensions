@@ -7,7 +7,7 @@ const watchtowerSources = [{
     "iconUrl": "https://ipv4.vostfree.ws/templates/Animix/images/favicon.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "0.1.12",
+    "version": "0.2.0",
     "login": false,
     "forYou": false,
     "pkgPath": "watch/fr/vostfree.js",
@@ -42,7 +42,9 @@ class DefaultExtension extends MProvider {
         while ((m = anchorRe.exec(html)) !== null) {
             const attrs = m[1];
             const hrefM = attrs.match(/\bhref="([^"]+\.html)"/i);
-            const titleM = attrs.match(/\btitle="([^"]{2,})"/i);
+            // Genre pages put the label in `alt=` on the anchor; the popular and
+            // latest rails put it in `title=`.
+            const titleM = attrs.match(/\btitle="([^"]{2,})"/i) || attrs.match(/\balt="([^"]{2,})"/i);
             if (!hrefM || !titleM) continue;
             let link = hrefM[1];
             if (link.startsWith("/")) link = `${this.baseUrl}${link}`;
@@ -65,6 +67,24 @@ class DefaultExtension extends MProvider {
 
     async getLatestUpdates(page) {
         const res = await new Client().get(`${this.baseUrl}/page/${page}/`, this._hdrs());
+        const list = this._parseList(res.body);
+        return { list, hasNextPage: list.length >= 8 };
+    }
+
+    async getCustomList(listId, page) {
+        const genres = {
+            action: "Action", aventure: "Aventure", comedie: "Comédie",
+            drama: "Drama", drame: "Drame", fantasy: "Fantasy",
+            horreur: "Horreur", isekai: "Isekai", mystere: "Mystère",
+            romance: "Romance", school_life: "School Life", shonen: "Shonen",
+            science_fiction: "Sci-Fi", tranche_de_vie: "Tranche de vie",
+        };
+        const genre = genres[listId];
+        if (!genre) return this.getPopular(page);
+        const res = await new Client().get(
+            `${this.baseUrl}/genre/${encodeURIComponent(genre).replace(/%20/g, "+")}/page/${page}/`,
+            this._hdrs()
+        );
         const list = this._parseList(res.body);
         return { list, hasNextPage: list.length >= 8 };
     }

@@ -279,44 +279,65 @@ async getCustomList(listId, page) {
             case "vostfr":
                 url = this.baseUrl + "/xfsearch/version-serie/VOSTFR/page/" + page + "/";
                 break;
+            case "vosteng":
+                url = this.baseUrl + "/xfsearch/version-serie/VOSTENG/page/" + page + "/";
+                break;
+            case "en_cours":
+                url = this.baseUrl + "/xfsearch/serie-statut/En+cours/page/" + page + "/";
+                break;
+            case "termine":
+                url = this.baseUrl + "/xfsearch/serie-statut/Terminé/page/" + page + "/";
+                break;
+            case "film":
+                url = this.baseUrl + "/xfsearch/serie-statut/Film/page/" + page + "/";
+                break;
             case "action":
-                url = this.baseUrl + "/xfsearch/genre-1/action/page/" + page + "/";
+                url = this.baseUrl + "/xfsearch/manga_genre/Action/page/" + page + "/";
                 break;
-            case "adventure":
-                url = this.baseUrl + "/xfsearch/genre-1/adventure/page/" + page + "/";
+            case "aventure":
+                url = this.baseUrl + "/xfsearch/manga_genre/Aventure/page/" + page + "/";
                 break;
-            case "shonen":
-                url = this.baseUrl + "/xfsearch/genre-1/shonen/page/" + page + "/";
+            case "comedie":
+                url = this.baseUrl + "/xfsearch/manga_genre/Comédie/page/" + page + "/";
+                break;
+            case "drame":
+                url = this.baseUrl + "/xfsearch/manga_genre/Drame/page/" + page + "/";
+                break;
+            case "fantastique":
+                url = this.baseUrl + "/xfsearch/manga_genre/Fantastique/page/" + page + "/";
+                break;
+            case "mystere":
+                url = this.baseUrl + "/xfsearch/manga_genre/Mystère/page/" + page + "/";
                 break;
             case "romance":
-                url = this.baseUrl + "/xfsearch/genre-1/romance/page/" + page + "/";
+                url = this.baseUrl + "/xfsearch/manga_genre/Romance/page/" + page + "/";
                 break;
-            case "fantasy":
-                url = this.baseUrl + "/xfsearch/genre-1/fantasy/page/" + page + "/";
+            case "science_fiction":
+                url = this.baseUrl + "/xfsearch/manga_genre/Science-Fiction/page/" + page + "/";
                 break;
-            case "sci_fi":
-                url = this.baseUrl + "/xfsearch/genre-1/sci-fi/page/" + page + "/";
+            case "sf_fantastique":
+                url = this.baseUrl + "/xfsearch/manga_genre/Science-Fiction%2B%26%2BFantastique/page/" + page + "/";
                 break;
-            case "comedy":
-                url = this.baseUrl + "/xfsearch/genre-1/comedy/page/" + page + "/";
+            case "thriller":
+                url = this.baseUrl + "/xfsearch/manga_genre/Thriller/page/" + page + "/";
                 break;
-            case "horror":
-                url = this.baseUrl + "/xfsearch/genre-1/horror/page/" + page + "/";
+            case "shounen":
+                url = this.baseUrl + "/xfsearch/tagz/shounen/page/" + page + "/";
                 break;
-            case "season_2026":
-                url = this.baseUrl + "/xfsearch/date-de-sortie/2026/page/" + page + "/";
+            case "seinen":
+                url = this.baseUrl + "/xfsearch/tagz/seinen/page/" + page + "/";
+                break;
+            case "isekai":
+                url = this.baseUrl + "/xfsearch/tagz/isekai/page/" + page + "/";
                 break;
             default:
                 return this.getPopular(page);
         }
-        try {
-            const r = await new Client().get(url, this._hdrs());
-            const items = this._parseItems(r.body);
-            if (items.length === 0) return this.getPopular(page);
-            return { list: items, hasNextPage: items.length >= 10 };
-        } catch (_) {
-            return this.getPopular(page);
-        }
+        // No silent fallback: a wrong slug used to return the popular page, so a
+        // broken section looked identical to a working one in the app.
+        const r = await new Client().get(url, this._hdrs());
+        const items = this._parseItems(r.body);
+        return { list: items, hasNextPage: items.length >= 10 };
     }
 
     // ── Pour vous ────────────────────────────────────────────────────────────

@@ -259,54 +259,24 @@ class DefaultExtension extends MProvider {
 
     // ── Custom lists (sections accueil) ──────────────────────────────────────
 async getCustomList(listId, page) {
-        var url;
-        switch (listId) {
-            case "all":
-                return this.getPopular(page);
-            case "sport":
-                url = this.baseUrl + "/xfsearch/genre-1/sport/page/" + page + "/";
-                break;
-            case "info":
-                url = this.baseUrl + "/xfsearch/genre-1/info/page/" + page + "/";
-                break;
-            case "divertissement":
-                url = this.baseUrl + "/xfsearch/genre-1/divertissement/page/" + page + "/";
-                break;
-            case "cinema":
-                url = this.baseUrl + "/xfsearch/genre-1/cinema/page/" + page + "/";
-                break;
-            case "series":
-                url = this.baseUrl + "/xfsearch/genre-1/series/page/" + page + "/";
-                break;
-            case "documentaire":
-                url = this.baseUrl + "/xfsearch/genre-1/documentaire/page/" + page + "/";
-                break;
-            case "jeunesse":
-                url = this.baseUrl + "/xfsearch/genre-1/jeunesse/page/" + page + "/";
-                break;
-            case "musique":
-                url = this.baseUrl + "/xfsearch/genre-1/musique/page/" + page + "/";
-                break;
-            case "france":
-                url = this.baseUrl + "/xfsearch/lang/france/page/" + page + "/";
-                break;
-            case "international":
-                url = this.baseUrl + "/xfsearch/lang/international/page/" + page + "/";
-                break;
-            case "sport_foot":
-                url = this.baseUrl + "/xfsearch/ftagz/football/page/" + page + "/";
-                break;
-            default:
-                return this.getPopular(page);
-        }
-        try {
-            const r = await new Client().get(url, this._hdrs());
-            const items = this._parseItems(r.body);
-            if (items.length === 0) return this.getPopular(page);
-            return { list: items, hasNextPage: items.length >= 10 };
-        } catch (_) {
-            return this.getPopular(page);
-        }
+        const categories = {
+            sport: "sport",
+            generaliste: "generaliste",
+            cinema: "cinema",
+            enfants: "enfants",
+            documentaire: "documentaire",
+            information: "information",
+            musique: "musique",
+        };
+        if (listId === "all") return this.getPopular(page);
+        const category = categories[listId];
+        if (!category) return this.getPopular(page);
+        // No silent fallback: a wrong slug used to return the popular page, so a
+        // broken section looked identical to a working one in the app.
+        const url = this.baseUrl + "/index.php?do=cat&category=" + category;
+        const r = await new Client().get(url, this._hdrs());
+        const items = this._parseItems(r.body);
+        return { list: items, hasNextPage: items.length >= 10 };
     }
 
     // ── Pour vous ────────────────────────────────────────────────────────────
