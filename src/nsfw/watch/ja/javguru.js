@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://cdn.javnorth.com/wp-content/uploads/2018/12/logofinal6.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.15",
+  "version": "1.0.16",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javguru.js",
@@ -196,16 +196,30 @@ class DefaultExtension extends MProvider {
    * Probes run in parallel, so a dead gateway costs one request instead of a
    * full player timeout. A thrown request is treated as "unknown" and the entry
    * is kept: a transient network failure must never empty a working list.
+   *
+   * A master that answers 200 is not proof of playback: the signed CDN can
+   * serve a playlist whose renditions are already gone, and mpv then waits for
+   * a first frame that never arrives. One rendition is probed too, and a master
+   * whose renditions are all dead is dropped like a refused one.
    */
   async _playableMasters(masters, watchUrl) {
+    const headers = this._mediaHeaders(watchUrl);
     const checks = await Promise.all(
       masters.map(async (entry) => {
         try {
-          const res = await new Client().get(entry.url, this._mediaHeaders(watchUrl));
+          const res = await new Client().get(entry.url, headers);
           const status = (res && res.statusCode) || 0;
           const body = String((res && res.body) || "");
           if (status === 404 || status === 410) return null;
           if (!/^#EXTM3U/m.test(body.slice(0, 512))) return null;
+          const rendition = this._firstRendition(body, entry.url);
+          if (rendition) {
+            const probe = await new Client().get(rendition, headers);
+            const probeStatus = (probe && probe.statusCode) || 0;
+            const probeBody = String((probe && probe.body) || "");
+            if (probeStatus === 404 || probeStatus === 410) return null;
+            if (!/^#EXTM3U/m.test(probeBody.slice(0, 512))) return null;
+          }
           return entry;
         } catch (error) {
           return entry;
@@ -213,6 +227,20 @@ class DefaultExtension extends MProvider {
       })
     );
     return checks.filter(Boolean);
+  }
+
+  /** Absolute URL of the first rendition of a master playlist, if any. */
+  _firstRendition(playlist, masterUrl) {
+    for (const raw of String(playlist).split("\n")) {
+      const line = raw.trim();
+      if (!line || line.startsWith("#")) continue;
+      try {
+        return new URL(line, masterUrl).href;
+      } catch (_) {
+        return null;
+      }
+    }
+    return null;
   }
 
   // Media requests go to a third-party CDN whose playlist is not
