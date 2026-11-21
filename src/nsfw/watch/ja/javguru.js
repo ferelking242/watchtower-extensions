@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://cdn.javnorth.com/wp-content/uploads/2018/12/logofinal6.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.16",
+  "version": "1.0.17",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javguru.js",
@@ -201,6 +201,11 @@ class DefaultExtension extends MProvider {
    * serve a playlist whose renditions are already gone, and mpv then waits for
    * a first frame that never arrives. One rendition is probed too, and a master
    * whose renditions are all dead is dropped like a refused one.
+   *
+   * A rendition playlist is not proof either. `javclan.com` answers 200 with a
+   * well-formed HLS body whose segments are TikTok ad PNGs, so mpv decodes a
+   * still image, never reports a video frame, and the player's watchdog fails
+   * the chapter ~10 s later. The first segment is HEADed to tell the two apart.
    */
   async _playableMasters(masters, watchUrl) {
     const headers = this._mediaHeaders(watchUrl);
@@ -219,6 +224,8 @@ class DefaultExtension extends MProvider {
             const probeBody = String((probe && probe.body) || "");
             if (probeStatus === 404 || probeStatus === 410) return null;
             if (!/^#EXTM3U/m.test(probeBody.slice(0, 512))) return null;
+            const media = await this._segmentIsMedia(probeBody, rendition, headers);
+            if (media === false) return null;
           }
           return entry;
         } catch (error) {
@@ -227,6 +234,41 @@ class DefaultExtension extends MProvider {
       })
     );
     return checks.filter(Boolean);
+  }
+
+  /**
+   * Whether the first segment of a rendition carries real media.
+   *
+   * Returns `true`/`false` when the answer is known and `null` when it cannot
+   * be determined (no segment listed, HEAD refused, no content-type). The
+   * caller keeps the entry on `null`: a probe that cannot answer must never
+   * remove a stream that might play.
+   */
+  async _segmentIsMedia(playlist, renditionUrl, headers) {
+    const segment = this._firstRendition(playlist, renditionUrl);
+    if (!segment) return null;
+    let res;
+    try {
+      res = await new Client().head(segment, headers);
+    } catch (error) {
+      return null;
+    }
+    const status = (res && res.statusCode) || 0;
+    if (status === 404 || status === 410) return false;
+    if (status < 200 || status >= 300) return null;
+    const type = this._headerValue(res.headers, "content-type").toLowerCase();
+    if (!type) return null;
+    // An image or an HTML error page in a segment slot means the CDN served a
+    // placeholder, not the episode.
+    return !/^(image|text)\//.test(type);
+  }
+
+  _headerValue(headers, name) {
+    if (!headers) return "";
+    for (const key of Object.keys(headers)) {
+      if (key.toLowerCase() === name) return String(headers[key] || "");
+    }
+    return "";
   }
 
   /** Absolute URL of the first rendition of a master playlist, if any. */

@@ -7508,7 +7508,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000208.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.0.16",
+    "version": "1.0.17",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@66c357ea447da92e9f8d1c742bca36cda2a139ba/src/nsfw/watch/ja/javguru.js",
     "isManga": false,
     "isNsfw": true,
