@@ -1,0 +1,117 @@
+[
+  {
+    "id": "iptv-org-world",
+    "name": "IPTV-org — Monde",
+    "lang": "all",
+    "kind": "m3u",
+    "source": "https://iptv-org.github.io/iptv/index.category.m3u",
+    "version": "1.0.0",
+    "author": "iptv-org",
+    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/live-iptv-org.png",
+    "description": "Catalogue public mondial classé par catégorie (actualités, sport, cinéma, musique, enfants). Flux gratuits et légaux, mis à jour en amont.",
+    "typeSource": "single",
+    "itemType": 1,
+    "sourceCodeLanguage": 1,
+    "isNsfw": false,
+    "login": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "multilingual"
+    ],
+    "addedAt": "2026-11-20"
+  },
+  {
+    "id": "iptv-org-fr",
+    "name": "IPTV-org — France",
+    "lang": "fr",
+    "kind": "m3u",
+    "source": "https://iptv-org.github.io/iptv/countries/fr.m3u",
+    "version": "1.0.0",
+    "author": "iptv-org",
+    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/live-iptv-org.png",
+    "description": "Chaînes françaises gratuites (info, divertissement, locales).",
+    "typeSource": "single",
+    "itemType": 1,
+    "sourceCodeLanguage": 1,
+    "isNsfw": false,
+    "login": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "french"
+    ],
+    "addedAt": "2026-11-20"
+  },
+  {
+    "id": "iptv-org-fr-lang",
+    "name": "IPTV-org — Francophones",
+    "lang": "fr",
+    "kind": "m3u",
+    "source": "https://iptv-org.github.io/iptv/languages/fra.m3u",
+    "version": "1.0.0",
+    "author": "iptv-org",
+    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/live-iptv-org.png",
+    "description": "Toutes les chaînes diffusées en français, tous pays confondus.",
+    "typeSource": "single",
+    "itemType": 1,
+    "sourceCodeLanguage": 1,
+    "isNsfw": false,
+    "login": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "french"
+    ],
+    "addedAt": "2026-11-20"
+  },
+  {
+    "id": "iptv-org-us",
+    "name": "IPTV-org — États-Unis",
+    "lang": "en",
+    "kind": "m3u",
+    "source": "https://iptv-org.github.io/iptv/countries/us.m3u",
+    "version": "1.0.0",
+    "author": "iptv-org",
+    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/live-iptv-org.png",
+    "description": "Chaînes américaines gratuites, majoritairement anglophones.",
+    "typeSource": "single",
+    "itemType": 1,
+    "sourceCodeLanguage": 1,
+    "isNsfw": false,
+    "login": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "addedAt": "2026-11-20"
+  },
+  {
+    "id": "free-tv-fr",
+    "name": "Free-TV — France",
+    "lang": "fr",
+    "kind": "m3u",
+    "source": "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_france.m3u8",
+    "version": "1.0.0",
+    "author": "Free-TV",
+    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/live-free-tv.png",
+    "description": "Sélection française vérifiée manuellement par le projet Free-TV.",
+    "typeSource": "single",
+    "itemType": 1,
+    "sourceCodeLanguage": 1,
+    "isNsfw": false,
+    "login": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "tags": [
+      "watch",
+      "french"
+    ],
+    "addedAt": "2026-11-20"
+  }
+]
