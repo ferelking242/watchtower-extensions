@@ -332,28 +332,63 @@ class DefaultExtension extends MProvider {
 
   // "Pour vous" : the detail page ends with a related-videos grid rendered
   // in the same thumbnail markup as any listing, so `_parseList` covers it.
-  // The current video must not suggest itself; when a page ships no related
-  // grid (some mirrors lazy-load it), the random catalogue fills the tab
-  // instead of leaving it empty.
+  // The current video must not suggest itself.
   async getRecommendations(url) {
     const target = String(url || "").trim();
     if (!/^https?:\/\//i.test(target)) return [];
     const current = this._videoCode(target);
-    let related;
+    let html = "";
     try {
-      const html = await this._get(target);
-      related = this._parseList(html, 1, {})
-        .list.filter((item) => this._videoCode(item.link) !== current);
+      html = await this._get(target);
     } catch (error) {
-      related = [];
-    }
-    if (related.length) return related.slice(0, 30);
-    try {
-      const random = await this._randomList();
-      return (random.list || []).slice(0, 30);
-    } catch (error) {
+      // A refused detail page still yields nothing to recommend: the listing
+      // fallback below must not run, or every detail view spends a WebView
+      // round-trip on a URL Cloudflare refuses.
       return [];
     }
+    // Related cards live in the detail page itself. `/random` used to fill the
+    // gap, but it is a redirect to a single video that the in-page fetch cannot
+    // follow (Cloudflare refuses it), so the fallback cost a full browser
+    // round-trip and returned nothing — the recommendation tab appeared to
+    // hang for 60 s. An empty list is the honest answer.
+    const related = this._parseList(html, 1, {})
+      .list.filter((item) => this._videoCode(item.link) !== current);
+    if (related.length) return related.slice(0, 30);
+    // Some detail pages render their "related" grid with the same card markup
+    // as a listing but under a different container: pick the video links out of
+    // the page as a last resort, without a second request.
+    return this._relatedFromPage(html, current).slice(0, 30);
+  }
+
+  /// Extracts video cards from an already-fetched detail page.
+  _relatedFromPage(html, current) {
+    const doc = new Document(html);
+    const list = [];
+    const seen = {};
+    for (const anchor of doc.select("a[href*='/en/'], a[href*='/ja/']")) {
+      const href = anchor.attr("href") || "";
+      if (!href) continue;
+      const link = (href.indexOf("http") === 0 ? href : BASE_URL + href)
+        .replace(/^(https?:\/\/[^/]+)\/dm\d+\//, "$1/");
+      const code = this._videoCode(link);
+      if (!code || code === current) continue;
+      // Actress and genre links share the path shape: keep real video codes
+      // (studio prefix + number), which is what the site uses for titles.
+      if (!/^[a-z0-9]+-\d+$/i.test(code)) continue;
+      if (seen[link]) continue;
+      const name = (anchor.text || "").trim() || (anchor.attr("title") || "").trim();
+      if (!name) continue;
+      seen[link] = true;
+      const img = anchor.selectFirst("img");
+      list.push({
+        name: name,
+        link: link,
+        imageUrl: img ? (img.attr("data-src") || img.attr("src") || "") : "",
+        description: "",
+        badges: this._itemBadges(name, link, {})
+      });
+    }
+    return list;
   }
 
   // Stable per-video identity: the path after the optional rotating mirror
