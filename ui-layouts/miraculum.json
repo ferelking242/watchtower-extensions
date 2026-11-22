@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "home": {
+    "sections": [
+      {
+        "id": "latest",
+        "component": "spotlight",
+        "title": "🆕 Derniers épisodes",
+        "accent": "#E53935",
+        "icon": "fiber_new",
+        "seeAll": true
+      },
+      {
+        "id": "season_7",
+        "component": "compactRow",
+        "title": "Saison 7",
+        "accent": "#FF6B35",
+        "icon": "playlist_play",
+        "seeAll": true
+      },
+      {
+        "id": "season_6",
+        "component": "compactRow",
+        "title": "Saison 6",
+        "accent": "#7C4DFF",
+        "icon": "playlist_play",
+        "seeAll": true
+      },
+      {
+        "id": "seasons",
+        "component": "grid",
+        "title": "Toutes les saisons",
+        "accent": "tertiary",
+        "icon": "video_library",
+        "columns": 3,
+        "rows": 2,
+        "seeAll": false
+      },
+      {
+        "id": "specials",
+        "component": "compactRow",
+        "title": "Spéciaux",
+        "accent": "#00BCD4",
+        "icon": "movie",
+        "seeAll": true
+      },
+      {
+        "id": "webisodes_tales",
+        "component": "compactRow",
+        "title": "Une journée à Paris",
+        "accent": "#4CAF50",
+        "icon": "auto_awesome",
+        "seeAll": true
+      },
+      {
+        "id": "webisodes_secrets",
+        "component": "compactRow",
+        "title": "Les secrets",
+        "accent": "#FFB300",
+        "icon": "lock",
+        "seeAll": true
+      },
+      {
+        "id": "webisodes_chibi",
+        "component": "compactRow",
+        "title": "Miraculous Chibi",
+        "accent": "#EC407A",
+        "icon": "child_care",
+        "seeAll": true
+      }
+    ]
+  },
+  "browse": {
+    "popular": {
+      "component": "grid",
+      "columns": 2,
+      "cardStyle": "poster"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 2,
+      "cardStyle": "landscape"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 2,
+        "cardStyle": "landscape"
+      },
+      "filters": "chips"
+    }
+  },
+  "detail": {
+    "showRecommendations": true
+  },
+  "player": {
+    "mode": "standard"
+  }
+}

@@ -25,7 +25,8 @@ const DRY_RUN = process.argv.includes("--dry-run");
 const INDEX_TYPES = ["watch", "manga", "novel", "game", "music", "subtitles"];
 
 // ── 1. Collect JS manifest versions, keyed by file name ─────────────────────
-const jsVersions = new Map(); // filename -> version
+const jsVersions = new Map(); // "src/..." path -> version
+const jsVersionsByName = new Map(); // filename -> version (fallback)
 const unparsed = [];
 
 function walk(dir) {
@@ -40,7 +41,9 @@ function walk(dir) {
       if (!m) { unparsed.push(e.name); continue; }
       const vm = m[1].match(/"version"\s*:\s*"([^"]+)"/);
       if (!vm) { unparsed.push(e.name); continue; }
-      jsVersions.set(e.name, vm[1]);
+      const rel = path.relative(ROOT, p).split(path.sep).join("/");
+      jsVersions.set(rel, vm[1]);
+      jsVersionsByName.set(e.name, vm[1]);
     }
   }
 }
@@ -73,8 +76,12 @@ for (const type of INDEX_TYPES) {
       loginChanged++;
     }
 
-    const fname = (entry.sourceCodeUrl || "").split("/").pop();
-    const jsVer = jsVersions.get(fname);
+    const url = String(entry.sourceCodeUrl || "");
+    const fname = url.split("/").pop();
+    // Two sources can share a file name (watch/multi/x.js and music/multi/x.js),
+    // so prefer the full path published in sourceCodeUrl.
+    const relPath = url.match(/(?:^|\/)(src\/[^?#]+)/)?.[1];
+    const jsVer = (relPath && jsVersions.get(relPath)) || jsVersionsByName.get(fname);
     if (!jsVer) continue; // no local JS manifest for this entry (or unparsed)
     const idxVer = entry.version;
     if (idxVer === jsVer) continue; // already in sync
