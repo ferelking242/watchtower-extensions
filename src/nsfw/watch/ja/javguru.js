@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://cdn.javnorth.com/wp-content/uploads/2018/12/logofinal6.png",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.0.17",
+  "version": "1.0.18",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/javguru.js",
@@ -100,8 +100,12 @@ class DefaultExtension extends MProvider {
     const res = await this._get(url);
     const doc = new Document(res.body);
     const title = doc.selectFirst("meta[property='og:title']")?.attr("content")
-      || doc.selectFirst("h1.entry-title, h1")?.text || "Unknown";
-    const thumb = this._cover(doc.selectFirst("meta[property='og:image']")?.attr("content")
+      || doc.selectFirst("h1.entry-title, h1, h1.titl")?.text || "Unknown";
+    // Detail pages carry no og:image and no wp-post-image: the poster lives in
+    // the `.large-screenshot` block. Without this selector the tile stays empty.
+    const thumb = this._cover(
+      doc.selectFirst("meta[property='og:image']")?.attr("content")
+      || doc.selectFirst(".large-screenimg img, .large-screenshot img")?.attr("src")
       || doc.selectFirst("img.wp-post-image")?.attr("src") || "");
     const tags = doc.select(".tags-links a, .entry-footer a, .genre a").map(el => ({ name: el.text.trim() }));
     return {
