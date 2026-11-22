@@ -16,7 +16,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.0.0",
+    "version": "3.0.1",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -175,11 +175,30 @@ class DefaultExtension extends MProvider {
         return String(n % 100);
     }
 
-    _episodeName(season, code, title) {
+    // Standalone list items keep their season, chapters do not (see _episodeName).
+    _withSeason(card, season) {
         var label = MN_SEASON_LABELS[season] || ("Saison " + season);
+        return {
+            name: label + " · " + card.name,
+            link: card.link,
+            imageUrl: card.imageUrl,
+            description: card.description
+        };
+    }
+
+    // Chapter labels stay short and start with the episode number: the app
+    // reads the first number of a chapter name as its episode number, and a
+    // "Saison N · ..." prefix made every chapter of a season report N.
+    _episodeName(season, code, title) {
         var num = this._episodeNumber(code);
-        var prefix = label + (num ? " · Ép. " + num : "");
+        var prefix = num ? "Ép. " + num : "Ép. " + code;
         return title ? prefix + " — " + title : prefix;
+    }
+
+    // List items (latest rail, search) stand alone, so they keep the season.
+    _episodeLabel(season, code, title) {
+        var label = MN_SEASON_LABELS[season] || ("Saison " + season);
+        return label + " · " + this._episodeName(season, code, title);
     }
 
     _cover(season, code) {
@@ -218,7 +237,7 @@ class DefaultExtension extends MProvider {
             var sub = this._clean(subM ? subM[1] : "");
             var num = sub.split("/")[0].trim();
             var name = this._episodeName(season, code, title);
-            if (num && title) name = (MN_SEASON_LABELS[season] || season) + " · Ép. " + num + " — " + title;
+            if (num && title) name = "Ép. " + num + " — " + title;
 
             out.push({
                 name: name,
@@ -261,6 +280,7 @@ class DefaultExtension extends MProvider {
 
     async getLatestUpdates(page) {
         if (page > 1) return { list: [], hasNextPage: false };
+        var self = this;
         var lang = this.getLang();
         var items = [];
         try {
@@ -293,7 +313,7 @@ class DefaultExtension extends MProvider {
                     if (seen[c.link]) continue;
                     if (c.link.indexOf("e=" + e.code) !== -1) {
                         seen[c.link] = true;
-                        list.push(c);
+                        list.push(self._withSeason(c, e.season));
                         break;
                     }
                 }
@@ -316,7 +336,7 @@ class DefaultExtension extends MProvider {
             for (var j = 0; j < tail.length && list.length < 12; j++) {
                 if (known[tail[j].link]) continue;
                 known[tail[j].link] = true;
-                list.push(tail[j]);
+                list.push(self._withSeason(tail[j], newest));
             }
         }
         return { list: list, hasNextPage: false };
@@ -346,7 +366,7 @@ class DefaultExtension extends MProvider {
             if (wantedSeason && season !== wantedSeason) continue;
             var title = this._clean(ep.content || "");
             list.push({
-                name: this._episodeName(season, code, title),
+                name: this._episodeLabel(season, code, title),
                 link: this._watchUrl("watch?s=" + encodeURIComponent(season) + "&e=" + encodeURIComponent(code), lang),
                 imageUrl: this._cover(season, code),
                 description: (ep.blurred ? "Spoiler · " : "") + (MN_SEASON_LABELS[season] || season)
@@ -415,7 +435,11 @@ class DefaultExtension extends MProvider {
                     this._clean(ogTitleM ? ogTitleM[1] : "").split(" – ")[0];
         var image = ogImageM ? this._abs(ogImageM[1]) : this._cover(season, code);
 
-        var chapters = [{ name: title || ("Épisode " + code), url: url, thumbnailUrl: image }];
+        // The item name must identify the episode on its own: the download
+        // writer derives the file name from it, so a series-level title here
+        // gave every episode of the season the same name.
+        var episodeLabel = this._episodeLabel(season, code, title);
+        var chapters = [{ name: this._episodeName(season, code, title), url: url, thumbnailUrl: image }];
 
         if (season) {
             try {
@@ -434,7 +458,7 @@ class DefaultExtension extends MProvider {
         }
 
         return {
-            name: title || "Miraculous",
+            name: episodeLabel,
             imageUrl: image,
             description: this._clean(descM ? descM[1] : "") || ("Miraculous Ladybug — " + (MN_SEASON_LABELS[season] || "")),
             chapters: chapters
