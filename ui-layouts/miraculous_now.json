@@ -12,7 +12,7 @@
       },
       {
         "id": "season_7",
-        "component": "compactRow",
+        "component": "landscapeStacked",
         "title": "Saison 7",
         "accent": "#FF6B35",
         "icon": "playlist_play",
@@ -20,7 +20,7 @@
       },
       {
         "id": "season_6",
-        "component": "compactRow",
+        "component": "landscapeStacked",
         "title": "Saison 6",
         "accent": "#7C4DFF",
         "icon": "playlist_play",
@@ -34,11 +34,11 @@
         "icon": "video_library",
         "columns": 3,
         "rows": 2,
-        "seeAll": false
+        "seeAll": true
       },
       {
         "id": "specials",
-        "component": "compactRow",
+        "component": "landscapeStacked",
         "title": "Spéciaux",
         "accent": "#00BCD4",
         "icon": "movie",
@@ -46,7 +46,7 @@
       },
       {
         "id": "webisodes_tales",
-        "component": "compactRow",
+        "component": "landscapeStacked",
         "title": "Une journée à Paris",
         "accent": "#4CAF50",
         "icon": "auto_awesome",
@@ -54,7 +54,7 @@
       },
       {
         "id": "webisodes_secrets",
-        "component": "compactRow",
+        "component": "landscapeStacked",
         "title": "Les secrets",
         "accent": "#FFB300",
         "icon": "lock",
@@ -62,7 +62,7 @@
       },
       {
         "id": "webisodes_chibi",
-        "component": "compactRow",
+        "component": "landscapeStacked",
         "title": "Miraculous Chibi",
         "accent": "#EC407A",
         "icon": "child_care",
