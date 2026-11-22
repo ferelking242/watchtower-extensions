@@ -372,9 +372,10 @@ class DefaultExtension extends MProvider {
         .replace(/^(https?:\/\/[^/]+)\/dm\d+\//, "$1/");
       const code = this._videoCode(link);
       if (!code || code === current) continue;
-      // Actress and genre links share the path shape: keep real video codes
-      // (studio prefix + number), which is what the site uses for titles.
-      if (!/^[a-z0-9]+-\d+$/i.test(code)) continue;
+      // `_videoCode` keeps the locale segment ("en/abc-123"), so match the code
+      // itself: a real video is `<studio>-<number>`. That keeps actress, genre
+      // and pagination links out of the recommendation list.
+      if (!/[a-z0-9]+-\d+$/i.test(code)) continue;
       if (seen[link]) continue;
       const name = (anchor.text || "").trim() || (anchor.attr("title") || "").trim();
       if (!name) continue;
