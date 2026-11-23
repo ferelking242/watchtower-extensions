@@ -16,7 +16,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.1.0",
+    "version": "3.2.0",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -110,13 +110,14 @@ class DefaultExtension extends MProvider {
 
     // ── Transport ─────────────────────────────────────────────
 
-    async _get(url) {
+    async _get(url, opts) {
         var cached = MIRK_CACHE[url];
         if (cached && Date.now() - cached.t < MIRK_CACHE_TTL) return { body: cached.body };
         var started = Date.now();
         var lastError = null;
+        var tries = opts && opts.tries ? opts.tries : MIRK_HOSTS.length + 1;
         var start = this._host;
-        for (var attempt = 0; attempt < MIRK_HOSTS.length + 1; attempt++) {
+        for (var attempt = 0; attempt < tries; attempt++) {
             try {
                 var res = await new Client().get(url, this.getHeaders(url));
                 var body = res && res.body ? String(res.body) : "";
@@ -297,65 +298,25 @@ class DefaultExtension extends MProvider {
     async getLatestUpdates(page) {
         if (page > 1) return { list: [], hasNextPage: false };
         var self = this;
-        var lang = this.getLang();
-        var items = [];
-        try {
-            var res = await this._get(this._base() + "/includes/features/new_episodes/get_episodes.php?lang=" + encodeURIComponent(lang));
-            var data = JSON.parse(res.body || "{}");
-            items = (data.episodes || []).map(function (e) {
-                var parts = String(e.s_e || "").split(":");
-                return { season: parts[0] || "", code: parts[1] || "" };
-            }).filter(function (e) {
-                return e.season && e.code && MN_BLOCKED.indexOf(e.code) === -1;
+        // One page read is enough: a season page lists its episodes in order,
+        // so the tail is the latest batch. The site's "new episodes" API takes
+        // 12 s+ and the app serialises every extension call through one
+        // runtime, so asking it delayed playback and timed `getDetail` out.
+        var numeric = MN_CATEGORIES.filter(function (cat) { return /^\d+$/.test(String(cat.s)); });
+        for (var i = 0; i < numeric.length; i++) {
+            var cards = [];
+            try {
+                cards = this._parseCards((await this._get(this._episodesUrl(numeric[i].s))).body, numeric[i].s);
+            } catch (e) {
+                cards = [];
+            }
+            if (cards.length < 3) continue;
+            var list = cards.slice(-14).reverse().map(function (card) {
+                return self._withSeason(card, numeric[i].s);
             });
-        } catch (e) { items = []; }
-
-        var list = [];
-        var cardsBySeason = {};
-        if (items.length) {
-            var seasons = {};
-            items.forEach(function (e) { seasons[e.season] = true; });
-            for (var s in seasons) {
-                try {
-                    var pageRes = await this._get(this._episodesUrl(s));
-                    cardsBySeason[s] = this._parseCards(pageRes.body, s);
-                } catch (e) { cardsBySeason[s] = []; }
-            }
-            var seen = {};
-            items.forEach(function (e) {
-                var cards = cardsBySeason[e.season] || [];
-                for (var i = 0; i < cards.length; i++) {
-                    var c = cards[i];
-                    if (seen[c.link]) continue;
-                    if (c.link.indexOf("e=" + e.code) !== -1) {
-                        seen[c.link] = true;
-                        list.push(self._withSeason(c, e.season));
-                        break;
-                    }
-                }
-            });
+            return { list: list.slice(0, 12), hasNextPage: false };
         }
-
-        if (list.length < 12) {
-            var newest = "7";
-            for (var n = 7; n >= 1; n--) {
-                if (cardsBySeason[String(n)] && cardsBySeason[String(n)].length) { newest = String(n); break; }
-            }
-            var seasonCards = cardsBySeason[newest];
-            if (!seasonCards || !seasonCards.length) {
-                var fallback = await this._get(this._episodesUrl(newest));
-                seasonCards = this._parseCards(fallback.body, newest);
-            }
-            var known = {};
-            list.forEach(function (item) { known[item.link] = true; });
-            var tail = seasonCards.slice(-14).reverse();
-            for (var j = 0; j < tail.length && list.length < 12; j++) {
-                if (known[tail[j].link]) continue;
-                known[tail[j].link] = true;
-                list.push(self._withSeason(tail[j], newest));
-            }
-        }
-        return { list: list, hasNextPage: false };
+        return { list: [], hasNextPage: false };
     }
 
     async search(query, page, filterList) {
@@ -608,23 +569,27 @@ class DefaultExtension extends MProvider {
         return videos;
     }
 
-    /// "Pour vous": the rest of the season, then the other seasons.
+    /// "Pour vous": the seasons rail, enriched with the current season's
+    /// episodes when that page is already cached. Network-free on purpose: it
+    /// shares the single extension runtime with the player.
     async getRecommendations(url) {
         var lang = this.getLang();
         var sM = String(url || "").match(/[?&]s=([^&\s]+)/);
         var eM = String(url || "").match(/[?&]e=([^&\s]+)/);
-        var season = sM ? decodeURIComponent(sM[1]) : "7";
+        var season = sM ? decodeURIComponent(sM[1]) : "";
         var code = eM ? decodeURIComponent(eM[1]) : "";
         var out = [];
         try {
-            var cards = this._parseCards((await this._get(this._episodesUrl(season))).body, season);
-            for (var i = 0; i < cards.length; i++) {
-                if (code && cards[i].link.indexOf("e=" + code) !== -1) continue;
-                out.push(this._withSeason(cards[i], season));
+            var cached = season ? MIRK_CACHE[this._episodesUrl(season)] : null;
+            if (cached) {
+                var cards = this._parseCards(cached.body, season);
+                for (var i = 0; i < cards.length; i++) {
+                    if (code && cards[i].link.indexOf("e=" + code) !== -1) continue;
+                    out.push(this._withSeason(cards[i], season));
+                }
             }
-        } catch (e) { /* the season list below keeps the tab useful */ }
-
-        for (var c = 0; c < MN_CATEGORIES.length && out.length < 30; c++) {
+        } catch (e) { /* the seasons rail below still fills the tab */ }
+        for (var c = 0; c < MN_CATEGORIES.length; c++) {
             var cat = MN_CATEGORIES[c];
             if (String(cat.s) === String(season)) continue;
             out.push({
@@ -648,7 +613,7 @@ class DefaultExtension extends MProvider {
                   encodeURIComponent(se) + "&page=1&lang=" + encodeURIComponent(this.getLang());
         var data = null;
         try {
-            data = JSON.parse((await this._get(api)).body || "{}");
+            data = JSON.parse((await this._get(api, { tries: 1 })).body || "{}");
         } catch (e) {
             return [];
         }
