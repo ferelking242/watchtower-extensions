@@ -14,7 +14,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.2.0",
+    "version": "1.3.0",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -44,6 +44,20 @@ var MN_TRIES = 3;
 // read is what pushes `getDetail` past its 60 s budget ("0 épisode").
 var MN_TRY_BUDGET = 8000;
 var MN_CACHE = {};
+
+// The master lists one audio rendition per language; these are the codes it
+// publishes. They are the fallback when the master does not answer in time, so
+// the language picker still works instead of collapsing to one opaque entry.
+var MN_AUDIO_CODES = ["fr", "en", "es", "es-419", "pt", "pt-br", "de", "it",
+    "nl", "pl", "cs", "da", "fi", "no", "sv", "hu", "ro", "el", "ar", "he", "fr-ad"];
+var MN_AUDIO_LABELS = {
+    "fr": "Français", "en": "English", "es": "Español", "es-419": "Español (LatAm)",
+    "pt": "Português", "pt-br": "Português (Brasil)", "de": "Deutsch",
+    "it": "Italiano", "nl": "Nederlands", "pl": "Polski", "cs": "Čeština",
+    "da": "Dansk", "fi": "Suomi", "no": "Norsk", "sv": "Svenska",
+    "hu": "Magyar", "ro": "Română", "el": "Ελληνικά", "ar": "العربية",
+    "he": "עברית", "fr-ad": "Français (audiodescription)"
+};
 var MN_CACHE_TTL = 180000;
 
 // Same list as the site: episodes the site itself hides (unreleased/blocked).
@@ -102,6 +116,32 @@ class DefaultExtension extends MProvider {
     get supportsLatest() { return true; }
 
     // ── Transport ─────────────────────────────────────────────
+
+    /// Bounds a request: `Client.get` has no timeout, so a stalled origin can
+    /// hold a call until the app kills the whole worker. Resolves to null when
+    /// [ms] elapses first, which lets each caller fall back to something usable.
+    _withTimeout(promise, ms) {
+        return new Promise(function (resolve) {
+            var settled = false;
+            // The timer is left to fire: it finds `settled` set and does
+            // nothing, which keeps this free of clearTimeout (not guaranteed
+            // in the extension runtime).
+            setTimeout(function () {
+                if (settled) return;
+                settled = true;
+                resolve(null);
+            }, ms);
+            promise.then(function (value) {
+                if (settled) return;
+                settled = true;
+                resolve(value);
+            }, function () {
+                if (settled) return;
+                settled = true;
+                resolve(null);
+            });
+        });
+    }
 
     async _get(url, opts) {
         var cached = MN_CACHE[url];
@@ -360,7 +400,16 @@ class DefaultExtension extends MProvider {
         var sM = url.match(/[?&]s=([^&\s]+)/);
         var s = sM ? decodeURIComponent(sM[1]) : "7";
         var cat = this._category(s);
-        var res = await this._get(this._episodesUrl(s));
+        var res = await this._withTimeout(this._get(this._episodesUrl(s)), 20000);
+        if (!res) {
+            var fbLabel = cat ? cat.label : ("Saison " + s);
+            return {
+                name: fbLabel,
+                imageUrl: cat ? MN_BASE + cat.poster : "",
+                description: "Miraculous Ladybug — " + fbLabel,
+                chapters: []
+            };
+        }
         var html = res.body || "";
         var hero = this._parseHero(html);
         var cards = this._parseCards(html, s);
@@ -384,7 +433,19 @@ class DefaultExtension extends MProvider {
     }
 
     async _episodeDetail(url, lang) {
-        var res = await this._get(url);
+        var res = await this._withTimeout(this._get(url), 20000);
+        if (!res) {
+            var fbS = String(url).match(/[?&]s=([^&\s]+)/);
+            var fbE = String(url).match(/[?&]e=([^&\s]+)/);
+            var fbSeason = fbS ? decodeURIComponent(fbS[1]) : "";
+            var fbCode = fbE ? decodeURIComponent(fbE[1]) : "";
+            return {
+                name: this._episodeLabel(fbSeason, fbCode, ""),
+                imageUrl: this._cover(fbSeason, fbCode),
+                description: "Miraculous Ladybug",
+                chapters: [{ name: this._episodeName(fbSeason, fbCode, ""), url: url, thumbnailUrl: this._cover(fbSeason, fbCode) }]
+            };
+        }
         var html = res.body || "";
         var titleM = html.match(/<h1[^>]*class="[^"]*"[^>]*>([\s\S]*?)<\/h1>/) || html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
         var ogTitleM = html.match(/property="og:title"[^>]*content="([^"]*)"/);
@@ -404,10 +465,14 @@ class DefaultExtension extends MProvider {
         var episodeLabel = this._episodeLabel(season, code, title);
         var chapters = [{ name: this._episodeName(season, code, title), url: url, thumbnailUrl: image }];
 
-        if (season) {
+        // Siblings are a nicety, not the detail: reading the season page here
+        // added a second request that could stall and time the whole call out
+        // (the screen then showed "0 épisode"). Reuse it when an earlier call
+        // already paid for it.
+        var seasonCache = season ? MN_CACHE[this._episodesUrl(season)] : null;
+        if (seasonCache) {
             try {
-                var seasonRes = await this._get(this._episodesUrl(season));
-                var cards = this._parseCards(seasonRes.body, season);
+                var cards = this._parseCards(seasonCache.body, season);
                 for (var i = 0; i < cards.length; i++) {
                     if (cards[i].link === url) continue;
                     chapters.push({
@@ -489,7 +554,8 @@ class DefaultExtension extends MProvider {
     }
 
     async getVideoList(url) {
-        var res = await this._get(url);
+        var res = await this._withTimeout(this._get(url), 10000);
+        if (!res) return [{ quality: "WebView", url: url, originalUrl: url }];
         var html = res.body || "";
 
         var tokenM = html.match(/userToken\s*=\s*'([A-Za-z0-9]+)'/);
@@ -517,10 +583,13 @@ class DefaultExtension extends MProvider {
         var headers = { "Referer": MN_BASE + "/", "User-Agent": MN_UA };
         var masterUrl = streamFor(prefLang);
         var info = { variants: [], audios: [], subs: [] };
-        try {
-            info = this._parseMaster((await this._get(masterUrl)).body || "", masterUrl);
-        } catch (e) {
-            info = { variants: [], audios: [], subs: [] };
+        var master = await this._withTimeout(this._get(masterUrl, { tries: 1 }), 6000);
+        if (master) {
+            try {
+                info = this._parseMaster(master.body || "", masterUrl);
+            } catch (e) {
+                info = { variants: [], audios: [], subs: [] };
+            }
         }
 
         var audios = info.audios.map(function (a) { return { label: a.label, file: a.url }; });
@@ -528,7 +597,11 @@ class DefaultExtension extends MProvider {
         var topLabel = info.variants.length ? info.variants[0].label : "Auto";
 
         var languages = info.audios.filter(function (a) { return a.code; });
-        if (!languages.length) languages = [{ code: prefLang, label: prefLang }];
+        if (!languages.length) {
+            languages = MN_AUDIO_CODES.map(function (code) {
+                return { code: code, label: MN_AUDIO_LABELS[code] || code };
+            });
+        }
         // `?lang=` only picks which rendition is DEFAULT: the URL is the audio
         // selector, so one entry per language is what makes the choice work.
         languages.sort(function (a, b) {
@@ -592,35 +665,78 @@ class DefaultExtension extends MProvider {
         return out;
     }
 
-    /// Comments tab: the site's read-only `action=load` endpoint. Best effort —
-    /// an unreachable or unauthenticated API yields an empty list, never an
-    /// error that would blank the whole detail page.
+    /// Comments tab: the site's `comments_api.php` is a JSON POST
+    /// (`{s_e: "7:701", se: "7:701", lang, page, sortOrder}`). A GET answers
+    /// "No input received", which is why the tab stayed empty.
+    ///
+    /// Best effort: any failure returns an empty list rather than an error
+    /// that would blank the detail page.
     async getComments(url) {
         var m = String(url || "").match(/[?&]s=([^&\s]+)[^#]*[?&]e=([^&\s]+)/);
         if (!m) return [];
-        var se = decodeURIComponent(m[1]) + ":" + decodeURIComponent(m[2]);
-        var api = MN_BASE + "/includes/features/comments/comments_api.php?action=load&se=" +
-                  encodeURIComponent(se) + "&page=1&lang=" + encodeURIComponent(this.getLang());
+        var season = decodeURIComponent(m[1]);
+        var episode = decodeURIComponent(m[2]);
+        var se = season + ":" + episode;
+        var api = MN_BASE + "/includes/features/comments/comments_api.php?action=load";
+        var payload = JSON.stringify({
+            requesterId: null,
+            requesterPasswordHash: null,
+            s_e: se,
+            se: se,
+            lang: this.getLang(),
+            page: 1,
+            sortOrder: "newest"
+        });
         var data = null;
         try {
-            data = JSON.parse((await this._get(api, { tries: 1 })).body || "{}");
+            var res = await this._withTimeout(new Client().post(api, {
+                "Content-Type": "application/json",
+                "Referer": MN_BASE + "/",
+                "User-Agent": MN_UA
+            }, payload), 8000);
+            if (!res) return [];
+            data = JSON.parse((res && res.body ? String(res.body) : "") || "{}");
         } catch (e) {
             return [];
         }
-        var items = data.comments || data.data || data.items || [];
-        var out = [];
+
+        var items = data.comments || data.data || [];
+        var byId = {};
+        var roots = [];
+        var list = [];
         for (var i = 0; i < items.length; i++) {
             var c = items[i] || {};
-            out.push({
-                id: String(c.id || c.comment_id || i),
-                author: c.username || c.user || c.author || c.name || "",
-                avatar: c.avatar || c.avatar_url || c.user_avatar || "",
-                content: this._clean(c.content || c.body || c.message || ""),
-                date: c.created_at || c.date || c.time_ago || "",
-                score: c.likes || c.reactions || 0
-            });
+            var avatar = String(c.avatar || "");
+            var item = {
+                id: String(c.id || i),
+                author: String(c.username || c.user || c.author || ""),
+                avatar: /^https?:\/\//i.test(avatar) ? avatar : "",
+                date: this._commentDate(c.created_at || c.date || 0),
+                content: this._clean(c.content || c.message || c.body || ""),
+                score: c.likes || c.reactions || 0,
+                replies: []
+            };
+            byId[item.id] = item;
+            list.push(item);
         }
-        return out;
+        for (var j = 0; j < list.length; j++) {
+            var parentId = items[j] ? items[j].parent_id : null;
+            var parent = parentId ? byId[String(parentId)] : null;
+            if (parent && parent !== list[j]) parent.replies.push(list[j]);
+            else roots.push(list[j]);
+        }
+        return roots;
+    }
+
+    _commentDate(ts) {
+        var seconds = parseInt(ts, 10);
+        if (!seconds || seconds < 0) return "";
+        var diff = Math.floor(Date.now() / 1000) - seconds;
+        if (diff < 60) return "à l'instant";
+        if (diff < 3600) return "il y a " + Math.floor(diff / 60) + " min";
+        if (diff < 86400) return "il y a " + Math.floor(diff / 3600) + " h";
+        if (diff < 2592000) return "il y a " + Math.floor(diff / 86400) + " j";
+        return "il y a " + Math.floor(diff / 2592000) + " mois";
     }
 
     // ── Filters & preferences ─────────────────────────────────
