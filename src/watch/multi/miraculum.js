@@ -16,7 +16,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "3.0.1",
+    "version": "3.1.0",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -37,6 +37,14 @@ const watchtowerSources = [{
 // domain is tried second because its origin has been returning 522.
 var MIRK_HOSTS = ["https://miraculous.now", "https://miraculum.ml"];
 var MIRK_INTERNAL = "https://internal.miraculum.ml";
+
+// Successful reads are reused for a few minutes and retries stop once a read
+// has burned this much time: the origin is slow (10 s+ per page) and the app
+// serialises every call, so a repeated read is what times `getDetail` out
+// ("0 épisode").
+var MIRK_TRY_BUDGET = 8000;
+var MIRK_CACHE = {};
+var MIRK_CACHE_TTL = 180000;
 var MN_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
 // Same list as the site: episodes the site itself hides (unreleased/blocked).
@@ -103,17 +111,25 @@ class DefaultExtension extends MProvider {
     // ── Transport ─────────────────────────────────────────────
 
     async _get(url) {
+        var cached = MIRK_CACHE[url];
+        if (cached && Date.now() - cached.t < MIRK_CACHE_TTL) return { body: cached.body };
+        var started = Date.now();
         var lastError = null;
         var start = this._host;
         for (var attempt = 0; attempt < MIRK_HOSTS.length + 1; attempt++) {
             try {
                 var res = await new Client().get(url, this.getHeaders(url));
                 var body = res && res.body ? String(res.body) : "";
-                if (body.length > 120) return res;
+                if (body.length > 120) {
+                    MIRK_CACHE[url] = { t: Date.now(), body: body };
+                    return res;
+                }
                 lastError = new Error("empty response from " + url);
             } catch (e) {
                 lastError = e;
             }
+            // A stalled origin must not eat the app's whole call budget.
+            if (Date.now() - started > MIRK_TRY_BUDGET) break;
             var previous = MIRK_HOSTS[this._host];
             this._host = (this._host + 1) % MIRK_HOSTS.length;
             url = String(url).split(previous).join(MIRK_HOSTS[this._host]);
@@ -467,6 +483,65 @@ class DefaultExtension extends MProvider {
 
     // ── Playback ──────────────────────────────────────────────
 
+    /// Splits a master playlist into what the site actually publishes: video
+    /// renditions, one audio rendition per language, and subtitle renditions.
+    _parseMaster(body, masterUrl) {
+        var self = this;
+        var out = { variants: [], audios: [], subs: [] };
+        if (!body || body.indexOf("#EXTM3U") === -1) return out;
+
+        function attrs(line) {
+            var res = {};
+            var re = /([A-Z0-9-]+)=("[^"]*"|[^,]*)/g, m;
+            while ((m = re.exec(line)) !== null) {
+                var v = m[2] || "";
+                if (v.charAt(0) === '"') v = v.slice(1, -1);
+                res[m[1]] = v;
+            }
+            return res;
+        }
+        function abs(uri) {
+            if (!uri) return "";
+            if (/^https?:\/\//i.test(uri)) return uri;
+            var origin = (masterUrl.match(/^(https?:\/\/[^\/]+)/) || [])[1] || self._base();
+            if (uri.charAt(0) === "/") return origin + uri;
+            return masterUrl.replace(/[?#].*$/, "").replace(/\/[^\/]*$/, "/") + uri;
+        }
+
+        var lines = String(body).split(/\r?\n/);
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+            if (line.indexOf("#EXT-X-MEDIA:") === 0) {
+                var a = attrs(line);
+                if (!a.URI) continue;
+                var media = { label: a.NAME || a.LANGUAGE || "", code: a.LANGUAGE || "", url: abs(a.URI) };
+                if (a.TYPE === "AUDIO") out.audios.push(media);
+                else if (a.TYPE === "SUBTITLES") out.subs.push(media);
+                continue;
+            }
+            if (line.indexOf("#EXT-X-STREAM-INF:") === 0) {
+                var v = attrs(line);
+                var resM = (v.RESOLUTION || "").match(/(\d+)x(\d+)/);
+                var uri = "";
+                for (var j = i + 1; j < lines.length; j++) {
+                    var next = lines[j].trim();
+                    if (!next) continue;
+                    if (next.charAt(0) !== "#") uri = next;
+                    break;
+                }
+                if (!uri) continue;
+                var bandwidth = parseInt(v.BANDWIDTH || "0", 10);
+                out.variants.push({
+                    label: resM ? resM[2] + "p" : (bandwidth ? Math.round(bandwidth / 1000) + " kbps" : "Auto"),
+                    bandwidth: bandwidth,
+                    url: abs(uri)
+                });
+            }
+        }
+        out.variants.sort(function (a, b) { return b.bandwidth - a.bandwidth; });
+        return out;
+    }
+
     async getVideoList(url) {
         var res = await this._get(url);
         var html = res.body || "";
@@ -482,24 +557,115 @@ class DefaultExtension extends MProvider {
         }
 
         var internal = internalM ? internalM[1] : MIRK_INTERNAL;
-        var lang = langM ? langM[1] : this.getLang();
-        var stream = internal + "/m3u8.m3u8?lang=" + encodeURIComponent(lang) +
-                     "&s=" + encodeURIComponent(sM[1]) +
-                     "&e=" + encodeURIComponent(eM[1]) +
-                     "&token=" + tokenM[1];
+        var prefLang = this.getLang();
+        function streamFor(code) {
+            return internal + "/m3u8.m3u8?lang=" + encodeURIComponent(code) +
+                   "&s=" + encodeURIComponent(sM[1]) +
+                   "&e=" + encodeURIComponent(eM[1]) +
+                   "&token=" + tokenM[1];
+        }
 
-        // The internal proxy answers 522 intermittently; the site page is a
-        // working fallback when the HLS master cannot be fetched.
-        return [{
-            quality: "Auto",
-            url: stream,
-            originalUrl: stream,
-            headers: { "Referer": this._base() + "/", "User-Agent": MN_UA }
-        }, {
-            quality: "WebView",
-            url: url,
-            originalUrl: url
-        }];
+        // The master is the only playlist that names the audio renditions, so
+        // reading it turns the opaque "Auto" entry into the real formats, the
+        // full language list and the subtitles the site offers.
+        var headers = { "Referer": this._base() + "/", "User-Agent": MN_UA };
+        var masterUrl = streamFor(prefLang);
+        var info = { variants: [], audios: [], subs: [] };
+        try {
+            info = this._parseMaster((await this._get(masterUrl)).body || "", masterUrl);
+        } catch (e) {
+            info = { variants: [], audios: [], subs: [] };
+        }
+
+        var audios = info.audios.map(function (a) { return { label: a.label, file: a.url }; });
+        var subtitles = info.subs.map(function (s) { return { label: s.label, file: s.url }; });
+        var topLabel = info.variants.length ? info.variants[0].label : "Auto";
+
+        var languages = info.audios.filter(function (a) { return a.code; });
+        if (!languages.length) languages = [{ code: prefLang, label: prefLang }];
+        // `?lang=` only picks which rendition is DEFAULT: the URL is the audio
+        // selector, so one entry per language is what makes the choice work.
+        languages.sort(function (a, b) {
+            var pa = a.code === prefLang ? 0 : 1, pb = b.code === prefLang ? 0 : 1;
+            if (pa !== pb) return pa - pb;
+            return a.label < b.label ? -1 : (a.label > b.label ? 1 : 0);
+        });
+
+        var videos = languages.map(function (a) {
+            var stream = streamFor(a.code);
+            return {
+                quality: topLabel + " · " + (a.label || a.code),
+                url: stream,
+                originalUrl: stream,
+                headers: headers,
+                audios: audios,
+                subtitles: subtitles
+            };
+        });
+
+        // The site's own player is the last resort when the HLS proxy is down.
+        videos.push({ quality: "WebView", url: url, originalUrl: url });
+        return videos;
+    }
+
+    /// "Pour vous": the rest of the season, then the other seasons.
+    async getRecommendations(url) {
+        var lang = this.getLang();
+        var sM = String(url || "").match(/[?&]s=([^&\s]+)/);
+        var eM = String(url || "").match(/[?&]e=([^&\s]+)/);
+        var season = sM ? decodeURIComponent(sM[1]) : "7";
+        var code = eM ? decodeURIComponent(eM[1]) : "";
+        var out = [];
+        try {
+            var cards = this._parseCards((await this._get(this._episodesUrl(season))).body, season);
+            for (var i = 0; i < cards.length; i++) {
+                if (code && cards[i].link.indexOf("e=" + code) !== -1) continue;
+                out.push(this._withSeason(cards[i], season));
+            }
+        } catch (e) { /* the season list below keeps the tab useful */ }
+
+        for (var c = 0; c < MN_CATEGORIES.length && out.length < 30; c++) {
+            var cat = MN_CATEGORIES[c];
+            if (String(cat.s) === String(season)) continue;
+            out.push({
+                name: cat.label,
+                link: this._base() + "/" + lang + "/episodes?s=" + encodeURIComponent(cat.s),
+                imageUrl: this._base() + cat.poster,
+                description: "Miraculous — " + cat.label
+            });
+        }
+        return out;
+    }
+
+    /// Comments tab: the site's read-only `action=load` endpoint. Best effort —
+    /// an unreachable or unauthenticated API yields an empty list, never an
+    /// error that would blank the whole detail page.
+    async getComments(url) {
+        var m = String(url || "").match(/[?&]s=([^&\s]+)[^#]*[?&]e=([^&\s]+)/);
+        if (!m) return [];
+        var se = decodeURIComponent(m[1]) + ":" + decodeURIComponent(m[2]);
+        var api = this._base() + "/includes/features/comments/comments_api.php?action=load&se=" +
+                  encodeURIComponent(se) + "&page=1&lang=" + encodeURIComponent(this.getLang());
+        var data = null;
+        try {
+            data = JSON.parse((await this._get(api)).body || "{}");
+        } catch (e) {
+            return [];
+        }
+        var items = data.comments || data.data || data.items || [];
+        var out = [];
+        for (var i = 0; i < items.length; i++) {
+            var c = items[i] || {};
+            out.push({
+                id: String(c.id || c.comment_id || i),
+                author: c.username || c.user || c.author || c.name || "",
+                avatar: c.avatar || c.avatar_url || c.user_avatar || "",
+                content: this._clean(c.content || c.body || c.message || ""),
+                date: c.created_at || c.date || c.time_ago || "",
+                score: c.likes || c.reactions || 0
+            });
+        }
+        return out;
     }
 
     // ── Filters & preferences ─────────────────────────────────
