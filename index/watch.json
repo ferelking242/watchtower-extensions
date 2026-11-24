@@ -8,7 +8,7 @@
     "typeSource": "single",
     "itemType": 1,
     "version": "2.0.0",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@main/src/watch/fr/mlpfrance.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@559df1eb143e7f614049a1fb8dfb9482db5ca5ed/src/watch/fr/mlpfrance.js",
     "isManga": false,
     "isNsfw": false,
     "hasCloudflare": false,
