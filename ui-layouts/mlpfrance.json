@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "renderer": "watch",
+  "capabilities": {
+    "download": true
+  },
+  "home": {
+    "sections": [
+      {
+        "id": "latest",
+        "component": "spotlight",
+        "title": "À l'affiche",
+        "accent": "#F06292",
+        "icon": "auto_awesome",
+        "seeAll": true
+      },
+      {
+        "id": "films",
+        "component": "landscapeStacked",
+        "title": "Films",
+        "accent": "#7C4DFF",
+        "icon": "movie",
+        "seeAll": true
+      },
+      {
+        "id": "fim",
+        "component": "landscapeStacked",
+        "title": "Friendship is Magic — S1 à S9",
+        "accent": "#42A5F5",
+        "icon": "playlist_play",
+        "seeAll": true
+      },
+      {
+        "id": "seasons",
+        "component": "grid",
+        "title": "Toutes les saisons",
+        "accent": "tertiary",
+        "icon": "video_library",
+        "columns": 3,
+        "rows": 3,
+        "cardStyle": "landscape",
+        "seeAll": true
+      },
+      {
+        "id": "ova",
+        "component": "landscapeStacked",
+        "title": "OVA, spéciaux & bonus",
+        "accent": "#00BCD4",
+        "icon": "celebration",
+        "seeAll": true
+      },
+      {
+        "id": "g5",
+        "component": "landscapeStacked",
+        "title": "Génération 5",
+        "accent": "#26A69A",
+        "icon": "stars",
+        "seeAll": true
+      },
+      {
+        "id": "eqg",
+        "component": "landscapeStacked",
+        "title": "Equestria Girls",
+        "accent": "#EC407A",
+        "icon": "favorite",
+        "seeAll": true
+      },
+      {
+        "id": "retro",
+        "component": "landscapeStacked",
+        "title": "Rétro — G1 à G3",
+        "accent": "#FFB300",
+        "icon": "history",
+        "seeAll": true
+      },
+      {
+        "id": "cartoons",
+        "component": "landscapeStacked",
+        "title": "Cartoons",
+        "accent": "#66BB6A",
+        "icon": "animation",
+        "seeAll": true
+      },
+      {
+        "id": "all",
+        "component": "grid",
+        "title": "Tout le catalogue",
+        "accent": "secondary",
+        "icon": "grid_view",
+        "columns": 2,
+        "cardStyle": "landscape",
+        "seeAll": true
+      }
+    ]
+  },
+  "browse": {
+    "popular": {
+      "component": "grid",
+      "columns": 2,
+      "cardStyle": "landscape"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 2,
+      "cardStyle": "landscape"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 2,
+        "cardStyle": "landscape"
+      },
+      "filters": "chips"
+    }
+  },
+  "detail": {
+    "hero": "backdrop",
+    "episodeList": "compact",
+    "showRecommendations": true
+  },
+  "player": {
+    "mode": "standard"
+  }
+}
