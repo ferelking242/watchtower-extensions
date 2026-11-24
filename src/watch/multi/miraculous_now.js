@@ -736,7 +736,12 @@ class DefaultExtension extends MProvider {
             return [{ quality: "WebView", url: url, originalUrl: url }];
         }
 
-        var internal = internalM ? internalM[1] : MN_INTERNAL;
+        // The page advertises an "internal" stream host that some devices
+        // cannot resolve at all (private DNS filters, split-horizon DNS). It is
+        // served by the same Cloudflare origin as the public site, so re-root
+        // it on MN_BASE and keep the path/query the page gave us.
+        var internal = (internalM ? internalM[1] : MN_INTERNAL)
+            .replace(/^https?:\/\/[^/]+/i, MN_BASE);
         var prefLang = this.getLang();
         function streamFor(code) {
             return internal + "/m3u8.m3u8?lang=" + encodeURIComponent(code) +
