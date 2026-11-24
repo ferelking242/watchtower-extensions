@@ -38,13 +38,43 @@
         "seeAll": true
       },
       {
-        "id": "seasons",
-        "component": "grid",
-        "title": "Toutes les saisons",
-        "accent": "tertiary",
-        "icon": "video_library",
-        "columns": 3,
-        "rows": 3,
+        "id": "season_5",
+        "component": "landscapeStacked",
+        "title": "Saison 5",
+        "accent": "#4CAF50",
+        "icon": "playlist_play",
+        "seeAll": true
+      },
+      {
+        "id": "season_4",
+        "component": "landscapeStacked",
+        "title": "Saison 4",
+        "accent": "#26A69A",
+        "icon": "playlist_play",
+        "seeAll": true
+      },
+      {
+        "id": "season_3",
+        "component": "landscapeStacked",
+        "title": "Saison 3",
+        "accent": "#42A5F5",
+        "icon": "playlist_play",
+        "seeAll": true
+      },
+      {
+        "id": "season_2",
+        "component": "landscapeStacked",
+        "title": "Saison 2",
+        "accent": "#EC407A",
+        "icon": "playlist_play",
+        "seeAll": true
+      },
+      {
+        "id": "season_1",
+        "component": "landscapeStacked",
+        "title": "Saison 1",
+        "accent": "#66BB6A",
+        "icon": "playlist_play",
         "seeAll": true
       },
       {
@@ -56,11 +86,13 @@
         "seeAll": true
       },
       {
-        "id": "season_5",
-        "component": "landscapeStacked",
-        "title": "Saison 5",
-        "accent": "#4CAF50",
-        "icon": "playlist_play",
+        "id": "seasons",
+        "component": "grid",
+        "title": "Toutes les saisons",
+        "accent": "tertiary",
+        "icon": "video_library",
+        "columns": 3,
+        "rows": 3,
         "seeAll": true
       },
       {
