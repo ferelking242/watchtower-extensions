@@ -31,7 +31,9 @@ function seasonPage(season, count) {
 
 function loadExtension(handler, prefs = new Map()) {
   const calls = [];
+  const clientOptions = [];
   class Client {
+    constructor(options) { clientOptions.push(options); }
     async get(url, headers = {}) {
       calls.push({ method: "GET", url });
       return handler(url, headers);
@@ -62,7 +64,7 @@ function loadExtension(handler, prefs = new Map()) {
     filename: sourcePath,
     timeout: 10000,
   });
-  return { extension: new sandbox.Extension(), calls, prefs };
+  return { extension: new sandbox.Extension(), calls, prefs, clientOptions };
 }
 
 const episodeUrl = "https://miraculous.now/fr/watch?s=7&e=701";
@@ -139,7 +141,7 @@ console.log("miraculous.now — origin down (Cloudflare 522)");
 
 console.log("miraculous.now — origin healthy");
 {
-  const { extension, calls, prefs } = loadExtension((url) => {
+  const { extension, calls, prefs, clientOptions } = loadExtension((url) => {
     if (url.includes("/episodes?s=7")) return { statusCode: 200, body: seasonPage(7, 6) };
     if (url.includes("/episodes?s=")) return { statusCode: 200, body: seasonPage(1, 4) };
     return { statusCode: 404, body: "not found" };
@@ -162,6 +164,11 @@ console.log("miraculous.now — origin healthy");
     assert.equal(calls.length, before, "season page should come from the cache");
   });
 
+  await check("the client asks for a short timeout", async () => {
+    assert.equal(clientOptions.length, 1, "one client should be reused");
+    assert.equal(clientOptions[0].timeout, 10);
+  });
+
   await check("every rail is stored for the next outage", async () => {
     const stored = JSON.parse(prefs.get("miraculous.rail.latest"));
     assert.equal(stored.list.length, 6);
@@ -180,6 +187,21 @@ console.log("miraculous.now — origin healthy");
     assert.equal(season.list.length, 6, "season rail should come from the store");
     assert.equal(outage.calls.length, 1, "only the first probe may hit the network");
     assert.ok(elapsed < 1500, `took ${elapsed}ms`);
+  });
+
+  await check("reopening the app during the outage skips the probe", async () => {
+    const reopened = loadExtension(() => ({ statusCode: 522, body: CF_522 }), outage.prefs);
+    const res = await reopened.extension.getLatestUpdates(1);
+    assert.equal(res.list.length, 6, "the stored rail should still be served");
+    assert.equal(reopened.calls.length, 0, "the persisted breaker must skip the network");
+  });
+
+  await check("getDetail serves the stored episodes instead of 'aucun épisode'", async () => {
+    const before = outage.calls.length;
+    const detail = await outage.extension.getDetail("https://miraculous.now/fr/episodes?s=7");
+    assert.equal(detail.chapters.length, 6, "season detail should list the cached episodes");
+    assert.match(detail.description, /hors ligne/);
+    assert.equal(outage.calls.length, before, "the breaker must answer without a request");
   });
 }
 

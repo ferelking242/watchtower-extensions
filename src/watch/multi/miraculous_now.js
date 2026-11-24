@@ -14,7 +14,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.5.0",
+    "version": "1.6.1",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -52,12 +52,43 @@ var MN_CACHE = {};
 // made during the window fails immediately instead of queueing behind a stall.
 var MN_DOWN_UNTIL = 0;
 var MN_DOWN_WINDOW = 30000;
+// The breaker is also written to the store, so reopening the app during an
+// outage does not pay for a new 10 s probe.
+var MN_DOWN_KEY = "miraculous.downUntil";
+var MN_DOWN_PERSIST = 90000;
 var MN_DOWN_MESSAGE = "miraculous.now is unreachable (Cloudflare 52x)";
 
 // A rail read from the local store is served for a week after the last
 // successful fetch: long enough to bridge an outage, short enough that a
 // changed catalogue is not shown forever.
 var MN_RAIL_TTL = 7 * 24 * 3600 * 1000;
+
+// A dead origin holds the connection ~20 s before Cloudflare answers 522. The
+// app's default client waits 60 s; this one gives up after 10 s so the first
+// probe of an outage costs seconds, not a minute.
+var MN_HTTP_TIMEOUT = 10;
+var MN_CLIENT = null;
+
+function mnDownUntil() {
+    if (MN_DOWN_UNTIL) return MN_DOWN_UNTIL;
+    try {
+        var v = parseInt(new SharedPreferences().getString(MN_DOWN_KEY, ""), 10);
+        if (!isNaN(v) && v > Date.now()) MN_DOWN_UNTIL = v;
+    } catch (e) {}
+    return MN_DOWN_UNTIL;
+}
+
+function mnMarkDown() {
+    MN_DOWN_UNTIL = Date.now() + MN_DOWN_WINDOW;
+    try {
+        new SharedPreferences().setString(MN_DOWN_KEY, String(Date.now() + MN_DOWN_PERSIST));
+    } catch (e) {}
+}
+
+function mnClient() {
+    if (!MN_CLIENT) MN_CLIENT = new Client({ timeout: MN_HTTP_TIMEOUT, connectTimeout: 5 });
+    return MN_CLIENT;
+}
 
 // The master lists one audio rendition per language; these are the codes it
 // publishes. They are the fallback when the master does not answer in time, so
@@ -196,38 +227,70 @@ class DefaultExtension extends MProvider {
         } catch (e) {}
     }
 
+    _chaptersKey(season) {
+        return "miraculous.chapters." + season;
+    }
+
+    _cardsToChapters(cards) {
+        return (cards || []).map(function (card) {
+            return {
+                name: card.name,
+                url: card.link,
+                thumbnailUrl: card.imageUrl,
+                description: card.description
+            };
+        });
+    }
+
+    _readChapters(season) {
+        try {
+            var raw = new SharedPreferences().getString(this._chaptersKey(season), "");
+            if (!raw) return null;
+            var parsed = JSON.parse(raw);
+            if (!parsed || !parsed.chapters || !parsed.chapters.length) return null;
+            if (Date.now() - (parsed.t || 0) > MN_RAIL_TTL) return null;
+            return parsed.chapters;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    _writeChapters(season, chapters) {
+        if (!season || !chapters || !chapters.length) return;
+        try {
+            new SharedPreferences().setString(
+                this._chaptersKey(season),
+                JSON.stringify({ t: Date.now(), chapters: chapters })
+            );
+        } catch (e) {}
+    }
+
     async _get(url, opts) {
         var cached = MN_CACHE[url];
         if (cached && Date.now() - cached.t < MN_CACHE_TTL) return { body: cached.body };
-        if (Date.now() < MN_DOWN_UNTIL) throw new Error(MN_DOWN_MESSAGE);
+        if (Date.now() < mnDownUntil()) return null;
         var start = Date.now();
         var tries = opts && opts.tries ? opts.tries : MN_TRIES;
-        var lastError = null;
         for (var i = 0; i < tries; i++) {
             try {
-                var res = await new Client().get(url, this.getHeaders(url));
+                var res = await mnClient().get(url, this.getHeaders(url));
                 var body = res && res.body ? String(res.body) : "";
                 var status = res && res.statusCode ? Number(res.statusCode) : 0;
                 if (status >= 500 || this._isOriginDown(body)) {
-                    MN_DOWN_UNTIL = Date.now() + MN_DOWN_WINDOW;
-                    throw new Error(MN_DOWN_MESSAGE);
+                    mnMarkDown();
+                    return null;
                 }
+                if (status >= 400) return null;
                 if (body.length > 120) {
                     MN_CACHE[url] = { t: Date.now(), body: body };
                     return res;
                 }
-                lastError = new Error("empty response");
-            } catch (e) {
-                lastError = e;
-                // The origin is down: a second attempt cannot succeed either.
-                if (Date.now() < MN_DOWN_UNTIL) throw e;
-            }
-            // A stalled origin must not eat the app's whole call budget: the
-            // retry loop stops once the request has already cost this much.
+            } catch (e) {}
+            // A stalled origin must not eat the app's whole call budget.
             if (Date.now() - start > MN_TRY_BUDGET) break;
-            if (i + 1 < tries) await new Promise(function (r) { setTimeout(r, 400 + i * 400); });
+            if (i + 1 < tries) await new Promise(function (r) { setTimeout(r, 400); });
         }
-        throw lastError || new Error("unreachable: " + url);
+        return null;
     }
 
     _abs(path) {
@@ -392,12 +455,10 @@ class DefaultExtension extends MProvider {
         var numeric = MN_CATEGORIES.filter(function (cat) { return /^\d+$/.test(String(cat.s)); });
         for (var i = 0; i < numeric.length; i++) {
             var cards = [];
-            try {
-                cards = this._parseCards((await this._get(this._episodesUrl(numeric[i].s))).body, numeric[i].s);
-            } catch (e) {
-                // Origin unreachable: the other seasons will fail the same way.
-                break;
-            }
+            var page = await this._get(this._episodesUrl(numeric[i].s));
+            // Origin unreachable: the other seasons will fail the same way.
+            if (!page) break;
+            cards = this._parseCards(page.body, numeric[i].s);
             if (cards.length < 3) continue;
             var list = cards.slice(-14).reverse().map(function (card) {
                 return self._withSeason(card, numeric[i].s);
@@ -417,12 +478,8 @@ class DefaultExtension extends MProvider {
         var lang = this.getLang();
         var url = MN_BASE + "/includes/features/search/search.php?q=" + encodeURIComponent(q) +
                   "&lang=" + encodeURIComponent(lang);
-        var res = null;
-        try {
-            res = await this._get(url);
-        } catch (e) {
-            return { list: [], hasNextPage: false };
-        }
+        var res = await this._get(url);
+        if (!res) return { list: [], hasNextPage: false };
         var data = {};
         try { data = JSON.parse(res.body || "{}"); } catch (e) { data = {}; }
 
@@ -455,15 +512,11 @@ class DefaultExtension extends MProvider {
 
         var cat = this._category(listId);
         if (!cat) return { list: [], hasNextPage: false };
-        var res = null;
-        try {
-            res = await this._get(this._episodesUrl(cat.s));
-        } catch (e) {
-            return { list: this._readRail(listId) || [], hasNextPage: false };
-        }
-        var cards = this._parseCards(res.body, cat.s);
+        var res = await this._get(this._episodesUrl(cat.s));
+        var cards = res ? this._parseCards(res.body, cat.s) : [];
         if (!cards.length) return { list: this._readRail(listId) || [], hasNextPage: false };
         this._writeRail(listId, cards);
+        this._writeChapters(cat.s, this._cardsToChapters(cards));
         return { list: cards, hasNextPage: false };
     }
 
@@ -476,14 +529,16 @@ class DefaultExtension extends MProvider {
         var sM = url.match(/[?&]s=([^&\s]+)/);
         var s = sM ? decodeURIComponent(sM[1]) : "7";
         var cat = this._category(s);
-        var res = await this._withTimeout(this._get(this._episodesUrl(s)), 20000);
+        var res = await this._withTimeout(this._get(this._episodesUrl(s)), 12000);
         if (!res) {
+            var cached = this._readChapters(s);
             var fbLabel = cat ? cat.label : ("Saison " + s);
             return {
                 name: fbLabel,
                 imageUrl: cat ? MN_BASE + cat.poster : "",
-                description: "Miraculous Ladybug — " + fbLabel,
-                chapters: []
+                description: "Miraculous Ladybug — " + fbLabel +
+                    (cached ? "\n" + cached.length + " épisode(s) · hors ligne" : ""),
+                chapters: cached || []
             };
         }
         var html = res.body || "";
@@ -491,14 +546,8 @@ class DefaultExtension extends MProvider {
         var cards = this._parseCards(html, s);
         var label = cat ? cat.label : (hero.name || ("Saison " + s));
 
-        var chapters = cards.map(function (card, index) {
-            return {
-                name: card.name,
-                url: card.link,
-                thumbnailUrl: card.imageUrl,
-                description: card.description
-            };
-        });
+        var chapters = this._cardsToChapters(cards);
+        this._writeChapters(s, chapters);
 
         return {
             name: label,
@@ -509,7 +558,7 @@ class DefaultExtension extends MProvider {
     }
 
     async _episodeDetail(url, lang) {
-        var res = await this._withTimeout(this._get(url), 20000);
+        var res = await this._withTimeout(this._get(url), 12000);
         if (!res) {
             var fbS = String(url).match(/[?&]s=([^&\s]+)/);
             var fbE = String(url).match(/[?&]e=([^&\s]+)/);
@@ -718,13 +767,26 @@ class DefaultExtension extends MProvider {
         var out = [];
 
         try {
-            var cached = season ? MN_CACHE[this._episodesUrl(season)] : null;
-            if (cached) {
-                var cards = this._parseCards(cached.body, season);
-                for (var i = 0; i < cards.length; i++) {
-                    if (code && cards[i].link.indexOf("e=" + code) !== -1) continue;
-                    out.push(this._withSeason(cards[i], season));
+            var cards = [];
+            var page = season ? MN_CACHE[this._episodesUrl(season)] : null;
+            if (page) cards = this._parseCards(page.body, season);
+            if (!cards.length && season) {
+                // Offline: the stored episode list still fills the tab.
+                var stored = this._readChapters(season);
+                if (stored) {
+                    cards = stored.map(function (ch) {
+                        return {
+                            name: ch.name,
+                            link: ch.url,
+                            imageUrl: ch.thumbnailUrl,
+                            description: ch.description
+                        };
+                    });
                 }
+            }
+            for (var i = 0; i < cards.length; i++) {
+                if (code && cards[i].link.indexOf("e=" + code) !== -1) continue;
+                out.push(this._withSeason(cards[i], season));
             }
         } catch (e) { /* the seasons rail below still fills the tab */ }
 
@@ -765,15 +827,15 @@ class DefaultExtension extends MProvider {
         });
         var data = null;
         try {
-            var res = await this._withTimeout(new Client().post(api, {
+            var res = await this._withTimeout(mnClient().post(api, {
                 "Content-Type": "application/json",
                 "Referer": MN_BASE + "/",
                 "User-Agent": MN_UA
             }, payload), 8000);
-            if (!res) return [];
+            if (!res) return this._readComments(se) || [];
             data = JSON.parse((res && res.body ? String(res.body) : "") || "{}");
         } catch (e) {
-            return [];
+            return this._readComments(se) || [];
         }
 
         var items = data.comments || data.data || [];
@@ -801,7 +863,35 @@ class DefaultExtension extends MProvider {
             if (parent && parent !== list[j]) parent.replies.push(list[j]);
             else roots.push(list[j]);
         }
+        this._writeComments(se, roots);
         return roots;
+    }
+
+    _commentsKey(se) {
+        return "miraculous.comments." + se;
+    }
+
+    _readComments(se) {
+        try {
+            var raw = new SharedPreferences().getString(this._commentsKey(se), "");
+            if (!raw) return null;
+            var parsed = JSON.parse(raw);
+            if (!parsed || !parsed.list || !parsed.list.length) return null;
+            if (Date.now() - (parsed.t || 0) > MN_RAIL_TTL) return null;
+            return parsed.list;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    _writeComments(se, list) {
+        if (!se || !list || !list.length) return;
+        try {
+            new SharedPreferences().setString(
+                this._commentsKey(se),
+                JSON.stringify({ t: Date.now(), list: list })
+            );
+        } catch (e) {}
     }
 
     _commentDate(ts) {
