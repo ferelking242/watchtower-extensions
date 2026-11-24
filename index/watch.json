@@ -24069,7 +24069,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-2000001175.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.4.0",
+    "version": "1.5.0",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@715ad576e369737e7348743c38106f0e61a33c17/src/watch/multi/miraculous_now.js",
     "isManga": false,
     "isNsfw": false,

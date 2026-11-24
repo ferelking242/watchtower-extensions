@@ -29,7 +29,7 @@ function seasonPage(season, count) {
   return `<!DOCTYPE html><html><body>${cards.join("\n")}</body></html>`;
 }
 
-function loadExtension(handler) {
+function loadExtension(handler, prefs = new Map()) {
   const calls = [];
   class Client {
     async get(url, headers = {}) {
@@ -42,7 +42,13 @@ function loadExtension(handler) {
     }
   }
   class MProvider { constructor() { this.source = null; } }
-  class SharedPreferences { get() { return null; } }
+  class SharedPreferences {
+    getString(key, fallback = "") {
+      return prefs.has(key) ? prefs.get(key) : fallback;
+    }
+    setString(key, value) { prefs.set(key, value); }
+    get() { return null; }
+  }
 
   const sandbox = {
     Client, MProvider, SharedPreferences, console, setTimeout, clearTimeout,
@@ -56,7 +62,7 @@ function loadExtension(handler) {
     filename: sourcePath,
     timeout: 10000,
   });
-  return { extension: new sandbox.Extension(), calls };
+  return { extension: new sandbox.Extension(), calls, prefs };
 }
 
 const episodeUrl = "https://miraculous.now/fr/watch?s=7&e=701";
@@ -133,7 +139,7 @@ console.log("miraculous.now — origin down (Cloudflare 522)");
 
 console.log("miraculous.now — origin healthy");
 {
-  const { extension, calls } = loadExtension((url) => {
+  const { extension, calls, prefs } = loadExtension((url) => {
     if (url.includes("/episodes?s=7")) return { statusCode: 200, body: seasonPage(7, 6) };
     if (url.includes("/episodes?s=")) return { statusCode: 200, body: seasonPage(1, 4) };
     return { statusCode: 404, body: "not found" };
@@ -154,6 +160,26 @@ console.log("miraculous.now — origin healthy");
     const res = await extension.getCustomList("season_7", 1);
     assert.equal(res.list.length, 6);
     assert.equal(calls.length, before, "season page should come from the cache");
+  });
+
+  await check("every rail is stored for the next outage", async () => {
+    const stored = JSON.parse(prefs.get("miraculous.rail.latest"));
+    assert.equal(stored.list.length, 6);
+    assert.equal(JSON.parse(prefs.get("miraculous.rail.season_7")).list.length, 6);
+  });
+
+  console.log("miraculous.now — origin down after a healthy read");
+  const outage = loadExtension(() => ({ statusCode: 522, body: CF_522 }), prefs);
+
+  await check("the stored catalogue is served instead of an empty home", async () => {
+    const started = Date.now();
+    const latest = await outage.extension.getLatestUpdates(1);
+    const season = await outage.extension.getCustomList("season_7", 1);
+    const elapsed = Date.now() - started;
+    assert.equal(latest.list.length, 6, "latest rail should come from the store");
+    assert.equal(season.list.length, 6, "season rail should come from the store");
+    assert.equal(outage.calls.length, 1, "only the first probe may hit the network");
+    assert.ok(elapsed < 1500, `took ${elapsed}ms`);
   });
 }
 

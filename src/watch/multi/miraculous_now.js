@@ -14,7 +14,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.4.0",
+    "version": "1.5.0",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -53,6 +53,11 @@ var MN_CACHE = {};
 var MN_DOWN_UNTIL = 0;
 var MN_DOWN_WINDOW = 30000;
 var MN_DOWN_MESSAGE = "miraculous.now is unreachable (Cloudflare 52x)";
+
+// A rail read from the local store is served for a week after the last
+// successful fetch: long enough to bridge an outage, short enough that a
+// changed catalogue is not shown forever.
+var MN_RAIL_TTL = 7 * 24 * 3600 * 1000;
 
 // The master lists one audio rendition per language; these are the codes it
 // publishes. They are the fallback when the master does not answer in time, so
@@ -159,6 +164,36 @@ class DefaultExtension extends MProvider {
         if (!body) return false;
         var head = body.slice(0, 4000);
         return /cf-error-details|Origin is unreachable|Web server is down|Connection timed out|The origin web server/i.test(head);
+    }
+
+    /// Rails are kept in the source's own key/value store, so a down origin
+    /// still shows the last catalogue instead of an empty home. Only the parsed
+    /// cards are stored: a season page is ~200 KB of HTML, the cards are a few.
+    _railKey(id) {
+        return "miraculous.rail." + id;
+    }
+
+    _readRail(id) {
+        try {
+            var raw = new SharedPreferences().getString(this._railKey(id), "");
+            if (!raw) return null;
+            var parsed = JSON.parse(raw);
+            if (!parsed || !parsed.list || !parsed.list.length) return null;
+            if (Date.now() - (parsed.t || 0) > MN_RAIL_TTL) return null;
+            return parsed.list;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    _writeRail(id, list) {
+        if (!list || !list.length) return;
+        try {
+            new SharedPreferences().setString(
+                this._railKey(id),
+                JSON.stringify({ t: Date.now(), list: list })
+            );
+        } catch (e) {}
     }
 
     async _get(url, opts) {
@@ -367,9 +402,11 @@ class DefaultExtension extends MProvider {
             var list = cards.slice(-14).reverse().map(function (card) {
                 return self._withSeason(card, numeric[i].s);
             });
-            return { list: list.slice(0, 12), hasNextPage: false };
+            var out = list.slice(0, 12);
+            this._writeRail("latest", out);
+            return { list: out, hasNextPage: false };
         }
-        return { list: [], hasNextPage: false };
+        return { list: this._readRail("latest") || [], hasNextPage: false };
     }
 
     async search(query, page, filterList) {
@@ -422,9 +459,11 @@ class DefaultExtension extends MProvider {
         try {
             res = await this._get(this._episodesUrl(cat.s));
         } catch (e) {
-            return { list: [], hasNextPage: false };
+            return { list: this._readRail(listId) || [], hasNextPage: false };
         }
         var cards = this._parseCards(res.body, cat.s);
+        if (!cards.length) return { list: this._readRail(listId) || [], hasNextPage: false };
+        this._writeRail(listId, cards);
         return { list: cards, hasNextPage: false };
     }
 
