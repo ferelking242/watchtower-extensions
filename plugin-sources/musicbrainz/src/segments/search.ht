@@ -1,4 +1,5 @@
 import "module:std" as std
+import { ResilientHttpClient } from "../common/http.ht"
 import { MbConverter } from "./converter.ht"
 import { CommonArtistEntity } from "../common/artist.ht"
 
@@ -6,8 +7,8 @@ var HttpClient = std.HttpClient
 var HttpResponse = std.HttpResponse
 
 class SearchEndpoint {
-  var lbApi: HttpClient
-  var mbApi: HttpClient
+  var lbApi: ResilientHttpClient
+  var mbApi: ResilientHttpClient
   final username: string
   var artistCommon: CommonArtistEntity
 
@@ -43,7 +44,7 @@ class SearchEndpoint {
   }
 
   fun albums(query: string, {offset: int, limit: int}) {
-    return mbApi.get_req(
+    return mbApi.get_optional(
       "/release-group",
       queryParameters: {
         query: query,
@@ -52,6 +53,18 @@ class SearchEndpoint {
         fmt: "json",
       }.toJson()
     ).then((res){
+      // The host can stay unavailable past the retries; an empty tab reads far
+      // better in the Hub than a red error, and the next search retries anyway.
+      if (res == null) {
+        return {
+          limit: limit ?? 10,
+          nextOffset: null,
+          total: 0,
+          hasMore: false,
+          items: []
+        }.toJson()
+      }
+
       if (res.data["release-groups"].isEmpty) {
         return {
           limit: limit ?? 10,
@@ -76,7 +89,7 @@ class SearchEndpoint {
   }
 
   fun artists(query: string, {offset: int, limit: int}) {
-    return mbApi.get_req(
+    return mbApi.get_optional(
       "/artist",
       queryParameters: {
         query: query,
@@ -85,6 +98,18 @@ class SearchEndpoint {
         fmt: "json",
       }.toJson()
     ).then((res){
+      // The host can stay unavailable past the retries; an empty tab reads far
+      // better in the Hub than a red error, and the next search retries anyway.
+      if (res == null) {
+        return {
+          limit: limit ?? 10,
+          nextOffset: null,
+          total: 0,
+          hasMore: false,
+          items: []
+        }.toJson()
+      }
+
       var artistIds = res.data["artists"].map((artist) => artist["id"]).toList()
 
       if (artistIds.isEmpty) {
@@ -112,7 +137,7 @@ class SearchEndpoint {
   }
 
   fun tracks(query: string, {offset: int, limit: int}) {
-    return mbApi.get_req(
+    return mbApi.get_optional(
       "/recording",
       queryParameters: {
         query: query,
@@ -121,6 +146,18 @@ class SearchEndpoint {
         fmt: "json",
       }.toJson()
     ).then((res){
+      // The host can stay unavailable past the retries; an empty tab reads far
+      // better in the Hub than a red error, and the next search retries anyway.
+      if (res == null) {
+        return {
+          limit: limit ?? 10,
+          nextOffset: null,
+          total: 0,
+          hasMore: false,
+          items: []
+        }.toJson()
+      }
+
       if (res.data["recordings"].isEmpty) {
         return {
           limit: limit ?? 10,
@@ -145,7 +182,7 @@ class SearchEndpoint {
   }
 
   fun playlists(query: string, {offset: int, limit: int}) {
-    return lbApi.get_req(
+    return lbApi.get_optional(
       "/playlist/search",
       queryParameters: {
         query: query,
@@ -153,6 +190,18 @@ class SearchEndpoint {
         offset: offset ?? 0,
       }.toJson()
     ).then((res){
+      // The host can stay unavailable past the retries; an empty tab reads far
+      // better in the Hub than a red error, and the next search retries anyway.
+      if (res == null) {
+        return {
+          limit: limit ?? 10,
+          nextOffset: null,
+          total: 0,
+          hasMore: false,
+          items: []
+        }.toJson()
+      }
+
       if (res.data["playlists"].isEmpty) {
         return {
           limit: limit ?? 10,

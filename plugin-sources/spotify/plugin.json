@@ -2,7 +2,7 @@
   "version": "0.2.2",
   "name": "Spotify",
   "author": "Sonic Liberation",
-  "description": "Spotube plugin for Spotify metadata",
+  "description": "Watchtower plugin for Spotify metadata",
   "entryPoint": "SpotifyMetadataProviderPlugin",
   "apis": [
     "webview",

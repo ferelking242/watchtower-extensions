@@ -1,8 +1,8 @@
 {
   "version": "1.0.0",
   "name": "DAB Music",
-  "author": "Kingkor Roy Tirtho",
-  "description": "dab.yeet.su audio source plugin for Spotube",
+  "author": "Watchtower",
+  "description": "dab.yeet.su audio source plugin for Watchtower",
   "entryPoint": "DABMusicAudioSourcePlugin",
   "apis": [
     "localstorage",

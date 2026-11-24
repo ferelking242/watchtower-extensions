@@ -1,4 +1,5 @@
 import "module:std" as std
+import { ResilientHttpClient } from "../common/http.ht"
 import "module:spotube_plugin" as spotube
 import { MbConverter } from "./converter.ht"
 import { Recommendations } from "../common/recommendations.ht"
@@ -12,8 +13,8 @@ var Duration = std.Duration
 var FutureUtils = std.FutureUtils
 
 class BrowseEndpoint {
-  var lbApi: HttpClient
-  var mbApi: HttpClient
+  var lbApi: ResilientHttpClient
+  var mbApi: ResilientHttpClient
   final username: string
 
   var recommendations: Recommendations
@@ -31,12 +32,14 @@ class BrowseEndpoint {
 
     return FutureUtils.chain(sectionsFutures, delay: Duration(milliseconds: 200))
     .then((sections) {
+      // Signed-out sections come back as null instead of an empty shelf.
+      var items = sections.where((section) => section != null).toList()
       return {
         limit: limit ?? 25,
         nextOffset: null,
         total: 1,
         hasMore: false,
-        items: sections
+        items: items
       }.toJson()
     })
   }

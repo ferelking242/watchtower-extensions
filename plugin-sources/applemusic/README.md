@@ -1,11 +1,11 @@
-# Spotube Apple Music Plugin
+# Watchtower Apple Music Plugin
 
-An Apple Music metadata provider for [Spotube](https://github.com/KRTirtho/spotube),
+An Apple Music metadata provider for Watchtower,
 built on the same Hetu plugin architecture as the
 [Spotify plugin](https://github.com/sonic-liberation/spotube-plugin-spotify).
 
 It exposes catalog, library, search and browse data from Apple Music's JSON API
-through the standard Spotube metadata-provider interface (`auth`, `user`,
+through the standard Watchtower metadata-provider interface (`auth`, `user`,
 `track`, `album`, `artist`, `playlist`, `search`, `browse`, `core`).
 
 ## How it works
@@ -26,7 +26,7 @@ scoped to).
 
 ### Authentication
 
-- **`auth.authenticate()`** (the flow Spotube invokes) opens music.apple.com in
+- **`auth.authenticate()`** (the flow Watchtower invokes) opens music.apple.com in
   a webview and harvests the `media-user-token` cookie automatically — no token
   pasting, same approach as the Spotify plugin. Because Apple's sign-in often
   completes inside an iframe without a top-level navigation, it both reacts to
@@ -45,7 +45,7 @@ plugin.json                     Plugin manifest
 Makefile                        compile / archive targets
 src/plugin.ht                   Entry point (AppleMusicMetadataProviderPlugin)
 src/api/apple_music_api.ht      Thin client over the Apple Music JSON API
-src/converter/converter.ht      Apple resources -> Spotube common shapes
+src/converter/converter.ht      Apple resources -> Watchtower common shapes
 src/segments/*.ht               auth, core, track, album, artist, playlist, user, search, browse
 example/                        Flutter host app for local testing
 ```
@@ -60,7 +60,7 @@ make           # compiles src/plugin.ht -> build/plugin.out (+ copies to example
 make archive   # bundles plugin.json + plugin.out + logo.png -> build/plugin.smplug
 ```
 
-Install the resulting `build/plugin.smplug` from Spotube's plugin settings.
+Install the resulting `build/plugin.smplug` from the Watchtower Marketplace (Music tab).
 
 To run the example host for testing:
 

@@ -1,4 +1,5 @@
 import 'module:std' as std
+import { ResilientHttpClient } from "../common/http.ht"
 import 'module:spotube_plugin' as spotube
 
 var StreamController = std.StreamController
@@ -11,8 +12,8 @@ var LocalStorage = spotube.LocalStorage
 var JSON = std.JSON
 
 class AuthEndpoint {
-  final lbApi: HttpClient
-  final mbApi: HttpClient
+  final lbApi: ResilientHttpClient
+  final mbApi: ResilientHttpClient
   final controller: StreamController
 
   var credentials: Map
@@ -128,11 +129,23 @@ class AuthEndpoint {
     })
   }
 
-	fun logout() {
+  fun logout() {
     return LocalStorage.remove("lb_creds").then(() {
       credentials = null
       controller.add({ type: "logout" }.toJson())
     })
+  }
+
+  /// Drops credentials the API has just rejected. ListenBrainz revokes tokens
+  /// from its website, so the stored copy can die while the app runs; keeping it
+  /// would make every per-user call fail again.
+  fun forgetCredentials() {
+    if (credentials == null) {
+      return
+    }
+    credentials = null
+    LocalStorage.remove("lb_creds")
+    controller.add({ type: "logout" }.toJson())
   }
 }
 

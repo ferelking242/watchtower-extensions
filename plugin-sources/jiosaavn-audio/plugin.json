@@ -1,8 +1,8 @@
 {
   "version": "1.0.0",
   "name": "Jiosaavn Audio",
-  "author": "Kingkor Roy Tirtho",
-  "description": "Jiosaavn audio source plugin for Spotube",
+  "author": "Watchtower",
+  "description": "Jiosaavn audio source plugin for Watchtower",
   "entryPoint": "JiosaavnAudioSourcePlugin",
   "apis": [
     "localstorage"

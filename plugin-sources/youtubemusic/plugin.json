@@ -2,7 +2,7 @@
   "version": "0.1.1",
   "name": "YouTube Music",
   "author": "Benisgo",
-  "description": "Spotube plugin for YouTube Music metadata",
+  "description": "Watchtower plugin for YouTube Music metadata",
   "entryPoint": "YouTubeMusicMetadataProviderPlugin",
   "apis": [
     "webview",

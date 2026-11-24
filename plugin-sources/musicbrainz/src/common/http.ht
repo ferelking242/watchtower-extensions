@@ -1,0 +1,198 @@
+import "module:std" as std
+
+var HttpClient = std.HttpClient
+var HttpBaseOptions = std.HttpBaseOptions
+var RequestOptions = std.RequestOptions
+var HttpResponse = std.HttpResponse
+var FutureUtils = std.FutureUtils
+var Duration = std.Duration
+var DateTime = std.DateTime
+
+/// Next free millisecond at which a rate-limited host may be called again.
+///
+/// MusicBrainz allows one request per second per client and answers `503` to
+/// anything above that. The Hub fires a whole shelf of searches at once, so
+/// without this the first requests win and the rest come back empty. Slots are
+/// reserved up-front instead of chaining futures: a request that throws then
+/// only fails itself, where a chain would have failed everything queued behind
+/// it.
+var _nextSlotMs = 0
+
+/// One client for every request this plugin makes: it identifies itself,
+/// respects the one-request-per-second MusicBrainz budget and retries the
+/// transient failures instead of surfacing them as a hard error in the Hub.
+///
+/// It also owns the token story. ListenBrainz answers `401` both when no token
+/// is sent and when the stored token has been revoked, and letting that status
+/// throw put a raw `DioException [bad response] … 401` in the middle of the Hub.
+/// So `401` is accepted as a normal response here and turned into an anonymous
+/// retry (or an empty result), never into an exception.
+class ResilientHttpClient {
+  final baseUrl: string
+  final headers: Map
+  final minIntervalMs: int
+  /// Called when a request proves the stored token dead, so the plugin can
+  /// forget it and keep serving the public endpoints.
+  final onUnauthorized: Function
+  var inner: HttpClient
+  var anonInner: HttpClient
+
+  static const userAgent = "Watchtower/8.1.0 ( https://github.com/ferelking242/watchtower )"
+  // MusicBrainz sheds load in bursts ("web server is currently busy") and asks
+  // clients to come back after a second. One or two retries ride out a single
+  // burst but not a shed that lasts a few seconds, and every give-up costs the
+  // user a whole shelf.
+  static const maxRetries = 6
+  static const maxBackoffMs = 4000
+
+  construct (this.baseUrl, {this.headers, this.minIntervalMs = 0, this.onUnauthorized}) {
+    inner = _newClient(_headers)
+    anonInner = _newClient({
+      "User-Agent": userAgent,
+    }.toJson())
+  }
+
+  fun _newClient(clientHeaders: Map) -> HttpClient {
+    return HttpClient(
+      HttpBaseOptions(
+        baseUrl: baseUrl,
+        headers: clientHeaders,
+        // 401 is part of the contract, not an error: it is retried without the
+        // token or resolved as an empty result. Transient upstream failures are
+        // retried below; every other status keeps Dio's default behaviour.
+        validateStatus: (status) =>
+          status < 400 || status == 401 || status == 429 || status == 502 || status == 503,
+      )
+    )
+  }
+
+  get hasToken -> bool {
+    return headers != null && headers["Authorization"] != null
+  }
+
+  /// Endpoints that only exist for a signed-in user. Retrying one of these
+  /// anonymously is pointless: ListenBrainz answers `400`/`404` for an unknown
+  /// user, which would replace the 401 with an equally raw error.
+  static fun isAccountScoped(path: string) -> bool {
+    return path.startsWith("/user/") ||
+      path.startsWith("/feedback/") ||
+      path.startsWith("/submit-listens") ||
+      path.startsWith("/validate-token") ||
+      path.startsWith("/playlist/create") ||
+      path.startsWith("/playlist/edit/") ||
+      path.contains("/item/") ||
+      path.endsWith("/delete") ||
+      path.startsWith("/explore/lb-radio")
+  }
+
+  get _headers -> Map {
+    var merged = {
+      "User-Agent": userAgent,
+    }.toJson()
+    if (headers != null) {
+      for (var key in headers.keys) {
+        merged[key] = headers[key]
+      }
+    }
+    return merged
+  }
+
+  fun get_req(path: string, {queryParameters: Map, options: RequestOptions}) {
+    return _run(path, true, (client) {
+      return client.get_req(path, queryParameters: queryParameters, options: options)
+    })
+  }
+
+  /// Read-only call for content that is nice to have but not essential (a
+  /// browse shelf, a search tab). When the host stays unavailable after the
+  /// retries, or the endpoint needs an account, it resolves to `null` instead of
+  /// throwing, so one busy or gated endpoint hides one shelf rather than
+  /// blanking the whole page with an error.
+  fun get_optional(path: string, {queryParameters: Map, options: RequestOptions}) {
+    return _run(path, false, (client) {
+      return client.get_req(path, queryParameters: queryParameters, options: options)
+    })
+  }
+
+  fun post(path: string, {data, queryParameters: Map, options: RequestOptions}) {
+    return _run(path, true, (client) {
+      return client.post(path, data: data, queryParameters: queryParameters, options: options)
+    })
+  }
+
+  fun _run(path: string, strict: bool, build: Function) {
+    if (minIntervalMs <= 0) {
+      return _attempt(path, build, strict, 0, hasToken)
+    }
+
+    var now = DateTime.now().millisecondsSinceEpoch
+    var slot = _nextSlotMs
+    if (slot < now) {
+      slot = now
+    }
+    _nextSlotMs = slot + minIntervalMs
+
+    var waitMs = slot - now
+    if (waitMs <= 0) {
+      return _attempt(path, build, strict, 0, hasToken)
+    }
+    return FutureUtils.delayed(
+      Duration(milliseconds: waitMs),
+      () => _attempt(path, build, strict, 0, hasToken)
+    )
+  }
+
+  fun _attempt(path: string, build: Function, strict: bool, attempt: int, withToken: bool) {
+    var client = withToken ? inner : anonInner
+
+    return build(client).then((res) {
+      // A rejected token means the stored credentials are dead: forget them and
+      // carry on anonymously. Endpoints that only exist for an account have no
+      // anonymous form, so they end as an empty result instead of a retry.
+      if (res.statusCode == 401) {
+        if (withToken && onUnauthorized != null) {
+          onUnauthorized()
+        }
+        if (withToken && !isAccountScoped(path)) {
+          return _attempt(path, build, strict, attempt, false)
+        }
+        if (!strict) {
+          return null
+        }
+        throw "This feature needs a ListenBrainz account. Sign in from Settings > Plugins."
+      }
+
+      var transient = res.statusCode == 503 || res.statusCode == 429 || res.statusCode == 502
+      if (!transient) {
+        return res
+      }
+      if (attempt >= maxRetries) {
+        if (!strict) {
+          return null
+        }
+        throw "MusicBrainz is busy right now. Please try again in a moment."
+      }
+      return FutureUtils.delayed(
+        Duration(milliseconds: _backoffMs(attempt)),
+        () => _attempt(path, build, strict, attempt + 1, withToken)
+      )
+    })
+  }
+
+  /// MusicBrainz sheds load in bursts and asks clients to come back later, so
+  /// the backoff grows with every attempt instead of hammering a busy server
+  /// (which only extends the shed). It is capped so a long outage still fails
+  /// in bounded time instead of hanging the shelf.
+  fun _backoffMs(attempt: int) -> int {
+    var backoff = 500 * (attempt + 1)
+    if (backoff < minIntervalMs) {
+      backoff = minIntervalMs
+    }
+    if (backoff > maxBackoffMs) {
+      backoff = maxBackoffMs
+    }
+    return backoff
+  }
+}
+
+export { ResilientHttpClient }

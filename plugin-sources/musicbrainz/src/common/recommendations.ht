@@ -1,4 +1,5 @@
 import "module:std" as std
+import { ResilientHttpClient } from "../common/http.ht"
 import "module:spotube_plugin" as spotube
 import { MbConverter } from "../segments/converter.ht"
 
@@ -13,20 +14,36 @@ var Duration = std.Duration
 const _delay = Duration(milliseconds: 200)
 
 class Recommendations {
-  var lbApi: HttpClient
-  var mbApi: HttpClient
+  var lbApi: ResilientHttpClient
+  var mbApi: ResilientHttpClient
   final username: string
 
   construct (this.lbApi, this.mbApi, this.username)
 
+  /// ListenBrainz gates the `/explore/*` and per-user endpoints behind a token
+  /// (it answers 401 "Due to bad actors and AI scrapers…" otherwise), so every
+  /// call that needs one is skipped when the user is signed out.
+  get isAuthenticated -> bool {
+    return username != null && username.isNotEmpty
+  }
+
   fun getCreatedForPlaylists() {
-    return lbApi.get_req(
+    // "Created for you" is generated from the user's own listening history, so
+    // there is nothing to show without an account.
+    if (!isAuthenticated) {
+      return Future.value(null)
+    }
+
+    return lbApi.get_optional(
       "/user/${username}/playlists/createdfor",
       queryParameters: {
         count: 25,
         offset: 0
       }.toJson()
     ).then((res){
+      if (res == null) {
+        return null
+      }
       var playlists = res.data["playlists"]
 
       for(var i = 0; i < playlists.length; i++) {
@@ -62,6 +79,10 @@ class Recommendations {
   }
 
   fun getUserListens({maxTs: int, minTs: int, count: int}) {
+    if (!isAuthenticated) {
+      return Future.value([])
+    }
+
     var query = Map()
     if (maxTs != null) {
       query["max_ts"] = maxTs
@@ -101,7 +122,7 @@ class Recommendations {
 
       var mbidQuery = playlist["playlist"]["track"].map((track)=>"rid:${track["identifier"][0].split("/").last}").join(" OR ")
 
-      return mbApi.get_req(
+      return mbApi.get_optional(
         "/recording",
         queryParameters: {
           query: mbidQuery,
@@ -109,6 +130,15 @@ class Recommendations {
           fmt: "json",
         }.toJson()
       ).then((res){
+        if (res == null) {
+          return {
+            limit: 0,
+            nextOffset: null,
+            total: 0,
+            hasMore: false,
+            items: []
+          }.toJson()
+        }
         var items = MbConverter.recordings(res.data["recordings"])
         return {
           limit: items.length,
@@ -147,13 +177,26 @@ class Recommendations {
         }
       }
 
-      return lbApi.get_req(
+      if (!isAuthenticated) {
+        return generateFromMusicbrainz(
+          playlistId: playlistId,
+          prompt: prompt,
+          title: title,
+          annotation: annotation,
+          imageUrl: imageUrl
+        )
+      }
+
+      return lbApi.get_optional(
         "/explore/lb-radio",
         queryParameters: {
           prompt: prompt,
           mode: mode
         }.toJson()
       ).then((res){
+        if (res == null) {
+          return null
+        }
         var playlist = res.data["payload"]["jspf"]
 
         playlist["playlist"]["identifier"] = "https://listenbrainz.org/playlist/${playlistId}"
@@ -183,6 +226,79 @@ class Recommendations {
     })
   }
 
+  /// Signed-out fallback for lb-radio: ListenBrainz refuses `/explore/lb-radio`
+  /// without a token, so build the same playlist shape from MusicBrainz's
+  /// public search, which needs no account, and cache it the same way.
+  fun generateFromMusicbrainz({
+    playlistId: string,
+    prompt: string,
+    title: string,
+    annotation: string,
+    imageUrl: string,
+  }) {
+    return mbApi.get_optional(
+      "/recording",
+      queryParameters: {
+        query: toMusicbrainzQuery(prompt),
+        limit: 25,
+        fmt: "json",
+        inc: "artist-credits+releases+release-groups+isrcs",
+      }.toJson()
+    ).then((res){
+      if (res == null) {
+        return null
+      }
+      var tracks = MbConverter.recordings(res.data["recordings"] ?? []).map((track){
+        return {
+          identifier: ["https://musicbrainz.org/recording/${track["id"]}"],
+          title: track["name"],
+          creator: track["artists"].map((artist) => artist["name"]).join(", "),
+          album: track["album"]["name"],
+          duration: track["durationMs"],
+        }.toJson()
+      }).toList()
+
+      var playlist = {
+        "playlist": {
+          "identifier": "https://listenbrainz.org/playlist/${playlistId}",
+          "title": title,
+          "creator": username ?? "watchtower",
+          "annotation": annotation ?? "",
+          "date": DateTime.now().toString(),
+          "track": tracks,
+          "extension": {
+            "https://musicbrainz.org/doc/jspf#playlist": {
+              public: true
+            }
+          },
+        },
+        "created_at": DateTime.now().millisecondsSinceEpoch,
+      }
+
+      if (imageUrl != null) {
+        playlist["playlist"]["images"] = [
+          {
+            url: imageUrl,
+            width: 360,
+            height: 360,
+          }.toJson()
+        ]
+      }
+
+      LocalStorage.setString(playlistId, JSON.encode(playlist))
+
+      return MbConverter.playlists([playlist])[0]
+    })
+  }
+
+  /// LB radio prompts carry personalisation clauses (`stats:<user>::<range>`)
+  /// that MusicBrainz search does not understand, and it spells the artist
+  /// restriction `arid:`.
+  static fun toMusicbrainzQuery(prompt: string) -> string {
+    var parts = prompt.split(" ").where((part) => !part.startsWith("stats:")).toList()
+    return parts.join(" ").replaceAll("artist:(", "arid:(")
+  }
+
   final moods = {
     chill: ['ambient', "Chill playlist", "Yo chill my friend!"],
     energetic: ['energetic', "Pump it up!", "Get ready to move!"],
@@ -203,7 +319,7 @@ class Recommendations {
       var tag = mood[0]
       var title = mood[1]
       var annotation = mood[2]
-      
+
       playlistsFuture.add(
         ()=> generateAndCacheLbRadioPlaylist(
           prompt: 'tag:(${tag}) stats:${username}::all_time',
@@ -222,22 +338,31 @@ class Recommendations {
         title: "Based on your mood",
         externalUri: "https://listenbrainz.org/explore/lb-radio",
         browseMore: false,
-        items: playlists
+        items: playlists.where((playlist) => playlist != null).toList()
       }.toJson()
     })
   }
 
   fun getUserTopArtists() -> Future {
-    return  lbApi.get_req(
-      "/stats/user/${username}/artists",
+    // Signed out there is no personal history to rank, so the sitewide charts
+    // stand in: they are public and still make the radios feel populated.
+    var path = isAuthenticated
+      ? "/stats/user/${username}/artists"
+      : "/stats/sitewide/artists"
+
+    return lbApi.get_optional(
+      path,
       queryParameters: {
         count: 10,
         offset: 0,
         range: "quarter"
       }.toJson()
     ).then((res){
+      if (res == null) {
+        return []
+      }
       var artists = res.data?["payload"]?["artists"] ?? []
-      
+
       return artists.where((artist) => artist["artist_mbid"] != null).toList()
     })
   }
@@ -266,7 +391,7 @@ class Recommendations {
           title: "Top Artist Radios",
           externalUri: "https://listenbrainz.org/explore/lb-radio",
           browseMore: false,
-          items: playlists
+          items: playlists.where((playlist) => playlist != null).toList()
         }.toJson()
       })
     })

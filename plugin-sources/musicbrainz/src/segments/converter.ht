@@ -168,19 +168,25 @@ class LbConverter {
     .where((r)=>r["release_group_secondary_type"] != "Live")
     .map((release) {
       final regex = Regex("\\s*(x|X|&|and|vs\\.?|with|feat\\.?|featuring|ft\\.?|presents|/|;|×|\\+|,)\\s*")
-      var artistNames = Regex.splitString(release["artist_credit_name"], regex).toList()
-      var albumType = release["release_group_primary_type"].toLowerCase() ?? "album"
+      var creditName = release["artist_credit_name"] ?? ""
+      var artistNames = Regex.splitString(creditName, regex).toList()
+      // ListenBrainz leaves the primary type empty for some release groups.
+      var albumType = (release["release_group_primary_type"] ?? "").toLowerCase()
+      var artistMbids = release["artist_mbids"] ?? []
 
       var artists = []
 
-      if(artistNames.length < release["artist_mbids"].length) {
-        artistNames = release["artist_credit_name"].split(".")
+      if(artistNames.length < artistMbids.length) {
+        artistNames = creditName.split(".")
       }
-      for (var i = 0; i < release["artist_mbids"].length; i++) {
-        var id = release["artist_mbids"][i]
+      for (var i = 0; i < artistMbids.length; i++) {
+        var id = artistMbids[i]
+        // The credit string is free text and does not always split into one
+        // name per artist MBID, so fall back to the full credit.
+        var name = i < artistNames.length ? artistNames[i] : creditName
         artists.add({
           id: id,
-          name: artistNames[i],
+          name: name,
           externalUri: "https://musicbrainz.org/artist/${id}"
         })
       }

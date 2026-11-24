@@ -1,15 +1,22 @@
 import "module:std" as std
+import { ResilientHttpClient } from "../common/http.ht"
 import { MbConverter } from "./converter.ht"
 
 var HttpClient = std.HttpClient
 var HttpResponse = std.HttpResponse
 
 class TrackEndpoint {
-  var lbApi: HttpClient
-  var mbApi: HttpClient
+  var lbApi: ResilientHttpClient
+  var mbApi: ResilientHttpClient
   final username: string
 
   construct (this.lbApi, this.mbApi, this.username)
+
+  /// Feedback (likes) is stored on the ListenBrainz account, so signed out
+  /// there is nowhere to write and the API answers 401.
+  get isAuthenticated -> bool {
+    return username != null && username.isNotEmpty
+  }
 
   fun getTrack(id: string) {
     return mbApi.get_req(
@@ -26,6 +33,10 @@ class TrackEndpoint {
   }
 
   fun save(trackIds: List) {
+    if (!isAuthenticated) {
+      return Future.value(null)
+    }
+
     return Future.wait(
       trackIds.map((id) {
         return lbApi.post(
@@ -40,6 +51,10 @@ class TrackEndpoint {
   }
 
   fun unsave(trackIds: List) {
+    if (!isAuthenticated) {
+      return Future.value(null)
+    }
+
     return Future.wait(
       trackIds.map((id) {
         return lbApi.post(
@@ -69,6 +84,23 @@ class TrackEndpoint {
       var query = "${artistQuery}"
       if (tagsQuery.isNotEmpty) {
         query += " tag:(${tagsQuery}):2:easy"
+      }
+
+      // ListenBrainz answers 401 on /explore/lb-radio without a token, so a
+      // signed-out user gets the same radio straight from MusicBrainz search.
+      if (username == null || username.isEmpty) {
+        var mbQuery = query.replaceAll("artist:(", "arid:(")
+        return mbApi.get_req(
+          "/recording",
+          queryParameters: {
+            fmt: "json",
+            query: mbQuery,
+            limit: 25,
+            inc: "artist-credits+releases+release-groups+isrcs",
+          }.toJson(),
+        ).then((res) {
+          return MbConverter.recordings(res.data["recordings"] ?? [])
+        })
       }
 
       return lbApi.get_req(

@@ -1,4 +1,5 @@
 import "module:std" as std
+import { ResilientHttpClient } from "../common/http.ht"
 import "module:spotube_plugin" as spotube
 import { EmulatedArtistAlbum } from "../common/album-artist.ht"
 import { MbConverter, LbConverter } from "./converter.ht"
@@ -10,14 +11,18 @@ var JSON = std.JSON
 var LocalStorage = spotube.LocalStorage
 
 class AlbumEndpoint {
-  var lbApi: HttpClient
-  var mbApi: HttpClient
+  var lbApi: ResilientHttpClient
+  var mbApi: ResilientHttpClient
   final username: string
 
   var emulator: EmulatedArtistAlbum
 
   construct (this.lbApi, this.mbApi, this.username) {
     this.emulator = EmulatedArtistAlbum(lbApi, mbApi, username)
+  }
+
+  get isAuthenticated -> bool {
+    return username != null && username.isNotEmpty
   }
 
   fun getAlbum(id: string) {
@@ -68,10 +73,17 @@ class AlbumEndpoint {
   }
 
   fun releases({offset: int, limit: int}) {
+    // Per-user fresh releases need a token; signed out we show the public
+    // site-wide release feed, which has the same payload shape.
+    var path = username == null || username.isEmpty
+      ? "/explore/fresh-releases/"
+      : "/user/${username}/fresh_releases"
+
     return lbApi.get_req(
-      "/user/${username}/fresh_releases",
+      path,
       queryParameters: {
-        "future": "false"
+        "future": "false",
+        "days": 90,
       }.toJson()
     ).then((res){
       var data = res.data
@@ -88,10 +100,17 @@ class AlbumEndpoint {
   }
 
   fun save(albumIds: List) {
+    if (!isAuthenticated) {
+      return Future.value(null)
+    }
+
     return emulator.save("album", albumIds)
   }
 
   fun unsave(albumIds: List) {
+    if (!isAuthenticated) {
+      return Future.value(null)
+    }
     assert(albumIds.isNotEmpty)
     
     return emulator.unsave("album", albumIds)

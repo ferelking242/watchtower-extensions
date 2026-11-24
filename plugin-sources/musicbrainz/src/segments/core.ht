@@ -1,4 +1,5 @@
 import "module:std" as std
+import { ResilientHttpClient } from "../common/http.ht"
 
 var HttpClient = std.HttpClient
 var HttpResponse = std.HttpResponse
@@ -6,8 +7,8 @@ var RequestOptions = std.RequestOptions
 var DateTime = std.DateTime
 
 class CorePlugin {
-  var client: HttpClient
-  var lbApi: HttpClient
+  var client: ResilientHttpClient
+  var lbApi: ResilientHttpClient
 
   construct (this.client, this.lbApi)
 
@@ -26,6 +27,12 @@ class CorePlugin {
   /// - [duration_ms] -> The duration of the track in milliseconds (optional).
   /// - [isrc] -> The ISRC code of the track (optional).
   fun scrobble(details: Map) {
+    // Scrobbles land in the user's own ListenBrainz profile, so there is
+    // nothing to submit (and no token to submit it with) when signed out.
+    if (!lbApi.hasToken) {
+      return Future.value(null)
+    }
+
     return lbApi.post(
       "/submit-listens",
       data: {
@@ -38,8 +45,8 @@ class CorePlugin {
               artist_name: details["artists"][0]["name"],
               release_name: details["album"]["name"],
               additional_info: {
-                media_player: "Spotube",
-                submission_client: "Spotube Plugin - MusicBrainz ListenBrainz",
+                media_player: "Watchtower",
+                submission_client: "Watchtower Plugin - MusicBrainz ListenBrainz",
                 artist_mbids: details["artists"].map((artist) => artist["id"]).toList(),
                 release_group_mbid: details["album"]["id"],
                 recording_mbid: details["id"],

@@ -1,8 +1,8 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "name": "Musicbrainz and Listenbrainz",
-  "author": "Kingkor Roy Tirtho",
-  "description": "Musicbrainz and Listenbrainz integration for Spotube",
+  "author": "Watchtower",
+  "description": "Musicbrainz and Listenbrainz integration for Watchtower",
   "entryPoint": "BrainzMetadataProviderPlugin",
   "apis": [
     "webview",

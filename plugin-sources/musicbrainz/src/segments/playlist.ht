@@ -1,4 +1,5 @@
 import "module:std" as std
+import { ResilientHttpClient } from "../common/http.ht"
 import { EmulatedArtistAlbum } from "../common/album-artist.ht"
 import { Recommendations } from "../common/recommendations.ht"
 import { MbConverter } from "./converter.ht"
@@ -7,8 +8,8 @@ var HttpClient = std.HttpClient
 var HttpResponse = std.HttpResponse
 
 class PlaylistEndpoint {
-  var lbApi: HttpClient
-  var mbApi: HttpClient
+  var lbApi: ResilientHttpClient
+  var mbApi: ResilientHttpClient
   final username: string
 
   var emulated: EmulatedArtistAlbum
@@ -17,6 +18,13 @@ class PlaylistEndpoint {
   construct (this.lbApi, this.mbApi, this.username) {
     this.emulated = EmulatedArtistAlbum(this.lbApi, this.mbApi, this.username)
     this.recommendations = Recommendations(this.lbApi, this.mbApi, this.username)
+  }
+
+  /// Writing playlists needs the user's own ListenBrainz token. Reads keep
+  /// working anonymously because ListenBrainz serves public playlists without
+  /// one.
+  get isAuthenticated -> bool {
+    return username != null && username.isNotEmpty
   }
 
   fun getPlaylist(id: string) {
@@ -69,6 +77,10 @@ class PlaylistEndpoint {
     public: bool,
     collaborative: bool
   }) {
+    if (!isAuthenticated) {
+      throw "Creating a playlist needs a ListenBrainz account. Sign in from Settings > Plugins."
+    }
+
     return lbApi.post(
       "/playlist/create",
       data: {
@@ -98,6 +110,10 @@ class PlaylistEndpoint {
     collaborative: bool
   }) {
     assert(playlistId != null)
+
+    if (!isAuthenticated) {
+      return Future.value(null)
+    }
 
     // At least one of these fields must be provided
     if(name == null && description == null && public == null && collaborative == null) {
@@ -139,12 +155,20 @@ class PlaylistEndpoint {
   fun deletePlaylist(playlistId: string) {
     assert(playlistId != null)
 
+    if (!isAuthenticated) {
+      return Future.value(null)
+    }
+
     return lbApi.post("/playlist/${playlistId}/delete").then((_) => null)
   }
 
   fun addTracks(playlistId: string, { trackIds: List, position: int }) {
     assert(playlistId != null)
     assert(trackIds != null && trackIds.isNotEmpty)
+
+    if (!isAuthenticated) {
+      return Future.value(null)
+    }
 
     var positionStr = position != null ? "/${position}" : ""
 
@@ -169,6 +193,10 @@ class PlaylistEndpoint {
 
 
   fun removeTracks(playlistId: string, { trackIds: List }) {
+    if (!isAuthenticated) {
+      return Future.value(null)
+    }
+
     return emulated.getPlaylistTracks(
       playlistId,
       offset: -1,

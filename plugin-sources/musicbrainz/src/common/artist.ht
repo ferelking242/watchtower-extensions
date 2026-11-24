@@ -1,4 +1,5 @@
 import "module:std" as std
+import { ResilientHttpClient } from "../common/http.ht"
 import "module:spotube_plugin" as spotube
 
 var HttpClient = std.HttpClient
@@ -6,8 +7,8 @@ var HttpResponse = std.HttpResponse
 var RequestOptions = std.RequestOptions
 
 class CommonArtistEntity {
-  var lbApi: HttpClient
-  var mbApi: HttpClient
+  var lbApi: ResilientHttpClient
+  var mbApi: ResilientHttpClient
   final username: string
 
   construct (this.lbApi, this.mbApi, this.username)

@@ -1,4 +1,5 @@
 import "module:std" as std
+import { ResilientHttpClient } from "../common/http.ht"
 import "module:spotube_plugin" as spotube
 import { EmulatedArtistAlbum } from "../common/album-artist.ht"
 import { CommonArtistEntity } from "../common/artist.ht"
@@ -11,8 +12,8 @@ var RequestOptions = std.RequestOptions
 var LocalStorage = spotube.LocalStorage
 
 class ArtistEndpoint {
-  var lbApi: HttpClient
-  var mbApi: HttpClient
+  var lbApi: ResilientHttpClient
+  var mbApi: ResilientHttpClient
   final username: string
 
   var emulator: EmulatedArtistAlbum
@@ -22,6 +23,10 @@ class ArtistEndpoint {
   construct (this.lbApi, this.mbApi, this.username) {
     this.emulator = EmulatedArtistAlbum(lbApi, mbApi, username)
     this.artistCommon = CommonArtistEntity(lbApi, mbApi, username)
+  }
+
+  get isAuthenticated -> bool {
+    return username != null && username.isNotEmpty
   }
 
   fun getArtist(id: string) {
@@ -134,16 +139,73 @@ class ArtistEndpoint {
   }
 
   fun save(artistIds: List) {
+    if (!isAuthenticated) {
+      return Future.value(null)
+    }
+
     return emulator.save("artist", artistIds)
   }
 
   fun unsave(artistIds: List) {
+    if (!isAuthenticated) {
+      return Future.value(null)
+    }
     assert(artistIds.isNotEmpty)
     
     return emulator.unsave("artist", artistIds)
   }
 
   fun related(artistId: string, {limit: int, offset: int}) {
+    // /lb-radio/artist is token-gated (401 when signed out), so signed-out
+    // users get the related artists straight from MusicBrainz relations.
+    if (username == null || username.isEmpty) {
+      return mbApi.get_req(
+        "/artist/${artistId}",
+        queryParameters: {
+          fmt: "json",
+          inc: "artist-rels",
+        }.toJson()
+      ).then((res) {
+        var relations = res.data["relations"] ?? []
+        var seen = Set()
+        var artistIds = []
+        for (var relation in relations) {
+          if (relation["artist"] == null) {
+            continue
+          }
+          var relatedId = relation["artist"]["id"]
+          if (seen.contains(relatedId)) {
+            continue
+          }
+          seen.add(relatedId)
+          artistIds.add(relatedId)
+          if (artistIds.length >= (limit ?? 20)) {
+            break
+          }
+        }
+
+        if (artistIds.isEmpty) {
+          return {
+            limit: limit ?? 20,
+            nextOffset: null,
+            total: 0,
+            hasMore: false,
+            items: []
+          }.toJson()
+        }
+
+        return artistCommon.listArtists(artistIds).then((artists) {
+          return {
+            limit: limit ?? 20,
+            nextOffset: null,
+            total: artistIds.length,
+            hasMore: false,
+            items: MbConverter.artists(artists)
+          }.toJson()
+        })
+      })
+    }
+
     return lbApi.get_req(
       "/lb-radio/artist/${artistId}",
       queryParameters: {

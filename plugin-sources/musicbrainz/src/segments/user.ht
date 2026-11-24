@@ -1,4 +1,5 @@
 import "module:std" as std
+import { ResilientHttpClient } from "../common/http.ht"
 import "module:spotube_plugin" as spotube
 import { MbConverter } from "./converter.ht"
 import { EmulatedArtistAlbum } from "../common/album-artist.ht"
@@ -8,8 +9,8 @@ var HttpResponse = std.HttpResponse
 var LocalStorage = spotube.LocalStorage
 
 class UserEndpoint {
-  var lbApi: HttpClient
-  var mbApi: HttpClient
+  var lbApi: ResilientHttpClient
+  var mbApi: ResilientHttpClient
   var emulator: EmulatedArtistAlbum
 
   final username: string
@@ -17,15 +18,34 @@ class UserEndpoint {
   construct (this.lbApi, this.mbApi, this.username) {
     this.emulator = EmulatedArtistAlbum(lbApi, mbApi, username)
   }
+
+  /// Saved music lives in the user's own ListenBrainz playlists, so without an
+  /// account there is nothing to list. Returning an empty page keeps the
+  /// library tab usable instead of failing the whole screen.
+  get isAuthenticated -> bool {
+    return username != null && username.isNotEmpty
+  }
+
+  fun _emptyPage({limit: int}) {
+    return {
+      limit: limit ?? 20,
+      nextOffset: null,
+      total: 0,
+      hasMore: false,
+      items: []
+    }.toJson()
+  }
   
   fun me() {
     return Future.value(MbConverter.user(username))
   }
 
   fun savedTracks({ offset: int, limit: int }) {
-    assert(username != null)
+    if (!isAuthenticated) {
+      return Future.value(_emptyPage(limit: limit))
+    }
     
-    return lbApi.get_req(
+    return lbApi.get_optional(
       "/feedback/user/${username}/get-feedback",
       queryParameters: {
         score: "1",
@@ -34,18 +54,30 @@ class UserEndpoint {
       }.toJson()
     )
     .then((res){
+      if (res == null) {
+        return _emptyPage(limit: limit)
+      }
       var data = res.data
-      var hasMore = data["feedback"].length >= (limit ?? 20)
-      var mbids = data["feedback"].map((f) => "rid:${f["recording_mbid"]}").join(" OR ")
+      var feedback = data["feedback"] ?? []
+      // Nothing saved yet: MusicBrainz rejects an empty `query` with a 400, so
+      // stop before building one.
+      if (feedback.isEmpty) {
+        return _emptyPage(limit: limit)
+      }
+      var hasMore = feedback.length >= (limit ?? 20)
+      var mbids = feedback.map((f) => "rid:${f["recording_mbid"]}").join(" OR ")
 
-      return mbApi.get_req(
+      return mbApi.get_optional(
         "/recording",
         queryParameters: {
           query: mbids,
-          limit: data["feedback"].length,
+          limit: feedback.length,
           fmt: "json"
         }.toJson()
       ).then((res){
+        if (res == null) {
+          return _emptyPage(limit: limit)
+        }
         var recordings = res.data["recordings"] ?? []
         
         return {
@@ -60,15 +92,22 @@ class UserEndpoint {
   }
 
   fun savedPlaylists({ offset: int, limit: int }) {
-    assert(username != null)
+    if (!isAuthenticated) {
+      return Future.value(_emptyPage(limit: limit))
+    }
     
-    return lbApi.get_req(
+    return lbApi.get_optional(
       "/user/${username}/playlists",
       queryParameters: {
         count: limit ?? 20,
         offset: offset ?? 0,
       }.toJson()
     ).then((res) {
+      // A revoked token leaves nothing to list, and an empty Library tab reads
+      // far better than an auth error on a screen the user did not open for it.
+      if (res == null) {
+        return _emptyPage(limit: limit)
+      }
       var data = res.data
       var hasMore = data["playlists"].length >= (limit ?? 20)
 
@@ -80,7 +119,11 @@ class UserEndpoint {
         total: data["playlist_count"],
         hasMore: hasMore,
         items: items.where((item){
-          return item["name"] != "${username} saved artists by Spotube" &&
+          // Playlists created by older builds carried the upstream brand, so
+          // both names are filtered out of the user's own playlist list.
+          return item["name"] != "${username} saved artists by Watchtower" &&
+            item["name"] != "${username} saved albums by Watchtower" &&
+            item["name"] != "${username} saved artists by Spotube" &&
             item["name"] != "${username} saved albums by Spotube"
         }).toList(),
       }.toJson()
@@ -88,7 +131,9 @@ class UserEndpoint {
   }
 
   fun savedAlbums({ offset: int, limit: int }) {
-    assert(username != null)
+    if (!isAuthenticated) {
+      return Future.value(_emptyPage(limit: limit))
+    }
     return emulator.savedEntities(
       "album",
       offset: offset,
@@ -97,7 +142,9 @@ class UserEndpoint {
   }
 
   fun isSavedPlaylist(playlistId: string) { // Future<bool>
-    assert(username != null)
+    if (!isAuthenticated) {
+      return Future.value(false)
+    }
   
     return lbApi.get_req(
       "/playlist/${playlistId}",
@@ -113,7 +160,9 @@ class UserEndpoint {
   }
 
   fun isSavedTracks(trackIds: List) { // Future<List<bool>>
-    assert(username != null)
+    if (!isAuthenticated) {
+      return Future.value(trackIds.map((id) => false).toList())
+    }
   
     return lbApi.post(
       "/feedback/user/${username}/get-feedback-for-recordings",
@@ -132,13 +181,17 @@ class UserEndpoint {
   }
 
   fun isSavedAlbums(albumIds: List) { // Future<List<bool>>
-    assert(username != null)
+    if (!isAuthenticated) {
+      return Future.value(albumIds.map((id) => false).toList())
+    }
   
     return emulator.isSavedEntities("album", albumIds)
   }
 
   fun savedArtists({ offset: int, limit: int }) { // Future<List>
-    assert(username != null)
+    if (!isAuthenticated) {
+      return Future.value(_emptyPage(limit: limit))
+    }
     
     return emulator.savedEntities(
       "artist",
@@ -148,6 +201,10 @@ class UserEndpoint {
   }
 
   fun isSavedArtists(artistIds: List) { // Future<List<bool>>
+    if (!isAuthenticated) {
+      return Future.value(artistIds.map((id) => false).toList())
+    }
+
     return emulator.isSavedEntities("artist", artistIds)
   }
 }
