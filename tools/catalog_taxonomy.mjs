@@ -89,6 +89,16 @@ export const LANGUAGE_TAGS = [
 export const CURATION_TAGS = ["featured", "popular", "trending", "new", "dead"];
 
 /**
+ * Renderer tags — which host screen draws the extension.
+ *
+ * `reel` opts an extension into the vertical feed shell (Reel) instead of the
+ * Watch home/browse screens. The tag mirrors `renderer` in
+ * `ui-layouts/<slug>.json`, which carries the detail (capabilities, player
+ * mode); the tag exists so the catalogue can filter and group those sources.
+ */
+export const RENDERER_TAGS = ["reel"];
+
+/**
  * Tags describing the source's health rather than its content.
  *
  * `dead` is written only from the explicit `dead` flag on an index entry, which
@@ -103,6 +113,7 @@ export const ALL_TAGS = [
   ...GENRE_TAGS,
   ...LANGUAGE_TAGS,
   ...CURATION_TAGS,
+  ...RENDERER_TAGS,
 ];
 
 const TAG_SET = new Set(ALL_TAGS);

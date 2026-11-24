@@ -1,5 +1,16 @@
 {
   "schemaVersion": 1,
+  "renderer": "reel",
+  "capabilities": {
+    "live": true,
+    "views": true,
+    "likes": false,
+    "comments": false,
+    "shares": false,
+    "sounds": true,
+    "download": false,
+    "follow": true
+  },
   "home": {
     "sections": [
       {

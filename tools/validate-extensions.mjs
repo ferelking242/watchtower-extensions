@@ -218,6 +218,18 @@ const supportedLayoutComponents = new Set([
   "top-movies", "top-rated", "trending", "up-next", "up-next-compact",
   "watch-again", "watch-progress", "watch-providers-rail",
 ]);
+const KNOWN_RENDERERS = new Set(["watch", "reel"]);
+const KNOWN_PLAYER_MODES = new Set(["standard", "feed"]);
+const KNOWN_CAPABILITIES = new Set([
+  "live",
+  "views",
+  "likes",
+  "comments",
+  "shares",
+  "sounds",
+  "download",
+  "follow",
+]);
 for (const rel of jsonFiles.filter((file) => file.startsWith("ui-layouts/"))) {
   const layout = JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8"));
   if (!Number.isInteger(layout.schemaVersion) || layout.schemaVersion < 1) {
@@ -282,6 +294,53 @@ for (const rel of jsonFiles.filter((file) => file.startsWith("ui-layouts/"))) {
       );
     }
   });
+
+  // Renderer + capabilities. An extension names the host screen that draws it
+  // (`watch` by default, `reel` for the vertical feed) and lists the
+  // affordances it really supports. The app hides what is not declared, so an
+  // undeclared capability is a missing button rather than a broken one.
+  const renderer = layout.renderer;
+  if (renderer !== undefined) {
+    if (typeof renderer !== "string" || !KNOWN_RENDERERS.has(renderer)) {
+      problems.push(
+        `LAYOUT: ${rel} declares unknown renderer ${JSON.stringify(renderer)} (known: ${[...KNOWN_RENDERERS].join(", ")})`,
+      );
+    }
+  }
+  const capabilities = layout.capabilities;
+  if (capabilities !== undefined) {
+    if (!capabilities || typeof capabilities !== "object" || Array.isArray(capabilities)) {
+      problems.push(`LAYOUT: ${rel} capabilities must be an object`);
+    } else {
+      for (const [key, value] of Object.entries(capabilities)) {
+        if (!KNOWN_CAPABILITIES.has(key)) {
+          problems.push(
+            `LAYOUT: ${rel} declares unknown capability ${key} (known: ${[...KNOWN_CAPABILITIES].join(", ")})`,
+          );
+        } else if (typeof value !== "boolean") {
+          problems.push(`LAYOUT: ${rel} capability ${key} must be boolean`);
+        }
+      }
+    }
+  }
+  const playerMode = layout.player?.mode;
+  if (playerMode !== undefined && !KNOWN_PLAYER_MODES.has(playerMode)) {
+    problems.push(
+      `LAYOUT: ${rel} player.mode ${JSON.stringify(playerMode)} must be one of ${[...KNOWN_PLAYER_MODES].join(", ")}`,
+    );
+  }
+  if (renderer === "reel") {
+    if (!capabilities) {
+      problems.push(
+        `LAYOUT: ${rel} opts into the reel renderer but declares no capabilities; state live/views/likes/comments explicitly`,
+      );
+    }
+    if (playerMode !== undefined && playerMode !== "feed") {
+      problems.push(
+        `LAYOUT: ${rel} uses the reel renderer with player.mode ${JSON.stringify(playerMode)}; reel plays a vertical feed, so the mode must be "feed"`,
+      );
+    }
+  }
 }
 console.log("   layout structure is valid");
 
