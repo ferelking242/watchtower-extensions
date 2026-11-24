@@ -13,6 +13,7 @@
     "pin": "node tools/pin_sources.mjs --all",
     "pin:check": "node tools/pin_sources.mjs --check --all",
     "test:frenchstream": "node tools/test-frenchstream.mjs",
+    "test:miraculous": "node tools/test-miraculous.mjs",
     "test:xnxx": "node tools/test-xnxx.mjs",
     "test:pornhub": "node tools/test-pornhub.mjs",
     "test:xvideos": "node tools/test-xvideos.mjs",

@@ -14,7 +14,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.3.0",
+    "version": "1.4.0",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -28,22 +28,31 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "Miraculous Ladybug — S1–S7, Spéciaux, Webisodes (Paris/Secrets/Chibi/Autres). Recherche, HLS Auto, 51 langues."
+    "notes": "Miraculous Ladybug — S1–S7, Spéciaux, Webisodes (Paris/Secrets/Chibi/Autres). Recherche, HLS multi-langues (20 pistes), commentaires."
 }];
 
 var MN_BASE = "https://miraculous.now";
 var MN_INTERNAL = "https://internal.miraculous.now";
 var MN_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
-// The origin answers HTTP 522 from time to time; every page read is retried.
-var MN_TRIES = 3;
+// The origin answers HTTP 522 from time to time; a page read is retried once.
+var MN_TRIES = 2;
 
 // Retries stop once a single read has already burned this much time, and a
 // successful body is reused for a few minutes: the site is slow (10 s+ per
 // page) and the app serialises every call through one runtime, so a repeated
 // read is what pushes `getDetail` past its 60 s budget ("0 épisode").
-var MN_TRY_BUDGET = 8000;
+var MN_TRY_BUDGET = 4000;
 var MN_CACHE = {};
+
+// Cloudflare answers 52x when the origin itself is unreachable (the site is
+// down, not slow). The app serialises every extension call through one runtime,
+// so ten seconds of retries made the seven queued rails die at the 60 s budget
+// and the source looked dead. One probe marks the origin down, and every call
+// made during the window fails immediately instead of queueing behind a stall.
+var MN_DOWN_UNTIL = 0;
+var MN_DOWN_WINDOW = 30000;
+var MN_DOWN_MESSAGE = "miraculous.now is unreachable (Cloudflare 52x)";
 
 // The master lists one audio rendition per language; these are the codes it
 // publishes. They are the fallback when the master does not answer in time, so
@@ -143,9 +152,19 @@ class DefaultExtension extends MProvider {
         });
     }
 
+    /// True when [body] is one of Cloudflare's origin-error pages (520–527)
+    /// rather than a real page: those come back as HTML with a 7 KB body, so a
+    /// length check alone happily cached them as content.
+    _isOriginDown(body) {
+        if (!body) return false;
+        var head = body.slice(0, 4000);
+        return /cf-error-details|Origin is unreachable|Web server is down|Connection timed out|The origin web server/i.test(head);
+    }
+
     async _get(url, opts) {
         var cached = MN_CACHE[url];
         if (cached && Date.now() - cached.t < MN_CACHE_TTL) return { body: cached.body };
+        if (Date.now() < MN_DOWN_UNTIL) throw new Error(MN_DOWN_MESSAGE);
         var start = Date.now();
         var tries = opts && opts.tries ? opts.tries : MN_TRIES;
         var lastError = null;
@@ -153,6 +172,11 @@ class DefaultExtension extends MProvider {
             try {
                 var res = await new Client().get(url, this.getHeaders(url));
                 var body = res && res.body ? String(res.body) : "";
+                var status = res && res.statusCode ? Number(res.statusCode) : 0;
+                if (status >= 500 || this._isOriginDown(body)) {
+                    MN_DOWN_UNTIL = Date.now() + MN_DOWN_WINDOW;
+                    throw new Error(MN_DOWN_MESSAGE);
+                }
                 if (body.length > 120) {
                     MN_CACHE[url] = { t: Date.now(), body: body };
                     return res;
@@ -160,6 +184,8 @@ class DefaultExtension extends MProvider {
                 lastError = new Error("empty response");
             } catch (e) {
                 lastError = e;
+                // The origin is down: a second attempt cannot succeed either.
+                if (Date.now() < MN_DOWN_UNTIL) throw e;
             }
             // A stalled origin must not eat the app's whole call budget: the
             // retry loop stops once the request has already cost this much.
@@ -334,7 +360,8 @@ class DefaultExtension extends MProvider {
             try {
                 cards = this._parseCards((await this._get(this._episodesUrl(numeric[i].s))).body, numeric[i].s);
             } catch (e) {
-                cards = [];
+                // Origin unreachable: the other seasons will fail the same way.
+                break;
             }
             if (cards.length < 3) continue;
             var list = cards.slice(-14).reverse().map(function (card) {
@@ -353,7 +380,12 @@ class DefaultExtension extends MProvider {
         var lang = this.getLang();
         var url = MN_BASE + "/includes/features/search/search.php?q=" + encodeURIComponent(q) +
                   "&lang=" + encodeURIComponent(lang);
-        var res = await this._get(url);
+        var res = null;
+        try {
+            res = await this._get(url);
+        } catch (e) {
+            return { list: [], hasNextPage: false };
+        }
         var data = {};
         try { data = JSON.parse(res.body || "{}"); } catch (e) { data = {}; }
 
@@ -386,7 +418,12 @@ class DefaultExtension extends MProvider {
 
         var cat = this._category(listId);
         if (!cat) return { list: [], hasNextPage: false };
-        var res = await this._get(this._episodesUrl(cat.s));
+        var res = null;
+        try {
+            res = await this._get(this._episodesUrl(cat.s));
+        } catch (e) {
+            return { list: [], hasNextPage: false };
+        }
         var cards = this._parseCards(res.body, cat.s);
         return { list: cards, hasNextPage: false };
     }
