@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "renderer": "watch",
+  "capabilities": {
+    "live": false,
+    "views": false,
+    "likes": false,
+    "comments": true,
+    "shares": false,
+    "sounds": false,
+    "download": true,
+    "follow": false
+  },
+  "home": {
+    "sections": [
+      {
+        "id": "latest",
+        "component": "spotlight",
+        "title": "🆕 Derniers épisodes",
+        "accent": "#E53935",
+        "icon": "fiber_new",
+        "seeAll": true
+      },
+      {
+        "id": "season_7",
+        "component": "landscapeStacked",
+        "title": "Saison 7",
+        "accent": "#FF6B35",
+        "icon": "playlist_play",
+        "seeAll": true
+      },
+      {
+        "id": "season_6",
+        "component": "landscapeStacked",
+        "title": "Saison 6",
+        "accent": "#7C4DFF",
+        "icon": "playlist_play",
+        "seeAll": true
+      },
+      {
+        "id": "seasons",
+        "component": "grid",
+        "title": "Toutes les saisons",
+        "accent": "tertiary",
+        "icon": "video_library",
+        "columns": 3,
+        "rows": 3,
+        "seeAll": true
+      },
+      {
+        "id": "specials",
+        "component": "landscapeStacked",
+        "title": "Films spéciaux",
+        "accent": "#00BCD4",
+        "icon": "movie",
+        "seeAll": true
+      },
+      {
+        "id": "season_5",
+        "component": "landscapeStacked",
+        "title": "Saison 5",
+        "accent": "#4CAF50",
+        "icon": "playlist_play",
+        "seeAll": true
+      },
+      {
+        "id": "new",
+        "component": "landscapeStacked",
+        "title": "Nouveautés",
+        "accent": "#FFB300",
+        "icon": "auto_awesome",
+        "seeAll": true
+      }
+    ]
+  },
+  "browse": {
+    "popular": {
+      "component": "grid",
+      "columns": 2,
+      "cardStyle": "landscape"
+    },
+    "latest": {
+      "component": "grid",
+      "columns": 2,
+      "cardStyle": "landscape"
+    },
+    "search": {
+      "results": {
+        "component": "grid",
+        "columns": 2,
+        "cardStyle": "landscape"
+      },
+      "filters": "chips"
+    }
+  },
+  "detail": {
+    "showRecommendations": true
+  },
+  "player": {
+    "mode": "standard"
+  }
+}

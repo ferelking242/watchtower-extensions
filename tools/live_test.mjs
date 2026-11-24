@@ -63,12 +63,22 @@ class Client {
       if (process.env.DEBUG) console.error(`[fetch] ${method} ${url.slice(0, 90)} -> ${res.status} len=${text.length}`);
       const hdrs = {};
       res.headers.forEach((v, k) => { hdrs[k] = v; });
+      // undici collapses repeated Set-Cookie headers; the app joins them with
+      // ", " instead, so mirror that or cookie-gated media reads as 403.
+      if (typeof res.headers.getSetCookie === "function") {
+        const jar = res.headers.getSetCookie();
+        if (jar.length) hdrs["set-cookie"] = jar.join(", ");
+      }
       return { statusCode: res.status, body: text, headers: hdrs, url: res.url };
     } finally { clearTimeout(t); }
   }
   async get(url, headers) { return this._req("GET", url, headers); }
-  async post(url, body, headers) {
-    let b = body; const h = { ...(headers || {}) };
+  async post(url, first, second) {
+    // The app calls post(url, headers, body); older tests used the reverse.
+    const headerFirst = first && typeof first === "object" && !(first instanceof URLSearchParams) &&
+      (second == null || typeof second === "string");
+    let b = headerFirst ? second : first;
+    const h = { ...((headerFirst ? first : second) || {}) };
     if (b && typeof b === "object" && !(b instanceof URLSearchParams) && !Buffer.isBuffer(b)) {
       b = JSON.stringify(b);
       if (!h["Content-Type"]) h["Content-Type"] = "application/json";
@@ -97,6 +107,7 @@ class MProvider {
   async getVideoList(url) { throw new Error("getVideoList not implemented"); }
   getFilterList() { return []; }
   getSourcePreferences() { return []; }
+  getPreference(key) { return (globalThis.__prefs || {})[key] ?? null; }
 }
 
 // ---- Loader -------------------------------------------------------------------
@@ -116,6 +127,7 @@ function loadExtension(filePath) {
     atob: (s) => Buffer.from(s, "base64").toString("utf8"),
     btoa: (s) => Buffer.from(s, "utf8").toString("base64"),
     watchtowerSources: undefined, mangayomiSources: undefined, DefaultExtension: undefined,
+    __prefs: (() => { try { return JSON.parse(process.env.PREFS || "{}"); } catch (e) { return {}; } })(),
   };
   vm.createContext(sandbox);
   const wrapped = code + `\n;this.__exports = {
