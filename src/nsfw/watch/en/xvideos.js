@@ -1278,7 +1278,14 @@ class DefaultExtension extends MProvider {
   async getRecommendations(url) {
     const target = String(url || "").split("#")[0];
     if (!target) return [];
-    const body = await this._get(target);
+    // The detail page is sometimes rate-limited or answered with a challenge
+    // page. An empty related rail is better than failing the whole detail view.
+    let body;
+    try {
+      body = await this._get(target);
+    } catch (_) {
+      return [];
+    }
 
     const items = [];
     const seen = {};

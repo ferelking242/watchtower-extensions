@@ -1581,7 +1581,14 @@ class DefaultExtension extends MProvider {
   async getRecommendations(url) {
     const target = this._targetUrl(url);
     if (!target) return [];
-    const { body } = await this._get(target.replace(DefaultExtension.BASE_URL, ""));
+    let body;
+    try {
+      ({ body } = await this._get(target.replace(DefaultExtension.BASE_URL, "")));
+    } catch (_) {
+      // Rate-limited or challenge page: leave the related rail empty instead of
+      // failing the detail view.
+      return [];
+    }
     const match = body.match(/var\s+video_related\s*=\s*(\[[\s\S]*?\])\s*;/);
     let raw = [];
     if (match) {
