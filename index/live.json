@@ -1,6 +1,6 @@
 [
   {
-    "id": "wiflix-iptv-org",
+    "id": "iptv-org",
     "name": "IPTV-org — Monde vérifié",
     "lang": "all",
     "kind": "json",
@@ -23,7 +23,7 @@
     "addedAt": "2026-11-20"
   },
   {
-    "id": "wiflix-iptv-org-categories",
+    "id": "iptv-org-categories",
     "name": "IPTV-org — Catégories vérifiées",
     "lang": "all",
     "kind": "json",
@@ -46,7 +46,7 @@
     "addedAt": "2026-11-20"
   },
   {
-    "id": "wiflix-free-tv",
+    "id": "free-tv",
     "name": "Free-TV — Monde vérifié",
     "lang": "all",
     "kind": "json",
@@ -69,7 +69,7 @@
     "addedAt": "2026-11-20"
   },
   {
-    "id": "wiflix-br-extra",
+    "id": "br-extra",
     "name": "Free-TV — Brésil (extras)",
     "lang": "pt",
     "kind": "json",
@@ -92,7 +92,7 @@
     "addedAt": "2026-11-20"
   },
   {
-    "id": "wiflix-direct-feeds",
+    "id": "direct-feeds",
     "name": "Flux directs vérifiés",
     "lang": "all",
     "kind": "json",
@@ -227,6 +227,52 @@
       "watch",
       "french"
     ],
+    "addedAt": "2026-11-20"
+  },
+  {
+    "id": "pluto-tv",
+    "name": "Pluto TV — 464 chaînes",
+    "lang": "en",
+    "kind": "json",
+    "source": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/live/pluto-tv.json",
+    "version": "1.0.0",
+    "author": "Pluto TV",
+    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/live-pluto-tv.png",
+    "description": "464 chaînes FAST de Pluto TV, rangées en 26 catégories (films, séries, sport, info, jeunesse, musique). Flux propres à Pluto : aucun recouvrement avec IPTV-org. Chaque lien a été testé jusqu'au segment vidéo.",
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "typeSource": "single",
+    "itemType": 1,
+    "sourceCodeLanguage": 1,
+    "isNsfw": false,
+    "login": false,
+    "requiresAccount": false,
+    "hasDRM": false,
+    "addedAt": "2026-11-20"
+  },
+  {
+    "id": "samsung-tv-plus",
+    "name": "Samsung TV Plus — 271 chaînes",
+    "lang": "en",
+    "kind": "json",
+    "source": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/live/samsung-tv-plus.json",
+    "version": "1.0.0",
+    "author": "Samsung",
+    "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/live-samsung-tv-plus.png",
+    "description": "271 chaînes FAST du service gratuit de Samsung, classées en 21 catégories, avec logos. Doublons retirés et liens testés jusqu'au segment vidéo.",
+    "tags": [
+      "watch",
+      "english"
+    ],
+    "typeSource": "single",
+    "itemType": 1,
+    "sourceCodeLanguage": 1,
+    "isNsfw": false,
+    "login": false,
+    "requiresAccount": false,
+    "hasDRM": false,
     "addedAt": "2026-11-20"
   }
 ]
