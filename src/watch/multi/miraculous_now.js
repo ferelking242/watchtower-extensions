@@ -14,7 +14,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.6.1",
+    "version": "1.6.2",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -28,7 +28,7 @@ const watchtowerSources = [{
     "paywall": "free",
     "hasSubtitles": true,
     "hasDub": true,
-    "notes": "Miraculous Ladybug — S1–S7, Spéciaux, Webisodes (Paris/Secrets/Chibi/Autres). Recherche, HLS multi-langues (20 pistes), commentaires."
+    "notes": "Miraculous Ladybug — S1–S7, Spéciaux, Webisodes (Paris/Secrets/Chibi/Autres). Recherche, HLS multi-langues (20 pistes), commentaires. Une origine injoignable remonte son vrai code (HTTP 52x) au lieu d'un accueil vide."
 }];
 
 var MN_BASE = "https://miraculous.now";
@@ -55,8 +55,11 @@ var MN_DOWN_WINDOW = 30000;
 // The breaker is also written to the store, so reopening the app during an
 // outage does not pay for a new 10 s probe.
 var MN_DOWN_KEY = "miraculous.downUntil";
+var MN_DOWN_STATUS_KEY = "miraculous.downStatus";
 var MN_DOWN_PERSIST = 90000;
-var MN_DOWN_MESSAGE = "miraculous.now is unreachable (Cloudflare 52x)";
+// The status the origin answered with, so the error screen shows the real code
+// (523 "origin unreachable", 522 "connection timed out") instead of a guess.
+var MN_DOWN_STATUS = 523;
 
 // A rail read from the local store is served for a week after the last
 // successful fetch: long enough to bridge an outage, short enough that a
@@ -72,17 +75,32 @@ var MN_CLIENT = null;
 function mnDownUntil() {
     if (MN_DOWN_UNTIL) return MN_DOWN_UNTIL;
     try {
-        var v = parseInt(new SharedPreferences().getString(MN_DOWN_KEY, ""), 10);
-        if (!isNaN(v) && v > Date.now()) MN_DOWN_UNTIL = v;
+        var prefs = new SharedPreferences();
+        var v = parseInt(prefs.getString(MN_DOWN_KEY, ""), 10);
+        if (!isNaN(v) && v > Date.now()) {
+            MN_DOWN_UNTIL = v;
+            var stored = parseInt(prefs.getString(MN_DOWN_STATUS_KEY, ""), 10);
+            if (!isNaN(stored) && stored >= 500) MN_DOWN_STATUS = stored;
+        }
     } catch (e) {}
     return MN_DOWN_UNTIL;
 }
 
-function mnMarkDown() {
+function mnMarkDown(status) {
     MN_DOWN_UNTIL = Date.now() + MN_DOWN_WINDOW;
+    if (status >= 500) MN_DOWN_STATUS = status;
     try {
-        new SharedPreferences().setString(MN_DOWN_KEY, String(Date.now() + MN_DOWN_PERSIST));
+        var prefs = new SharedPreferences();
+        prefs.setString(MN_DOWN_KEY, String(Date.now() + MN_DOWN_PERSIST));
+        prefs.setString(MN_DOWN_STATUS_KEY, String(MN_DOWN_STATUS));
     } catch (e) {}
+}
+
+/// The origin refused the read. Carries the real status so the app can show
+/// "HTTP 523" with a retry button instead of an empty, silently cached home.
+function mnDownError(url, status) {
+    var code = status >= 500 ? status : MN_DOWN_STATUS;
+    return new Error("HTTP " + code + " " + url);
 }
 
 function mnClient() {
@@ -165,8 +183,10 @@ class DefaultExtension extends MProvider {
     /// Bounds a request: `Client.get` has no timeout, so a stalled origin can
     /// hold a call until the app kills the whole worker. Resolves to null when
     /// [ms] elapses first, which lets each caller fall back to something usable.
+    /// A rejection is passed through: an origin that answers 52x must reach the
+    /// screen as an error, not as an empty rail.
     _withTimeout(promise, ms) {
-        return new Promise(function (resolve) {
+        return new Promise(function (resolve, reject) {
             var settled = false;
             // The timer is left to fire: it finds `settled` set and does
             // nothing, which keeps this free of clearTimeout (not guaranteed
@@ -180,10 +200,10 @@ class DefaultExtension extends MProvider {
                 if (settled) return;
                 settled = true;
                 resolve(value);
-            }, function () {
+            }, function (error) {
                 if (settled) return;
                 settled = true;
-                resolve(null);
+                reject(error);
             });
         });
     }
@@ -268,7 +288,9 @@ class DefaultExtension extends MProvider {
     async _get(url, opts) {
         var cached = MN_CACHE[url];
         if (cached && Date.now() - cached.t < MN_CACHE_TTL) return { body: cached.body };
-        if (Date.now() < mnDownUntil()) return null;
+        // The origin was just probed and refused: report the real status at
+        // once instead of queueing the other rails behind another stall.
+        if (Date.now() < mnDownUntil()) throw mnDownError(url, 0);
         var start = Date.now();
         var tries = opts && opts.tries ? opts.tries : MN_TRIES;
         for (var i = 0; i < tries; i++) {
@@ -277,15 +299,19 @@ class DefaultExtension extends MProvider {
                 var body = res && res.body ? String(res.body) : "";
                 var status = res && res.statusCode ? Number(res.statusCode) : 0;
                 if (status >= 500 || this._isOriginDown(body)) {
-                    mnMarkDown();
-                    return null;
+                    mnMarkDown(status);
+                    throw mnDownError(url, status);
                 }
-                if (status >= 400) return null;
+                if (status >= 400) throw mnDownError(url, status);
                 if (body.length > 120) {
                     MN_CACHE[url] = { t: Date.now(), body: body };
                     return res;
                 }
-            } catch (e) {}
+            } catch (e) {
+                // A status the origin answered with is final; only transport
+                // errors are worth another attempt.
+                if (e && /^HTTP \d/.test(String(e.message || ""))) throw e;
+            }
             // A stalled origin must not eat the app's whole call budget.
             if (Date.now() - start > MN_TRY_BUDGET) break;
             if (i + 1 < tries) await new Promise(function (r) { setTimeout(r, 400); });
@@ -478,7 +504,17 @@ class DefaultExtension extends MProvider {
         var lang = this.getLang();
         var url = MN_BASE + "/includes/features/search/search.php?q=" + encodeURIComponent(q) +
                   "&lang=" + encodeURIComponent(lang);
-        var res = await this._get(url);
+        var res;
+        try {
+            res = await this._get(url);
+        } catch (e) {
+            // The search endpoint answers 404 for an empty result; a 5xx is the
+            // origin being down and must reach the screen as an error.
+            if (/^HTTP 4\d\d/.test(String((e && e.message) || ""))) {
+                return { list: [], hasNextPage: false };
+            }
+            throw e;
+        }
         if (!res) return { list: [], hasNextPage: false };
         var data = {};
         try { data = JSON.parse(res.body || "{}"); } catch (e) { data = {}; }
@@ -558,7 +594,14 @@ class DefaultExtension extends MProvider {
     }
 
     async _episodeDetail(url, lang) {
-        var res = await this._withTimeout(this._get(url), 12000);
+        var res = null;
+        try {
+            res = await this._withTimeout(this._get(url), 12000);
+        } catch (e) {
+            // The episode the user opened is already known from the URL, so the
+            // detail stays usable; the player reports the outage on the stream.
+            res = null;
+        }
         if (!res) {
             var fbS = String(url).match(/[?&]s=([^&\s]+)/);
             var fbE = String(url).match(/[?&]e=([^&\s]+)/);

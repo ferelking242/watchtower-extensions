@@ -83,12 +83,20 @@ console.log("miraculous.now — origin down (Cloudflare 522)");
 {
   const { extension, calls } = loadExtension(() => ({ statusCode: 522, body: CF_522 }));
 
-  await check("getLatestUpdates returns empty fast and probes once", async () => {
+  const rejectsWithStatus = async (fn, code) => {
+    try {
+      await fn();
+    } catch (e) {
+      assert.match(String(e.message || e), new RegExp(`HTTP ${code}`), `unexpected error: ${e.message}`);
+      return e;
+    }
+    assert.fail("expected the origin failure to surface as an error");
+  };
+
+  await check("getLatestUpdates reports the 522 instead of an empty home", async () => {
     const started = Date.now();
-    const res = await extension.getLatestUpdates(1);
+    await rejectsWithStatus(() => extension.getLatestUpdates(1), 522);
     const elapsed = Date.now() - started;
-    assert.equal(JSON.stringify(res.list), "[]", "expected an empty list");
-    assert.equal(res.hasNextPage, false);
     assert.equal(calls.length, 1, `expected 1 HTTP call, saw ${calls.length}`);
     assert.ok(elapsed < 1500, `took ${elapsed}ms`);
   });
@@ -96,22 +104,24 @@ console.log("miraculous.now — origin down (Cloudflare 522)");
   await check("queued custom lists fail instantly without touching the network", async () => {
     const before = calls.length;
     const started = Date.now();
-    const results = await Promise.all([
+    const results = await Promise.allSettled([
       extension.getCustomList("season_7", 1),
       extension.getCustomList("season_6", 1),
       extension.getCustomList("season_1", 1),
       extension.getCustomList("specials", 1),
     ]);
     const elapsed = Date.now() - started;
-    for (const res of results) assert.equal(JSON.stringify(res.list), "[]", "expected an empty list");
+    for (const res of results) {
+      assert.equal(res.status, "rejected", "the outage must reach the caller");
+      assert.match(String(res.reason && res.reason.message), /HTTP 522/);
+    }
     assert.equal(calls.length, before, "the breaker must not issue requests");
     assert.ok(elapsed < 300, `took ${elapsed}ms`);
   });
 
-  await check("search returns empty without a request", async () => {
+  await check("search reports the outage instead of an empty result", async () => {
     const before = calls.length;
-    const res = await extension.search("ladybug", 1);
-    assert.equal(JSON.stringify(res.list), "[]", "expected an empty list");
+    await rejectsWithStatus(() => extension.search("ladybug", 1), 522);
     assert.equal(calls.length, before);
   });
 
@@ -121,10 +131,8 @@ console.log("miraculous.now — origin down (Cloudflare 522)");
     assert.equal(res.chapters[0].url, episodeUrl);
   });
 
-  await check("getVideoList falls back to the web player", async () => {
-    const list = await extension.getVideoList(episodeUrl);
-    assert.ok(Array.isArray(list) && list.length >= 1);
-    assert.equal(list[list.length - 1].quality, "WebView");
+  await check("getVideoList reports the outage instead of a dead WebView", async () => {
+    await rejectsWithStatus(() => extension.getVideoList(episodeUrl), 522);
   });
 
   await check("getComments returns an empty list", async () => {
@@ -178,30 +186,56 @@ console.log("miraculous.now — origin healthy");
   console.log("miraculous.now — origin down after a healthy read");
   const outage = loadExtension(() => ({ statusCode: 522, body: CF_522 }), prefs);
 
-  await check("the stored catalogue is served instead of an empty home", async () => {
+  await check("the stored catalogue is not passed off as fresh content", async () => {
     const started = Date.now();
-    const latest = await outage.extension.getLatestUpdates(1);
-    const season = await outage.extension.getCustomList("season_7", 1);
+    let latestError = null;
+    try {
+      await outage.extension.getLatestUpdates(1);
+    } catch (e) {
+      latestError = e;
+    }
+    assert.ok(latestError, "the outage must not be hidden behind stored rails");
+    assert.match(String(latestError.message), /HTTP 522/);
+    await assert.rejects(
+      () => outage.extension.getCustomList("season_7", 1),
+      /HTTP 522/,
+      "the season rail must report the outage too"
+    );
     const elapsed = Date.now() - started;
-    assert.equal(latest.list.length, 6, "latest rail should come from the store");
-    assert.equal(season.list.length, 6, "season rail should come from the store");
     assert.equal(outage.calls.length, 1, "only the first probe may hit the network");
     assert.ok(elapsed < 1500, `took ${elapsed}ms`);
   });
 
   await check("reopening the app during the outage skips the probe", async () => {
     const reopened = loadExtension(() => ({ statusCode: 522, body: CF_522 }), outage.prefs);
-    const res = await reopened.extension.getLatestUpdates(1);
-    assert.equal(res.list.length, 6, "the stored rail should still be served");
+    await assert.rejects(() => reopened.extension.getLatestUpdates(1), /HTTP 522/);
     assert.equal(reopened.calls.length, 0, "the persisted breaker must skip the network");
   });
 
-  await check("getDetail serves the stored episodes instead of 'aucun épisode'", async () => {
+  await check("getDetail reports the outage instead of 'aucun épisode'", async () => {
     const before = outage.calls.length;
-    const detail = await outage.extension.getDetail("https://miraculous.now/fr/episodes?s=7");
-    assert.equal(detail.chapters.length, 6, "season detail should list the cached episodes");
-    assert.match(detail.description, /hors ligne/);
+    await assert.rejects(
+      () => outage.extension.getDetail("https://miraculous.now/fr/episodes?s=7"),
+      /HTTP 522/
+    );
     assert.equal(outage.calls.length, before, "the breaker must answer without a request");
+  });
+
+  console.log("miraculous.now — transport failure (no HTTP status)");
+  // Fresh breaker state: only the stored catalogue carries over.
+  const offlinePrefs = new Map(
+    [...prefs].filter(([key]) => !key.startsWith("miraculous.down"))
+  );
+  const offline = loadExtension(() => {
+    throw new Error("SocketException: Failed host lookup: 'miraculous.now'");
+  }, offlinePrefs);
+
+  await check("a transport failure still serves the stored catalogue", async () => {
+    const latest = await offline.extension.getLatestUpdates(1);
+    assert.equal(latest.list.length, 6, "latest rail should come from the store");
+    const detail = await offline.extension.getDetail("https://miraculous.now/fr/episodes?s=7");
+    assert.equal(detail.chapters.length, 6, "season detail should list the stored episodes");
+    assert.match(detail.description, /hors ligne/);
   });
 }
 
