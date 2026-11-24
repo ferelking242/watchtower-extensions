@@ -14,7 +14,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "2.0.0",
+    "version": "2.0.1",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -44,6 +44,8 @@ function mlpClient() {
 }
 
 var MLP_CACHE = {};
+// Libellé exact affiché par le site pour chaque page de lecture (VF, VOSTFR, VO…).
+var MLP_LANG_BY_URL = {};
 
 // Le site est un archive PHP statique : chaque « série » est une page qui
 // liste ses épisodes. Le catalogue est donc déclaré ici, une entrée par page,
@@ -52,7 +54,7 @@ var MLP_SHOWS = [
     // ── Films ────────────────────────────────────────────────────────────────
     { id: "mlpnewgen", group: "films", kind: "film", name: "MLP: Nouvelle Génération (2021)", path: "/mlpg5/mlpnewgen.php", image: "/source/banmlpnewgen.png", keywords: "g5 film 2021 new generation nouvelle generation" },
     { id: "mlp2017", group: "films", kind: "film", name: "MLP: Le Film (2017)", path: "/films/mlp2017.php", image: "/source/banmlp2017.png", keywords: "film 2017 movie le film" },
-    { id: "eqg", group: "films", kind: "film", name: "EqG — Equestria Girls (2013)", path: "/films/eqg.php", image: "/source/baneqg.png", keywords: "equestria girls film 2013" },
+    { id: "eqgfilm", group: "films", kind: "film", name: "EqG — Equestria Girls (2013)", path: "/films/eqg.php", image: "/source/baneqg.png", keywords: "equestria girls film 2013" },
     { id: "rbr", group: "films", kind: "film", name: "EqG — Rainbow Rocks (2014)", path: "/films/rbr.php", image: "/source/banrbr.png", keywords: "equestria girls rainbow rocks film 2014" },
     { id: "fsg", group: "films", kind: "film", name: "EqG — Friendship Games (2015)", path: "/films/fsg.php", image: "/source/banfsg.png", keywords: "equestria girls friendship games film 2015" },
     { id: "loe", group: "films", kind: "film", name: "EqG — Legend of Everfree (2016)", path: "/films/loe.php", image: "/source/banloe.png", keywords: "equestria girls legend everfree film 2016" },
@@ -120,8 +122,11 @@ var MLP_GROUPS = [
 
 var MLP_LANG_CODES = {
     EN: "English", FR: "Français", QB: "Français (Québec)", ES: "Español",
-    AR: "العربية", DE: "Deutsch", IT: "Italiano", PT: "Português",
-    BR: "Português (BR)", PL: "Polski", RU: "Русский", NL: "Nederlands"
+    MX: "Latino", BR: "Português (BR)", PT: "Português", IT: "Italiano",
+    NL: "Nederlands", DE: "Deutsch", PL: "Polski", HU: "Magyar", DK: "Dansk",
+    NO: "Norsk", SE: "Svenska", FI: "Suomi", RU: "Русский", AR: "العربية",
+    TR: "Türkçe", CZ: "Čeština", GR: "Ελληνικά", JP: "日本語", KR: "한국어",
+    CN: "中文", IL: "עברית", ID: "Bahasa Indonesia", VN: "Tiếng Việt"
 };
 
 var MLP_SHOW_BY_PATH = {};
@@ -207,11 +212,8 @@ class DefaultExtension extends MProvider {
         return parts.join("/");
     }
 
-    _clean(html) {
-        if (!html) return "";
-        return String(html)
-            .replace(/<br\s*\/?>/gi, " ")
-            .replace(/<[^>]*>/g, " ")
+    _decode(html) {
+        return String(html || "")
             .replace(/&nbsp;/g, " ")
             .replace(/&amp;/g, "&")
             .replace(/&#0?39;|&apos;/g, "'")
@@ -220,9 +222,19 @@ class DefaultExtension extends MProvider {
             .replace(/&gt;/g, ">")
             .replace(/&eacute;/gi, "é").replace(/&egrave;/gi, "è").replace(/&agrave;/gi, "à")
             .replace(/&ecirc;/gi, "ê").replace(/&ccedil;/gi, "ç").replace(/&ocirc;/gi, "ô")
-            .replace(/&ugrave;/gi, "ù").replace(/&rsquo;|&#8217;/g, "'")
+            .replace(/&ugrave;/gi, "ù").replace(/&rsquo;|&#8217;/g, "'");
+    }
+
+    _clean(html) {
+        if (!html) return "";
+        return this._decode(String(html).replace(/<br\s*\/?>/gi, " ").replace(/<[^>]*>/g, " "))
             .replace(/\s+/g, " ")
             .trim();
+    }
+
+    _titleCase(value) {
+        var text = String(value || "").replace(/[_-]+/g, " ").trim();
+        return text.charAt(0).toUpperCase() + text.slice(1);
     }
 
     _item(show) {
@@ -293,11 +305,10 @@ class DefaultExtension extends MProvider {
             });
         } else if (id === "latest") {
             return this.getLatestUpdates(page);
+        } else if (this._showsOfGroup(id).length) {
+            shows = this._showsOfGroup(id);
         } else if (MLP_SHOW_BY_ID[id]) {
             shows = [MLP_SHOW_BY_ID[id]];
-        } else {
-            var grouped = this._showsOfGroup(id);
-            if (grouped.length) shows = grouped;
         }
         return this._slice(shows.map(function (show) { return self._item(show); }), page, 24);
     }
@@ -401,28 +412,42 @@ class DefaultExtension extends MProvider {
         return label;
     }
 
-    _chapterTitle(block) {
-        var bold = [];
-        var bRe = /<b>([\s\S]{1,300}?)<\/b>/gi;
-        var bm;
-        while ((bm = bRe.exec(block)) !== null) {
-            var text = this._clean(bm[1]);
-            if (text) bold.push(text);
+    _isLanguageLabel(text) {
+        var value = String(text || "").replace(/\s+/g, " ").trim();
+        if (!value) return false;
+        if (/t[ée]l[ée]charger|download|page de/i.test(value)) return true;
+        if (/^(VOSTFR|VOSTF|VF|VO|VQ)$/i.test(value)) return true;
+        var lower = value.toLowerCase();
+        if (lower.indexOf("fran") === 0 || lower === "english" || lower === "latino" || lower === "brasileiro") return true;
+        var keys = Object.keys(MLP_LANG_CODES);
+        for (var i = 0; i < keys.length; i++) {
+            if (MLP_LANG_CODES[keys[i]].toLowerCase() === lower) return true;
         }
-        var plain = this._clean(block);
-        bold.forEach(function (text) {
-            plain = plain.split(text).join(" ");
-        });
-        var subtitle = plain
-            .replace(/\b(VOSTFR|VOSTF|VF|VO|ENGLISH|FRENCH|FRAN[ÇC]AIS|ESPA[ÑN]OL|LATINO|BRASILEIRO|ITALIANO|NEDERLANDS|DEUTSCH|POLSKI|MAGYAR|DANSK)\b/gi, " ")
-            .replace(/\s{2,}/g, " ")
-            .trim();
+        return false;
+    }
 
-        var parts = bold.slice();
-        if (subtitle && parts.join(" ").toLowerCase().indexOf(subtitle.toLowerCase()) === -1) {
-            parts.push(subtitle);
+    // « Episode 1 / Friendship is Magic » et « Episode 01 / The Royal Wedding »
+    // n'ordonnent pas leurs lignes de la même façon : on garde l'ordre du document.
+    // Le titre est parfois le libellé du lien (G2), parfois une ligne à part.
+    _chapterTitle(block) {
+        var self = this;
+        var text = String(block)
+            .replace(/<img[^>]*>/gi, " ")
+            .replace(/<a[^>]*class="link"[^>]*>([\s\S]*?)<\/a>/gi, function (match, inner) {
+                return self._isLanguageLabel(inner) ? " " : " " + inner + " ";
+            })
+            .replace(/<br\s*\/?>/gi, "\n")
+            .replace(/<[^>]*>/g, " ");
+        var lines = this._decode(text).split("\n");
+        var parts = [];
+        for (var i = 0; i < lines.length; i++) {
+            var part = lines[i].replace(/\s+/g, " ").trim();
+            if (!part) continue;
+            if (/^(VOSTFR|VOSTF|VF|VO)$/i.test(part)) continue;
+            if (parts.length && parts[parts.length - 1].toLowerCase() === part.toLowerCase()) continue;
+            parts.push(part);
         }
-        return parts.join(" — ").replace(/\s*—\s*—\s*/g, " — ").trim();
+        return parts.join(" — ");
     }
 
     _chapters(html, pageUrl) {
@@ -431,7 +456,9 @@ class DefaultExtension extends MProvider {
         var chapters = [];
         var filmLinks = [];
         var seen = {};
-        var re = /<li class="list\d+">([\s\S]{1,4000}?)<\/li>/gi;
+        // Certaines pages (Tell Your Tale S3) n'émettent pas de </li> : on borne
+        // chaque bloc sur le <li> suivant ou sur la fin de la liste.
+        var re = /<li class="list\d+">([\s\S]{1,8000}?)(?=<li class="list\d+">|<\/ul>|$)/gi;
         var m;
 
         while ((m = re.exec(html)) !== null) {
@@ -464,6 +491,11 @@ class DefaultExtension extends MProvider {
             if (seen[preferred.url]) continue;
             seen[preferred.url] = true;
 
+            var self = this;
+            links.forEach(function (link) {
+                if (link.label) MLP_LANG_BY_URL[link.url] = link.label;
+            });
+
             var title = this._chapterTitle(block);
             if (!title) title = "Épisode " + (chapters.length + 1);
             var season = marks.length > 1 ? this._seasonAt(marks, m.index) : "";
@@ -478,20 +510,45 @@ class DefaultExtension extends MProvider {
             });
         }
 
-        // Les films s'ouvrent sur la version française, puis les autres pistes.
-        filmLinks.sort(function (a, b) {
-            var ra = /fran|FR\b|QB\b/i.test(a.label) ? 0 : 1;
-            var rb = /fran|FR\b|QB\b/i.test(b.label) ? 0 : 1;
-            return ra - rb;
-        });
-        for (var f = 0; f < filmLinks.length; f++) {
-            chapters.push({
-                name: show.name + " — " + filmLinks[f].label,
-                url: filmLinks[f].url,
-                dateUpload: "",
-                thumbnailUrl: MLP_BASE + show.image,
-                description: "Film · " + filmLinks[f].label
-            });
+        if (filmLinks.length && show) {
+            // Une page de film liste ses doublages, parfois aussi des courts
+            // métrages (Rainbow Rocks) : on sépare les deux.
+            var counts = {};
+            var mainPath = "";
+            var mainCount = 0;
+            for (var c = 0; c < filmLinks.length; c++) {
+                var path = filmLinks[c].url.split("?")[0];
+                counts[path] = (counts[path] || 0) + 1;
+                if (counts[path] > mainCount) {
+                    mainCount = counts[path];
+                    mainPath = path;
+                }
+            }
+            function rank(link) {
+                var isMain = link.url.split("?")[0] === mainPath ? 0 : 1;
+                var isFrench = /fran|FR\b|QB\b/i.test(link.label) ? 0 : 1;
+                return isMain * 2 + isFrench;
+            }
+            filmLinks.sort(function (a, b) { return rank(a) - rank(b); });
+            for (var f = 0; f < filmLinks.length; f++) {
+                if (filmLinks[f].label) MLP_LANG_BY_URL[filmLinks[f].url] = filmLinks[f].label;
+                var isMain = filmLinks[f].url.split("?")[0] === mainPath;
+                var name = show.name + " — " + filmLinks[f].label;
+                var kind = "Film";
+                if (!isMain) {
+                    var stem = this._titleCase(filmLinks[f].url.split("?")[0].replace(/^.*\//, "").replace(/\.php$/i, ""));
+                    var ep = (filmLinks[f].url.match(/[?&]ep=([A-Za-z0-9]+)/) || [])[1] || "";
+                    name = show.name + " · " + stem + (ep ? " (" + ep + ")" : "") + " — " + filmLinks[f].label;
+                    kind = "Bonus";
+                }
+                chapters.push({
+                    name: name,
+                    url: filmLinks[f].url,
+                    dateUpload: "",
+                    thumbnailUrl: MLP_BASE + show.image,
+                    description: kind + " · " + filmLinks[f].label
+                });
+            }
         }
         return chapters;
     }
@@ -540,8 +597,18 @@ class DefaultExtension extends MProvider {
     // ── lecteur ────────────────────────────────────────────────
     _languageOf(url) {
         var link = String(url || "");
-        if (/\/vf\.php/i.test(link)) return "VF";
-        if (/\/vo\.php/i.test(link)) return "VOSTFR";
+        var known = MLP_LANG_BY_URL[link];
+        if (known) {
+            var upper = known.toUpperCase();
+            if (upper === "VOSTFR" || upper === "VOSTF") return "VOSTFR";
+            if (upper === "VF" || upper === "VO") return upper;
+            return known;
+        }
+        var file = link.split("?")[0].replace(/^.*\//, "").toLowerCase();
+        if (/vf\.php$/.test(file)) return "VF";
+        // `vo.php` est étiqueté VOSTFR par le site ; `bfhhsvo.php` & co sont des VO.
+        if (file === "vo.php") return "VOSTFR";
+        if (/vo\.php$/.test(file)) return "VO";
         var code = (link.match(/[?&]ep=([A-Za-z]{2})\b/) || [])[1];
         if (code) return MLP_LANG_CODES[code.toUpperCase()] || code.toUpperCase();
         return "VO";
@@ -586,16 +653,22 @@ class DefaultExtension extends MProvider {
         var out = [];
         var seen = {};
         seen[String(pageUrl)] = true;
+        var currentEp = (String(pageUrl).match(/[?&]ep=([A-Za-z0-9]+)/) || [])[1] || "";
         var re = /<a[^>]+href="([^"]+)"[^>]*class="link"[^>]*>([\s\S]{1,80}?)<\/a>/gi;
         var m;
         while ((m = re.exec(html)) !== null) {
             var href = String(m[1] || "").trim();
             var label = this._clean(m[2]);
             if (!href || /^https?:\/\//i.test(href)) continue;
-            var isLanguage = /passer en|english|fran[çc]ais|espa[ñn]ol|deutsch|italiano|portugu|polski|nederlands|русск|العربية|langue/i.test(label) ||
-                /(?:^|\/)(?:vf|vo)\.php/i.test(href) ||
-                /[?&]ep=[A-Za-z]{2}\b/.test(href);
-            if (!isLanguage) continue;
+            // « ÉPISODE SUIVANT » pointe sur une autre vidéo, pas sur une autre langue.
+            if (/suivant|pr[ée]c[ée]dent|next|prev|retour|accueil|t[ée]l[ée]chargement|download/i.test(label)) continue;
+
+            var ep = (href.match(/[?&]ep=([A-Za-z0-9]+)/) || [])[1] || "";
+            var isLanguageLabel = /passer en|english|fran[çc]ais|espa[ñn]ol|deutsch|italiano|portugu|polski|nederlands|русск|عربي|langue/i.test(label);
+            var isSeriesSibling = /(?:^|\/)(?:vf|vo)\.php/i.test(href) && ep === currentEp;
+            var isFilmSibling = ep !== "" && MLP_LANG_CODES[ep.toUpperCase()] && ep.toUpperCase() !== currentEp.toUpperCase();
+            if (!(isLanguageLabel || isSeriesSibling || isFilmSibling)) continue;
+
             var url = this._abs(href, pageUrl);
             if (seen[url]) continue;
             seen[url] = true;

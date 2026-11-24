@@ -64,7 +64,8 @@ var player = new NPlayer(document.querySelector('#makamour'), {
   'defaultQuality': '480p'
 });
 </script>
-<div class="switch"><p><a href="vo.php?ep=01" class="link">PASSER EN ANGLAIS</a></p></div>
+<div class="switch"><p><a href="vo.php?ep=01" class="link">PASSER EN ANGLAIS</a></p>
+<p><a href="vf.php?ep=02" class="link">ÉPISODE SUIVANT →</a></p></div>
 </body></html>`;
 
 const VO_PLAYER = `<!DOCTYPE HTML><html><body>
@@ -142,6 +143,9 @@ console.log("mlpfrance — catalogue (offline fixtures)");
     if (url.endsWith("/films/eqg.php")) return { statusCode: 200, body: FILM_HTML };
     if (url.endsWith("/episodes/saison1/vf.php?ep=01")) return { statusCode: 200, body: VF_PLAYER };
     if (url.endsWith("/episodes/saison1/vo.php?ep=01")) return { statusCode: 200, body: VO_PLAYER };
+    if (url.endsWith("/episodes/saison1/vf.php?ep=02")) {
+      return { statusCode: 200, body: VF_PLAYER.replace(/VF01-1/g, "VF02-1") };
+    }
     return { statusCode: 404, body: "" };
   });
 
@@ -224,6 +228,7 @@ console.log("mlpfrance — catalogue (offline fixtures)");
     assert.equal(res[0].url, "https://mlpfr.ponies.fr/rarity/VF01-1_720p.mp4");
     assert.equal(res[0].originalUrl, res[0].url);
     assert.equal(res[0].headers.Referer, "https://mlp-france.com/episodes/saison1/vf.php?ep=01");
+    assert.ok(res.every((v) => !/VF02-1/.test(v.url)), "next-episode page leaked into the list");
   });
 
   await check("a dead player page falls back to the web view", async () => {
