@@ -8483,14 +8483,14 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000227.ico",
     "typeSource": "single",
     "itemType": 1,
-    "version": "2.2.1",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@3d811192e7ec773e9e3c71777a9fb77510fb0917/src/nsfw/watch/multi/redgifs.js",
+    "version": "2.2.2",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@a0629b8086c8dc2f53ba5e97b1d8d3172eaf2272/src/nsfw/watch/multi/redgifs.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
     "appMinVerReq": "0.5.0",
     "sourceCodeLanguage": 1,
-    "notes": "RedGIFs v2.2.0 — tags, creatorAvatar, verified, creator feed, profil créateur",
+    "notes": "RedGIFs v2.2.2 — shell vertical Reel (renderer: reel), tags, creatorAvatar, verified, creator feed",
     "login": false,
     "forYou": false,
     "requiresAccount": false,
@@ -8519,7 +8519,9 @@
       "th": "RedGIFs คือเว็บไซต์ GIF โป๊ฟรีชั้นนำของโลก เรียกดู GIF เซ็กซ์ฮาร์ดคอร์นับล้านและวิดีโอโป๊ใหม่ล่าสุดทุกวัน!.",
       "tr": "RedGIFs dünyanın önde gelen ücretsiz porno GIF sitesidir. Her gün milyonlarca hardcore seks GIF'ine ve EN YENİ porno videolarına göz atın!.",
       "zh": "RedGIFs 是世界领先的免费色情 GIF 网站。每天浏览数以百万计的性交 GIF 和最新的色情视频！"
-    }
+    },
+    "uiLayout": "ui-layouts/redgifs.json",
+    "uiLayoutVersion": "1.0.0"
   },
   {
     "name": "VIVAMAXph",
@@ -19000,8 +19002,8 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900001459.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "2.2.1",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@3d811192e7ec773e9e3c71777a9fb77510fb0917/src/nsfw/watch/en/redgifs.js",
+    "version": "2.2.2",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@a0629b8086c8dc2f53ba5e97b1d8d3172eaf2272/src/nsfw/watch/en/redgifs.js",
     "isManga": false,
     "isNsfw": true,
     "hasCloudflare": false,
@@ -19035,7 +19037,9 @@
       "th": "RedGIFs คือเว็บไซต์ GIF โป๊ฟรีชั้นนำของโลก เรียกดู GIF เซ็กซ์ฮาร์ดคอร์นับล้านและวิดีโอโป๊ใหม่ล่าสุดทุกวัน!.",
       "tr": "RedGIFs dünyanın önde gelen ücretsiz porno GIF sitesidir. Her gün milyonlarca hardcore seks GIF'ine ve EN YENİ porno videolarına göz atın!.",
       "zh": "RedGIFs 是世界领先的免费色情 GIF 网站。每天浏览数以百万计的性交 GIF 和最新的色情视频！"
-    }
+    },
+    "uiLayout": "ui-layouts/redgifs.json",
+    "uiLayoutVersion": "1.0.0"
   },
   {
     "name": "reelsmunkey",
