@@ -14,7 +14,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "2.0.1",
+    "version": "2.1.0",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -32,6 +32,10 @@ const watchtowerSources = [{
 }];
 
 var MLP_BASE = "https://mlp-france.com";
+// Les bannières du site font 1000×200 : rognées dans une vignette 16:9 les
+// côtés disparaissent. Ces cartes 1280×720 sont composées par
+// tools/gen_mlpfrance_covers.py (bandeau entier, centré, sur un fond dégradé).
+var MLP_COVERS = "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/covers/mlpfrance/";
 var MLP_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 var MLP_HTTP_TIMEOUT = 15;
 var MLP_CACHE_TTL = 600000;
@@ -46,6 +50,7 @@ function mlpClient() {
 var MLP_CACHE = {};
 // Libellé exact affiché par le site pour chaque page de lecture (VF, VOSTFR, VO…).
 var MLP_LANG_BY_URL = {};
+var MLP_PREF = { value: "", t: 0 };
 
 // Le site est un archive PHP statique : chaque « série » est une page qui
 // liste ses épisodes. Le catalogue est donc déclaré ici, une entrée par page,
@@ -93,18 +98,18 @@ var MLP_SHOWS = [
     { id: "g3", group: "retro", kind: "serie", name: "Rétro — My Little Pony G3", path: "/retro/g3.php", image: "/source/retroban.png", keywords: "retro g3" },
 
     // ── Cartoons ─────────────────────────────────────────────────────────────
-    { id: "star1", group: "cartoons", kind: "serie", name: "Star VS — Saison 1", path: "/star/saison1.php", image: "/source/starban.png", keywords: "star vs forces of evil butterfly saison 1" },
-    { id: "star2", group: "cartoons", kind: "serie", name: "Star VS — Saison 2", path: "/star/saison2.php", image: "/source/starban.png", keywords: "star vs forces of evil butterfly saison 2" },
-    { id: "star3", group: "cartoons", kind: "serie", name: "Star VS — Saison 3", path: "/star/saison3.php", image: "/source/starban.png", keywords: "star vs forces of evil butterfly saison 3" },
-    { id: "star4", group: "cartoons", kind: "serie", name: "Star VS — Saison 4", path: "/star/saison4.php", image: "/source/starban.png", keywords: "star vs forces of evil butterfly saison 4" },
-    { id: "luz1", group: "cartoons", kind: "serie", name: "Luz à Osville — Saison 1", path: "/luz/saison1.php", image: "/source/luzban.png", keywords: "luz osville owl house saison 1" },
-    { id: "luz2", group: "cartoons", kind: "serie", name: "Luz à Osville — Saison 2", path: "/luz/saison2.php", image: "/source/luzban.png", keywords: "luz osville owl house saison 2" },
-    { id: "luz3", group: "cartoons", kind: "serie", name: "Luz à Osville — Saison 3", path: "/luz/saison3.php", image: "/source/luzban.png", keywords: "luz osville owl house saison 3" },
-    { id: "luzx", group: "cartoons", kind: "serie", name: "Luz à Osville — Extras", path: "/luz/extras.php", image: "/source/luzban.png", keywords: "luz osville owl house extras" },
-    { id: "lps1", group: "cartoons", kind: "serie", name: "Littlest Pet Shop — Saison 1", path: "/lps/saison1.php", image: "/source/lpsban.png", keywords: "littlest pet shop lps saison 1" },
-    { id: "lps2", group: "cartoons", kind: "serie", name: "Littlest Pet Shop — Saison 2", path: "/lps/saison2.php", image: "/source/lpsban.png", keywords: "littlest pet shop lps saison 2" },
-    { id: "lps3", group: "cartoons", kind: "serie", name: "Littlest Pet Shop — Saison 3", path: "/lps/saison3.php", image: "/source/lpsban.png", keywords: "littlest pet shop lps saison 3" },
-    { id: "lps4", group: "cartoons", kind: "serie", name: "Littlest Pet Shop — Saison 4", path: "/lps/saison4.php", image: "/source/lpsban.png", keywords: "littlest pet shop lps saison 4" }
+    { id: "star1", group: "star", kind: "serie", name: "Star VS — Saison 1", path: "/star/saison1.php", image: "/source/starban.png", keywords: "star vs forces of evil butterfly saison 1" },
+    { id: "star2", group: "star", kind: "serie", name: "Star VS — Saison 2", path: "/star/saison2.php", image: "/source/starban.png", keywords: "star vs forces of evil butterfly saison 2" },
+    { id: "star3", group: "star", kind: "serie", name: "Star VS — Saison 3", path: "/star/saison3.php", image: "/source/starban.png", keywords: "star vs forces of evil butterfly saison 3" },
+    { id: "star4", group: "star", kind: "serie", name: "Star VS — Saison 4", path: "/star/saison4.php", image: "/source/starban.png", keywords: "star vs forces of evil butterfly saison 4" },
+    { id: "luz1", group: "luz", kind: "serie", name: "Luz à Osville — Saison 1", path: "/luz/saison1.php", image: "/source/luzban.png", keywords: "luz osville owl house saison 1" },
+    { id: "luz2", group: "luz", kind: "serie", name: "Luz à Osville — Saison 2", path: "/luz/saison2.php", image: "/source/luzban.png", keywords: "luz osville owl house saison 2" },
+    { id: "luz3", group: "luz", kind: "serie", name: "Luz à Osville — Saison 3", path: "/luz/saison3.php", image: "/source/luzban.png", keywords: "luz osville owl house saison 3" },
+    { id: "luzx", group: "luz", kind: "serie", name: "Luz à Osville — Extras", path: "/luz/extras.php", image: "/source/luzban.png", keywords: "luz osville owl house extras" },
+    { id: "lps1", group: "lps", kind: "serie", name: "Littlest Pet Shop — Saison 1", path: "/lps/saison1.php", image: "/source/lpsban.png", keywords: "littlest pet shop lps saison 1" },
+    { id: "lps2", group: "lps", kind: "serie", name: "Littlest Pet Shop — Saison 2", path: "/lps/saison2.php", image: "/source/lpsban.png", keywords: "littlest pet shop lps saison 2" },
+    { id: "lps3", group: "lps", kind: "serie", name: "Littlest Pet Shop — Saison 3", path: "/lps/saison3.php", image: "/source/lpsban.png", keywords: "littlest pet shop lps saison 3" },
+    { id: "lps4", group: "lps", kind: "serie", name: "Littlest Pet Shop — Saison 4", path: "/lps/saison4.php", image: "/source/lpsban.png", keywords: "littlest pet shop lps saison 4" }
 ];
 
 // Ordre du rail « Nouveautés » : les sorties que le site met en avant.
@@ -117,8 +122,13 @@ var MLP_GROUPS = [
     { id: "eqg", title: "Equestria Girls" },
     { id: "ova", title: "OVA, spéciaux & bonus" },
     { id: "retro", title: "Rétro" },
+    { id: "star", title: "Star VS the Forces of Evil" },
+    { id: "luz", title: "Luz à Osville" },
+    { id: "lps", title: "Littlest Pet Shop" },
     { id: "cartoons", title: "Cartoons" }
 ];
+
+var MLP_CARTOONS = ["star", "luz", "lps"];
 
 var MLP_LANG_CODES = {
     EN: "English", FR: "Français", QB: "Français (Québec)", ES: "Español",
@@ -156,9 +166,34 @@ class DefaultExtension extends MProvider {
         }];
     }
 
+    // Le runtime n'expose que `SharedPreferences` : un `this.getPreference`
+    // n'existe pas et faisait planter toute la fiche. Selon la version il y a
+    // `getString(key, défaut)` ou seulement `get(key)`.
+    getPreference(key) {
+        var store = null;
+        try {
+            store = new SharedPreferences();
+        } catch (e) {
+            return "";
+        }
+        try {
+            var value = store.getString(key, "");
+            if (value !== null && value !== undefined) return String(value);
+        } catch (e) {}
+        try {
+            var raw = store.get(key);
+            return raw === null || raw === undefined ? "" : String(raw);
+        } catch (e) {
+            return "";
+        }
+    }
+
     getPreferredLang() {
-        var value = String(this.getPreference("mlp_lang") || "vf").toLowerCase();
-        return value === "vo" ? "vo" : "vf";
+        if (MLP_PREF.value && Date.now() - MLP_PREF.t < 5000) return MLP_PREF.value;
+        var value = this.getPreference("mlp_lang").toLowerCase() === "vo" ? "vo" : "vf";
+        MLP_PREF.value = value;
+        MLP_PREF.t = Date.now();
+        return value;
     }
 
     // ── http ───────────────────────────────────────────────────
@@ -245,7 +280,7 @@ class DefaultExtension extends MProvider {
         return {
             name: show.name,
             link: MLP_BASE + show.path,
-            imageUrl: MLP_BASE + show.image,
+            imageUrl: MLP_COVERS + show.id + ".jpg",
             description: group + " · " + (show.kind === "film" ? "Film" : "Série") + " — VF et VOSTFR"
         };
     }
@@ -265,7 +300,8 @@ class DefaultExtension extends MProvider {
     }
 
     _showsOfGroup(group) {
-        return MLP_SHOWS.filter(function (show) { return show.group === group; });
+        var wanted = group === "cartoons" ? MLP_CARTOONS : [group];
+        return MLP_SHOWS.filter(function (show) { return wanted.indexOf(show.group) !== -1; });
     }
 
     // ── catalogue ──────────────────────────────────────────────
@@ -362,6 +398,9 @@ class DefaultExtension extends MProvider {
                 option("Equestria Girls", "eqg"),
                 option("OVA", "ova"),
                 option("Rétro", "retro"),
+                option("Star VS", "star"),
+                option("Luz à Osville", "luz"),
+                option("Littlest Pet Shop", "lps"),
                 option("Cartoons", "cartoons")
             ]
         }];
@@ -456,6 +495,7 @@ class DefaultExtension extends MProvider {
         var chapters = [];
         var filmLinks = [];
         var seen = {};
+        var preferredLang = "";
         // Certaines pages (Tell Your Tale S3) n'émettent pas de </li> : on borne
         // chaque bloc sur le <li> suivant ou sur la fin de la liste.
         var re = /<li class="list\d+">([\s\S]{1,8000}?)(?=<li class="list\d+">|<\/ul>|$)/gi;
@@ -477,13 +517,14 @@ class DefaultExtension extends MProvider {
 
             var imgM = block.match(/<img[^>]+src="([^"]+)"/i);
             var image = imgM ? this._abs(imgM[1], pageUrl) : "";
+            if (!preferredLang) preferredLang = this.getPreferredLang();
             var preferred = links[0];
             for (var j = 0; j < links.length; j++) {
-                if (this.getPreferredLang() === "vf" && /vf\.php|FR\b/i.test(links[j].url)) {
+                if (preferredLang === "vf" && /vf\.php|FR\b/i.test(links[j].url)) {
                     preferred = links[j];
                     break;
                 }
-                if (this.getPreferredLang() === "vo" && /vo\.php|EN\b/i.test(links[j].url)) {
+                if (preferredLang === "vo" && /vo\.php|EN\b/i.test(links[j].url)) {
                     preferred = links[j];
                     break;
                 }
@@ -545,12 +586,32 @@ class DefaultExtension extends MProvider {
                     name: name,
                     url: filmLinks[f].url,
                     dateUpload: "",
-                    thumbnailUrl: MLP_BASE + show.image,
+                    thumbnailUrl: MLP_COVERS + show.id + ".jpg",
                     description: kind + " · " + filmLinks[f].label
                 });
             }
         }
         return chapters;
+    }
+
+    async getRecommendations(url) {
+        var self = this;
+        var show = this._showByPath(url);
+        var group = show ? show.group : "";
+        var seen = {};
+        if (show) seen[show.id] = true;
+        var pool = [];
+        MLP_SHOWS.forEach(function (item) {
+            if (seen[item.id] || item.group !== group) return;
+            seen[item.id] = true;
+            pool.push(item);
+        });
+        MLP_SHOWS.forEach(function (item) {
+            if (seen[item.id]) return;
+            seen[item.id] = true;
+            pool.push(item);
+        });
+        return pool.slice(0, 12).map(function (item) { return self._item(item); });
     }
 
     async getDetail(url) {
@@ -566,7 +627,7 @@ class DefaultExtension extends MProvider {
             return {
                 name: show ? show.name : "MLP France",
                 link: link,
-                imageUrl: show ? MLP_BASE + show.image : "",
+                imageUrl: show ? MLP_COVERS + show.id + ".jpg" : "",
                 description: "Le site MLP France n'a pas répondu. Réessaie dans un instant.",
                 chapters: []
             };
@@ -586,7 +647,7 @@ class DefaultExtension extends MProvider {
         return {
             name: show ? show.name : (siteTitle || "MLP France"),
             link: link,
-            imageUrl: show ? MLP_BASE + show.image : "",
+            imageUrl: show ? MLP_COVERS + show.id + ".jpg" : "",
             description: (siteTitle || "") +
                 (group ? "\n" + group : "") +
                 (chapters.length ? "\n" + chapters.length + " vidéo(s) — VF et VOSTFR" : "\nAucune vidéo publiée sur cette page."),

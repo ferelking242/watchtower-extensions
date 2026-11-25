@@ -23,17 +23,9 @@
         "seeAll": true
       },
       {
-        "id": "fim",
-        "component": "landscapeStacked",
-        "title": "Friendship is Magic — S1 à S9",
-        "accent": "#42A5F5",
-        "icon": "playlist_play",
-        "seeAll": true
-      },
-      {
         "id": "seasons",
         "component": "grid",
-        "title": "Toutes les saisons",
+        "title": "Friendship is Magic — S1 à S9",
         "accent": "tertiary",
         "icon": "video_library",
         "columns": 3,
@@ -42,11 +34,11 @@
         "seeAll": true
       },
       {
-        "id": "ova",
+        "id": "fim",
         "component": "landscapeStacked",
-        "title": "OVA, spéciaux & bonus",
-        "accent": "#00BCD4",
-        "icon": "celebration",
+        "title": "Toute la série",
+        "accent": "#42A5F5",
+        "icon": "playlist_play",
         "seeAll": true
       },
       {
@@ -66,6 +58,14 @@
         "seeAll": true
       },
       {
+        "id": "ova",
+        "component": "landscapeStacked",
+        "title": "OVA, spéciaux & bonus",
+        "accent": "#00BCD4",
+        "icon": "celebration",
+        "seeAll": true
+      },
+      {
         "id": "retro",
         "component": "landscapeStacked",
         "title": "Rétro — G1 à G3",
@@ -74,9 +74,25 @@
         "seeAll": true
       },
       {
-        "id": "cartoons",
+        "id": "star",
         "component": "landscapeStacked",
-        "title": "Cartoons",
+        "title": "Star VS the Forces of Evil",
+        "accent": "#AB47BC",
+        "icon": "auto_awesome_motion",
+        "seeAll": true
+      },
+      {
+        "id": "luz",
+        "component": "landscapeStacked",
+        "title": "Luz à Osville",
+        "accent": "#8D6E63",
+        "icon": "local_fire_department",
+        "seeAll": true
+      },
+      {
+        "id": "lps",
+        "component": "landscapeStacked",
+        "title": "Littlest Pet Shop",
         "accent": "#66BB6A",
         "icon": "animation",
         "seeAll": true

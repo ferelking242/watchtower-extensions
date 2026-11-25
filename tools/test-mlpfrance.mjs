@@ -89,11 +89,16 @@ function loadExtension(handler, prefs = {}) {
       return handler(url, headers);
     }
   }
-  class MProvider {
-    getPreference(key) { return key in prefs ? prefs[key] : null; }
+  // Le runtime applicatif ne fournit que `SharedPreferences` : y ajouter un
+  // `getPreference` masquerait le plantage qui cassait toutes les fiches.
+  class MProvider {}
+  class SharedPreferences {
+    get(key) { return key in prefs ? String(prefs[key]) : ""; }
+    getString(key, fallback) { return key in prefs ? String(prefs[key]) : fallback; }
+    setString() { return true; }
   }
   const sandbox = {
-    Client, MProvider, console, setTimeout, clearTimeout, Promise,
+    Client, MProvider, SharedPreferences, console, setTimeout, clearTimeout, Promise,
     JSON, Date, Math, String, Number, Array, Object, RegExp, Error,
     parseInt, parseFloat, isNaN, decodeURIComponent, encodeURIComponent,
   };
@@ -150,7 +155,7 @@ console.log("mlpfrance — catalogue (offline fixtures)");
   });
 
   await check("every rail the layout asks for is populated", async () => {
-    for (const id of ["films", "fim", "g5", "eqg", "ova", "retro", "cartoons", "all", "seasons", "latest"]) {
+    for (const id of ["films", "fim", "g5", "eqg", "ova", "retro", "star", "luz", "lps", "cartoons", "all", "seasons", "latest"]) {
       const res = await extension.getCustomList(id, 1);
       assert.ok(res.list.length > 0, `rail ${id} is empty`);
       if (res.list.length < 24) {
@@ -166,10 +171,39 @@ console.log("mlpfrance — catalogue (offline fixtures)");
     assert.match(res.list[8].name, /Saison 9/);
   });
 
-  await check("cards carry the site banner and an absolute link", async () => {
+  await check("cards carry a composed 16:9 cover and an absolute link", async () => {
     const res = await extension.getCustomList("films", 1);
-    assert.equal(res.list[0].imageUrl, "https://mlp-france.com/source/banmlpnewgen.png");
+    assert.equal(
+      res.list[0].imageUrl,
+      "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/covers/mlpfrance/mlpnewgen.jpg"
+    );
     assert.equal(res.list[0].link, "https://mlp-france.com/mlpg5/mlpnewgen.php");
+    const all = await extension.getCustomList("all", 1);
+    for (const item of all.list) {
+      assert.match(item.imageUrl, /assets\/covers\/mlpfrance\/[a-z0-9]+\.jpg$/, `bad cover for ${item.name}`);
+    }
+  });
+
+  await check("the cartoons are split into one rail per show", async () => {
+    const names = async (id) => (await extension.getCustomList(id, 1)).list.map((i) => i.name);
+    const star = await names("star");
+    const luz = await names("luz");
+    const lps = await names("lps");
+    const cartoons = await names("cartoons");
+    assert.equal(star.length, 4);
+    assert.equal(luz.length, 4);
+    assert.equal(lps.length, 4);
+    assert.equal(cartoons.length, 12);
+    assert.ok(star.every((n) => /^Star VS/.test(n)));
+    assert.ok(luz.every((n) => /^Luz à Osville/.test(n)));
+    assert.ok(lps.every((n) => /^Littlest Pet Shop/.test(n)));
+  });
+
+  await check("recommendations come from the same collection", async () => {
+    const res = await extension.getRecommendations("https://mlp-france.com/episodes/saison4.php");
+    assert.equal(res.length, 12);
+    assert.ok(!res.some((i) => i.link.endsWith("/episodes/saison4.php")), "recommended itself");
+    assert.ok(res.slice(0, 9).every((i) => /Saison|Pony Life/.test(i.name)), "same collection first");
   });
 
   await check("search matches names, keywords and ignores accents", async () => {
@@ -196,6 +230,11 @@ console.log("mlpfrance — catalogue (offline fixtures)");
     assert.equal(res.chapters[0].description, "VOSTFR · VF");
   });
 
+  await check("the reading language comes from SharedPreferences", async () => {
+    const vf = await extension.getDetail("https://mlp-france.com/episodes/saison1.php");
+    assert.match(vf.chapters[0].url, /saison1\/vf\.php\?ep=01$/);
+  });
+
   await check("multi-season pages prefix the season", async () => {
     const res = await extension.getDetail("https://mlp-france.com/episodes/ponylife.php");
     assert.equal(res.chapters.length, 2);
@@ -209,7 +248,7 @@ console.log("mlpfrance — catalogue (offline fixtures)");
     assert.equal(res.chapters[0].name, "EqG — Equestria Girls (2013) — FRANÇAIS");
     assert.equal(res.chapters[1].name, "EqG — Equestria Girls (2013) — ENGLISH");
     assert.ok(res.chapters.every((c) => /eqg\.php\?ep=/.test(c.url)));
-    assert.ok(res.chapters.every((c) => /baneqg\.png$/.test(c.thumbnailUrl)));
+    assert.ok(res.chapters.every((c) => /covers\/mlpfrance\/eqgfilm\.jpg$/.test(c.thumbnailUrl)));
   });
 
   await check("a page that never answers yields an explicit empty detail", async () => {
@@ -235,6 +274,51 @@ console.log("mlpfrance — catalogue (offline fixtures)");
     const res = await extension.getVideoList("https://mlp-france.com/episodes/saison3/vf.php?ep=99");
     assert.equal(res.length, 1);
     assert.equal(res[0].quality, "WebView");
+  });
+}
+
+console.log("mlpfrance — preferences");
+{
+  const { extension } = loadExtension(
+    (url) => {
+      if (url.endsWith("/episodes/saison1.php")) return { statusCode: 200, body: SEASON_HTML };
+      if (url.endsWith("/episodes/saison1/vf.php?ep=01")) return { statusCode: 200, body: VF_PLAYER };
+      return { statusCode: 404, body: "" };
+    },
+    { mlp_lang: "vo" }
+  );
+
+  await check("the VOSTFR preference opens the vo.php page", async () => {
+    const res = await extension.getDetail("https://mlp-france.com/episodes/saison1.php");
+    assert.match(res.chapters[0].url, /saison1\/vo\.php\?ep=01$/);
+    assert.equal(res.chapters[0].description, "VOSTFR · VF");
+  });
+
+  await check("a missing preference falls back to VF", async () => {
+    const { extension: plain } = loadExtension((url) => {
+      if (url.endsWith("/episodes/saison1.php")) return { statusCode: 200, body: SEASON_HTML };
+      return { statusCode: 404, body: "" };
+    });
+    const res = await plain.getDetail("https://mlp-france.com/episodes/saison1.php");
+    assert.match(res.chapters[0].url, /saison1\/vf\.php\?ep=01$/);
+  });
+
+  await check("a runtime without SharedPreferences still opens a detail", async () => {
+    const calls = [];
+    class Client {
+      async get(url) {
+        calls.push(url);
+        if (url.endsWith("/episodes/saison1.php")) return { statusCode: 200, body: SEASON_HTML };
+        return { statusCode: 404, body: "" };
+      }
+    }
+    const bare = { Client, MProvider: class {}, console, setTimeout, Promise, JSON, Date, Math, String, Number, Array, Object, RegExp, Error, parseInt, isNaN };
+    bare.globalThis = bare;
+    vm.createContext(bare);
+    vm.runInContext(fs.readFileSync(sourcePath, "utf8") + "\n;this.Extension = DefaultExtension;", bare, { filename: sourcePath });
+    const res = await new bare.Extension().getDetail("https://mlp-france.com/episodes/saison1.php");
+    assert.equal(res.chapters.length, 2);
+    assert.match(res.chapters[0].url, /saison1\/vf\.php\?ep=01$/);
   });
 }
 
