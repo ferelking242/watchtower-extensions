@@ -24,7 +24,8 @@
     "test:allmanga": "node tools/test-allmanga.mjs",
     "test:harimanga-covers": "node tools/test-harimanga-covers.mjs",
     "validate:live": "files=$(find src/nsfw -type f -name '*.js' -print | sort | paste -sd, -) && node tools/run_all_tests.mjs --files \"$files\" --deep --strict --concurrency 4 --out tools/live-report.json",
-    "test:mkissa-manga": "node tools/test-mkissa-manga.mjs"
+    "test:mkissa-manga": "node tools/test-mkissa-manga.mjs",
+    "test:miraculum": "node tools/test-miraculum.mjs"
   },
   "engines": {
     "node": ">=18"

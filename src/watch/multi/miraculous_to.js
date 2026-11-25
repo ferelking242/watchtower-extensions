@@ -12,7 +12,7 @@ const watchtowerSources = [{
     "typeSource": "single",
     "isManga": false,
     "itemType": 1,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "login": false,
     "forYou": false,
     "dateFormat": "",
@@ -74,6 +74,27 @@ class DefaultExtension extends MProvider {
     }
 
     // ── preferences ────────────────────────────────────────────
+    // Le runtime n'expose que `SharedPreferences` : `this.getPreference`
+    // n'existe pas et faisait planter getLang(), donc toutes les pages.
+    getPreference(key) {
+        var store = null;
+        try {
+            store = new SharedPreferences();
+        } catch (e) {
+            return "";
+        }
+        try {
+            var value = store.getString(key, "");
+            if (value !== null && value !== undefined) return String(value);
+        } catch (e) {}
+        try {
+            var raw = store.get(key);
+            return raw === null || raw === undefined ? "" : String(raw);
+        } catch (e) {
+            return "";
+        }
+    }
+
     getLang() {
         var lang = String(this.getPreference("mt_lang") || "fr").toLowerCase();
         for (var i = 0; i < MT_LANGS.length; i++) {
@@ -407,19 +428,33 @@ class DefaultExtension extends MProvider {
         return list;
     }
 
+    _normalize(value) {
+        return String(value || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    // « saison 7 », « season 7 » ou « s7 » renvoie les épisodes de la saison.
+    _seasonQuery(query) {
+        var m = this._normalize(query).trim().match(/^(?:saison|season|s)\s*0*(\d{1,2})$/);
+        return m ? m[1] : "";
+    }
+
     async search(query, page, filterList) {
         var q = String(query || "").trim();
         if (!q) return { list: [], hasNextPage: false };
-        var season = this._filterValue(filterList, "Saison");
+        var season = this._filterValue(filterList, "Saison") || this._seasonQuery(q);
 
-        var api = await this._searchApi(q, page, season);
+        var api = season ? null : await this._searchApi(q, page, "");
         if (api && api.length) return { list: api, hasNextPage: false };
 
         // The index page is cached and searchable offline.
         await this._get(this._episodesUrl());
-        var needle = q.toLowerCase();
+        var needle = this._normalize(q);
         var local = this._allCards().filter(function (c) {
             if (season && season !== "specials" && String(c.season) !== season) return false;
+            if (season) return true;
             return String(c.name).toLowerCase().indexOf(needle) !== -1;
         });
         return this._slice(local, page, 24);

@@ -87,9 +87,11 @@ function loadExtension(handler, prefs = {}) {
       return handler(url, headers, body);
     }
   }
+  // Le vrai runtime n'expose PAS getPreference sur MProvider : le stub ne doit
+  // pas en fournir, sinon une extension qui l'appelle passe les tests puis
+  // plante dans l'app.
   class MProvider {
     constructor() { this.source = null; }
-    getPreference(key) { return key in prefs ? prefs[key] : null; }
   }
   class SharedPreferences {
     getString(key, fallback = "") { return key in prefs ? prefs[key] : fallback; }
@@ -277,6 +279,12 @@ console.log("miraculous.to — search fallback");
   await check("season filter narrows the local results", async () => {
     const res = await extension.search("le bon moment", 1, [{ name: "Saison", value: "7" }]);
     assert.equal(res.list.length, 2);
+    for (const item of res.list) assert.match(item.name, /^S7/);
+  });
+
+  await check("a \"saison 7\" query returns the season's episodes", async () => {
+    const res = await extension.search("saison 7", 1);
+    assert.ok(res.list.length > 0);
     for (const item of res.list) assert.match(item.name, /^S7/);
   });
 }
