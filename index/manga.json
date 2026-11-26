@@ -1483,7 +1483,7 @@
     "typeSource": "single",
     "itemType": 0,
     "version": "1.1.0",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@c7b20c136f270aa34eb94581efd022334584c0dd/src/manga/en/mangafire_en.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@bc79cb2a6c63b55bcded0238d83b5f9c006e9af3/src/manga/en/mangafire_en.js",
     "isManga": true,
     "isNsfw": false,
     "hasCloudflare": false,
