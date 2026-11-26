@@ -1,5 +1,5 @@
 const watchtowerSources = [{
-    "name": "SpankBang",
+    "name": "SpankBang (Legacy)",
     "lang": "en",
     "baseUrl": "https://spankbang.com",
     "apiUrl": "",

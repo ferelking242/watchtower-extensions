@@ -11,7 +11,7 @@
 //   Vidéo    : <iframe src="https://www.blogger.com/video.g?token=...">
 
 const watchtowerSources = [{
-    "name": "Gogoanime",
+    "name": "Gogoanime (fi)",
     "id": 748290022,
     "baseUrl": "https://gogoanime.fi",
     "apiUrl": "",

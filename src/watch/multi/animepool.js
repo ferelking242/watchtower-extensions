@@ -1,5 +1,5 @@
 const watchtowerSources = [{
-    "name": "AniPool",
+    "name": "AniPool (Legacy)",
     "lang": "en",
     "baseUrl": "https://anipool.to",
     "apiUrl": "https://anipool.to",

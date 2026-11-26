@@ -1,5 +1,5 @@
 const watchtowerSources = [{
-    "name": "DonghuaStream",
+    "name": "DonghuaStream (Ext)",
     "lang": "multi",
     "baseUrl": "https://donghuastream.com",
     "apiUrl": "https://donghuastream.com",

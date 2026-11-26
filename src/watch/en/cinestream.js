@@ -1,5 +1,5 @@
 const watchtowerSources = [{
-    "name": "CineStream",
+    "name": "CineStream (EN)",
     "lang": "en",
     "baseUrl": "https://cinestream.net",
     "apiUrl": "https://cinestream.net",

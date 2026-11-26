@@ -1,5 +1,5 @@
 const watchtowerSources = [{
-      "name": "TNAFlix",
+      "name": "TNAFlix (Legacy)",
       "lang": "en",
       "baseUrl": "https://www.tnaflix.com",
       "apiUrl": "",

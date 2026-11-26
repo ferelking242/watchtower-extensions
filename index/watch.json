@@ -610,7 +610,7 @@
     "addedAt": "2026-09-02"
   },
   {
-    "name": "Gogoanime",
+    "name": "Gogoanime (fi)",
     "id": 1900000021,
     "lang": "en",
     "baseUrl": "https://gogoanime.fi",
@@ -1614,7 +1614,7 @@
     "addedAt": "2026-09-02"
   },
   {
-    "name": "Cinestream",
+    "name": "CineStream (FR)",
     "id": 1900000054,
     "lang": "fr",
     "baseUrl": "https://cinestream.io",
@@ -6220,7 +6220,7 @@
     "addedAt": "2026-09-02"
   },
   {
-    "name": "SpankBang",
+    "name": "SpankBang (Legacy)",
     "id": 1900000181,
     "lang": "en",
     "baseUrl": "https://spankbang.com",
@@ -6265,7 +6265,7 @@
     }
   },
   {
-    "name": "TNAFlix",
+    "name": "TNAFlix (Legacy)",
     "id": 1900000182,
     "lang": "en",
     "baseUrl": "https://www.tnaflix.com",
@@ -18995,7 +18995,7 @@
     }
   },
   {
-    "name": "redgifs",
+    "name": "RedGIFs (EN)",
     "id": 1900001459,
     "lang": "en",
     "baseUrl": "https://redgifs.com",
@@ -23399,7 +23399,7 @@
     "addedAt": "2026-10-08"
   },
   {
-    "name": "CineStream",
+    "name": "CineStream (EN)",
     "id": 1900001561,
     "lang": "en",
     "baseUrl": "https://cinestream.net",
@@ -23844,7 +23844,7 @@
     "addedAt": "2026-10-08"
   },
   {
-    "name": "AniPool",
+    "name": "AniPool (Legacy)",
     "id": 1900001578,
     "lang": "en",
     "baseUrl": "https://anipool.to",
@@ -23948,7 +23948,7 @@
     "addedAt": "2026-10-08"
   },
   {
-    "name": "DonghuaStream",
+    "name": "DonghuaStream (Ext)",
     "id": 1900001582,
     "lang": "multi",
     "baseUrl": "https://donghuastream.com",

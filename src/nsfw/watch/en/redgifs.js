@@ -1,5 +1,5 @@
 const watchtowerSources = [{
-  "name": "redgifs",
+  "name": "RedGIFs (EN)",
   "lang": "en",
   "baseUrl": "https://redgifs.com",
   "apiUrl": "",
