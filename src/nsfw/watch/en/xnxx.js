@@ -634,8 +634,14 @@ class DefaultExtension extends MProvider {
         );
         items.push(...recovered);
       } else {
+        // "suggestions" and "history" are empty for an anonymous session by
+        // design (XNXX builds both from browser-local activity), and the
+        // caller already falls back to a keyword listing. Logging them as
+        // warnings put ~100 lines per day in the app log for a non-event and
+        // buried the real parse failures.
+        const expectedEmpty = mode === "suggestions" || mode === "history";
         extLog(
-          "warn",
+          expectedEmpty ? "debug" : "warn",
           `XNXX parsed zero video cards mode=${mode || "unknown"} page=${page} thumbBlocks=${cards.length} videoLinks=${videoLinksFound} htmlBytes=${String(html || "").length}`
         );
       }
