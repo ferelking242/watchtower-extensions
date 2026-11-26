@@ -316,7 +316,7 @@
     {
       "id": "com.spotube.youtube-audio",
       "name": "YouTube Audio",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "author": "Watchtower",
       "description": "YouTube audio source plugin for the Watchtower Music Hub.",
       "longDescription": "Streams audio directly from YouTube. Supports track matching, quality selection, and local cache. Required to play music via the Music Hub when no other audio source is configured.",
@@ -360,7 +360,7 @@
     {
       "id": "com.spotube.jiosaavn-audio",
       "name": "Jiosaavn Audio",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": "Watchtower",
       "description": "Jiosaavn audio source plugin for the Watchtower Music Hub.",
       "longDescription": "Streams audio from JioSaavn — large catalog of Hindi, Tamil, Telugu, and other South Asian music. Great alternative to YouTube Audio for regional content.",
@@ -405,7 +405,7 @@
     {
       "id": "com.spotube.dab-music",
       "name": "DAB Music",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": "Watchtower",
       "description": "dab.yeet.su HiFi audio source plugin for the Watchtower Music Hub.",
       "longDescription": "Streams lossless HiFi audio (up to 24-bit/96 kHz) from dab.yeet.su. Requires account authentication. Best quality audio source available in the Music Hub.",
@@ -451,7 +451,7 @@
     {
       "id": "com.spotube.musicbrainz-listenbrainz",
       "name": "Musicbrainz & Listenbrainz",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "author": "Watchtower",
       "description": "Musicbrainz metadata + Listenbrainz scrobbling plugin for the Watchtower Music Hub.",
       "longDescription": "Enriches tracks with MusicBrainz metadata (release year, labels, ISRCs) and scrobbles listening history to ListenBrainz — the open-source alternative to Last.fm. Also supports authentication for personalized recommendations.",
@@ -499,7 +499,7 @@
     {
       "id": "com.spotube.spotify",
       "name": "Spotify",
-      "version": "1.0.0",
+      "version": "0.2.3",
       "author": "sonic-liberation",
       "description": "Spotify metadata plugin for the Watchtower Music Hub.",
       "longDescription": "Full Spotify metadata integration. Browse playlists, albums and artists. Requires a Spotify account.",
@@ -587,7 +587,7 @@
     {
       "id": "com.spotube.applemusic",
       "name": "Apple Music",
-      "version": "1.0.0",
+      "version": "0.1.4",
       "author": "CornHead764",
       "description": "Apple Music metadata plugin for the Watchtower Music Hub.",
       "longDescription": "Integrates Apple Music catalog: albums, artists, playlists. Requires an Apple Music account.",
@@ -632,7 +632,7 @@
     {
       "id": "com.spotube.deezer",
       "name": "Deezer",
-      "version": "1.0.0",
+      "version": "0.2.1",
       "author": "000Tonio",
       "description": "Deezer metadata plugin for the Watchtower Music Hub.",
       "longDescription": "Deezer catalog integration: albums, playlists, artists. Requires a Deezer account.",
@@ -677,7 +677,7 @@
     {
       "id": "com.spotube.youtube-music",
       "name": "YouTube Music",
-      "version": "1.0.0",
+      "version": "0.1.2",
       "author": "Benisgo",
       "description": "YouTube Music metadata plugin for the Watchtower Music Hub.",
       "longDescription": "YouTube Music catalog integration: playlists, albums, artists from YT Music. Requires a Google account.",

@@ -1,5 +1,5 @@
 {
-  "version": "0.2.0",
+  "version": "0.2.1",
   "name": "Deezer",
   "author": "ferelking242",
   "description": "Deezer metadata plugin for Watchtower - real Deezer catalogue (search, charts, albums, artists, playlists) plus ARL-authenticated library access.",

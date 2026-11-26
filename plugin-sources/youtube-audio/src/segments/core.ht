@@ -4,6 +4,43 @@ var HttpClient = std.HttpClient
 var HttpResponse = std.HttpResponse
 var RequestOptions = std.RequestOptions
 
+// GitHub tags are not always semver: this repo publishes a single rolling
+// "plugins-latest" release, and `int.parse` throws on such a tag. A version
+// check must never take the plugin down, so an unusable tag simply means
+// "no update to advertise".
+fun isVersionNumber(part: String) -> bool {
+  var i = 0
+  if (part.startsWith("v")) i = 1
+  if (i >= part.length) return false
+  while (i < part.length) {
+    var c = part.substring(i, i + 1)
+    if (!"0123456789".contains(c)) return false
+    i = i + 1
+  }
+  return true
+}
+
+fun parseVersionNumbers(tag) -> List {
+  if (tag == null) return []
+  var parts = "${tag}".split(".")
+  if (parts.length < 3) return []
+  if (!isVersionNumber(parts[0])) return []
+  if (!isVersionNumber(parts[1])) return []
+  if (!isVersionNumber(parts[2])) return []
+  var major = int.parse(parts[0].replaceAll("v", ""))
+  var minor = int.parse(parts[1].replaceAll("v", ""))
+  var patch = int.parse(parts[2].replaceAll("v", ""))
+  return [major, minor, patch]
+}
+
+fun isPluginAssetName(name) -> bool {
+  if (name == null) return false
+  var n = "${name}"
+  if (n.length < 7) return false
+  return n.substring(n.length - 7, n.length) == ".smplug"
+}
+
+
 class CorePlugin {
   var client: HttpClient
 
@@ -19,10 +56,11 @@ class CorePlugin {
   ///
   /// If no update is available, it will return null.
   fun checkUpdate(currentConfig: Map) -> Future {
-    var versionParts = currentConfig["version"].split(".")
-    var major = int.parse(versionParts[0])
-    var minor = int.parse(versionParts[1])
-    var patch = int.parse(versionParts[2])
+    var currentVersion = parseVersionNumbers(currentConfig["version"])
+    if (currentVersion.length < 3) return null
+    var major = currentVersion[0]
+    var minor = currentVersion[1]
+    var patch = currentVersion[2]
 
     var repoSlug = (currentConfig["repository"] ?? "").replaceAll("https://github.com/", "")
     var releasesUrl = "https://api.github.com/repos/${repoSlug}/releases/latest"
@@ -35,15 +73,13 @@ class CorePlugin {
       ),
     ).then((res) {
       var data = res.data
-      var latestVersion = data["tag_name"].split(".")
+      var latestVersion = parseVersionNumbers(data["tag_name"])
 
-      if (latestVersion.length < 3) {
-        throw "Invalid version format from GitHub API. Expected format: <major>.<minor>.<patch>. Got: ${data["tag_name"]}"
-      }
+      if (latestVersion.length < 3) return null
 
-      var latestMajor = int.parse(latestVersion[0])
-      var latestMinor = int.parse(latestVersion[1])
-      var latestPatch = int.parse(latestVersion[2])
+      var latestMajor = latestVersion[0]
+      var latestMinor = latestVersion[1]
+      var latestPatch = latestVersion[2]
 
       var isUpdateAvailable = latestMajor > major ||
         (latestMajor == major && latestMinor > minor) ||
@@ -52,12 +88,12 @@ class CorePlugin {
       if (!isUpdateAvailable) return null
 
       var downloadUrl = data["assets"].firstWhere(
-        (asset) => asset["name"] == "plugin.smplug",
+        (asset) => isPluginAssetName(asset["name"]),
         orElse: () => null
       )?["browser_download_url"]
 
       if (downloadUrl == null) {
-        throw "No download URL found for the plugin update"
+        return null
       }
 
       var changelog = data["body"] ?? "No changelog available"
