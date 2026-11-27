@@ -6114,7 +6114,7 @@
     "iconUrl": "https://raw.githubusercontent.com/ferelking242/watchtower-extensions/main/assets/icons/watch-1900000178.png",
     "typeSource": "single",
     "itemType": 1,
-    "version": "1.4.7",
+    "version": "1.4.8",
     "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@c7b20c136f270aa34eb94581efd022334584c0dd/src/nsfw/watch/en/pornhub.js",
     "isManga": false,
     "isNsfw": true,

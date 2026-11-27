@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.pornhub.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.4.7",
+  "version": "1.4.8",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/pornhub.js",
@@ -65,6 +65,16 @@ const PORNHUB_PLAYLISTS = [
 const PORNHUB_PROXY_URL =
   "https://watchtower-proxy.aivos-dev.workers.dev/proxy";
 
+// PornHub sits behind Cloudflare, whose WAF answers `403 error code: 1003`
+// ("Direct IP access not allowed") to any request that arrives without a
+// browser User-Agent. The app injects one for its own native client, but the
+// Worker proxy forwards only the headers listed here — so this header must be
+// part of the extension's own set, or the proxy transport is refused every
+// time (the "PornHub proxy failed with HTTP 403" failure). A current desktop
+// Chrome UA is accepted; the other NSFW extensions already send one.
+const PORNHUB_USER_AGENT =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+
 // Pornhub's edge drops requests from the app's default native client
 // (Rust/rustls) for this host — the JS bridge then hands the extension
 // `{statusCode: 0, body: ""}`, which used to surface as an empty home screen.
@@ -113,6 +123,7 @@ class DefaultExtension extends MProvider {
 
   getHeaders(url) {
     return {
+      "User-Agent": PORNHUB_USER_AGENT,
       "Referer": url || `${DefaultExtension.BASE_URL}/`,
       "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,*/*;q=0.8",
       "Accept-Language": "en-US,en;q=0.8",
