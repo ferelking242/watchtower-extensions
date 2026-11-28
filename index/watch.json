@@ -8030,7 +8030,7 @@
     "typeSource": "single",
     "itemType": 1,
     "version": "1.3.4",
-    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@c7b20c136f270aa34eb94581efd022334584c0dd/src/nsfw/watch/ja/missav.js",
+    "sourceCodeUrl": "https://cdn.jsdelivr.net/gh/ferelking242/watchtower-extensions@5cad0f6c27f8c4e787a4031d6bfb969c6d0e32bc/src/nsfw/watch/ja/missav.js",
     "uiLayout": "ui-layouts/missav.json",
     "uiLayoutVersion": "1.2.0",
     "isManga": false,
