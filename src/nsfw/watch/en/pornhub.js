@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://www.pornhub.com/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.4.8",
+  "version": "1.4.9",
   "login": false,
   "forYou": false,
   "pkgPath": "nsfw/watch/en/pornhub.js",
@@ -387,6 +387,118 @@ class DefaultExtension extends MProvider {
     };
   }
 
+  // Pornstars live on `/pornstars`: a grid of `li.pornstarLi` performer cards
+  // whose `img` carries the avatar and the stage name in `alt`.
+  async _parsePornstars(page) {
+    const url = `${DefaultExtension.BASE_URL}/pornstars?page=${page}`;
+    const html = await this._get(url);
+    const doc = new Document(html);
+    const items = [];
+    const seen = {};
+    for (const card of doc.select("li.pornstarLi")) {
+      const anchor = card.selectFirst("a[href*='/pornstar/'], a[href*='/model/']");
+      if (!anchor) continue;
+      const link = this._absolute(anchor.attr("href"));
+      if (!link || seen[link]) continue;
+      seen[link] = true;
+      const image = card.selectFirst("img");
+      const imageUrl = this._cleanUrl(
+        image?.attr("data-thumb_url") || image?.attr("data-src") || image?.attr("src")
+      );
+      const name = String(
+        image?.attr("alt") || card.selectFirst(".title-album, .usernameLink")?.text || ""
+      ).replace(/\s+/g, " ").trim() || "Pornstar";
+      const videos = this._text(card.selectFirst(".videosNumber"));
+      const views = this._text(card.selectFirst(".viewsNumber"));
+      items.push({
+        name,
+        imageUrl,
+        link,
+        url: link,
+        description: [videos, views].filter(Boolean).join(" · ")
+      });
+    }
+    if (items.length === 0) this._throwIfWall(html);
+    return { list: items, hasNextPage: items.length >= 20 };
+  }
+
+  // Studios are PornHub's "channels" (`/channels`). The grid paginates on the
+  // client, so the server only ever serves page 1.
+  async _parseChannels(page) {
+    if (page > 1) return { list: [], hasNextPage: false };
+    const url = `${DefaultExtension.BASE_URL}/channels`;
+    const html = await this._get(url);
+    const doc = new Document(html);
+    const items = [];
+    const seen = {};
+    for (const card of doc.select("li.wrap.mainChannels")) {
+      const nameAnchor = card.selectFirst(
+        "a.usernameLink, .descriptionContainer a[href*='/channels/']"
+      );
+      if (!nameAnchor) continue;
+      const link = this._absolute(nameAnchor.attr("href"));
+      if (!link || seen[link]) continue;
+      seen[link] = true;
+      const image = card.selectFirst(".avatar img, img");
+      const imageUrl = this._cleanUrl(image?.attr("data-src") || image?.attr("src"));
+      const name = String(nameAnchor.text || image?.attr("alt") || "")
+        .replace(/\s+/g, " ").trim() || "Studio";
+      const raw = String(card.text || "").replace(/\s+/g, " ");
+      const subscribers = (raw.match(/Subscribers\s*([\d,.KM]+)/i) || [])[1] || "";
+      const videos = (raw.match(/Videos\s*([\d,.KM]+)/i) || [])[1] || "";
+      items.push({
+        name,
+        imageUrl,
+        link,
+        url: link,
+        description: [
+          subscribers ? `${subscribers} subscribers` : "",
+          videos ? `${videos} videos` : ""
+        ].filter(Boolean).join(" · ")
+      });
+    }
+    if (items.length === 0) this._throwIfWall(html);
+    return { list: items, hasNextPage: false };
+  }
+
+  // `/categories` renders `li.catPic` cards with real artwork and an `alt`
+  // such as "Ebony Porn Category".
+  async _parseCategories(page) {
+    if (page > 1) return { list: [], hasNextPage: false };
+    const url = `${DefaultExtension.BASE_URL}/categories`;
+    const html = await this._get(url);
+    const doc = new Document(html);
+    const items = [];
+    const seen = {};
+    for (const card of doc.select("li.catPic")) {
+      const anchor = card.selectFirst("a[href*='/video?c='], a[href*='/categories/']");
+      if (!anchor) continue;
+      const link = this._absolute(anchor.attr("href"));
+      if (!link || seen[link]) continue;
+      seen[link] = true;
+      const image = card.selectFirst("img");
+      const imageUrl = this._cleanUrl(image?.attr("data-src") || image?.attr("src"));
+      const name = String(anchor.attr("alt") || image?.attr("alt") || "")
+        .replace(/\s*Porn\s*Category\s*$/i, "").replace(/\s+/g, " ").trim();
+      if (!name) continue;
+      items.push({ name, imageUrl, link, url: link, description: "Browse videos" });
+    }
+    return { list: items, hasNextPage: false };
+  }
+
+  _throwIfWall(html) {
+    if (this._isGatePage(html)) {
+      throw new Error(
+        `PornHub is behind an age or region verification. Open the page to validate access ${this._lastUrl}`
+      );
+    }
+    if (this._isChallengePage(html)) {
+      throw new Error(
+        `PornHub is behind a bot check. Open the page to validate access ${this._lastUrl}`
+      );
+    }
+  }
+
   // Pornhub retired the `/video?o=<order>` browse route: it now 302-redirects
   // to the homepage, so any listing built on it comes back empty. The homepage
   // feed (`/?o=<order>&page=<n>`) still honours the ordering codes and
@@ -569,15 +681,18 @@ class DefaultExtension extends MProvider {
       : "Auto";
   }
 
+  // Order the player by resolution, highest first, with the progressive file
+  // last: 1080p, 720p, 480p, 240p, then "Direct MP4". A preferred quality still
+  // wins when the user picked one in the source preferences.
   _qualityScore(video) {
     const quality = this._videoQuality(video).toLowerCase();
+    const pixels = Number((quality.match(/(\d{3,4})/) || [])[1] || 0);
     const preferred = this.preferredQuality;
-    if (preferred === "auto") {
-      return quality.includes("hls") ? 0 : quality.includes("mp4") ? 1 : 2;
+    if (preferred !== "auto" && pixels > 0 && quality.includes(preferred)) {
+      return -1;
     }
-    if (quality.includes(preferred)) return 0;
-    const pixels = Number((quality.match(/(\d{3,4})p?/) || [])[1] || 0);
-    return 10000 - pixels;
+    if (pixels > 0) return 100000 - pixels;
+    return 200000;
   }
 
   async getVideoList(url) {
@@ -596,10 +711,11 @@ class DefaultExtension extends MProvider {
         const quality = this._videoQuality(definition);
         videos.push({
           url: mediaUrl,
-          quality: format === "hls" ? `${quality} · HLS` : `${quality} · MP4`,
+          quality: format === "hls"
+            ? quality
+            : quality === "Direct" ? "Direct MP4" : `${quality} MP4`,
           originalUrl: mediaUrl,
-          headers,
-          _defaultQuality: !!definition.defaultQuality
+          headers
         });
       }
     }
@@ -612,17 +728,11 @@ class DefaultExtension extends MProvider {
         const mediaUrl = this._cleanUrl(meta.attr("content"));
         if (!mediaUrl || !/\.mp4(?:[?#]|$)/i.test(mediaUrl) || seen[mediaUrl]) continue;
         seen[mediaUrl] = true;
-        videos.push({ url: mediaUrl, quality: "240p · MP4", originalUrl: mediaUrl, headers });
+        videos.push({ url: mediaUrl, quality: "Direct MP4", originalUrl: mediaUrl, headers });
       }
     }
 
-    videos.sort((a, b) => {
-      if (this.preferredQuality === "auto" && a._defaultQuality !== b._defaultQuality) {
-        return a._defaultQuality ? -1 : 1;
-      }
-      return this._qualityScore(a) - this._qualityScore(b);
-    });
-    for (const video of videos) delete video._defaultQuality;
+    videos.sort((a, b) => this._qualityScore(a) - this._qualityScore(b));
     return videos;
   }
 
@@ -655,10 +765,25 @@ class DefaultExtension extends MProvider {
     if (listId === "trending") return this._list("ht", page);
     if (listId === "top") return this._list("mv", page);
     if (listId === "new") return this._list("mr", page);
+    if (listId === "latest") return this._list("mr", page);
     if (listId === "shorts") return this._searchList("short", page, "mr");
     if (listId === "catalogue") return this._list("mv", page);
 
+    if (listId === "pornstars" || listId === "pornstar" || listId === "models") {
+      return this._parsePornstars(page);
+    }
+    if (
+      listId === "studios" || listId === "studio" ||
+      listId === "channels" || listId === "channel" || listId === "networks"
+    ) {
+      return this._parseChannels(page);
+    }
+
     if (listId === "categories") {
+      // The live `/categories` grid carries real artwork; fall back to the
+      // curated slugs when the page is gated or its markup changes.
+      const live = await this._parseCategories(page).catch(() => null);
+      if (live && live.list.length > 0) return live;
       return {
         list: this._collectionItems(
           PORNHUB_CATEGORIES,

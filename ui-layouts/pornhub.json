@@ -24,6 +24,22 @@
         "seeAll": true
       },
       {
+        "id": "pornstars",
+        "component": "collectionCards",
+        "title": "Pornstars",
+        "accent": "#ff4081",
+        "icon": "star",
+        "seeAll": true
+      },
+      {
+        "id": "studios",
+        "component": "collectionCards",
+        "title": "Studios",
+        "accent": "#5c6bc0",
+        "icon": "business",
+        "seeAll": true
+      },
+      {
         "id": "categories",
         "component": "collectionCards",
         "title": "Catégories",
