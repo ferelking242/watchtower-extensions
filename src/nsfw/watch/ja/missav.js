@@ -6,7 +6,7 @@ const watchtowerSources = [{
   "iconUrl": "https://missav.ws/favicon.ico",
   "typeSource": "single",
   "itemType": 1,
-  "version": "1.3.3",
+  "version": "1.3.4",
   "login": true,
   "forYou": false,
   "pkgPath": "nsfw/watch/ja/missav.js",
@@ -44,6 +44,12 @@ const LANGUAGES = [
 ];
 const LANGUAGE_CODES = LANGUAGES.map((entry) => entry[1]);
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
+// Surrit answers a browser User-Agent with a Cloudflare 403 *when that UA is
+// presented by a non-browser TLS stack*: Cloudflare cross-checks the claimed
+// client against the handshake fingerprint, and Dart/BoringSSL never looks
+// like Chrome. The exact same request carrying a player UA is accepted, so the
+// CDN is told what actually fetches it — the app's own player/dl stack.
+const MEDIA_USER_AGENT = "libmpv/2.2.0";
 
 // Every home section is a real MissAV catalogue path (verified against the
 // site navigation). "popular"/"latest" are also served through the classic
@@ -80,15 +86,18 @@ class DefaultExtension extends MProvider {
   //  • the surrit CDN rejects a request whose `Origin` is missing or wrong and
   //    whose `Sec-Fetch-Dest` is `document` instead of `empty` — playback (a
   //    native player request) was tolerated but the downloader got a 403;
-  //  • the UA is a real desktop Chrome because the CDN fingerprints it, while
-  //    the page itself must keep the WebView UA that solved Cloudflare (see
-  //    _siteHeaders). The two never mix: this map is only for surrit/segments.
+  //  • the UA must NOT claim to be a browser: Cloudflare compares the declared
+  //    UA with the TLS fingerprint, and the app's Dart/FFmpeg stacks never
+  //    match Chrome/Firefox, so a browser UA earned a 403 on every playlist
+  //    and segment while the identical request as `libmpv` returned 200. The
+  //    page itself keeps the WebView UA that solved Cloudflare (see
+  //    _siteHeaders); the two never mix — this map is only for surrit/segments.
   getHeaders(url) {
     const pageUrl = /^https?:\/\//i.test(String(url || ""))
       ? String(url)
       : BASE_URL + "/" + this._lang();
     return {
-      "User-Agent": USER_AGENT,
+      "User-Agent": MEDIA_USER_AGENT,
       "Referer": pageUrl,
       "Origin": BASE_URL,
       "Accept": "*/*",
@@ -590,13 +599,9 @@ class DefaultExtension extends MProvider {
 
     // 3. Masters first: expand each adaptive playlist into its variants.
     const masters = candidates.filter((c) => isHls(c) && /\/playlist\.m3u8/i.test(c));
-    // The master is always a playable entry, whatever the CDN answers to this
-    // client. Surrit refuses the app's own HTTP stack on TLS fingerprint (a
-    // Dart/BoringSSL handshake gets a Cloudflare-branded 403 while the exact
-    // same request from curl or mpv gets 200), so listing the variants can
-    // legitimately fail here while playback still works. mpv performs the
-    // rendition switch itself on a master playlist, so this entry is the
-    // difference between "no source" and a working video.
+    // The master is always kept as a playable entry. Expansion is a bonus: the
+    // CDN can refuse this client on any given request, and mpv performs the
+    // rendition switch itself on a master playlist.
     let masterFallback = masters.length > 0 ? masters[0] : "";
     for (const master of masters.slice(0, 2)) {
       const text = await this._fetchMasterText(master, headers);
@@ -628,20 +633,18 @@ class DefaultExtension extends MProvider {
     }
 
     // 6. Last resort: the UUID the page exposes through its seek thumbnails,
-    // resolved through the same master→variants pipeline. If the pipeline
-    // yields nothing, playback is impossible anyway — returning a padded
-    // `Auto` entry would only promise qualities that do not exist.
+    // resolved through the same master→variants pipeline.
     if (videos.length === 0) {
       const uuidMatch = html.match(/surrit\.com[\\/]+([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
       if (uuidMatch) {
         const master = "https://surrit.com/" + uuidMatch[1] + "/playlist.m3u8";
-        masterFallback = masterFallback || master;
         const text = await this._fetchMasterText(master, headers);
         if (text) {
           for (const variant of this._parseMasterVariants(text, master)) {
             addVideo(variant.url, variant.quality);
           }
         }
+        masterFallback = masterFallback || master;
       }
     }
 
@@ -671,16 +674,19 @@ class DefaultExtension extends MProvider {
   // Master text retrieval uses the app's supported Client bridge. A refused
   // Surrit playlist is retried there from the exact MissAV page in the browser
   // session; the extension runtime does not expose the global fetch() API.
+  //
+  // One attempt only: each awaited request parks a promise continuation that
+  // QuickJS resumes later, and a retry loop multiplied those continuations on
+  // the playback path. A refusal is final — the CDN judges the client, not
+  // the request — so asking twice only delays the fallback.
   async _fetchMasterText(url, headers) {
-    for (let attempt = 0; attempt < 2; attempt++) {
-      try {
-        const res = await new Client().get(url, headers);
-        const body = (res && res.body) || "";
-        const status = (res && res.statusCode) || 0;
-        if (status < 400 && this._isMasterPlaylist(body)) return body;
-      } catch (error) {
-        // A second request through the same app bridge is a bounded retry.
-      }
+    try {
+      const res = await new Client().get(url, headers);
+      const body = (res && res.body) || "";
+      const status = (res && res.statusCode) || 0;
+      if (status < 400 && this._isMasterPlaylist(body)) return body;
+    } catch (error) {
+      // A refused playlist falls through to the playable master entry.
     }
     return "";
   }
